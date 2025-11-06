@@ -1,17 +1,16 @@
 export const siteConfig = {
-  name: "Ryan Fitzgerald",
-  title: "Senior Software Engineer",
-  description: "Portfolio website of Ryan Fitzgerald",
+  name: "Zaher Karp",
+  title: "Data Engineer",
+  description: "Portfolio website of Zaher Karp",
   accentColor: "#1d4ed8",
   social: {
     email: "your-email@example.com",
     linkedin: "https://linkedin.com/in/yourprofile",
-    twitter: "https://x.com/rfitzio",
-    github: "https://github.com/RyanFitzgerald",
+    github: "https://github.com/zaherkarp",
   },
   aboutMe:
-    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem quos asperiores nihil consequatur tempore cupiditate architecto natus commodi corrupti quas quasi facere est, dignissimos odit nam veniam sapiente ut, vitae eligendi ipsum dolor, nostrum ullam impedit! Corrupti ratione mollitia temporibus necessitatibus, consectetur reiciendis recusandae id, dolorum quaerat, vero pariatur. Ratione!",
-  skills: ["Javascript", "React", "Node.js", "Python", "AWS", "Docker"],
+    "After years writing and editing, I shifted into healthcare research and operations—then deeper into data. These days I build analytics that help care teams and leaders make better choices: clean models, pragmatic data design, and visuals that stay out of the way. Focus areas include value‑based care, primary care operations, and cost‑effective data stacks. I’ve presented at state and national venues and co‑authored peer‑reviewed work on clinic design and team communication.",
+  skills: ["SQL", "Python", "AWS", "Azure", "Docker"],
   projects: [
     {
       name: "AI Dev Roundup Newsletter",
