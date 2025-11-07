@@ -21,7 +21,57 @@ export const siteConfig = {
     "SAS",
     "Stata",
   ],
-  projects: [],
+  projects: [
+    {
+      name: "Clinic Environment & Team Interaction Research",
+      description:
+        "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
+      link: "",
+      skills: ["Qualitative Research", "Statistical Analysis", "Grant Writing", "IRB Protocol", "SAS"],
+    },
+    {
+      name: "UW Health Patient Relations Survey Redesign",
+      description:
+        "Redesigned primary care patient survey for UW Health Patient Relations/Resources department. Conducted pretesting with patient interviews to ensure survey validity and usability improvements.",
+      link: "",
+      skills: ["Survey Design", "Patient Experience", "Qualitative Methods", "Healthcare Quality"],
+    },
+    {
+      name: "Care Delivery Analytics - Interrupted Time Series",
+      description:
+        "Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. Measured impact of change initiatives with segmentation and regression modeling.",
+      link: "",
+      skills: ["Stata", "SAS", "Time Series Analysis", "Healthcare Analytics"],
+    },
+    {
+      name: "Cancer Prevention in Mental Health Populations",
+      description:
+        "Conducted research studying cancer prevention screening rates in patients with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index.",
+      link: "",
+      skills: ["SAS", "Logistic Regression", "Population Health", "Healthcare Disparities"],
+    },
+    {
+      name: "Depression Curriculum Evaluation",
+      description:
+        "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
+      link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
+      skills: ["Stata", "Medical Education", "Statistical Analysis", "Healthcare Research"],
+    },
+    {
+      name: "Medicare Shared Savings Program Analysis",
+      description:
+        "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
+      link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
+      skills: ["Stata", "Healthcare Economics", "Value-Based Care", "ACO Analytics"],
+    },
+    {
+      name: "Law School Graduation Rates Analysis",
+      description:
+        "Statistical analysis of law school graduation rates using multivariate regression modeling. Conducted as part of research work at the Center for Patient Partnerships.",
+      link: "https://github.com/zaherkarp/law-graduation-rates",
+      skills: ["Stata", "SAS", "Regression Analysis", "Education Analytics"],
+    },
+  ],
   experience: [
     {
       company: "Sustainable Clarity",
