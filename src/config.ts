@@ -4,13 +4,13 @@ export const siteConfig = {
   description: "Portfolio website of Zaher Karp",
   accentColor: "#1d4ed8",
   social: {
-    email: "your-email@example.com",
-    linkedin: "https://linkedin.com/in/yourprofile",
+    email: "email@zaherkarp.com",
+    linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
   },
   aboutMe:
     "After years writing and editing, I shifted into healthcare research and operations—then deeper into data. These days I build analytics that help care teams and leaders make better choices: clean models, pragmatic data design, and visuals that stay out of the way. Focus areas include value‑based care, primary care operations, and cost‑effective data stacks. I’ve presented at state and national venues and co‑authored peer‑reviewed work on clinic design and team communication.",
-  skills: ["SQL", "Python", "AWS", "Azure", "Docker"],
+  skills: ["SQL (Postgres, Redshift, SQL Server, MariaDB)", "Python (pandas, airflow)", "AWS", "Azure", "dbt", "Databricks"],
   projects: [
     {
       name: "AI Dev Roundup Newsletter",
