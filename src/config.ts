@@ -50,6 +50,27 @@ export const siteConfig = {
       link: "",
       skills: ["SAS", "Logistic Regression", "Population Health", "Healthcare Disparities"],
     },
+    {
+      name: "Depression Curriculum Evaluation",
+      description:
+        "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
+      link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
+      skills: ["Stata", "Medical Education", "Statistical Analysis", "Healthcare Research"],
+    },
+    {
+      name: "Medicare Shared Savings Program Analysis",
+      description:
+        "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
+      link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
+      skills: ["Stata", "Healthcare Economics", "Value-Based Care", "ACO Analytics"],
+    },
+    {
+      name: "Law School Graduation Rates Analysis",
+      description:
+        "Statistical analysis of law school graduation rates using multivariate regression modeling. Conducted as part of research work at the Center for Patient Partnerships.",
+      link: "https://github.com/zaherkarp/law-graduation-rates",
+      skills: ["Stata", "SAS", "Regression Analysis", "Education Analytics"],
+    },
   ],
   experience: [
     {
