@@ -21,7 +21,36 @@ export const siteConfig = {
     "SAS",
     "Stata",
   ],
-  projects: [],
+  projects: [
+    {
+      name: "Clinic Environment & Team Interaction Research",
+      description:
+        "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
+      link: "",
+      skills: ["Qualitative Research", "Statistical Analysis", "Grant Writing", "IRB Protocol", "SAS"],
+    },
+    {
+      name: "UW Health Patient Relations Survey Redesign",
+      description:
+        "Redesigned primary care patient survey for UW Health Patient Relations/Resources department. Conducted pretesting with patient interviews to ensure survey validity and usability improvements.",
+      link: "",
+      skills: ["Survey Design", "Patient Experience", "Qualitative Methods", "Healthcare Quality"],
+    },
+    {
+      name: "Care Delivery Analytics - Interrupted Time Series",
+      description:
+        "Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. Measured impact of change initiatives with segmentation and regression modeling.",
+      link: "",
+      skills: ["Stata", "SAS", "Time Series Analysis", "Healthcare Analytics"],
+    },
+    {
+      name: "Cancer Prevention in Mental Health Populations",
+      description:
+        "Conducted research studying cancer prevention screening rates in patients with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index.",
+      link: "",
+      skills: ["SAS", "Logistic Regression", "Population Health", "Healthcare Disparities"],
+    },
+  ],
   experience: [
     {
       company: "Sustainable Clarity",
