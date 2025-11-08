@@ -146,7 +146,7 @@ export const siteConfig = {
     {
       school: "University of Wisconsin-Madison",
       degree: "Industrial & Systems Engineering Graduate Certificate, Patient Safety",
-      dateRange: "2014 - 2015"
+      dateRange: "2014 - 2015",
       achievements: [
         "Focused on human factors in healthcare settings",
         "Completed projects in medication safety including root cause analysis and job analysis in pharmacy settings",
