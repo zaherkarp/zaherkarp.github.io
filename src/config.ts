@@ -34,7 +34,7 @@ export const siteConfig = {
       name: "Clinic Environment & Team Interaction Research",
       description:
         "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
-      link: "",
+      link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
       skills: ["Mixed Methods Research", "Grant Writing", "IRB Protocol", "NVivo"],
     },
     {
@@ -154,7 +154,7 @@ export const siteConfig = {
     },
     {
       school: "University of Wisconsin-Madison",
-      degree: "Bachelor of Arts (BA)a, English Literature",
+      degree: "Bachelor of Arts (BA), English Literature",
       dateRange: "2003 - 2007",
       achievements: [],
     },
