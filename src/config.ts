@@ -7,6 +7,7 @@ export const siteConfig = {
     email: "zaherkarp@gmail.com",
     linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
+    researchgate: "https://www.researchgate.net/profile/Zaher-Karp",
     blog: "https://zaher.bearblog.dev/",
   },
   aboutMe:
