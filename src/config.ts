@@ -7,6 +7,7 @@ export const siteConfig = {
     email: "zaherkarp@gmail.com",
     linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
+    blog: "https://zaher.bearblog.dev/",
   },
   aboutMe:
     "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
