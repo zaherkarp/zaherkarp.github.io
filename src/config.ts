@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Zaher Karp",
+  name: "Zaher",
   title: "Healthcare Analytics & Data Engineering",
   description: "Portfolio website of Zaher Karp - Healthcare Analytics with SQL and Python",
   accentColor: "#1d4ed8",
@@ -29,7 +29,7 @@ export const siteConfig = {
     "Veradigm analytics",
     "Cerner analytics",
     "athenahealth analytics",
-    "Sisense",
+    "Sisense"
   ],
   projects: [
     {
