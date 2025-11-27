@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { siteConfig } from '../../config';
+import '../../styles/global.css';
+import '../../styles/tufte.css';
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  return data.draft !== true;
+});
+
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={`Blog by ${siteConfig.name}`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Blog - {siteConfig.name}</title>
+  </head>
+  <body>
+    <Header />
+    <div class="tufte-content">
+      <div class="blog-list">
+        <h1 style="font-size: 2.5rem; font-weight: 400; margin-bottom: 3rem; color: #100f0f;">Blog</h1>
+        {sortedPosts.length === 0 ? (
+          <p style="font-size: 1.1rem; color: #5a5a5a;">No blog posts yet. Check back soon!</p>
+        ) : (
+          sortedPosts.map((post) => (
+            <article class="blog-post-card">
+              <h2>
+                <a href={`/blog/${post.slug}`}>
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="post-date">{formatDate(post.data.publishDate)}</p>
+              <p class="post-description">{post.data.description}</p>
+              {post.data.tags && post.data.tags.length > 0 && (
+                <div class="blog-tags">
+                  {post.data.tags.map((tag) => (
+                    <span class="blog-tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))
+        )}
+      </div>
+    </div>
+    <Footer />
+  </body>
+</html>
