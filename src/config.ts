@@ -36,7 +36,7 @@ export const siteConfig = {
     "Veradigm analytics",
     "Cerner analytics",
     "athenahealth analytics",
-    "Sisense"
+    "Sisense",
     "SAS",
     "Stata",
     "Electronic health record analytics (Epic, Veradigm, Cerner, athenahealth)"
@@ -47,7 +47,7 @@ export const siteConfig = {
       description:
         "Analytics used in case study at OCHIN, Inc. examining healthfinch's Charlie Practice Automation Platform implementation across multiple community health centers. Focus on workflow optimization and return on investment achieved through data-driven decision making.",
       link: "https://www.chcf.org/wp-content/uploads/2019/04/LessonsLearnedImplementingCharlieCaseStudy.pdf",
-      skills: ["Qualitative Research", "Statistical Analysis", "Grant Writing", "IRB Protocol", "SAS"],
+      skills: ["Statistical Analysis", "Sisense", "Epic Clarity"],
     },
     {
       name: "Clinic Environment & Team Interaction Research",
