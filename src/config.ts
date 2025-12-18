@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Zaher Karp, MPH CSSYB",
+  name: "Zaher",
   title: "Healthcare Analytics & Data Engineering",
   description: "Portfolio website of Zaher Karp - Healthcare Analytics with SQL and Python",
   accentColor: "#1d4ed8",
@@ -7,10 +7,14 @@ export const siteConfig = {
     email: "zaherkarp@gmail.com",
     linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
+    researchgate: "https://www.researchgate.net/profile/Zaher-Karp",
+    blog: "https://zaher.bearblog.dev/",
   },
   aboutMe:
     "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
   skills: [
+    "Amazon Web Services",
+    "Microsoft Azure",
     "SQL (Postgres, Redshift, SQL Server, MariaDB",
     "Python (pandas, PySpark)",
     "AWS (S3, Glue)",
@@ -19,6 +23,20 @@ export const siteConfig = {
     "Power BI",
     "dbt",
     "Databricks",
+    "Postgres",
+    "Redshift",
+    "SQL Server",
+    "MySQL (MariaDB)",
+    "Python",
+    "Shell scripting (bash)",
+    "dbt",
+    "pySpark",
+    "pandas",
+    "Epic Clarity analytics",
+    "Veradigm analytics",
+    "Cerner analytics",
+    "athenahealth analytics",
+    "Sisense"
     "SAS",
     "Stata",
     "Electronic health record analytics (Epic, Veradigm, Cerner, athenahealth)"
@@ -35,18 +53,18 @@ export const siteConfig = {
       name: "Clinic Environment & Team Interaction Research",
       description:
         "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
-      link: "",
-      skills: ["Qualitative Research", "Statistical Analysis", "Grant Writing", "IRB Protocol", "SAS"],
+      link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
+      skills: ["Mixed Methods Research", "Grant Writing", "IRB Protocol", "NVivo"],
     },
     {
       name: "UW Health Patient Relations Survey Redesign",
       description:
         "Redesigned primary care patient survey for UW Health Patient Relations/Resources department. Conducted pretesting with patient interviews to ensure survey validity and usability improvements.",
       link: "",
-      skills: ["Survey Design", "Patient Experience", "Qualitative Methods", "Healthcare Quality"],
+      skills: ["Survey Design", "Patient Experience", "Healthcare Quality", "Qualtrics"],
     },
     {
-      name: "Care Delivery Analytics - Interrupted Time Series",
+      name: "Care Delivery Workflow Changes",
       description:
         "Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. Measured impact of change initiatives with segmentation and regression modeling.",
       link: "",
@@ -57,28 +75,28 @@ export const siteConfig = {
       description:
         "Conducted research studying cancer prevention screening rates in patients with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index.",
       link: "",
-      skills: ["SAS", "Logistic Regression", "Population Health", "Healthcare Disparities"],
+      skills: ["Logistic Regression", "Population Health", "Healthcare Disparities", "SAS"],
     },
     {
       name: "Depression Curriculum Evaluation",
       description:
         "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
       link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
-      skills: ["Stata", "Medical Education", "Statistical Analysis", "Healthcare Research"],
+      skills: ["Univariate Statistical Analysis", "Medical Education", "Stata"],
     },
     {
       name: "Medicare Shared Savings Program Analysis",
       description:
         "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
       link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
-      skills: ["Stata", "Healthcare Economics", "Value-Based Care", "ACO Analytics"],
+      skills: ["Logistic Regression", "Healthcare Economics", "Value-Based Care", "ACO Analytics", "Stata", "SAS"],
     },
     {
       name: "Law School Graduation Rates Analysis",
       description:
         "Statistical analysis of law school graduation rates using multivariate regression modeling. Conducted as part of research work at the Center for Patient Partnerships.",
       link: "https://github.com/zaherkarp/law-graduation-rates",
-      skills: ["Stata", "SAS", "Regression Analysis", "Education Analytics"],
+      skills: ["Regression Analysis", "Education Analytics", "Stata", "SAS"],
     },
   ],
   experience: [
@@ -93,6 +111,7 @@ export const siteConfig = {
     {
       company: "Sustainable Clarity",
       title: "Principal",
+      dateRange: "Sep 2025 - Oct 2025",
       dateRange: "Sep 2025 - Sep 2025",
       bullets: [
         "Providing data engineering consulting",
@@ -148,8 +167,8 @@ export const siteConfig = {
       dateRange: "2013 - 2015",
       achievements: [
         "Health Innovation Program Research Trainee",
-        "Designed, wrote grant proposal (awarded $18,000), and published peer-reviewed research on clinic environments",
-        "Completed human factors training including projects in medication safety and pharmacy job analysis",
+        "Trained in dissemination & implementation research, qualitative interviewing, and focus group facilitation",
+        "Designed, wrote grant proposal (awarded $18,000), and published peer-reviewed research on clinic environments"
       ],
     },
     {
@@ -163,7 +182,7 @@ export const siteConfig = {
     },
     {
       school: "University of Wisconsin-Madison",
-      degree: "Bachelor of Arts, English Literature",
+      degree: "Bachelor of Arts (BA), English Literature",
       dateRange: "2003 - 2007",
       achievements: [],
     },
