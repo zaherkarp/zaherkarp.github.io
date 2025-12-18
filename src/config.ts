@@ -11,17 +11,26 @@ export const siteConfig = {
   aboutMe:
     "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
   skills: [
-    "SQL (Postgres, Redshift, SQL Server, MariaDB, Epic Clarity)",
+    "SQL (Postgres, Redshift, SQL Server, MariaDB",
     "Python (pandas, PySpark)",
     "AWS (S3, Glue)",
     "Azure Data Factory",
     "Tableau",
+    "Power BI",
     "dbt",
     "Databricks",
     "SAS",
     "Stata",
+    "Electronic health record analytics (Epic, Veradigm, Cerner, athenahealth)"
   ],
   projects: [
+    {
+      name: "Lessons Learned from healthfinch's Charlie Practice Automation: A Case Study",
+      description:
+        "Analytics used in case study at OCHIN, Inc. examining healthfinch's Charlie Practice Automation Platform implementation across multiple community health centers. Focus on workflow optimization and return on investment achieved through data-driven decision making.",
+      link: "https://www.chcf.org/wp-content/uploads/2019/04/LessonsLearnedImplementingCharlieCaseStudy.pdf",
+      skills: ["Qualitative Research", "Statistical Analysis", "Grant Writing", "IRB Protocol", "SAS"],
+    },
     {
       name: "Clinic Environment & Team Interaction Research",
       description:
@@ -74,9 +83,17 @@ export const siteConfig = {
   ],
   experience: [
     {
+      company: "Baltimore Health Analytics",
+      title: "Lead Data Engineer",
+      dateRange: "Nov 2025 - Present",
+      bullets: [
+        "Data engineering and technical leadership for analytics to proactively monitor, measure, and improve Medicare Star Rating scores",
+      ],
+    },
+    {
       company: "Sustainable Clarity",
       title: "Principal",
-      dateRange: "Sep 2025 - Present",
+      dateRange: "Sep 2025 - Sep 2025",
       bullets: [
         "Providing data engineering consulting",
       ],
