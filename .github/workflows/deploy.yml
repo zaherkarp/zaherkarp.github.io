@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Clear Astro cache
+        run: rm -rf node_modules/.astro
+
       - name: Build with Astro
         run: npm run build
 
