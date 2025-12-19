@@ -64,6 +64,36 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
           Blog
         </a>
       </li>
+      {
+        siteConfig.social?.tableau && (
+          <li>
+            <a
+              href={siteConfig.social.tableau}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Tableau"
+              class="text-gray-700 hover:text-black transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="h-5 w-5"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 3v18h18" />
+                <path d="M7 16l3 -3l4 4l4 -5" />
+              </svg>
+            </a>
+          </li>
+        )
+      }
     </ul>
   </nav>
 </header>
