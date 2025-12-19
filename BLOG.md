@@ -2,7 +2,7 @@
 
 This repository includes GitHub Actions workflows that make publishing blog posts easy and flexible. You can create posts directly through GitHub's web interface or locally.
 
-## 📝 Three Ways to Publish
+## 📝 Two Ways to Publish
 
 ### 1. **Create New Post via GitHub Actions** (Easiest)
 
@@ -52,19 +52,6 @@ For more control and longer writing sessions.
 
 4. **To publish the draft**, use the "Publish Blog Post" workflow (see below)
 
-### 3. **Schedule Future Posts**
-
-Write posts in advance and have them automatically publish on a specific date.
-
-1. Create a post (via Actions or locally) with:
-   - `draft: true`
-   - `publishDate: 2025-12-25` (future date)
-
-2. The **Auto-Publish Scheduled Posts** workflow runs daily at 9 AM UTC
-3. It automatically publishes any draft posts whose `publishDate` has arrived
-
-You can also manually trigger this workflow anytime from the Actions tab.
-
 ## 🚀 GitHub Actions Workflows
 
 ### 1. **Create New Blog Post**
@@ -96,22 +83,6 @@ Publishes a draft post by removing `draft: true` from the frontmatter.
 **Usage**:
 - Actions tab → "Publish Blog Post" → "Run workflow"
 - Enter filename: `my-draft-post` (without `.md`)
-
-### 3. **Auto-Publish Scheduled Posts**
-
-**Location**: `.github/workflows/auto-publish-scheduled.yml`
-
-Automatically publishes draft posts when their publishDate arrives.
-
-**Schedule**: Daily at 9 AM UTC (cron: `0 9 * * *`)
-
-**Manual Trigger**: Actions tab → "Auto-Publish Scheduled Posts" → "Run workflow"
-
-**How it works**:
-- Scans all draft posts in `src/content/blog/`
-- Compares their `publishDate` with today's date
-- Publishes posts where `publishDate <= today`
-- Commits changes and triggers deployment
 
 ## 📋 Blog Post Format
 
@@ -175,8 +146,7 @@ All workflows that modify blog posts automatically trigger deployment:
 ### Publish Dates
 
 - **Immediate**: Use today's date + `draft: false` (or omit draft)
-- **Scheduled**: Use future date + `draft: true`, auto-publishes when date arrives
-- **Backdating**: Use past date for migrated content
+- **Backdating**: Use past date for migrated content (e.g., migrating old posts)
 
 ## 🐛 Troubleshooting
 
@@ -196,13 +166,6 @@ All workflows that modify blog posts automatically trigger deployment:
    - File doesn't exist (for publish workflow)
    - Invalid YAML in frontmatter
 
-### Scheduled Post Didn't Publish
-
-1. Check `publishDate` format is `YYYY-MM-DD`
-2. Verify `draft: true` is set
-3. Workflow runs at 9 AM UTC (check your timezone)
-4. Manually trigger "Auto-Publish Scheduled Posts" workflow
-
 ## 📁 File Structure
 
 ```
@@ -212,12 +175,11 @@ src/content/blog/
 └── post-three.md
 
 .github/workflows/
-├── deploy.yml                    # Auto-deploy on push to master
-├── new-blog-post.yml            # Create new posts
-├── publish-blog-post.yml        # Publish draft posts
-└── auto-publish-scheduled.yml   # Auto-publish scheduled posts
+├── deploy.yml                 # Auto-deploy on push to master
+├── new-blog-post.yml         # Create new posts
+└── publish-blog-post.yml     # Publish draft posts
 
-.blog-post-template.md           # Template for local posts
+.blog-post-template.md        # Template for local posts
 ```
 
 ## 🔐 Permissions
@@ -226,27 +188,10 @@ All workflows use `contents: write` permission to commit changes. This is automa
 
 ## ⚙️ Customization
 
-### Change Auto-Publish Schedule
-
-Edit `.github/workflows/auto-publish-scheduled.yml`:
-
-```yaml
-schedule:
-  - cron: '0 9 * * *'  # Change time/frequency
-```
-
-Cron examples:
-- `0 0 * * *` - Midnight UTC daily
-- `0 */6 * * *` - Every 6 hours
-- `0 9 * * 1` - 9 AM UTC every Monday
-
-### Modify Template
-
-Edit `.blog-post-template.md` or `.github/workflows/new-blog-post.yml` to customize default content structure.
+Edit `.blog-post-template.md` or `.github/workflows/new-blog-post.yml` to customize default content structure and formatting.
 
 ## 📚 Additional Resources
 
 - [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
 - [Markdown Guide](https://www.markdownguide.org/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Cron Expression Generator](https://crontab.guru/)
