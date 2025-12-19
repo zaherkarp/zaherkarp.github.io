@@ -8,7 +8,7 @@ export const siteConfig = {
     linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
     researchgate: "https://www.researchgate.net/profile/Zaher-Karp",
-    blog: "https://zaher.bearblog.dev/",
+    blog: "/blog",
     tableau: "https://public.tableau.com/app/profile/zaher.karp/vizzes",
   },
   aboutMe:
