@@ -75,24 +75,24 @@ jobs:
 
           # Create the blog post file
           cat > "$POST_FILE" << 'EOF'
-          ---
-          title: "${{ inputs.title }}"
-          description: "${{ inputs.description }}"
-          publishDate: ${TODAY}
-          draft: ${DRAFT_STATUS}
-          ${TAGS_YAML}
-          ---
+---
+title: "${{ inputs.title }}"
+description: "${{ inputs.description }}"
+publishDate: ${TODAY}
+draft: ${DRAFT_STATUS}
+${TAGS_YAML}
+---
 
-          Write your blog post content here...
+Write your blog post content here...
 
-          ## Section 1
+## Section 1
 
-          Your content goes here.
+Your content goes here.
 
-          ## Section 2
+## Section 2
 
-          More content here.
-          EOF
+More content here.
+EOF
 
           # Replace variables in the file
           sed -i "s/\${TODAY}/$TODAY/g" "$POST_FILE"
