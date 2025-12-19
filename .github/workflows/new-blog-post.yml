@@ -1,0 +1,136 @@
+name: Create New Blog Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Blog post title'
+        required: true
+        type: string
+      filename:
+        description: 'Filename (slug, lowercase-with-hyphens, without .md)'
+        required: true
+        type: string
+      description:
+        description: 'Short description of the post'
+        required: false
+        type: string
+        default: ''
+      tags:
+        description: 'Comma-separated tags (e.g., "tech, tutorial, javascript")'
+        required: false
+        type: string
+        default: ''
+      publish_now:
+        description: 'Publish immediately (uncheck to save as draft)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Create Blog Post
+        run: |
+          POST_FILE="src/content/blog/${{ inputs.filename }}.md"
+
+          if [ -f "$POST_FILE" ]; then
+            echo "Error: Post file $POST_FILE already exists!"
+            exit 1
+          fi
+
+          # Process tags into YAML array format
+          TAGS_YAML=""
+          if [ -n "${{ inputs.tags }}" ]; then
+            # Convert comma-separated tags to YAML array
+            IFS=',' read -ra TAG_ARRAY <<< "${{ inputs.tags }}"
+            TAGS_YAML="tags: ["
+            for i in "${!TAG_ARRAY[@]}"; do
+              # Trim whitespace
+              TAG=$(echo "${TAG_ARRAY[$i]}" | xargs)
+              if [ $i -eq 0 ]; then
+                TAGS_YAML+="\"$TAG\""
+              else
+                TAGS_YAML+=", \"$TAG\""
+              fi
+            done
+            TAGS_YAML+="]"
+          fi
+
+          # Create frontmatter
+          TODAY=$(date +%Y-%m-%d)
+          DRAFT_STATUS="true"
+          if [ "${{ inputs.publish_now }}" == "true" ]; then
+            DRAFT_STATUS="false"
+          fi
+
+          # Create the blog post file
+          cat > "$POST_FILE" << 'EOF'
+          ---
+          title: "${{ inputs.title }}"
+          description: "${{ inputs.description }}"
+          publishDate: ${TODAY}
+          draft: ${DRAFT_STATUS}
+          ${TAGS_YAML}
+          ---
+
+          Write your blog post content here...
+
+          ## Section 1
+
+          Your content goes here.
+
+          ## Section 2
+
+          More content here.
+          EOF
+
+          # Replace variables in the file
+          sed -i "s/\${TODAY}/$TODAY/g" "$POST_FILE"
+          sed -i "s/\${DRAFT_STATUS}/$DRAFT_STATUS/g" "$POST_FILE"
+          if [ -n "$TAGS_YAML" ]; then
+            sed -i "s/\${TAGS_YAML}/$TAGS_YAML/g" "$POST_FILE"
+          else
+            sed -i '/\${TAGS_YAML}/d' "$POST_FILE"
+          fi
+
+          echo "Created new blog post at $POST_FILE"
+          cat "$POST_FILE"
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/blog/${{ inputs.filename }}.md
+
+          if [ "${{ inputs.publish_now }}" == "true" ]; then
+            git commit -m "Add new blog post: ${{ inputs.title }}"
+          else
+            git commit -m "Add new draft blog post: ${{ inputs.title }}"
+          fi
+
+          git push
+
+      - name: Summary
+        run: |
+          echo "✅ Blog post created successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Title:** ${{ inputs.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Filename:** ${{ inputs.filename }}.md" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** $( [ '${{ inputs.publish_now }}' == 'true' ] && echo 'Published' || echo 'Draft' )" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:** ${{ inputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.publish_now }}" == "true" ]; then
+            echo "🚀 The post will be deployed to your site shortly." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "📝 The post is saved as a draft. Use the 'Publish Blog Post' workflow to publish it later." >> $GITHUB_STEP_SUMMARY
+          fi
