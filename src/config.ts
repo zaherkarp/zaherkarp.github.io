@@ -9,6 +9,7 @@ export const siteConfig = {
     github: "https://github.com/zaherkarp",
     researchgate: "https://www.researchgate.net/profile/Zaher-Karp",
     blog: "https://zaher.bearblog.dev/",
+    tableau: "https://public.tableau.com/app/profile/zaher.karp/vizzes",
   },
   aboutMe:
     "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
