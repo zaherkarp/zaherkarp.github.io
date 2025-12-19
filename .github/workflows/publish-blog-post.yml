@@ -1,0 +1,76 @@
+name: Publish Blog Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      post_filename:
+        description: 'Blog post filename (without .md extension)'
+        required: true
+        type: string
+      update_date:
+        description: 'Update publish date to today?'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Publish Draft Post
+        run: |
+          POST_FILE="src/content/blog/${{ inputs.post_filename }}.md"
+
+          if [ ! -f "$POST_FILE" ]; then
+            echo "Error: Post file $POST_FILE not found!"
+            exit 1
+          fi
+
+          # Check if post is already published
+          if ! grep -q "draft: true" "$POST_FILE"; then
+            echo "Warning: Post is already published (draft: false or no draft field)"
+            echo "Continuing anyway to allow date updates..."
+          fi
+
+          # Remove draft: true line or change draft: true to draft: false
+          sed -i '/^draft: true$/d' "$POST_FILE"
+
+          # Update publish date if requested
+          if [ "${{ inputs.update_date }}" == "true" ]; then
+            TODAY=$(date +%Y-%m-%d)
+            if grep -q "^publishDate:" "$POST_FILE"; then
+              sed -i "s/^publishDate:.*/publishDate: $TODAY/" "$POST_FILE"
+              echo "Updated publish date to $TODAY"
+            else
+              # Add publishDate after title if it doesn't exist
+              sed -i "/^title:/a publishDate: $TODAY" "$POST_FILE"
+              echo "Added publish date: $TODAY"
+            fi
+          fi
+
+          echo "Successfully prepared post for publishing"
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/blog/${{ inputs.post_filename }}.md
+          git commit -m "Publish blog post: ${{ inputs.post_filename }}"
+          git push
+
+      - name: Summary
+        run: |
+          echo "✅ Blog post published successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Post:** ${{ inputs.post_filename }}.md" >> $GITHUB_STEP_SUMMARY
+          echo "**Date Updated:** ${{ inputs.update_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The site will be automatically deployed to GitHub Pages." >> $GITHUB_STEP_SUMMARY
