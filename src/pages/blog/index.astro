@@ -4,7 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { siteConfig } from '../../config';
 import '../../styles/global.css';
-import '../../styles/tufte.css';
+import '../../styles/blog.css';
 
 const allPosts = await getCollection('blog', ({ data }) => {
   return data.draft !== true;
@@ -37,14 +37,23 @@ const formatDate = (date: Date) => {
       rel="stylesheet"
     />
     <title>Blog - {siteConfig.name}</title>
+    <style is:inline define:vars={{
+      'color-accent': siteConfig.colors.accent,
+      'color-accent-hover': siteConfig.colors.accentHover,
+      'color-text': siteConfig.colors.text,
+      'color-text-light': siteConfig.colors.textLight,
+      'color-border': siteConfig.colors.border,
+      'color-background': siteConfig.colors.background,
+      'color-background-alt': siteConfig.colors.backgroundAlt,
+    }}></style>
   </head>
   <body>
     <Header />
-    <div class="tufte-content">
+    <div class="blog-content">
       <div class="blog-list">
-        <h1 style="font-size: 2.5rem; font-weight: 400; margin-bottom: 3rem; color: #100f0f;">Blog</h1>
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem;">Blog</h1>
         {sortedPosts.length === 0 ? (
-          <p style="font-size: 1.1rem; color: #5a5a5a;">No blog posts yet. Check back soon!</p>
+          <p style="font-size: 1.1rem;">No blog posts yet. Check back soon!</p>
         ) : (
           sortedPosts.map((post) => (
             <article class="blog-post-card">

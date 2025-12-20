@@ -3,6 +3,15 @@ export const siteConfig = {
   title: "Healthcare Analytics & Data Engineering",
   description: "Portfolio website of Zaher Karp - Healthcare Analytics with SQL and Python",
   accentColor: "#1d4ed8",
+  colors: {
+    accent: "#1d4ed8",
+    accentHover: "#1e40af",
+    text: "#1f2937",
+    textLight: "#6b7280",
+    border: "#e5e7eb",
+    background: "#ffffff",
+    backgroundAlt: "#f9fafb",
+  },
   social: {
     email: "zaherkarp@gmail.com",
     linkedin: "https://linkedin.com/in/zkarp",
