@@ -1,8 +1,8 @@
 /* Tufte CSS inspired styles for blog posts */
 
 .tufte-content {
-  background-color: #f2f0e5;
-  color: #100f0f;
+  background-color: var(--blog-background);
+  color: var(--blog-text);
   padding: 2rem 1rem;
   min-height: 100vh;
 }
@@ -11,7 +11,7 @@
   max-width: 55rem;
   margin: 0 auto;
   padding: 2rem 1rem;
-  background-color: #f2f0e5;
+  background-color: var(--blog-background);
 }
 
 /* Typography */
@@ -21,7 +21,7 @@
   line-height: 1.2;
   margin-top: 2rem;
   margin-bottom: 1.5rem;
-  color: #100f0f;
+  color: var(--blog-text);
 }
 
 .tufte-article h2 {
@@ -30,7 +30,7 @@
   line-height: 1.3;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  color: #100f0f;
+  color: var(--blog-text);
 }
 
 .tufte-article h3 {
@@ -39,7 +39,7 @@
   line-height: 1.4;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  color: #100f0f;
+  color: var(--blog-text);
 }
 
 .tufte-article p {
@@ -51,15 +51,15 @@
 }
 
 .tufte-article a {
-  color: #0066cc;
+  color: var(--blog-link);
   text-decoration: none;
-  border-bottom: 1px solid #0066cc;
+  border-bottom: 1px solid var(--blog-link);
   transition: color 0.2s ease;
 }
 
 .tufte-article a:hover {
-  color: #004499;
-  border-bottom-color: #004499;
+  color: var(--blog-link-hover);
+  border-bottom-color: var(--blog-link-hover);
 }
 
 /* Lists */
@@ -77,7 +77,7 @@
 
 /* Code blocks */
 .tufte-article pre {
-  background-color: #e8e6dc;
+  background-color: var(--blog-code-background);
   padding: 1rem;
   overflow-x: auto;
   margin-bottom: 1.5rem;
@@ -87,7 +87,7 @@
 .tufte-article code {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.9rem;
-  background-color: #e8e6dc;
+  background-color: var(--blog-code-background);
   padding: 0.2rem 0.4rem;
   border-radius: 0.2rem;
 }
@@ -101,18 +101,18 @@
 .tufte-article blockquote {
   margin: 2rem 0;
   padding-left: 2rem;
-  border-left: 3px solid #100f0f;
+  border-left: 3px solid var(--blog-text);
   font-style: italic;
-  color: #3a3a3a;
+  color: var(--blog-quote-text);
 }
 
 /* Meta information */
 .blog-meta {
   font-size: 0.95rem;
-  color: #5a5a5a;
+  color: var(--blog-meta-text);
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #d0cec4;
+  border-bottom: 1px solid var(--blog-border);
 }
 
 .blog-meta time {
@@ -127,11 +127,11 @@
 }
 
 .blog-tag {
-  background-color: #e8e6dc;
+  background-color: var(--blog-code-background);
   padding: 0.25rem 0.75rem;
   border-radius: 0.25rem;
   font-size: 0.85rem;
-  color: #100f0f;
+  color: var(--blog-text);
 }
 
 /* Blog listing */
@@ -144,7 +144,7 @@
 .blog-post-card {
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #d0cec4;
+  border-bottom: 1px solid var(--blog-border);
 }
 
 .blog-post-card:last-child {
@@ -157,41 +157,41 @@
 }
 
 .blog-post-card h2 a {
-  color: #100f0f;
+  color: var(--blog-text);
   text-decoration: none;
   border-bottom: 2px solid transparent;
   transition: border-bottom-color 0.2s ease;
 }
 
 .blog-post-card h2 a:hover {
-  border-bottom-color: #0066cc;
+  border-bottom-color: var(--blog-link);
 }
 
 .blog-post-card .post-date {
   font-size: 0.9rem;
-  color: #5a5a5a;
+  color: var(--blog-meta-text);
   margin-bottom: 0.75rem;
 }
 
 .blog-post-card .post-description {
   font-size: 1.05rem;
   line-height: 1.6;
-  color: #3a3a3a;
+  color: var(--blog-quote-text);
 }
 
 /* Back link */
 .back-link {
   display: inline-block;
   margin-bottom: 2rem;
-  color: #0066cc;
+  color: var(--blog-link);
   text-decoration: none;
-  border-bottom: 1px solid #0066cc;
+  border-bottom: 1px solid var(--blog-link);
   transition: color 0.2s ease;
 }
 
 .back-link:hover {
-  color: #004499;
-  border-bottom-color: #004499;
+  color: var(--blog-link-hover);
+  border-bottom-color: var(--blog-link-hover);
 }
 
 /* Images */
@@ -212,12 +212,12 @@
 .tufte-article td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #d0cec4;
+  border-bottom: 1px solid var(--blog-border);
 }
 
 .tufte-article th {
   font-weight: 600;
-  background-color: #e8e6dc;
+  background-color: var(--blog-code-background);
 }
 
 /* Responsive adjustments */
