@@ -14,33 +14,22 @@ export const siteConfig = {
   aboutMe:
     "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
   skills: [
-    "Amazon Web Services",
-    "Microsoft Azure",
-    "SQL (Postgres, Redshift, SQL Server, MariaDB",
+    "Amazon Web Services (S3, Glue)",
+    "Microsoft Azure (Data Factory)",
+    "SQL (Postgres, Redshift, SQL Server, MariaDB)",
     "Python (pandas, PySpark)",
-    "AWS (S3, Glue)",
-    "Azure Data Factory",
-    "Tableau",
-    "Power BI",
-    "dbt",
-    "Databricks",
-    "Postgres",
-    "Redshift",
-    "SQL Server",
-    "MySQL (MariaDB)",
-    "Python",
     "Shell scripting (bash)",
     "dbt",
-    "pySpark",
-    "pandas",
+    "Databricks",
+    "Tableau",
+    "Power BI",
+    "Sisense",
     "Epic Clarity analytics",
     "Veradigm analytics",
     "Cerner analytics",
     "athenahealth analytics",
-    "Sisense",
     "SAS",
-    "Stata",
-    "Electronic health record analytics (Epic, Veradigm, Cerner, athenahealth)"
+    "Stata"
   ],
   projects: [
     {
@@ -112,8 +101,7 @@ export const siteConfig = {
     {
       company: "Sustainable Clarity",
       title: "Principal",
-      dateRange: "Sep 2025 - Oct 2025",
-      dateRange: "Sep 2025 - Sep 2025",
+      dateRange: "Sep 2025",
       bullets: [
         "Providing data engineering consulting",
       ],
