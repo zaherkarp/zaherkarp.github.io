@@ -1,5 +1,85 @@
 @import "tailwindcss";
 
+/* Theme Variables */
+:root {
+  --color-accent: #1d4ed8;
+  --color-accent-hover: #1e40af;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-border: #e5e7eb;
+  --color-background: #ffffff;
+  --color-background-alt: #f9fafb;
+}
+
+[data-theme="dark"] {
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-text: #f9fafb;
+  --color-text-light: #9ca3af;
+  --color-border: #374151;
+  --color-background: #111827;
+  --color-background-alt: #1f2937;
+}
+
 body {
   font-family: 'IBM Plex Mono', monospace;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode text color overrides */
+[data-theme="dark"] .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .text-gray-800 {
+  color: #f3f4f6 !important;
+}
+
+[data-theme="dark"] .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+[data-theme="dark"] .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+/* Dark mode background color overrides */
+[data-theme="dark"] .bg-white {
+  background-color: #111827 !important;
+}
+
+[data-theme="dark"] .bg-gray-100 {
+  background-color: #1f2937 !important;
+}
+
+[data-theme="dark"] .bg-gray-200 {
+  background-color: #374151 !important;
+}
+
+[data-theme="dark"] .bg-gray-50 {
+  background-color: #1f2937 !important;
+}
+
+/* Dark mode hover states */
+[data-theme="dark"] .hover\:bg-gray-200:hover {
+  background-color: #4b5563 !important;
+}
+
+[data-theme="dark"] .hover\:text-black:hover {
+  color: #f9fafb !important;
+}
+
+/* Border colors */
+[data-theme="dark"] .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+[data-theme="dark"] .border-gray-300 {
+  border-color: #4b5563 !important;
 }
