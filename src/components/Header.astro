@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from "../config";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
 const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
@@ -64,23 +65,61 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
           Blog
         </a>
       </li>
+      <li>
+        <ThemeToggle />
+      </li>
     </ul>
   </nav>
 </header>
 
 <script>
-  window.addEventListener("scroll", () => {
+  function updateHeaderBackground() {
     const header = document.getElementById("header");
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+
     if (window.scrollY > 100) {
-      header?.classList.add("bg-white/80", "backdrop-blur-sm");
+      header?.classList.add("backdrop-blur-sm", "header-scrolled");
     } else {
-      header?.classList.remove("bg-white/80", "backdrop-blur-sm");
+      header?.classList.remove("backdrop-blur-sm", "header-scrolled");
     }
+  }
+
+  window.addEventListener("scroll", updateHeaderBackground);
+
+  // Update on theme change
+  const observer = new MutationObserver(updateHeaderBackground);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
   });
 </script>
 
 <style>
   html {
     scroll-behavior: smooth;
+  }
+
+  #header.header-scrolled {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  :global([data-theme="dark"]) #header.header-scrolled {
+    background-color: rgba(17, 24, 39, 0.8);
+  }
+
+  #header a {
+    color: #374151;
+  }
+
+  #header a:hover {
+    color: #111827;
+  }
+
+  :global([data-theme="dark"]) #header a {
+    color: #d1d5db;
+  }
+
+  :global([data-theme="dark"]) #header a:hover {
+    color: #f9fafb;
   }
 </style>

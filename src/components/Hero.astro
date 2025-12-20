@@ -4,18 +4,17 @@ import { siteConfig } from "../config";
 
 <div
   id="hero"
-  class="relative isolate overflow-hidden bg-white py-24 md:h-screen"
+  class="relative isolate overflow-hidden hero-container py-24 md:h-screen"
   style={`--accent-color: ${siteConfig.accentColor}`}
 >
   <!-- Gradient overlay -->
   <div
-    class="absolute inset-0 -z-10"
-    style={`background: radial-gradient(ellipse 800px 1200px at 0% 0%, ${siteConfig.accentColor}40 0%, ${siteConfig.accentColor}25 20%, ${siteConfig.accentColor}10 40%, rgba(255, 255, 255, 0.3) 70%, rgba(255, 255, 255, 0.8) 90%, white 100%)`}
+    class="absolute inset-0 -z-10 hero-gradient"
   >
   </div>
   <svg
     aria-hidden="true"
-    class="absolute inset-0 -z-10 size-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+    class="absolute inset-0 -z-10 size-full hero-svg [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
   >
     <defs>
       <pattern
@@ -132,26 +131,24 @@ import { siteConfig } from "../config";
   <div class="h-full mx-auto p-8 sm:p-12 md:p-24 flex items-center">
     <div>
       <h2
-        class="text-pretty text-xl sm:text-2xl md:text-5xl font-bold tracking-tight text-gray-700 animate-fade-in"
+        class="text-pretty text-xl sm:text-2xl md:text-5xl font-bold tracking-tight hero-greeting animate-fade-in"
       >
         Hello! 👋
       </h2>
       <h1
-        class="mt-6 sm:mt-8 md:mt-10 text-pretty text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight text-gray-800 animate-fade-in animation-delay-200"
+        class="mt-6 sm:mt-8 md:mt-10 text-pretty text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight hero-title animate-fade-in animation-delay-200"
       >
-        I'm <span style={{ color: siteConfig.accentColor }}
-          >{siteConfig.name}</span
-        >
+        I'm <span class="hero-name">{siteConfig.name}</span>
       </h1>
       <p
-        class="mt-4 sm:mt-6 md:mt-8 text-pretty text-base sm:text-lg md:text-xl/8 font-medium text-gray-600 animate-fade-in animation-delay-400"
+        class="mt-4 sm:mt-6 md:mt-8 text-pretty text-base sm:text-lg md:text-xl/8 font-medium hero-subtitle animate-fade-in animation-delay-400"
       >
         {siteConfig.title}
       </p>
     </div>
   </div>
   <div
-    class="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-24 flex gap-x-4 sm:gap-x-6 md:gap-x-8 text-gray-700 animate-fade-in animation-delay-600"
+    class="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-24 flex gap-x-4 sm:gap-x-6 md:gap-x-8 hero-social animate-fade-in animation-delay-600"
   >
     {
       siteConfig.social?.email && (
@@ -387,5 +384,87 @@ import { siteConfig } from "../config";
 
   .animation-delay-600 {
     animation-delay: 0.6s;
+  }
+
+  /* Light mode */
+  .hero-container {
+    background: #ffffff;
+  }
+
+  .hero-gradient {
+    background: radial-gradient(
+      ellipse 800px 1200px at 0% 0%,
+      rgba(29, 78, 216, 0.25) 0%,
+      rgba(29, 78, 216, 0.15) 20%,
+      rgba(29, 78, 216, 0.06) 40%,
+      rgba(255, 255, 255, 0.3) 70%,
+      rgba(255, 255, 255, 0.8) 90%,
+      #ffffff 100%
+    );
+  }
+
+  .hero-svg {
+    stroke: #e5e7eb;
+  }
+
+  .hero-greeting {
+    color: #374151;
+  }
+
+  .hero-title {
+    color: #1f2937;
+  }
+
+  .hero-name {
+    color: #1d4ed8;
+  }
+
+  .hero-subtitle {
+    color: #6b7280;
+  }
+
+  .hero-social {
+    color: #374151;
+  }
+
+  /* Dark mode */
+  :global([data-theme="dark"]) .hero-container {
+    background: #111827;
+  }
+
+  :global([data-theme="dark"]) .hero-gradient {
+    background: radial-gradient(
+      ellipse 800px 1200px at 0% 0%,
+      rgba(96, 165, 250, 0.2) 0%,
+      rgba(96, 165, 250, 0.12) 20%,
+      rgba(96, 165, 250, 0.05) 40%,
+      rgba(17, 24, 39, 0.3) 70%,
+      rgba(17, 24, 39, 0.8) 90%,
+      #111827 100%
+    );
+  }
+
+  :global([data-theme="dark"]) .hero-svg {
+    stroke: #374151;
+  }
+
+  :global([data-theme="dark"]) .hero-greeting {
+    color: #d1d5db;
+  }
+
+  :global([data-theme="dark"]) .hero-title {
+    color: #f9fafb;
+  }
+
+  :global([data-theme="dark"]) .hero-name {
+    color: #60a5fa;
+  }
+
+  :global([data-theme="dark"]) .hero-subtitle {
+    color: #9ca3af;
+  }
+
+  :global([data-theme="dark"]) .hero-social {
+    color: #d1d5db;
   }
 </style>
