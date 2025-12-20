@@ -64,10 +64,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/blog/${{ inputs.post_filename }}.md
-          git commit -m "Publish blog post: ${{ inputs.post_filename }}"
-          git push
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit - post may already be published"
+            echo "skip_deploy=true" >> $GITHUB_ENV
+          else
+            git commit -m "Publish blog post: ${{ inputs.post_filename }}"
+            git push
+            echo "skip_deploy=false" >> $GITHUB_ENV
+          fi
 
       - name: Trigger Deployment
+        if: env.skip_deploy != 'true'
         run: |
           curl -L \
             -X POST \
@@ -79,11 +88,20 @@ jobs:
 
       - name: Summary
         run: |
-          echo "✅ Blog post published successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Post:** ${{ inputs.post_filename }}.md" >> $GITHUB_STEP_SUMMARY
-          echo "**Date Updated:** ${{ inputs.update_date }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🚀 Deployment to GitHub Pages has been triggered." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check the 'Deploy to GitHub Pages' workflow for deployment status." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ env.skip_deploy }}" == "true" ]; then
+            echo "ℹ️ No changes were made to the blog post." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Post:** ${{ inputs.post_filename }}.md" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** Already published or no changes needed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "💡 Tip: This post may already be published. Check the blog to verify." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Blog post published successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Post:** ${{ inputs.post_filename }}.md" >> $GITHUB_STEP_SUMMARY
+            echo "**Date Updated:** ${{ inputs.update_date }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🚀 Deployment to GitHub Pages has been triggered." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the 'Deploy to GitHub Pages' workflow for deployment status." >> $GITHUB_STEP_SUMMARY
+          fi
