@@ -4,20 +4,13 @@ export const siteConfig = {
   description: "Portfolio website of Zaher Karp - Healthcare Analytics with SQL and Python",
   accentColor: "#1d4ed8",
   colors: {
-    // Main portfolio colors
     accent: "#1d4ed8",
-
-    // Blog colors (Tufte-inspired)
-    blog: {
-      background: "#f2f0e5",
-      text: "#100f0f",
-      link: "#0066cc",
-      linkHover: "#004499",
-      codeBackground: "#e8e6dc",
-      border: "#d0cec4",
-      metaText: "#5a5a5a",
-      quoteText: "#3a3a3a",
-    },
+    accentHover: "#1e40af",
+    text: "#1f2937",
+    textLight: "#6b7280",
+    border: "#e5e7eb",
+    background: "#ffffff",
+    backgroundAlt: "#f9fafb",
   },
   social: {
     email: "zaherkarp@gmail.com",

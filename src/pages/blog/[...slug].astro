@@ -5,7 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { siteConfig } from '../../config';
 import '../../styles/global.css';
-import '../../styles/tufte.css';
+import '../../styles/blog.css';
 
 export const getStaticPaths = (async () => {
   const blogEntries = await getCollection('blog', ({ data }) => {
@@ -44,20 +44,19 @@ const formatDate = (date: Date) => {
     />
     <title>{entry.data.title} - {siteConfig.name}</title>
     <style is:inline define:vars={{
-      'blog-background': siteConfig.colors.blog.background,
-      'blog-text': siteConfig.colors.blog.text,
-      'blog-link': siteConfig.colors.blog.link,
-      'blog-link-hover': siteConfig.colors.blog.linkHover,
-      'blog-code-background': siteConfig.colors.blog.codeBackground,
-      'blog-border': siteConfig.colors.blog.border,
-      'blog-meta-text': siteConfig.colors.blog.metaText,
-      'blog-quote-text': siteConfig.colors.blog.quoteText,
+      'color-accent': siteConfig.colors.accent,
+      'color-accent-hover': siteConfig.colors.accentHover,
+      'color-text': siteConfig.colors.text,
+      'color-text-light': siteConfig.colors.textLight,
+      'color-border': siteConfig.colors.border,
+      'color-background': siteConfig.colors.background,
+      'color-background-alt': siteConfig.colors.backgroundAlt,
     }}></style>
   </head>
   <body>
     <Header />
-    <div class="tufte-content">
-      <article class="tufte-article">
+    <div class="blog-content">
+      <article class="blog-article">
         <a href="/blog" class="back-link">← Back to Blog</a>
         <h1>{entry.data.title}</h1>
         <div class="blog-meta">
