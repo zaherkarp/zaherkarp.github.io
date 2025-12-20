@@ -14,8 +14,8 @@ export const siteConfig = {
       backgroundAlt: "#f9fafb",
     },
     dark: {
-      accent: "#60a5fa",
-      accentHover: "#93c5fd",
+      accent: "#3b82f6",
+      accentHover: "#60a5fa",
       text: "#f9fafb",
       textLight: "#9ca3af",
       border: "#374151",
