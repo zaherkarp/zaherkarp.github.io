@@ -2,7 +2,6 @@
 title: "Making PostgreSQL Connections More Resilient with TCP Keepalive"
 description: "Why idle database connections fail, and how TCP keepalive tuning prevents silent disconnects in PostgreSQL."
 publishDate: 2025-12-21
-draft: true
 tags: ["postgresql", "networking", "tcp", "reliability"]
 ---
 
