@@ -40,6 +40,10 @@ jobs:
           ref: master
 
       - name: Create Blog Post
+        env:
+          TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
+          TAGS: ${{ inputs.tags }}
         run: |
           POST_FILE="src/content/blog/${{ inputs.filename }}.md"
 
@@ -48,39 +52,38 @@ jobs:
             exit 1
           fi
 
-          # Process tags into YAML array format
-          TAGS_YAML=""
-          if [ -n "${{ inputs.tags }}" ]; then
-            # Convert comma-separated tags to YAML array
-            IFS=',' read -ra TAG_ARRAY <<< "${{ inputs.tags }}"
-            TAGS_YAML="tags: ["
-            for i in "${!TAG_ARRAY[@]}"; do
-              # Trim whitespace
-              TAG=$(echo "${TAG_ARRAY[$i]}" | xargs)
-              if [ $i -eq 0 ]; then
-                TAGS_YAML+="\"$TAG\""
-              else
-                TAGS_YAML+=", \"$TAG\""
-              fi
-            done
-            TAGS_YAML+="]"
-          fi
-
           # Create frontmatter
           TODAY=$(date +%Y-%m-%d)
-          DRAFT_STATUS="true"
           if [ "${{ inputs.publish_now }}" == "true" ]; then
-            DRAFT_STATUS="false"
+            DRAFT_LINE=""
+          else
+            DRAFT_LINE="draft: true"
+          fi
+
+          # Process tags into YAML array format
+          TAGS_LINE=""
+          if [ -n "$TAGS" ]; then
+            IFS=',' read -ra TAG_ARRAY <<< "$TAGS"
+            TAGS_LINE="tags: ["
+            for i in "${!TAG_ARRAY[@]}"; do
+              TAG=$(echo "${TAG_ARRAY[$i]}" | xargs)
+              if [ $i -eq 0 ]; then
+                TAGS_LINE+="\"$TAG\""
+              else
+                TAGS_LINE+=", \"$TAG\""
+              fi
+            done
+            TAGS_LINE+="]"
           fi
 
           # Create the blog post file
-          cat > "$POST_FILE" << 'EOF'
+          cat > "$POST_FILE" <<EOF
 ---
-title: "${{ inputs.title }}"
-description: "${{ inputs.description }}"
-publishDate: ${TODAY}
-draft: ${DRAFT_STATUS}
-${TAGS_YAML}
+title: "$TITLE"
+description: "$DESCRIPTION"
+publishDate: $TODAY
+$DRAFT_LINE
+$TAGS_LINE
 ---
 
 Write your blog post content here...
@@ -93,15 +96,6 @@ Your content goes here.
 
 More content here.
 EOF
-
-          # Replace variables in the file
-          sed -i "s/\${TODAY}/$TODAY/g" "$POST_FILE"
-          sed -i "s/\${DRAFT_STATUS}/$DRAFT_STATUS/g" "$POST_FILE"
-          if [ -n "$TAGS_YAML" ]; then
-            sed -i "s/\${TAGS_YAML}/$TAGS_YAML/g" "$POST_FILE"
-          else
-            sed -i '/\${TAGS_YAML}/d' "$POST_FILE"
-          fi
 
           echo "Created new blog post at $POST_FILE"
           cat "$POST_FILE"
