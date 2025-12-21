@@ -1,5 +1,6 @@
 name: Create New Blog Post
 
+# Updated: Fixed heredoc syntax
 on:
   workflow_dispatch:
     inputs:
