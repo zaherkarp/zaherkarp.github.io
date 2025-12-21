@@ -78,25 +78,25 @@ jobs:
           fi
 
           # Create the blog post file
-          cat > "$POST_FILE" <<-END_OF_POST
-		---
-		title: "$TITLE"
-		description: "$DESCRIPTION"
-		publishDate: $TODAY
-		$DRAFT_LINE
-		$TAGS_LINE
-		---
-
-		Write your blog post content here...
-
-		## Section 1
-
-		Your content goes here.
-
-		## Section 2
-
-		More content here.
-		END_OF_POST
+          {
+            echo "---"
+            echo "title: \"$TITLE\""
+            echo "description: \"$DESCRIPTION\""
+            echo "publishDate: $TODAY"
+            [ -n "$DRAFT_LINE" ] && echo "$DRAFT_LINE"
+            [ -n "$TAGS_LINE" ] && echo "$TAGS_LINE"
+            echo "---"
+            echo ""
+            echo "Write your blog post content here..."
+            echo ""
+            echo "## Section 1"
+            echo ""
+            echo "Your content goes here."
+            echo ""
+            echo "## Section 2"
+            echo ""
+            echo "More content here."
+          } > "$POST_FILE"
 
           echo "Created new blog post at $POST_FILE"
           cat "$POST_FILE"
