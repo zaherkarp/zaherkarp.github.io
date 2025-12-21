@@ -78,25 +78,25 @@ jobs:
           fi
 
           # Create the blog post file
-          cat > "$POST_FILE" <<EOF
----
-title: "$TITLE"
-description: "$DESCRIPTION"
-publishDate: $TODAY
-$DRAFT_LINE
-$TAGS_LINE
----
+          cat > "$POST_FILE" <<-END_OF_POST
+		---
+		title: "$TITLE"
+		description: "$DESCRIPTION"
+		publishDate: $TODAY
+		$DRAFT_LINE
+		$TAGS_LINE
+		---
 
-Write your blog post content here...
+		Write your blog post content here...
 
-## Section 1
+		## Section 1
 
-Your content goes here.
+		Your content goes here.
 
-## Section 2
+		## Section 2
 
-More content here.
-EOF
+		More content here.
+		END_OF_POST
 
           echo "Created new blog post at $POST_FILE"
           cat "$POST_FILE"
