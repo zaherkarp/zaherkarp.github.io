@@ -12,10 +12,6 @@
 
 The template is designed to be easily customizable through the `src/config.ts` file.
 
-### Icons
-
-The template uses [Tabler Icons](https://tabler.io/icons) for all icons. If you wish to add more icons and have it look consistent with what's already there, you can browse through their extensive icon library.
-
 ## Project Structure
 
 ```
