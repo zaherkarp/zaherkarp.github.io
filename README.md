@@ -1,11 +1,10 @@
-This site was created from the DevPortfolio template by [Ryan Fitzgerald](https://ryanfitzgerald.github.io/devportfolio/). Thanks, Ryan!
-
 ## Built With
-
-- **[Astro](https://astro.build/)** - Static site generator for modern web apps
-- **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Tabler Icons](https://tabler.io/icons)** - Free and open source icons
-- **TypeScript** - For type-safe configuration
+- **[Astro](https://astro.build/)** - static site generator for modern web apps
+- Template thanks to [Ryan Fitzgerald](https://ryanfitzgerald.github.io/devportfolio/).
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - utility-first CSS framework
+- **[Tabler Icons](https://tabler.io/icons)** - free and open source icons
+- **TypeScript** - for type-safe configuration
+- **GoatCounter** - for analytics
 
 ## Updating the Template
 
