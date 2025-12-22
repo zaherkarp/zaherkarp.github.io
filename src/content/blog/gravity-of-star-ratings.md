@@ -1,7 +1,7 @@
 ---
 title: "The Gravity of STAR Ratings"
 description: "How outcomes shape programs they never appear in - STAR Ratings operate less like a measurement program and more like a financial force that influences clinical workflows, data governance, and analytics investments across healthcare."
-publishDate: 2025-12-22
+publishDate: 2025-12-02
 tags: ["healthcare", "policy", "star-ratings", "medicare", "analytics", "data-engineering"]
 ---
 

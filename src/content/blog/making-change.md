@@ -1,7 +1,7 @@
 ---
 title: "I Don’t Actually Care About Making Change"
 description: "Solving the same problem in Haskell, Python, and SQL reveals less about coins and more about how programming languages shape how we think about correctness, process, and structure."
-publishDate: 2025-12-19
+publishDate: 2025-10-01
 tags: ["software-engineering", "data-engineering", "algorithms", "python", "sql", "haskell", "functional-programming"]
 ---
 
