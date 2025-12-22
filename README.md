@@ -43,6 +43,66 @@ devportfolio/
 └── tsconfig.json            # TypeScript configuration
 ```
 
+## Blog Publishing Workflows
+
+This site includes two GitHub Actions workflows for managing blog posts:
+
+### Creating New Blog Posts
+
+**Option 1: Use the "Create Blog Post" Workflow**
+
+1. Go to **Actions** → **Create New Blog Post**
+2. Click **Run workflow**
+3. Fill in the form:
+   - **Title**: Your blog post title
+   - **Filename**: URL-friendly slug (e.g., `my-awesome-post`)
+   - **Description**: Short description for metadata
+   - **Tags**: Comma-separated tags (e.g., `tech, tutorial, javascript`)
+   - **Publish now**: Check to publish immediately, uncheck to save as draft
+4. The workflow will create the file, commit, and push to master
+
+**Option 2: Create Manually**
+
+Create a markdown file in `src/content/blog/your-post-name.md`:
+
+```markdown
+---
+title: "Your Post Title"
+description: "A short description"
+publishDate: 2025-12-21
+draft: true  # Optional: include this to save as draft
+tags: ["tag1", "tag2"]  # Optional
+---
+
+Your blog post content here...
+```
+
+### Publishing Draft Posts
+
+**For posts with `draft: true` in the frontmatter:**
+
+1. Go to **Actions** → **Publish Blog Post**
+2. Click **Run workflow**
+3. Enter the **filename** (without `.md` extension)
+4. Optionally check **Update date** to set publishDate to today
+5. The workflow will:
+   - Remove the `draft: true` line
+   - Update the publish date (if requested)
+   - Commit and push the changes
+   - Trigger site deployment
+
+**How Draft vs Published Works:**
+
+- **Draft posts** (with `draft: true`) are filtered out and **won't appear** on your site
+- **Published posts** (without `draft: true` or after running Publish workflow) **will appear** on your site
+- Posts created manually without `draft: true` are **immediately published** when merged
+- You can use drafts to preview and edit posts before making them public
+
+### Workflow Files
+
+- `.github/workflows/new-blog-post.yml` - Creates new blog posts from inputs
+- `.github/workflows/publish-blog-post.yml` - Publishes draft posts by removing `draft: true`
+
 ## Local Development
 
 If you'd like to run it locally:
