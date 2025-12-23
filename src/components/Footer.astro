@@ -22,9 +22,10 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
           {
             siteConfig.social?.email && (
               <a
-                href={`mailto:${siteConfig.social.email}`}
+                href="#"
+                data-email={btoa(siteConfig.social.email)}
                 aria-label="Email"
-                class="text-gray-600 transition-colors duration-300 hover:text-[var(--accent-color)]"
+                class="email-link text-gray-600 transition-colors duration-300 hover:text-[var(--accent-color)]"
                 style={`--accent-color: ${siteConfig.accentColor}`}
               >
                 <svg
@@ -216,11 +217,10 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
                   class="h-6 w-6"
                 >
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                  <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                  <path d="M3 6l0 13" />
-                  <path d="M12 6l0 13" />
-                  <path d="M21 6l0 13" />
+                  <path d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11" />
+                  <path d="M8 8l4 0" />
+                  <path d="M8 12l4 0" />
+                  <path d="M8 16l4 0" />
                 </svg>
               </a>
             )
@@ -304,3 +304,19 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
     </svg>
   </div>
 </footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailLinks = document.querySelectorAll('.email-link');
+    emailLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const encodedEmail = link.getAttribute('data-email');
+        if (encodedEmail) {
+          const email = atob(encodedEmail);
+          window.location.href = `mailto:${email}`;
+        }
+      });
+    });
+  });
+</script>
