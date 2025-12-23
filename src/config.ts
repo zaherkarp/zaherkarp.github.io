@@ -24,15 +24,15 @@ export const siteConfig = {
     },
   },
   social: {
-    email: "zaherkarp@gmail.com",
+    email: "email@zaherkarp.com",
     linkedin: "https://linkedin.com/in/zkarp",
     github: "https://github.com/zaherkarp",
     researchgate: "https://www.researchgate.net/profile/Zaher-Karp",
-    blog: "/blog",
     tableau: "https://public.tableau.com/app/profile/zaher.karp/vizzes",
+    blog: "/blog",
   },
   aboutMe:
-    "I care deeply about the distinction between products and services as it pertains to the healthcare analytic space and optimizing the experiences of all users. I am always interested in discussions around population health analytics and related opportunities, especially in the health technology/digital health space.",
+    "I build healthcare analytics as products, not reports. My work spans population health, data engineering, and clinical operations, focused on scalable systems that connect revenue, cost, and quality in real-world complexity. I welcome conversations around population health and analytics designed to integrate cleanly into complex software systems.",
   skills: [
     "Amazon Web Services (S3, Glue)",
     "Microsoft Azure (Data Factory)",
@@ -57,14 +57,14 @@ export const siteConfig = {
       description:
         "Analytics used in case study at OCHIN, Inc. examining healthfinch's Charlie Practice Automation Platform implementation across multiple community health centers. Focus on workflow optimization and return on investment achieved through data-driven decision making.",
       link: "https://www.chcf.org/wp-content/uploads/2019/04/LessonsLearnedImplementingCharlieCaseStudy.pdf",
-      skills: ["Statistical Analysis", "Sisense", "Epic Clarity"],
+      skills: ["Linear Regression", "Statistics", "Sisense", "Epic Clarity"],
     },
     {
       name: "Clinic Environment & Team Interaction Research",
       description:
         "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
       link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
-      skills: ["Mixed Methods Research", "Grant Writing", "IRB Protocol", "NVivo"],
+      skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
     },
     {
       name: "UW Health Patient Relations Survey Redesign",
@@ -78,7 +78,7 @@ export const siteConfig = {
       description:
         "Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. Measured impact of change initiatives with segmentation and regression modeling.",
       link: "",
-      skills: ["Stata", "SAS", "Time Series Analysis", "Healthcare Analytics"],
+      skills: ["Stata", "SAS", "Time Series Analysis", "Outpatient Analytics"],
     },
     {
       name: "Cancer Prevention in Mental Health Populations",
@@ -152,7 +152,7 @@ export const siteConfig = {
       dateRange: "Dec 2017 - Dec 2018",
       bullets: [
         "Designed analytics for customers to optimize their protocol use and clinical workflows as a data analyst/engineer",
-        "Performed Epic Clarity data wrangling in varieties of SQL for healthfinch's Practice Automation Platform",
+        "Performed Epic Clarity, athenahealth, Cerner, and Veradigm data wrangling in varieties of SQL for healthfinch's Practice Automation Platform",
         "Helped healthcare systems achieve 4-6x return on investment through data-driven workflow optimization",
       ],
     },
@@ -185,8 +185,8 @@ export const siteConfig = {
       degree: "Industrial & Systems Engineering Graduate Certificate, Patient Safety",
       dateRange: "2014 - 2015",
       achievements: [
-        "Focused on human factors in healthcare settings",
-        "Completed projects in medication safety including root cause analysis and job analysis in pharmacy settings",
+        "Trained through AHRQ-funded Systems Engineering Initiative for Patient Safety",
+        "Completed quality improvement projects in medication safety using root cause and job analysis"
       ],
     },
     {
