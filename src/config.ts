@@ -10,8 +10,8 @@ export const siteConfig = {
       text: "#1f2937",
       textLight: "#6b7280",
       border: "#e5e7eb",
-      background: "#ffffff",
-      backgroundAlt: "#f9fafb",
+      background: "#f9fafb",
+      backgroundAlt: "#f3f4f6",
     },
     dark: {
       accent: "#60a5fa",
