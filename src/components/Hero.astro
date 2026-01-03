@@ -153,9 +153,10 @@ import { siteConfig } from "../config";
     {
       siteConfig.social?.email && (
         <a
-          href={`mailto:${siteConfig.social.email}`}
+          href="#"
+          data-email={btoa(siteConfig.social.email)}
           aria-label="Email"
-          class="transition-colors duration-300 hover:text-[var(--accent-color)]"
+          class="email-link transition-colors duration-300 hover:text-[var(--accent-color)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -328,34 +329,54 @@ import { siteConfig } from "../config";
         </a>
       )
     }
-    <a
-      href="/blog"
-      aria-label="Blog"
-      class="transition-colors duration-300 hover:text-[var(--accent-color)]"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
-      >
-        <>
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M3 4m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" />
-          <path d="M7 8h10" />
-          <path d="M7 12h10" />
-          <path d="M7 16h10" />
-        </>
-      </svg>
-    </a>
+    {
+      siteConfig.social?.blog && (
+        <a
+          href={siteConfig.social.blog}
+          aria-label="Blog"
+          class="transition-colors duration-300 hover:text-[var(--accent-color)]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
+          >
+            <>
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M16 6h3a1 1 0 0 1 1 1v11a2 2 0 0 1 -4 0v-13a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v12a3 3 0 0 0 3 3h11" />
+              <path d="M8 8l4 0" />
+              <path d="M8 12l4 0" />
+              <path d="M8 16l4 0" />
+            </>
+          </svg>
+        </a>
+      )
+    }
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailLinks = document.querySelectorAll('.email-link');
+    emailLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const encodedEmail = link.getAttribute('data-email');
+        if (encodedEmail) {
+          const email = atob(encodedEmail);
+          window.location.href = `mailto:${email}`;
+        }
+      });
+    });
+  });
+</script>
 
 <style>
   @keyframes fadeIn {
@@ -388,18 +409,18 @@ import { siteConfig } from "../config";
 
   /* Light mode */
   .hero-container {
-    background: #ffffff;
+    background: #f9fafb;
   }
 
   .hero-gradient {
     background: radial-gradient(
       ellipse 800px 1200px at 0% 0%,
-      rgba(29, 78, 216, 0.25) 0%,
-      rgba(29, 78, 216, 0.15) 20%,
-      rgba(29, 78, 216, 0.06) 40%,
-      rgba(255, 255, 255, 0.3) 70%,
-      rgba(255, 255, 255, 0.8) 90%,
-      #ffffff 100%
+      rgba(59, 130, 246, 0.25) 0%,
+      rgba(59, 130, 246, 0.15) 20%,
+      rgba(59, 130, 246, 0.06) 40%,
+      rgba(249, 250, 251, 0.3) 70%,
+      rgba(249, 250, 251, 0.8) 90%,
+      #f9fafb 100%
     );
   }
 
@@ -416,7 +437,7 @@ import { siteConfig } from "../config";
   }
 
   .hero-name {
-    color: #1d4ed8;
+    color: #3b82f6;
   }
 
   .hero-subtitle {
@@ -435,9 +456,9 @@ import { siteConfig } from "../config";
   :global([data-theme="dark"]) .hero-gradient {
     background: radial-gradient(
       ellipse 800px 1200px at 0% 0%,
-      rgba(59, 130, 246, 0.25) 0%,
-      rgba(59, 130, 246, 0.15) 20%,
-      rgba(59, 130, 246, 0.08) 40%,
+      rgba(96, 165, 250, 0.25) 0%,
+      rgba(96, 165, 250, 0.15) 20%,
+      rgba(96, 165, 250, 0.08) 40%,
       rgba(17, 24, 39, 0.3) 70%,
       rgba(17, 24, 39, 0.8) 90%,
       #111827 100%
@@ -457,7 +478,7 @@ import { siteConfig } from "../config";
   }
 
   :global([data-theme="dark"]) .hero-name {
-    color: #3b82f6;
+    color: #60a5fa;
   }
 
   :global([data-theme="dark"]) .hero-subtitle {
