@@ -43,6 +43,23 @@ const formatDate = (date: Date) => {
       rel="stylesheet"
     />
     <title>{entry.data.title} - {siteConfig.name}</title>
+    <script type="module">
+      // Load Mermaid from CDN
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+      // Transform code blocks with data-language="mermaid" to mermaid format
+      document.addEventListener('DOMContentLoaded', () => {
+        const mermaidBlocks = document.querySelectorAll('pre[data-language="mermaid"]');
+        mermaidBlocks.forEach((pre) => {
+          const mermaidPre = document.createElement('pre');
+          mermaidPre.className = 'mermaid';
+          mermaidPre.textContent = pre.textContent;
+          pre.replaceWith(mermaidPre);
+        });
+
+        mermaid.initialize({ startOnLoad: true });
+      });
+    </script>
   </head>
   <body>
     <Header />
