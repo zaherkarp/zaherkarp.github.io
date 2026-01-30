@@ -32,26 +32,39 @@ export const siteConfig = {
     blog: "/blog",
   },
   aboutMe:
-    "I build healthcare analytics as products, not reports. My work spans population health, data engineering, and clinical operations, focused on scalable systems that connect revenue, cost, and quality in real-world complexity. I welcome conversations around population health and analytics designed to integrate cleanly into complex software systems.",
+    "I build healthcare analytics as products, not reports. I work across population health, data engineering, and clinical operations to create scalable systems that connect revenue, cost, and quality in real-world complexity. I'm always open to conversations about analytics designed to integrate cleanly into complex software and real workflows.",
   skills: [
-    "Amazon Web Services (S3, Glue)",
-    "Microsoft Azure (Data Factory)",
+  "AWS (S3, Glue)",
+    "Azure Data Factory",
+    "Databricks",
     "SQL (Postgres, Redshift, SQL Server, MariaDB)",
     "Python (pandas, PySpark)",
-    "Shell scripting (bash)",
     "dbt",
-    "Databricks",
+    "Bash",
     "Tableau",
     "Power BI",
     "Sisense",
-    "Epic Clarity analytics",
-    "Veradigm analytics",
-    "Cerner analytics",
-    "athenahealth analytics",
+    "Epic Clarity Analytics",
+    "Veradigm Analytics",
+    "Cerner Analytics",
+    "athenahealth Analytics",
     "SAS",
     "Stata"
   ],
   projects: [
+    {
+      name: "Client-Side Stars Analytics Dashboard (Single-File HTML)",
+      description:
+        "Standalone, in-browser dashboard implemented as a single HTML file using Chart.js 4.4.1, PapaParse 5.4.1, jsPDF 2.5.1, and chartjs-plugin-datalabels to visualize local CSV data and generate PDF reports with no server dependency and no data leaving the user's machine.",
+      skills: ["Chart.js", "PapaParse", "jsPDF", "JavaScript", "HTML", "Client-Side Analytics"],
+    },
+    {
+    name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
+    description: 
+        "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
+        link: "https://github.com/zaherkarp/skillsprout",
+        skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
+    },
     {
       name: "Lessons Learned from healthfinch's Charlie Practice Automation: A Case Study",
       description:
