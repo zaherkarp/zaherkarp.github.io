@@ -1,9 +1,8 @@
 ---
-title: "Your Blog Post Title Here"
+title: "Security Starts With the Problem You’re Trying to Solve  "
 description: "A brief description of your blog post (1-2 sentences)"
-publishDate: 2025-12-19  # Format: YYYY-MM-DD
-draft: true  # Set to false to publish, or remove this line
-tags: ["example", "tutorial"]  # Optional: add relevant tags
+publishDate: 2025-12-15  # Format: YYYY-MM-DD
+tags: ["data governance", "security"]  # Optional: add relevant tags
 ---
 
 # Security Starts With the Problem You’re Trying to Solve  
