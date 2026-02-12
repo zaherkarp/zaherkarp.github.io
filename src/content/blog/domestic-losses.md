@@ -1,7 +1,7 @@
 ---
 title: "The Dismantling of America's Public Health Shield"
 subtitle: "Eleven Months of Documented Damage to Domestic Health Infrastructure"
-publishDate: 2026-01-19
+publishDate: 2025-11-02
 tags: ["public-health", "healthcare-policy", "data-analysis"]
 description: "A quantitative analysis of documented workforce reductions, budget cuts, and health outcomes in the U.S. public health system during 2025"
 ---

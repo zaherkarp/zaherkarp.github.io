@@ -1,7 +1,7 @@
 ---
 title: "We Were Bending the Cost Curve. Then We Looked Away."
 description: "For a brief, underappreciated period, Medicare and Medicaid showed real signs of cost stabilization. This post examines what changed, why it mattered, and how we quietly abandoned the lessons when the trajectory shifted."
-publishDate: 2025-12-19
+publishDate: 2025-11-01
 tags: ["medicare", "medicaid", "healthcare economics", "health policy", "cost growth"]
 ---
 
