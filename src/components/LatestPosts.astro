@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import { siteConfig } from "../config";
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  return data.draft !== true;
+});
+
+const latestPosts = allPosts
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 4);
+
+const hasPosts = latestPosts.length > 0;
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+};
+---
+
+{
+  hasPosts && (
+    <section id="writing" class="p-8 sm:p-12 md:p-16 lg:p-24">
+      <div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+          <div class="lg:col-span-4">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold text-gray-900">
+              Writing
+            </h2>
+            <div
+              class="w-[75px] h-[5px] mt-2 rounded-full"
+              style={`background-color: ${siteConfig.accentColor}`}
+            />
+            <a
+              href="/blog"
+              class="inline-flex items-center gap-1.5 mt-4 text-sm font-medium transition-colors duration-300 latest-posts-link"
+              style={`color: ${siteConfig.accentColor}`}
+            >
+              View all posts
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </a>
+          </div>
+
+          <div class="lg:col-span-8">
+            <div class="space-y-4">
+              {latestPosts.map((post) => (
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="group block relative p-4 sm:p-6 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 transition-all duration-300 hover:bg-white hover:shadow-xl hover:border-gray-300 hover:-translate-y-1"
+                >
+                  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors duration-300">
+                        {post.data.title}
+                      </h3>
+                      <p class="mt-1.5 text-sm sm:text-base text-gray-600 leading-relaxed line-clamp-2">
+                        {post.data.description}
+                      </p>
+                      {post.data.tags && post.data.tags.length > 0 && (
+                        <div class="flex flex-wrap gap-1.5 mt-3">
+                          {post.data.tags.slice(0, 4).map((tag) => (
+                            <span class="px-2 py-0.5 bg-gray-900 text-white rounded-md text-xs font-medium transition-all duration-300 group-hover:bg-gray-800">
+                              {tag}
+                            </span>
+                          ))}
+                          {post.data.tags.length > 4 && (
+                            <span class="px-2 py-0.5 text-gray-500 text-xs font-medium">
+                              +{post.data.tags.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <span class="text-xs sm:text-sm text-gray-500 whitespace-nowrap flex-shrink-0 sm:mt-1">
+                      {formatDate(post.data.publishDate)}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
