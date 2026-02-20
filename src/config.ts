@@ -78,6 +78,11 @@ export const siteConfig = {
         "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
       link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
       skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=11399498824498589520", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/331570926_Clinic_Environments_and_Interactions_Examination_of_a_Community_Health_Center", label: "Reads" },
+        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/30894019/", label: "PubMed" },
+      },
     },
     {
       name: "UW Health Patient Relations Survey Redesign",
@@ -106,6 +111,11 @@ export const siteConfig = {
         "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
       link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
       skills: ["Univariate Statistical Analysis", "Medical Education", "Stata"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=15568564972028498984", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/280717178_Depression_Curriculum", label: "Reads" },
+        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/26107169/", label: "PubMed" },
+      },
     },
     {
       name: "Medicare Shared Savings Program Analysis",
@@ -113,6 +123,10 @@ export const siteConfig = {
         "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
       link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
       skills: ["Logistic Regression", "Healthcare Economics", "Value-Based Care", "ACO Analytics", "Stata", "SAS"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=5765814482786120498", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/303684652_Medicare_Shared_Savings_Program", label: "Reads" },
+      },
     },
     {
       name: "Law School Graduation Rates Analysis",
