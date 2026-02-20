@@ -21,25 +21,25 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
           <div class="lg:col-span-8">
             <div class="space-y-8">
               {siteConfig.projects.map((project, index) => {
-                const Component = project.link ? "a" : "div";
-                const linkProps = project.link
-                  ? {
-                      href: project.link,
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                    }
-                  : {};
-
                 return (
                   <div class="group relative">
-                    <Component
-                      {...linkProps}
+                    <div
                       class={`block relative p-4 sm:p-6 md:p-8 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 transition-all duration-300 ${
                         project.link
                           ? "hover:bg-white hover:shadow-xl hover:border-gray-300 hover:-translate-y-1"
                           : ""
                       }`}
                     >
+                      {project.link && (
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="absolute inset-0 z-[1] rounded-xl sm:rounded-2xl"
+                          aria-label={project.name}
+                        />
+                      )}
+
                       {project.link && (
                         <div class="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center bg-gray-900 rounded-full text-white transition-all duration-300 group-hover:bg-gray-700">
                           <svg
@@ -92,14 +92,13 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
                         )}
 
                         {project.citations && (
-                          <div class="flex flex-wrap gap-2 sm:gap-3 pt-2">
+                          <div class="relative z-[2] flex flex-wrap gap-2 sm:gap-3 pt-2">
                             {project.citations.googleScholar && (
                               <a
                                 href={project.citations.googleScholar.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
-                                onclick="event.stopPropagation()"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -115,7 +114,6 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
-                                onclick="event.stopPropagation()"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -131,7 +129,6 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
-                                onclick="event.stopPropagation()"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -146,7 +143,7 @@ const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
                           </div>
                         )}
                       </div>
-                    </Component>
+                    </div>
                   </div>
                 );
               })}
