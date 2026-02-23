@@ -2,7 +2,6 @@
 title: "LLM Inference Is Not Just Bigger Inference"
 description: "Why serving large language models is a fundamentally different systems problem from traditional ML inference, especially in applied healthcare IT."
 publishDate: 2025-12-19
-draft: true
 tags: ["llm", "inference", "healthcare-it", "architecture", "systems"]
 ---
 
