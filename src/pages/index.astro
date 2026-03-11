@@ -7,24 +7,54 @@ import Experience from "../components/Experience.astro";
 import Education from "../components/Education.astro";
 import LatestPosts from "../components/LatestPosts.astro";
 import Footer from "../components/Footer.astro";
+import BaseHead from "../components/BaseHead.astro";
 import { siteConfig } from "../config";
 import "../styles/global.css";
+
+const canonicalURL = new URL("/", Astro.site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Zaher Karp",
+  "url": "https://zaherkarp.com",
+  "jobTitle": "Lead Data Engineer",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Baltimore Health Analytics",
+  },
+  "knowsAbout": [
+    "HEDIS",
+    "Medicare Star Ratings",
+    "Healthcare Data Engineering",
+    "dbt",
+    "SQL",
+    "Python",
+    "AWS",
+    "FHIR",
+    "Value-Based Care",
+    "CMS Quality Measurement",
+  ],
+  "alumniOf": {
+    "@type": "CollegeOrUniversity",
+    "name": "University of Wisconsin-Madison",
+  },
+  "sameAs": [
+    "https://linkedin.com/in/zkarp",
+    "https://github.com/zaherkarp",
+    "https://www.researchgate.net/profile/Zaher-Karp",
+  ],
+};
 ---
 
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={siteConfig.description} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
+    <BaseHead
+      title={`${siteConfig.fullName} - ${siteConfig.metaTitle}`}
+      description={siteConfig.description}
+      canonicalURL={canonicalURL}
     />
-    <title>{siteConfig.name} - {siteConfig.title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <Header />

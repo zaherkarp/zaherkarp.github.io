@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zaherkarp.com/sitemap-index.xml
