@@ -1,7 +1,9 @@
 export const siteConfig = {
   name: "Zaher",
-  title: "Healthcare Analytics & Data Engineering",
-  description: "Portfolio website of Zaher Karp - Healthcare Analytics with SQL and Python",
+  fullName: "Zaher Karp",
+  title: "Healthcare Data Engineering",
+  metaTitle: "Healthcare Data Engineering Leader | Medicare Stars & HEDIS",
+  description: "Zaher Karp -- Healthcare data engineering leader specializing in Medicare Stars, HEDIS measure pipelines, and value-based care analytics. 15+ years building scalable data systems with SQL, Python, dbt, and AWS.",
   accentColor: "#3b82f6",
   colors: {
     light: {
@@ -32,9 +34,14 @@ export const siteConfig = {
     blog: "/blog",
   },
   aboutMe:
-    "I build healthcare analytics as products, not reports. I work across population health, data engineering, and clinical operations to create scalable systems that connect revenue, cost, and quality in real-world complexity. I'm always open to conversations about analytics designed to integrate cleanly into complex software and real workflows.",
+    "I build healthcare data systems that connect quality measurement, revenue, and operations. My work spans Medicare Star Ratings, HEDIS measure pipelines, ACO/MSSP analytics, and clinical data integration across Epic, claims, and FHIR sources. I focus on scalable data engineering -- dbt models, SQL pipelines, cloud infrastructure -- designed to integrate into real clinical and payer workflows. I'm always open to conversations about analytics that ship as products, not reports.",
   skills: [
-  "AWS (S3, Glue)",
+    "HEDIS / Quality Measurement",
+    "Medicare Star Ratings",
+    "FHIR & Clinical Data Standards",
+    "HIPAA / Healthcare Data Governance",
+    "Value-Based Care (ACO/MSSP)",
+    "AWS (S3, Glue)",
     "Azure Data Factory",
     "Databricks",
     "SQL (Postgres, Redshift, SQL Server, MariaDB)",
