@@ -6,6 +6,8 @@ const stats = [
   { value: 6, suffix: '', label: 'Organizations' },
   { value: 39, suffix: '', label: 'Blog Posts' },
   { value: 20, suffix: '+', label: 'Technical Skills' },
+  { value: 6, suffix: '', label: 'Publications' },
+  { value: 17, suffix: '', label: 'Presentations' },
 ];
 ---
 
@@ -23,7 +25,7 @@ const stats = [
       </div>
 
       <div class="lg:col-span-8">
-        <div class="grid grid-cols-2 gap-4 sm:gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
           {stats.map((stat, i) => (
             <div
               class="stat-card"
