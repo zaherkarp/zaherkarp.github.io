@@ -34,11 +34,11 @@ export const siteConfig = {
     blog: "/blog",
   },
   aboutMe:
-    "I build healthcare data systems that connect quality measurement, revenue, and operations. My work spans Medicare Star Ratings, HEDIS measure pipelines, ACO/MSSP analytics, and clinical data integration across Epic, claims, and FHIR sources. I focus on scalable data engineering -- dbt models, SQL pipelines, cloud infrastructure -- designed to integrate into real clinical and payer workflows. I'm always open to conversations about analytics that ship as products, not reports.",
+    "I build healthcare data systems that connect quality measurement, revenue, and operations. My work spans Medicare Star Ratings, HEDIS measure pipelines, ACO/MSSP analytics, and clinical data integration across Epic, claims, and eligibility sources. I focus on scalable data engineering -- dbt models, SQL pipelines, cloud infrastructure -- designed to integrate into real clinical and payer workflows. I'm always open to conversations about analytics that ship as products, not reports.",
   skills: [
     "HEDIS / Quality Measurement",
     "Medicare Star Ratings",
-    "FHIR & Clinical Data Standards",
+    "Clinical Data Integration (EHR/Claims)",
     "HIPAA / Healthcare Data Governance",
     "Value-Based Care (ACO/MSSP)",
     "AWS (S3, Glue)",
