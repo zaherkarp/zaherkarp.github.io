@@ -6,6 +6,8 @@ import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
 import Education from "../components/Education.astro";
 import LatestPosts from "../components/LatestPosts.astro";
+import SqlTerminal from "../components/SqlTerminal.astro";
+import StatsCounter from "../components/StatsCounter.astro";
 import Footer from "../components/Footer.astro";
 import BaseHead from "../components/BaseHead.astro";
 import { siteConfig } from "../config";
@@ -60,7 +62,9 @@ const jsonLd = {
     <Header />
     <section>
       <Hero />
+      <SqlTerminal />
       <About />
+      <StatsCounter />
       <LatestPosts />
       <Projects />
       <Experience />

@@ -1,0 +1,278 @@
+---
+import { siteConfig } from "../config";
+---
+
+<section class="sql-section p-8 sm:p-12 md:p-16 lg:p-24">
+  <div class="max-w-4xl mx-auto">
+    <div class="terminal-window">
+      <!-- Title bar -->
+      <div class="terminal-titlebar">
+        <div class="terminal-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <span class="terminal-title">psql — zaher_resume_db</span>
+      </div>
+
+      <!-- Terminal body -->
+      <div class="terminal-body">
+        <!-- Prompt + query -->
+        <div class="terminal-line">
+          <span class="prompt">zaher_resume_db=# </span><span id="sql-query" class="query-text"></span><span id="cursor" class="cursor">█</span>
+        </div>
+
+        <!-- Results (hidden initially) -->
+        <div id="sql-results" class="terminal-results">
+          <pre class="results-table"><span class="sql-identifier"> name        | role               | domain                        | tools</span>
+<span class="sql-operator">-------------+--------------------+-------------------------------+----------------------</span>
+<span class="sql-identifier"> Zaher Karp  | Lead Data Engineer | Healthcare / Value-Based Care | dbt, SQL, Python, AWS</span>
+<span class="sql-row-count">(1 row)</span></pre>
+
+          <div class="terminal-line" style="margin-top: 1rem;">
+            <span class="prompt">zaher_resume_db=# </span><span class="cursor cursor-final">█</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sql-section {
+    background-color: #f9fafb;
+  }
+  :global([data-theme="dark"]) .sql-section {
+    background-color: #111827;
+  }
+
+  .terminal-window {
+    background-color: #0d1117;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  .terminal-titlebar {
+    background-color: #161b22;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot-red { background-color: #ff5f56; }
+  .dot-yellow { background-color: #ffbd2e; }
+  .dot-green { background-color: #27c93f; }
+
+  .terminal-title {
+    color: #6b7280;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  .terminal-body {
+    padding: 20px 24px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 120px;
+  }
+
+  .terminal-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .prompt {
+    color: #9ca3af;
+  }
+
+  .query-text {
+    /* tokens are colored individually */
+  }
+
+  .cursor {
+    color: #9ca3af;
+    animation: blink 1s step-end infinite;
+  }
+
+  .cursor-final {
+    color: #9ca3af;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .terminal-results {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    margin-top: 1rem;
+  }
+  .terminal-results.visible {
+    opacity: 1;
+  }
+
+  .results-table {
+    color: #e5e7eb;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    overflow-x: auto;
+  }
+
+  .sql-keyword { color: #60a5fa; }
+  .sql-string { color: #4ade80; }
+  .sql-number { color: #fb923c; }
+  .sql-identifier { color: #e5e7eb; }
+  .sql-operator { color: #9ca3af; }
+  .sql-row-count { color: #6b7280; }
+
+  /* Mobile adjustments */
+  @media (max-width: 640px) {
+    .terminal-body {
+      padding: 12px 16px;
+      font-size: 12px;
+    }
+    .results-table {
+      font-size: 12px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const queryEl = document.getElementById('sql-query');
+    const cursorEl = document.getElementById('cursor');
+    const resultsEl = document.getElementById('sql-results');
+    const section = document.querySelector('.sql-section');
+
+    if (!queryEl || !cursorEl || !resultsEl || !section) return;
+
+    // Token definitions for the SQL query
+    const tokens = [
+      { text: 'SELECT', cls: 'sql-keyword' },
+      { text: ' name, role, domain, tools', cls: 'sql-identifier' },
+      { text: '\n', cls: '' },
+      { text: 'FROM', cls: 'sql-keyword' },
+      { text: ' data_engineers', cls: 'sql-identifier' },
+      { text: '\n', cls: '' },
+      { text: 'WHERE', cls: 'sql-keyword' },
+      { text: ' specialization ', cls: 'sql-identifier' },
+      { text: 'IN', cls: 'sql-keyword' },
+      { text: ' (', cls: 'sql-operator' },
+      { text: "'HEDIS'", cls: 'sql-string' },
+      { text: ', ', cls: 'sql-operator' },
+      { text: "'Medicare Stars'", cls: 'sql-string' },
+      { text: ', ', cls: 'sql-operator' },
+      { text: "'FHIR'", cls: 'sql-string' },
+      { text: ')', cls: 'sql-operator' },
+      { text: '\n  ', cls: '' },
+      { text: 'AND', cls: 'sql-keyword' },
+      { text: ' years_experience > ', cls: 'sql-identifier' },
+      { text: '15', cls: 'sql-number' },
+      { text: ';', cls: 'sql-operator' },
+    ];
+
+    // Flatten tokens into character queue
+    const charQueue: Array<{ char: string; cls: string }> = [];
+    for (const token of tokens) {
+      for (const char of token.text) {
+        charQueue.push({ char, cls: token.cls });
+      }
+    }
+
+    let charIndex = 0;
+    let currentSpan: HTMLSpanElement | null = null;
+    let currentCls = '';
+    let animated = false;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function showInstant() {
+      queryEl!.innerHTML = '';
+      for (const token of tokens) {
+        if (token.text === '\n' || token.text === '\n  ') {
+          queryEl!.appendChild(document.createTextNode(token.text));
+        } else {
+          const span = document.createElement('span');
+          span.className = token.cls;
+          span.textContent = token.text;
+          queryEl!.appendChild(span);
+        }
+      }
+      cursorEl!.style.display = 'none';
+      resultsEl!.classList.add('visible');
+    }
+
+    function typeNextChar(timestamp: number) {
+      if (charIndex >= charQueue.length) {
+        // Done typing - hide inline cursor, show results
+        cursorEl!.style.display = 'none';
+        setTimeout(() => {
+          resultsEl!.classList.add('visible');
+        }, 400);
+        return;
+      }
+
+      const { char, cls } = charQueue[charIndex];
+
+      if (char === '\n') {
+        queryEl!.appendChild(document.createTextNode('\n'));
+        currentSpan = null;
+        currentCls = '';
+      } else if (cls !== currentCls || !currentSpan) {
+        currentSpan = document.createElement('span');
+        currentSpan.className = cls;
+        currentSpan.textContent = char;
+        queryEl!.appendChild(currentSpan);
+        currentCls = cls;
+      } else {
+        currentSpan.textContent += char;
+      }
+
+      charIndex++;
+      setTimeout(() => requestAnimationFrame(typeNextChar), 35);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            observer.disconnect();
+
+            if (prefersReducedMotion) {
+              showInstant();
+            } else {
+              requestAnimationFrame(typeNextChar);
+            }
+          }
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(section);
+  });
+</script>
