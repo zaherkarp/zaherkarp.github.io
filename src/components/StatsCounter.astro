@@ -1,0 +1,196 @@
+---
+import { siteConfig } from "../config";
+
+const stats = [
+  { value: 15, suffix: '+', label: 'Years Experience' },
+  { value: 6, suffix: '', label: 'Organizations' },
+  { value: 39, suffix: '', label: 'Blog Posts' },
+  { value: 20, suffix: '+', label: 'Technical Skills' },
+];
+---
+
+<section id="stats" class="stats-section p-8 sm:p-12 md:p-16 lg:p-24">
+  <div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+      <div class="lg:col-span-4">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold stats-heading">
+          By the Numbers
+        </h2>
+        <div
+          class="w-[75px] h-[5px] mt-2 rounded-full"
+          style={`background-color: ${siteConfig.accentColor}`}
+        />
+      </div>
+
+      <div class="lg:col-span-8">
+        <div class="grid grid-cols-2 gap-4 sm:gap-6">
+          {stats.map((stat, i) => (
+            <div
+              class="stat-card"
+              data-target={stat.value}
+              data-suffix={stat.suffix}
+              data-index={i}
+            >
+              <div class="stat-value">
+                <span class="stat-number">0</span><span class="stat-suffix">{stat.suffix}</span>
+              </div>
+              <p class="stat-label">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats-section {
+    background-color: #f9fafb;
+  }
+  :global([data-theme="dark"]) .stats-section {
+    background-color: #111827;
+  }
+
+  .stats-heading {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .stats-heading {
+    color: #f9fafb;
+  }
+
+  .stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+  }
+  :global([data-theme="dark"]) .stat-card {
+    background-color: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  :global([data-theme="dark"]) .stat-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-color: #60a5fa;
+  }
+
+  .stat-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #3b82f6;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  :global([data-theme="dark"]) .stat-number {
+    color: #60a5fa;
+  }
+
+  .stat-suffix {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #3b82f6;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  :global([data-theme="dark"]) .stat-suffix {
+    color: #60a5fa;
+  }
+
+  .stat-label {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  :global([data-theme="dark"]) .stat-label {
+    color: #9ca3af;
+  }
+
+  @media (min-width: 640px) {
+    .stat-card {
+      padding: 2rem;
+    }
+    .stat-number, .stat-suffix {
+      font-size: 3rem;
+    }
+    .stat-label {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .stat-number, .stat-suffix {
+      font-size: 3.75rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const section = document.getElementById('stats');
+    if (!section) return;
+
+    const cards = section.querySelectorAll('.stat-card');
+    let animated = false;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function animateCount(element: Element, target: number, duration: number) {
+      const numEl = element.querySelector('.stat-number');
+      if (!numEl) return;
+
+      if (prefersReducedMotion) {
+        numEl.textContent = target.toString();
+        return;
+      }
+
+      const start = performance.now();
+      function update(now: number) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        numEl!.textContent = current.toString();
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            observer.disconnect();
+
+            cards.forEach((card, i) => {
+              const target = parseInt(card.getAttribute('data-target') || '0', 10);
+              setTimeout(() => {
+                animateCount(card, target, 1800);
+              }, i * 150);
+            });
+          }
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(section);
+  });
+</script>
