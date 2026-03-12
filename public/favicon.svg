@@ -1,4 +1,7 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
   <rect width="32" height="32" rx="6" fill="#3b82f6"/>
-  <text x="16" y="22.5" text-anchor="middle" font-family="'IBM Plex Mono', 'Courier New', monospace" font-size="16" font-weight="700" fill="#ffffff">ZK</text>
+  <!-- Z -->
+  <path d="M7 10h8l-8 12h8" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- K -->
+  <path d="M19 10v12M19 16l6-6M19 16l6 6" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
