@@ -58,6 +58,55 @@ export const siteConfig = {
     "SAS",
     "Stata"
   ],
+  publications: [
+    {
+      title: "Clinic Environments and Interactions: Examination of a Community Health Center",
+      authors: "Karp Z, Hassett M, Rinehart D, Gilchrist V",
+      journal: "HERD: Health Environments Research & Design Journal",
+      year: 2019,
+      citationCount: 24,
+      link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
+      description:
+        "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants.",
+      skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=11399498824498589520", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/331570926_Clinic_Environments_and_Interactions_Examination_of_a_Community_Health_Center", label: "Reads" },
+        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/30894019/", label: "PubMed" },
+      },
+    },
+    {
+      title: "Medicare Shared Savings Program: Savings and Baseline Expenditures",
+      authors: "Karp Z, Smith M",
+      journal: "Journal of Health Economics & Outcomes Research",
+      year: 2016,
+      citationCount: 15,
+      link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
+      description:
+        "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
+      skills: ["Logistic Regression", "Healthcare Economics", "Value-Based Care", "ACO Analytics", "Stata", "SAS"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=5765814482786120498", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/303684652_Medicare_Shared_Savings_Program", label: "Reads" },
+      },
+    },
+    {
+      title: "Depression Curriculum: Broadening Medical Student Exposure to Illness Experiences",
+      authors: "Karp Z, Carnes M, Beasley J",
+      journal: "Academic Psychiatry",
+      year: 2015,
+      citationCount: 12,
+      link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
+      description:
+        "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
+      skills: ["Univariate Statistical Analysis", "Medical Education", "Stata"],
+      citations: {
+        googleScholar: { url: "https://scholar.google.com/scholar?cites=15568564972028498984", label: "Citations" },
+        researchGate: { url: "https://www.researchgate.net/publication/280717178_Depression_Curriculum", label: "Reads" },
+        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/26107169/", label: "PubMed" },
+      },
+    },
+  ],
   projects: [
     {
       name: "Client-Side Stars Analytics Dashboard (Single-File HTML)",
@@ -67,7 +116,7 @@ export const siteConfig = {
     },
     {
     name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
-    description: 
+    description:
         "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
         link: "https://github.com/zaherkarp/skillsprout",
         skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
@@ -78,18 +127,6 @@ export const siteConfig = {
         "Analytics used in case study at OCHIN, Inc. examining healthfinch's Charlie Practice Automation Platform implementation across multiple community health centers. Focus on workflow optimization and return on investment achieved through data-driven decision making.",
       link: "https://www.chcf.org/wp-content/uploads/2019/04/LessonsLearnedImplementingCharlieCaseStudy.pdf",
       skills: ["Linear Regression", "Statistics", "Sisense", "Epic Clarity"],
-    },
-    {
-      name: "Clinic Environment & Team Interaction Research",
-      description:
-        "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants, and published peer-reviewed findings on communication, efficiency, and privacy perceptions.",
-      link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
-      skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=11399498824498589520", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/331570926_Clinic_Environments_and_Interactions_Examination_of_a_Community_Health_Center", label: "Reads" },
-        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/30894019/", label: "PubMed" },
-      },
     },
     {
       name: "UW Health Patient Relations Survey Redesign",
@@ -111,29 +148,6 @@ export const siteConfig = {
         "Conducted research studying cancer prevention screening rates in patients with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index.",
       link: "",
       skills: ["Logistic Regression", "Population Health", "Healthcare Disparities", "SAS"],
-    },
-    {
-      name: "Depression Curriculum Evaluation",
-      description:
-        "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
-      link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
-      skills: ["Univariate Statistical Analysis", "Medical Education", "Stata"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=15568564972028498984", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/280717178_Depression_Curriculum", label: "Reads" },
-        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/26107169/", label: "PubMed" },
-      },
-    },
-    {
-      name: "Medicare Shared Savings Program Analysis",
-      description:
-        "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
-      link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
-      skills: ["Logistic Regression", "Healthcare Economics", "Value-Based Care", "ACO Analytics", "Stata", "SAS"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=5765814482786120498", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/303684652_Medicare_Shared_Savings_Program", label: "Reads" },
-      },
     },
     {
       name: "Law School Graduation Rates Analysis",

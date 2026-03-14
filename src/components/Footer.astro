@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "../config";
 
+const hasPublications = siteConfig.publications && siteConfig.publications.length > 0;
 const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
 const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
 const hasEducation = siteConfig.education && siteConfig.education.length > 0;
@@ -233,6 +234,16 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
             class="text-sm text-gray-600 hover:text-gray-800 transition-colors"
             >About</a
           >
+          {
+            hasPublications && (
+              <a
+                href="#publications"
+                class="text-sm text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Publications
+              </a>
+            )
+          }
           {
             hasProjects && (
               <a
