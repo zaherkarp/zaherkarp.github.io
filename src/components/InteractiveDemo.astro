@@ -35,7 +35,7 @@ import { siteConfig } from "../config";
                 <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="hedis-rate">
                   HEDIS Composite Rate
                   <span class="demo-weight-badge text-[10px] font-mono px-1.5 py-0.5 rounded">wt 1–3×</span>
-                  <span class="demo-help-tip cursor-help" title="Weighted average of clinical quality measures: breast cancer screening, colorectal screening, A1C control, blood pressure control, statin therapy, and others. Each measure is individually weighted 1–3× by CMS."></span>
+                  <span class="demo-help-tip cursor-help" title="Weighted average of clinical quality measures: breast cancer screening, colorectal screening, A1C control, blood pressure control, statin therapy, and others. Each measure is individually weighted 1–3× by CMS." aria-label="HEDIS includes breast cancer screening, colorectal screening, A1C control, blood pressure control, statin therapy. Weighted 1–3× by CMS."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="hedis-rate-val" style={`color: ${siteConfig.accentColor}`}>75%</span>
               </div>
@@ -59,7 +59,7 @@ import { siteConfig } from "../config";
                 <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="cahps-score">
                   CAHPS Member Satisfaction
                   <span class="demo-weight-badge text-[10px] font-mono px-1.5 py-0.5 rounded">wt 2×</span>
-                  <span class="demo-help-tip cursor-help" title="Consumer Assessment of Healthcare Providers and Systems survey. Covers provider communication, access to care, customer service, and care coordination. Survey response rates affect measurement precision."></span>
+                  <span class="demo-help-tip cursor-help" title="Consumer Assessment of Healthcare Providers and Systems survey. Covers provider communication, access to care, customer service, and care coordination. Survey response rates affect measurement precision." aria-label="CAHPS survey: provider communication, access, customer service, care coordination. Response rates affect precision."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="cahps-score-val" style={`color: ${siteConfig.accentColor}`}>3.5</span>
               </div>
@@ -83,7 +83,7 @@ import { siteConfig } from "../config";
                 <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="med-adherence">
                   Medication Adherence (D-SNP)
                   <span class="demo-weight-badge demo-weight-triple text-[10px] font-mono px-1.5 py-0.5 rounded">wt 3×</span>
-                  <span class="demo-help-tip cursor-help" title="Proportion of Days Covered (PDC) ≥80% across three measures: diabetes meds, RAS antagonists (hypertension), and statins (cholesterol). CMS measures the % of members hitting PDC ≥80%, not the mean. As little as 3% PDC can separate a 3★ from 5★ rating."></span>
+                  <span class="demo-help-tip cursor-help" title="Proportion of Days Covered (PDC) ≥80% across three measures: diabetes meds, RAS antagonists (hypertension), and statins (cholesterol). CMS measures the % of members hitting PDC ≥80%, not the mean. As little as 3% PDC can separate a 3★ from 5★ rating." aria-label="PDC ≥80% for diabetes meds, RAS antagonists, statins. 3% PDC can separate 3-star from 5-star."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="med-adherence-val" style={`color: ${siteConfig.accentColor}`}>70%</span>
               </div>
@@ -107,7 +107,7 @@ import { siteConfig } from "../config";
                 <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="readmission">
                   Readmission Rate
                   <span class="demo-weight-badge demo-weight-triple text-[10px] font-mono px-1.5 py-0.5 rounded">wt 3× ▼</span>
-                  <span class="demo-help-tip cursor-help" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure — lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years."></span>
+                  <span class="demo-help-tip cursor-help" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure — lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years." aria-label="PCR: unplanned readmission within 30 days. Lower is better. Weight increased to 3× for 2025."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="readmission-val" style={`color: ${siteConfig.accentColor}`}>15%</span>
               </div>
@@ -131,7 +131,7 @@ import { siteConfig } from "../config";
           <div class="demo-reward-row flex items-center justify-between mt-5 px-1">
             <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="reward-toggle">
               CMS Reward Factor
-              <span class="demo-help-tip cursor-help" title="Plans at ≥4 stars for 3+ consecutive years receive up to +0.4 stars added to their summary rating before final rounding. This is the mechanism behind sustained quality bonus payments."></span>
+              <span class="demo-help-tip cursor-help" title="Plans at ≥4 stars for 3+ consecutive years receive up to +0.4 stars added to their summary rating before final rounding. This is the mechanism behind sustained quality bonus payments." aria-label="Reward factor: up to +0.4 stars for plans at 4+ stars for 3 consecutive years."></span>
             </label>
             <div class="flex items-center gap-3">
               <span class="demo-reward-val text-sm font-mono font-bold" id="reward-val" style={`color: ${siteConfig.accentColor}`}>Off</span>
@@ -173,7 +173,7 @@ import { siteConfig } from "../config";
             </div>
 
             {/* QBP financial context */}
-            <div class="demo-qbp-callout mb-4" id="qbp-callout">
+            <div class="demo-qbp-callout mb-4" id="qbp-callout" aria-live="polite">
               <span class="text-xs" id="qbp-text"></span>
             </div>
 
@@ -224,7 +224,7 @@ import { siteConfig } from "../config";
             {/* Plain-language impact guidance */}
             <div class="mt-5" id="impact-panel">
               <h4 class="demo-output-title text-xs font-medium uppercase tracking-wider mb-2">What Would Move the Needle?</h4>
-              <div class="demo-impact-box" id="impact-guidance">
+              <div class="demo-impact-box" id="impact-guidance" aria-live="polite">
                 <p class="text-xs demo-subtext">Adjust sliders to see guidance.</p>
               </div>
             </div>
@@ -421,6 +421,11 @@ import { siteConfig } from "../config";
     background: #e5e7eb;
     outline: none;
     cursor: pointer;
+  }
+  .demo-slider:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 4px;
+    border-radius: 9999px;
   }
   :global([data-theme="dark"]) .demo-slider {
     background: #374151;
