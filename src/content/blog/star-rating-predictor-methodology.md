@@ -89,19 +89,40 @@ CAHPS survey scores evaluate member satisfaction across dimensions like provider
 
 ## Published Precedent: Ordinal Logistic Regression for Star Ratings
 
-The most directly relevant published study applied ordered logistic regression to predict CMS hospital star ratings:
+Multiple published studies have applied ordinal logistic regression to Medicare star ratings or closely related healthcare quality outcomes.
+
+### Kurian et al. (2021) — Hospital Star Ratings
 
 > **Kurian, N., Maid, J., Mitra, S., Rhyne, L., Korvink, M., & Gunn, L. H.** (2021). Predicting Hospital Overall Quality Star Ratings in the USA. *Healthcare*, 9(4), 486.
 > [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC8074583/) · [MDPI](https://www.mdpi.com/2227-9032/9/4/486) · [PubMed](https://pubmed.ncbi.nlm.nih.gov/33924198/)
-
-Key findings from Kurian et al.:
 
 - Applied **ordinal logistic regression with stepwise variable selection** to 4,519 U.S. hospitals
 - Found that **20 performance measures** (from 57 total) contained all the relevant information for star rating prediction after accounting for correlation
 - Used multiple imputation to handle missing data, enabling inference even when not all measures are available
 - Demonstrated that the proportional odds model provides **interpretable odds ratios** for the relationship between quality measures and star rating levels
 
-This validates the core approach of our demo: using a small number of composite quality inputs in an ordinal logistic framework to predict a 1–5 star outcome.
+### Hohmann et al. (2018) — Part D Star Ratings
+
+> **Hohmann, N., Hansen, R., Garza, K. B., Harris, I., Kiptanui, Z., & Qian, J.** (2018). Association between Higher Generic Drug Use and Medicare Part D Star Ratings: An Observational Analysis. *Value in Health*, 21(10), 1186–1191.
+> [PubMed](https://pubmed.ncbi.nlm.nih.gov/30314619/) · [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1098301518302766)
+
+This is the most direct methodological precedent: Hohmann et al. **explicitly used ordinal logistic regression** to model Medicare Part D summary and domain star ratings (1–5) as a function of generic drug dispensing rates, controlling for contract type and enrollment. They found higher generic dispensing was associated with higher summary star ratings (adjusted OR 1.08, 95% CI 1.04–1.12).
+
+### Xie et al. (2023) — Adherence Predicts Clinical Outcomes
+
+> **Xie, Z., St. Clair, P., Goldman, D. P., & Joyce, G. F.** (2023). Is There a Relationship Between Part D Medication Adherence and Part C Intermediate Outcomes Star Ratings Measures? *Journal of Managed Care & Specialty Pharmacy*, 29(8), 918–925.
+> [PMC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10397682/)
+
+Analyzed 366 contracts and found medication adherence measures explained **27–29% of variance** in related clinical outcomes (R² = 0.27–0.29). Each unit increase in adherence increased odds of top-quartile performance by factors of 4.13–4.69, providing strong empirical support for adherence as a key predictor.
+
+### Lingsma et al. (2021) — Why Ordinal Beats Binary
+
+> **Lingsma, H. F., Bottle, A., Middleton, S., Kievit, J., Steyerberg, E. W., & Marang-van de Mheen, P. J.** (2021). Ordinal Outcome Analysis Improves the Detection of Between-Hospital Differences in Outcome. *BMC Medical Research Methodology*, 21(1), 4.
+> [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC7788719/)
+
+Demonstrated that ordinal outcome analysis substantially improves statistical power for detecting quality differences compared to dichotomizing outcomes (e.g., "4+ stars vs. below"). This provides methodological justification for treating star ratings as ordinal rather than collapsing them into binary categories.
+
+Together, these studies validate using a small number of composite quality inputs in an ordinal logistic framework to predict a 1–5 star outcome.
 
 ## How the Demo Model Works
 
@@ -165,6 +186,9 @@ Despite these simplifications, the demo accurately represents:
 2. CMS (2024). Medicare 2025 Part C & D Star Ratings Technical Notes.
 3. CMS (2024). 2025 Medicare Advantage and Part D Star Ratings Fact Sheet.
 4. Kurian, N. et al. (2021). Predicting Hospital Overall Quality Star Ratings in the USA. *Healthcare*, 9(4), 486.
-5. Akinbosoye, O. E. et al. (2025). The influence of medication adherence on Medicare Star Ratings. *JMCP*, 31(5), 512.
-6. Harrell, F. E. (2001). *Regression Modeling Strategies*. Springer.
-7. SAS Institute (2005). Using the Proportional Odds Model for Health-Related Research. *SUGI 30 Proceedings*, Paper 205-30.
+5. Hohmann, N. et al. (2018). Association between Higher Generic Drug Use and Medicare Part D Star Ratings. *Value in Health*, 21(10), 1186–1191.
+6. Xie, Z. et al. (2023). Is There a Relationship Between Part D Medication Adherence and Part C Intermediate Outcomes Star Ratings Measures? *JMCP*, 29(8), 918–925.
+7. Lingsma, H. F. et al. (2021). Ordinal Outcome Analysis Improves the Detection of Between-Hospital Differences in Outcome. *BMC Medical Research Methodology*, 21(1), 4.
+8. Akinbosoye, O. E. et al. (2025). The influence of medication adherence on Medicare Star Ratings. *JMCP*, 31(5), 512.
+9. Harrell, F. E. (2001). *Regression Modeling Strategies*. Springer.
+10. SAS Institute (2005). Using the Proportional Odds Model for Health-Related Research. *SUGI 30 Proceedings*, Paper 205-30.
