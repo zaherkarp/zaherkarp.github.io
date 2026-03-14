@@ -1,8 +1,43 @@
 ---
 import { siteConfig } from "../config";
 const hasPublications = siteConfig.publications && siteConfig.publications.length > 0;
+
+// Fetch live citation counts from Semantic Scholar at build time (parallel)
+async function fetchCitationCounts() {
+  const publications = siteConfig.publications || [];
+  const counts = new Map<string, number>();
+
+  const results = await Promise.allSettled(
+    publications
+      .filter((pub) => pub.semanticScholarId)
+      .map(async (pub) => {
+        const res = await fetch(
+          `https://api.semanticscholar.org/graph/v1/paper/${pub.semanticScholarId}?fields=citationCount`
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { title: pub.title, count: data.citationCount };
+      })
+  );
+
+  for (const result of results) {
+    if (result.status === "fulfilled" && result.value && typeof result.value.count === "number") {
+      counts.set(result.value.title, result.value.count);
+    }
+  }
+  return counts;
+}
+
+const liveCounts = hasPublications ? await fetchCitationCounts() : new Map();
+
+// Merge live counts with static fallbacks
+const publications = (siteConfig.publications || []).map((pub) => ({
+  ...pub,
+  citationCount: liveCounts.get(pub.title) ?? pub.citationCount ?? 0,
+}));
+
 const maxCitations = hasPublications
-  ? Math.max(...siteConfig.publications.map((p) => p.citationCount || 0))
+  ? Math.max(...publications.map((p) => p.citationCount))
   : 0;
 ---
 
@@ -28,8 +63,8 @@ const maxCitations = hasPublications
                 Citation Metrics
               </h3>
               <div class="space-y-4">
-                {siteConfig.publications.map((pub) => {
-                  const pct = maxCitations > 0 ? ((pub.citationCount || 0) / maxCitations) * 100 : 0;
+                {publications.map((pub) => {
+                  const pct = maxCitations > 0 ? (pub.citationCount / maxCitations) * 100 : 0;
                   return (
                     <div class="pub-bar-row">
                       <div class="flex items-baseline justify-between gap-4 mb-1.5">
@@ -40,7 +75,7 @@ const maxCitations = hasPublications
                           class="pub-bar-count text-sm sm:text-base font-bold font-mono shrink-0"
                           style={`color: ${siteConfig.accentColor}`}
                         >
-                          {pub.citationCount || 0}
+                          {pub.citationCount}
                         </span>
                       </div>
                       <div class="pub-bar-track">
@@ -58,7 +93,7 @@ const maxCitations = hasPublications
 
             {/* Publication Cards */}
             <div class="space-y-8">
-              {siteConfig.publications.map((pub) => (
+              {publications.map((pub) => (
                 <article class="group relative">
                   <div class="block relative p-4 sm:p-6 md:p-8 pub-card rounded-xl sm:rounded-2xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                     {pub.link && (

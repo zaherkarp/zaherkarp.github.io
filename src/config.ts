@@ -64,6 +64,8 @@ export const siteConfig = {
     authors: "Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z, Legler C, Grob R",
     journal: "Academic Medicine",
     year: 2019,
+    citationCount: 5,
+    semanticScholarId: "PMID:31348061",
     link: "https://pubmed.ncbi.nlm.nih.gov/31348072/",
     description:
       "Pilot experimental curriculum trial evaluating approaches to broadening medical students' exposure to the range of illness experiences, with a focus on depression education.",
@@ -78,6 +80,8 @@ export const siteConfig = {
     authors: "Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfenter T, Pandhi N",
     journal: "Health Environments Research & Design Journal",
     year: 2019,
+    citationCount: 10,
+    semanticScholarId: "PMID:30913920",
     link: "https://pubmed.ncbi.nlm.nih.gov/30913920/",
     description:
       "Led comprehensive mixed-methods study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants.",
@@ -93,6 +97,8 @@ export const siteConfig = {
     authors: "Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N",
     journal: "International Journal of Healthcare Management",
     year: 2018,
+    citationCount: 4,
+    semanticScholarId: "DOI:10.1080/20479700.2018.1500760",
     link: "https://www.tandfonline.com/doi/abs/10.1080/20479700.2018.1507062",
     description:
       "Analysis of cost patterns and savings achievement across Medicare Shared Savings Program ACOs, finding that higher-baseline-cost organizations were more likely to achieve shared savings.",
@@ -106,6 +112,7 @@ export const siteConfig = {
     authors: "Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z",
     journal: "Implementation Science (Proceedings of the 3rd Biennial Conference of the Society for Implementation Research Collaboration)",
     year: 2016,
+    citationCount: 2,
     link: "https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6",
     description:
       "Methodological contribution on gathering diverse community opinions to inform health system interventions, presented at a national implementation science conference.",
@@ -119,6 +126,8 @@ export const siteConfig = {
     authors: "Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P",
     journal: "Journal of Innovation in Health Informatics",
     year: 2014,
+    citationCount: 24,
+    semanticScholarId: "PMID:25584902",
     link: "https://pubmed.ncbi.nlm.nih.gov/25584902/",
     description:
       "Qualitative study examining how primary care teams use and optimize EHR systems, identifying key barriers and facilitators to effective adoption.",
@@ -133,6 +142,7 @@ export const siteConfig = {
     authors: "Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P",
     journal: "Proceedings of World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education",
     year: 2012,
+    citationCount: 3,
     link: "https://www.learntechlib.org/p/41869/",
     description:
       "Conference proceedings presenting preliminary findings on EHR optimization challenges in primary care settings.",
