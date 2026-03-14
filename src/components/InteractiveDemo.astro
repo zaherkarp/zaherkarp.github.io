@@ -1,0 +1,407 @@
+---
+import { siteConfig } from "../config";
+---
+
+<section id="demo" class="demo-section p-8 sm:p-12 md:p-16 lg:p-24">
+  <div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+      <div class="lg:col-span-4">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold demo-heading">
+          Live Demo
+        </h2>
+        <div
+          class="w-[75px] h-[5px] mt-2 rounded-full"
+          style={`background-color: ${siteConfig.accentColor}`}
+        />
+        <p class="demo-subtext mt-4 text-sm sm:text-base">
+          Logistic regression running entirely in your browser. Adjust healthcare quality inputs to see predicted Medicare Star Rating.
+        </p>
+      </div>
+
+      <div class="lg:col-span-8">
+        <div class="demo-card p-5 sm:p-8 rounded-2xl border">
+          {/* Terminal-style header */}
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+            <span class="w-3 h-3 rounded-full bg-green-400"></span>
+            <span class="demo-terminal-title text-xs font-mono ml-2">star_rating_predictor.py</span>
+          </div>
+
+          {/* Input sliders */}
+          <div class="space-y-5" id="demo-inputs">
+            <div class="demo-input-group">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="demo-label text-sm font-medium" for="hedis-rate">
+                  HEDIS Composite Rate
+                </label>
+                <span class="demo-value text-sm font-mono font-bold" id="hedis-rate-val" style={`color: ${siteConfig.accentColor}`}>75%</span>
+              </div>
+              <input type="range" id="hedis-rate" min="40" max="98" value="75" class="demo-slider w-full" />
+              <div class="flex justify-between text-xs demo-range-label mt-0.5">
+                <span>40%</span><span>98%</span>
+              </div>
+            </div>
+
+            <div class="demo-input-group">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="demo-label text-sm font-medium" for="cahps-score">
+                  CAHPS Member Satisfaction
+                </label>
+                <span class="demo-value text-sm font-mono font-bold" id="cahps-score-val" style={`color: ${siteConfig.accentColor}`}>3.5</span>
+              </div>
+              <input type="range" id="cahps-score" min="1" max="5" value="3.5" step="0.1" class="demo-slider w-full" />
+              <div class="flex justify-between text-xs demo-range-label mt-0.5">
+                <span>1.0</span><span>5.0</span>
+              </div>
+            </div>
+
+            <div class="demo-input-group">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="demo-label text-sm font-medium" for="med-adherence">
+                  Medication Adherence (D-SNP)
+                </label>
+                <span class="demo-value text-sm font-mono font-bold" id="med-adherence-val" style={`color: ${siteConfig.accentColor}`}>70%</span>
+              </div>
+              <input type="range" id="med-adherence" min="30" max="95" value="70" class="demo-slider w-full" />
+              <div class="flex justify-between text-xs demo-range-label mt-0.5">
+                <span>30%</span><span>95%</span>
+              </div>
+            </div>
+
+            <div class="demo-input-group">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="demo-label text-sm font-medium" for="readmission">
+                  Readmission Rate
+                </label>
+                <span class="demo-value text-sm font-mono font-bold" id="readmission-val" style={`color: ${siteConfig.accentColor}`}>15%</span>
+              </div>
+              <input type="range" id="readmission" min="5" max="30" value="15" class="demo-slider w-full" />
+              <div class="flex justify-between text-xs demo-range-label mt-0.5">
+                <span>5%</span><span>30%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div class="demo-divider my-6" />
+
+          {/* Output */}
+          <div id="demo-output">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="demo-output-title text-sm font-medium uppercase tracking-wider">Predicted Rating</h3>
+              <div class="flex items-center gap-2">
+                <span class="demo-model-tag text-xs font-mono px-2 py-0.5 rounded">logistic regression</span>
+              </div>
+            </div>
+
+            {/* Star display */}
+            <div class="flex items-center gap-4 mb-4">
+              <div class="flex gap-1" id="star-display">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <svg
+                    class="w-8 h-8 sm:w-10 sm:h-10 star-icon transition-all duration-300"
+                    data-star={i}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                ))}
+              </div>
+              <span class="text-3xl sm:text-4xl font-bold font-mono" id="rating-number" style={`color: ${siteConfig.accentColor}`}>3.5</span>
+            </div>
+
+            {/* Probability bars */}
+            <div class="space-y-2" id="prob-bars">
+              {[5, 4, 3, 2, 1].map((star) => (
+                <div class="flex items-center gap-3">
+                  <span class="demo-bar-label text-xs font-mono w-8 text-right">{star}★</span>
+                  <div class="demo-bar-track flex-1">
+                    <div
+                      class="demo-bar-fill transition-all duration-500"
+                      data-star-prob={star}
+                      style={`width: 0%; background-color: ${siteConfig.accentColor}`}
+                    />
+                  </div>
+                  <span class="demo-bar-pct text-xs font-mono w-10 text-right" data-star-pct={star}>0%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <p class="demo-footnote text-xs mt-3">
+          Illustrative model with synthetic weights. Not trained on real CMS data.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .demo-section {
+    background-color: #f9fafb;
+  }
+  :global([data-theme="dark"]) .demo-section {
+    background-color: #111827;
+  }
+
+  .demo-heading {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .demo-heading {
+    color: #f9fafb;
+  }
+
+  .demo-subtext {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .demo-subtext {
+    color: #9ca3af;
+  }
+
+  .demo-card {
+    background-color: #ffffff;
+    border-color: #e5e7eb;
+  }
+  :global([data-theme="dark"]) .demo-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .demo-terminal-title {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .demo-terminal-title {
+    color: #9ca3af;
+  }
+
+  .demo-label {
+    color: #374151;
+  }
+  :global([data-theme="dark"]) .demo-label {
+    color: #d1d5db;
+  }
+
+  .demo-range-label {
+    color: #9ca3af;
+  }
+
+  /* Slider styling */
+  .demo-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 9999px;
+    background: #e5e7eb;
+    outline: none;
+    cursor: pointer;
+  }
+  :global([data-theme="dark"]) .demo-slider {
+    background: #374151;
+  }
+
+  .demo-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+  }
+  .demo-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  .demo-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .demo-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+  }
+  :global([data-theme="dark"]) .demo-divider {
+    background-color: #374151;
+  }
+
+  .demo-output-title {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .demo-output-title {
+    color: #9ca3af;
+  }
+
+  .demo-model-tag {
+    color: #6b7280;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+  }
+  :global([data-theme="dark"]) .demo-model-tag {
+    color: #9ca3af;
+    background-color: #111827;
+    border-color: #374151;
+  }
+
+  .star-icon {
+    color: #e5e7eb;
+  }
+  :global([data-theme="dark"]) .star-icon {
+    color: #374151;
+  }
+  .star-icon.active {
+    color: #facc15;
+  }
+  .star-icon.half {
+    color: #facc15;
+    opacity: 0.5;
+  }
+
+  .demo-bar-label {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .demo-bar-label {
+    color: #9ca3af;
+  }
+
+  .demo-bar-track {
+    height: 8px;
+    background-color: #f3f4f6;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  :global([data-theme="dark"]) .demo-bar-track {
+    background-color: #111827;
+  }
+
+  .demo-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+  }
+
+  .demo-bar-pct {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .demo-bar-pct {
+    color: #9ca3af;
+  }
+
+  .demo-footnote {
+    color: #9ca3af;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const hedisSlider = document.getElementById("hedis-rate") as HTMLInputElement;
+    const cahpsSlider = document.getElementById("cahps-score") as HTMLInputElement;
+    const medSlider = document.getElementById("med-adherence") as HTMLInputElement;
+    const readmitSlider = document.getElementById("readmission") as HTMLInputElement;
+
+    if (!hedisSlider || !cahpsSlider || !medSlider || !readmitSlider) return;
+
+    const hedisVal = document.getElementById("hedis-rate-val")!;
+    const cahpsVal = document.getElementById("cahps-score-val")!;
+    const medVal = document.getElementById("med-adherence-val")!;
+    const readmitVal = document.getElementById("readmission-val")!;
+    const ratingNum = document.getElementById("rating-number")!;
+    const stars = document.querySelectorAll("#star-display .star-icon");
+
+    // Synthetic logistic regression weights (illustrative)
+    // Higher HEDIS, CAHPS, med adherence → higher star; higher readmission → lower star
+    // Ordinal logistic regression: P(Y >= k) = sigmoid(a_k + b*x)
+    const intercepts = [-8.0, -4.5, -1.0, 2.5]; // thresholds for >=2, >=3, >=4, >=5
+    const weights = {
+      hedis: 0.08,      // per percentage point
+      cahps: 0.9,       // per unit (1-5)
+      medAdherence: 0.06, // per percentage point
+      readmission: -0.15, // per percentage point (negative = bad)
+    };
+
+    function sigmoid(x: number): number {
+      return 1 / (1 + Math.exp(-x));
+    }
+
+    function predict() {
+      const hedis = parseFloat(hedisSlider.value);
+      const cahps = parseFloat(cahpsSlider.value);
+      const med = parseFloat(medSlider.value);
+      const readmit = parseFloat(readmitSlider.value);
+
+      // Update display values
+      hedisVal.textContent = hedis + "%";
+      cahpsVal.textContent = cahps.toFixed(1);
+      medVal.textContent = med + "%";
+      readmitVal.textContent = readmit + "%";
+
+      // Linear combination
+      const z = weights.hedis * hedis +
+                weights.cahps * cahps +
+                weights.medAdherence * med +
+                weights.readmission * readmit;
+
+      // Cumulative probabilities P(Y >= k) for k = 2,3,4,5
+      const cumProbs = intercepts.map((a) => sigmoid(a + z));
+
+      // Convert to category probabilities
+      const probs = [
+        1 - cumProbs[0],                    // P(Y=1)
+        cumProbs[0] - cumProbs[1],           // P(Y=2)
+        cumProbs[1] - cumProbs[2],           // P(Y=3)
+        cumProbs[2] - cumProbs[3],           // P(Y=4)
+        cumProbs[3],                         // P(Y=5)
+      ].map((p) => Math.max(0, p));
+
+      // Normalize
+      const total = probs.reduce((s, p) => s + p, 0);
+      const normalized = probs.map((p) => p / total);
+
+      // Expected value
+      const expected = normalized.reduce((s, p, i) => s + p * (i + 1), 0);
+
+      // Update rating number
+      ratingNum.textContent = expected.toFixed(1);
+
+      // Update stars
+      const fullStars = Math.floor(expected);
+      const partial = expected - fullStars;
+      stars.forEach((star, i) => {
+        star.classList.remove("active", "half");
+        if (i < fullStars) {
+          star.classList.add("active");
+        } else if (i === fullStars && partial >= 0.25) {
+          star.classList.add(partial >= 0.75 ? "active" : "half");
+        }
+      });
+
+      // Update probability bars
+      for (let s = 1; s <= 5; s++) {
+        const bar = document.querySelector(`[data-star-prob="${s}"]`) as HTMLElement;
+        const pct = document.querySelector(`[data-star-pct="${s}"]`) as HTMLElement;
+        if (bar && pct) {
+          const p = normalized[s - 1] * 100;
+          bar.style.width = p + "%";
+          pct.textContent = Math.round(p) + "%";
+        }
+      }
+    }
+
+    // Bind sliders
+    [hedisSlider, cahpsSlider, medSlider, readmitSlider].forEach((slider) => {
+      slider.addEventListener("input", predict);
+    });
+
+    // Initial prediction
+    predict();
+  });
+</script>

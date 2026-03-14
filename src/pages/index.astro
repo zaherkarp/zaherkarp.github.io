@@ -10,6 +10,9 @@ import SqlTerminal from "../components/SqlTerminal.astro";
 import StatsCounter from "../components/StatsCounter.astro";
 import CitationMetrics from "../components/CitationMetrics.astro";
 import Publications from "../components/Publications.astro";
+import Presentations from "../components/Presentations.astro";
+import GitHubActivity from "../components/GitHubActivity.astro";
+import InteractiveDemo from "../components/InteractiveDemo.astro";
 import Footer from "../components/Footer.astro";
 import BaseHead from "../components/BaseHead.astro";
 import { siteConfig } from "../config";
@@ -69,8 +72,11 @@ const jsonLd = {
       <StatsCounter />
       <CitationMetrics />
       <LatestPosts />
+      <InteractiveDemo />
       <Projects />
       <Publications />
+      <Presentations />
+      <GitHubActivity />
       <Experience />
       <Education />
     </section>

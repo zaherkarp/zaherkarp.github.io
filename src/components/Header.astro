@@ -4,6 +4,7 @@ import ThemeToggle from "./ThemeToggle.astro";
 
 const hasPublications = siteConfig.publications && siteConfig.publications.length > 0;
 const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
+const hasPresentations = siteConfig.presentations && siteConfig.presentations.length > 0;
 const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
 const hasEducation = siteConfig.education && siteConfig.education.length > 0;
 ---
@@ -42,6 +43,18 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
               class="text-gray-700 hover:text-black transition-colors font-medium"
             >
               Projects
+            </a>
+          </li>
+        )
+      }
+      {
+        hasPresentations && (
+          <li>
+            <a
+              href="/#presentations"
+              class="text-gray-700 hover:text-black transition-colors font-medium"
+            >
+              Talks
             </a>
           </li>
         )
