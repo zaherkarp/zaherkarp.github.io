@@ -65,6 +65,7 @@ export const siteConfig = {
     journal: "Academic Medicine",
     year: 2019,
     citationCount: 5,
+    semanticScholarId: "PMID:31348061",
     link: "https://pubmed.ncbi.nlm.nih.gov/31348072/",
     description:
       "Pilot experimental curriculum trial evaluating approaches to broadening medical students' exposure to the range of illness experiences, with a focus on depression education.",
@@ -80,6 +81,7 @@ export const siteConfig = {
     journal: "Health Environments Research & Design Journal",
     year: 2019,
     citationCount: 10,
+    semanticScholarId: "PMID:30913920",
     link: "https://pubmed.ncbi.nlm.nih.gov/30913920/",
     description:
       "Led comprehensive mixed-methods study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants.",
@@ -96,6 +98,7 @@ export const siteConfig = {
     journal: "International Journal of Healthcare Management",
     year: 2018,
     citationCount: 4,
+    semanticScholarId: "DOI:10.1080/20479700.2018.1500760",
     link: "https://www.tandfonline.com/doi/abs/10.1080/20479700.2018.1507062",
     description:
       "Analysis of cost patterns and savings achievement across Medicare Shared Savings Program ACOs, finding that higher-baseline-cost organizations were more likely to achieve shared savings.",
@@ -124,6 +127,7 @@ export const siteConfig = {
     journal: "Journal of Innovation in Health Informatics",
     year: 2014,
     citationCount: 24,
+    semanticScholarId: "PMID:25584902",
     link: "https://pubmed.ncbi.nlm.nih.gov/25584902/",
     description:
       "Qualitative study examining how primary care teams use and optimize EHR systems, identifying key barriers and facilitators to effective adoption.",
