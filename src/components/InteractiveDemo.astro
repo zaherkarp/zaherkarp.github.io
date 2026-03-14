@@ -14,7 +14,7 @@ import { siteConfig } from "../config";
           style={`background-color: ${siteConfig.accentColor}`}
         />
         <p class="demo-subtext mt-4 text-sm sm:text-base">
-          Ordinal logistic regression running entirely in your browser. Coefficients calibrated to CMS 2025 measure weights and real-world star distribution.
+          Predictive model running entirely in your browser. Adjust healthcare quality inputs to see how they shift the predicted Medicare Star Rating.
         </p>
       </div>
 
@@ -32,66 +32,106 @@ import { siteConfig } from "../config";
           <div class="space-y-5" id="demo-inputs">
             <div class="demo-input-group">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="demo-label text-sm font-medium flex items-center gap-2" for="hedis-rate">
+                <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="hedis-rate">
                   HEDIS Composite Rate
                   <span class="demo-weight-badge text-[10px] font-mono px-1.5 py-0.5 rounded">wt 1–3×</span>
+                  <span class="demo-help-tip cursor-help" title="Weighted average of clinical quality measures: breast cancer screening, colorectal screening, A1C control, blood pressure control, statin therapy, and others. Each measure is individually weighted 1–3× by CMS."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="hedis-rate-val" style={`color: ${siteConfig.accentColor}`}>75%</span>
               </div>
-              <input type="range" id="hedis-rate" min="55" max="95" value="75" class="demo-slider w-full" />
+              <div class="demo-slider-wrapper">
+                <input type="range" id="hedis-rate" min="55" max="95" value="75" class="demo-slider w-full" />
+                <div class="demo-percentile-marks">
+                  <span class="demo-pctl-mark" style="left: 25%" title="25th percentile (national)"></span>
+                  <span class="demo-pctl-mark demo-pctl-median" style="left: 50%" title="50th percentile (national)"></span>
+                  <span class="demo-pctl-mark" style="left: 75%" title="75th percentile (national)"></span>
+                </div>
+              </div>
               <div class="flex justify-between text-xs demo-range-label mt-0.5">
-                <span>55%</span><span>95%</span>
+                <span>55%</span>
+                <span class="demo-pctl-legend">· 25th · 50th · 75th pctl</span>
+                <span>95%</span>
               </div>
             </div>
 
             <div class="demo-input-group">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="demo-label text-sm font-medium flex items-center gap-2" for="cahps-score">
+                <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="cahps-score">
                   CAHPS Member Satisfaction
                   <span class="demo-weight-badge text-[10px] font-mono px-1.5 py-0.5 rounded">wt 2×</span>
+                  <span class="demo-help-tip cursor-help" title="Consumer Assessment of Healthcare Providers and Systems survey. Covers provider communication, access to care, customer service, and care coordination. Survey response rates affect measurement precision."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="cahps-score-val" style={`color: ${siteConfig.accentColor}`}>3.5</span>
               </div>
-              <input type="range" id="cahps-score" min="2.5" max="4.8" value="3.5" step="0.1" class="demo-slider w-full" />
+              <div class="demo-slider-wrapper">
+                <input type="range" id="cahps-score" min="2.5" max="4.8" value="3.5" step="0.1" class="demo-slider w-full" />
+                <div class="demo-percentile-marks">
+                  <span class="demo-pctl-mark" style="left: 25%" title="25th percentile"></span>
+                  <span class="demo-pctl-mark demo-pctl-median" style="left: 50%" title="50th percentile"></span>
+                  <span class="demo-pctl-mark" style="left: 75%" title="75th percentile"></span>
+                </div>
+              </div>
               <div class="flex justify-between text-xs demo-range-label mt-0.5">
-                <span>2.5</span><span>4.8</span>
+                <span>2.5</span>
+                <span class="demo-pctl-legend">· 25th · 50th · 75th pctl</span>
+                <span>4.8</span>
               </div>
             </div>
 
             <div class="demo-input-group">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="demo-label text-sm font-medium flex items-center gap-2" for="med-adherence">
+                <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="med-adherence">
                   Medication Adherence (D-SNP)
                   <span class="demo-weight-badge demo-weight-triple text-[10px] font-mono px-1.5 py-0.5 rounded">wt 3×</span>
+                  <span class="demo-help-tip cursor-help" title="Proportion of Days Covered (PDC) ≥80% across three measures: diabetes meds, RAS antagonists (hypertension), and statins (cholesterol). CMS measures the % of members hitting PDC ≥80%, not the mean. As little as 3% PDC can separate a 3★ from 5★ rating."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="med-adherence-val" style={`color: ${siteConfig.accentColor}`}>70%</span>
               </div>
-              <input type="range" id="med-adherence" min="50" max="92" value="70" class="demo-slider w-full" />
+              <div class="demo-slider-wrapper">
+                <input type="range" id="med-adherence" min="50" max="92" value="70" class="demo-slider w-full" />
+                <div class="demo-percentile-marks">
+                  <span class="demo-pctl-mark" style="left: 25%" title="25th percentile"></span>
+                  <span class="demo-pctl-mark demo-pctl-median" style="left: 50%" title="50th percentile"></span>
+                  <span class="demo-pctl-mark" style="left: 75%" title="75th percentile"></span>
+                </div>
+              </div>
               <div class="flex justify-between text-xs demo-range-label mt-0.5">
-                <span>50%</span><span>92%</span>
+                <span>50%</span>
+                <span class="demo-pctl-legend">· 25th · 50th · 75th pctl</span>
+                <span>92%</span>
               </div>
             </div>
 
             <div class="demo-input-group">
               <div class="flex items-center justify-between mb-1.5">
-                <label class="demo-label text-sm font-medium flex items-center gap-2" for="readmission">
+                <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="readmission">
                   Readmission Rate
                   <span class="demo-weight-badge demo-weight-triple text-[10px] font-mono px-1.5 py-0.5 rounded">wt 3× ▼</span>
+                  <span class="demo-help-tip cursor-help" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure — lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years."></span>
                 </label>
                 <span class="demo-value text-sm font-mono font-bold" id="readmission-val" style={`color: ${siteConfig.accentColor}`}>15%</span>
               </div>
-              <input type="range" id="readmission" min="8" max="22" value="15" class="demo-slider w-full" />
+              <div class="demo-slider-wrapper">
+                <input type="range" id="readmission" min="8" max="22" value="15" class="demo-slider w-full" />
+                <div class="demo-percentile-marks">
+                  <span class="demo-pctl-mark" style="left: 25%" title="25th percentile"></span>
+                  <span class="demo-pctl-mark demo-pctl-median" style="left: 50%" title="50th percentile"></span>
+                  <span class="demo-pctl-mark" style="left: 75%" title="75th percentile"></span>
+                </div>
+              </div>
               <div class="flex justify-between text-xs demo-range-label mt-0.5">
-                <span>8%</span><span>22%</span>
+                <span>8%</span>
+                <span class="demo-pctl-legend">· 25th · 50th · 75th pctl</span>
+                <span>22%</span>
               </div>
             </div>
           </div>
 
           {/* Reward Factor toggle */}
           <div class="demo-reward-row flex items-center justify-between mt-5 px-1">
-            <label class="demo-label text-sm font-medium flex items-center gap-2" for="reward-toggle">
+            <label class="demo-label text-sm font-medium flex items-center gap-2 flex-wrap" for="reward-toggle">
               CMS Reward Factor
-              <span class="demo-help-tip text-[10px] font-mono px-1.5 py-0.5 rounded cursor-help" title="Plans at ≥4 stars for 3+ consecutive years receive a reward factor of up to +0.4 stars added to their summary rating before final rounding.">?</span>
+              <span class="demo-help-tip cursor-help" title="Plans at ≥4 stars for 3+ consecutive years receive up to +0.4 stars added to their summary rating before final rounding. This is the mechanism behind sustained quality bonus payments."></span>
             </label>
             <div class="flex items-center gap-3">
               <span class="demo-reward-val text-sm font-mono font-bold" id="reward-val" style={`color: ${siteConfig.accentColor}`}>Off</span>
@@ -110,12 +150,12 @@ import { siteConfig } from "../config";
             <div class="flex items-center justify-between mb-4">
               <h3 class="demo-output-title text-sm font-medium uppercase tracking-wider">Predicted Rating</h3>
               <div class="flex items-center gap-2">
-                <span class="demo-model-tag text-xs font-mono px-2 py-0.5 rounded">ordinal logistic</span>
+                <a href="/blog/star-rating-predictor-methodology" class="demo-model-tag text-xs font-mono px-2 py-0.5 rounded hover:opacity-80 no-underline" title="View full methodology">predictive model ↗</a>
               </div>
             </div>
 
             {/* Star display */}
-            <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center gap-4 mb-2">
               <div class="flex gap-1" id="star-display">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <svg
@@ -130,6 +170,11 @@ import { siteConfig } from "../config";
                 ))}
               </div>
               <span class="text-3xl sm:text-4xl font-bold font-mono" id="rating-number" style={`color: ${siteConfig.accentColor}`}>3.5</span>
+            </div>
+
+            {/* QBP financial context */}
+            <div class="demo-qbp-callout mb-4" id="qbp-callout">
+              <span class="text-xs" id="qbp-text"></span>
             </div>
 
             {/* Probability bars */}
@@ -176,33 +221,18 @@ import { siteConfig } from "../config";
               </div>
             </div>
 
-            {/* Sensitivity indicators */}
-            <div class="mt-5" id="sensitivity-panel">
-              <h4 class="demo-output-title text-xs font-medium uppercase tracking-wider mb-2">Marginal Sensitivity</h4>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="sensitivity-bars">
-                <div class="demo-sensitivity-item text-center">
-                  <div class="text-[10px] demo-range-label mb-1">HEDIS</div>
-                  <div class="text-xs font-mono font-bold" id="sens-hedis" style={`color: ${siteConfig.accentColor}`}>—</div>
-                </div>
-                <div class="demo-sensitivity-item text-center">
-                  <div class="text-[10px] demo-range-label mb-1">CAHPS</div>
-                  <div class="text-xs font-mono font-bold" id="sens-cahps" style={`color: ${siteConfig.accentColor}`}>—</div>
-                </div>
-                <div class="demo-sensitivity-item text-center">
-                  <div class="text-[10px] demo-range-label mb-1">Adherence</div>
-                  <div class="text-xs font-mono font-bold" id="sens-med" style={`color: ${siteConfig.accentColor}`}>—</div>
-                </div>
-                <div class="demo-sensitivity-item text-center">
-                  <div class="text-[10px] demo-range-label mb-1">Readmit</div>
-                  <div class="text-xs font-mono font-bold" id="sens-readmit" style={`color: ${siteConfig.accentColor}`}>—</div>
-                </div>
+            {/* Plain-language impact guidance */}
+            <div class="mt-5" id="impact-panel">
+              <h4 class="demo-output-title text-xs font-medium uppercase tracking-wider mb-2">What Would Move the Needle?</h4>
+              <div class="demo-impact-box" id="impact-guidance">
+                <p class="text-xs demo-subtext">Adjust sliders to see guidance.</p>
               </div>
             </div>
           </div>
         </div>
 
         <p class="demo-footnote text-xs mt-3">
-          Synthetic coefficients calibrated to CMS 2025 measure weights and 2025 MA-PD star distribution. Not trained on contract-level data.
+          Synthetic coefficients calibrated to CMS 2025 measure weights and MA-PD star distribution. Not trained on contract-level data. Does not include case-mix (CAI) adjustment.
           <a href="/blog/star-rating-predictor-methodology" class="underline hover:opacity-80" style={`color: ${siteConfig.accentColor}`}>Full methodology →</a>
         </p>
       </div>
@@ -295,6 +325,9 @@ import { siteConfig } from "../config";
     font-size: 10px;
     line-height: 1;
   }
+  .demo-help-tip::after {
+    content: "?";
+  }
   :global([data-theme="dark"]) .demo-help-tip {
     color: #9ca3af;
     background-color: #111827;
@@ -340,6 +373,43 @@ import { siteConfig } from "../config";
   }
   .demo-toggle-switch input:checked + .demo-toggle-slider:before {
     transform: translateX(16px);
+  }
+
+  /* Slider wrapper with percentile marks */
+  .demo-slider-wrapper {
+    position: relative;
+  }
+  .demo-percentile-marks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+  }
+  .demo-pctl-mark {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 12px;
+    background-color: #d1d5db;
+    opacity: 0.6;
+  }
+  :global([data-theme="dark"]) .demo-pctl-mark {
+    background-color: #6b7280;
+  }
+  .demo-pctl-median {
+    height: 14px;
+    width: 2px;
+    opacity: 0.8;
+  }
+  .demo-pctl-legend {
+    color: #d1d5db;
+    font-size: 9px;
+  }
+  :global([data-theme="dark"]) .demo-pctl-legend {
+    color: #4b5563;
   }
 
   /* Slider styling */
@@ -452,6 +522,41 @@ import { siteConfig } from "../config";
   .demo-footnote {
     color: #9ca3af;
   }
+  :global([data-theme="dark"]) .demo-footnote {
+    color: #6b7280;
+  }
+
+  /* QBP callout */
+  .demo-qbp-callout {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    min-height: 28px;
+  }
+  .demo-qbp-callout.qbp-eligible {
+    background-color: #ecfdf5;
+    border-left-color: #10b981;
+  }
+  :global([data-theme="dark"]) .demo-qbp-callout.qbp-eligible {
+    background-color: #052e16;
+    border-left-color: #10b981;
+  }
+  .demo-qbp-callout.qbp-near {
+    background-color: #fffbeb;
+    border-left-color: #f59e0b;
+  }
+  :global([data-theme="dark"]) .demo-qbp-callout.qbp-near {
+    background-color: #1c1917;
+    border-left-color: #f59e0b;
+  }
+  .demo-qbp-callout.qbp-below {
+    background-color: #f9fafb;
+    border-left-color: #d1d5db;
+  }
+  :global([data-theme="dark"]) .demo-qbp-callout.qbp-below {
+    background-color: #111827;
+    border-left-color: #374151;
+  }
 
   /* Threshold visualization */
   .demo-threshold-container {
@@ -475,6 +580,10 @@ import { siteConfig } from "../config";
     height: 100%;
     background-color: #6b7280;
     opacity: 0.5;
+  }
+  :global([data-theme="dark"]) .demo-threshold-marker {
+    background-color: #9ca3af;
+    opacity: 0.6;
   }
   .demo-threshold-label {
     position: absolute;
@@ -512,16 +621,23 @@ import { siteConfig } from "../config";
     white-space: nowrap;
   }
 
-  /* Sensitivity panel */
-  .demo-sensitivity-item {
-    padding: 6px 4px;
+  /* Impact guidance panel */
+  .demo-impact-box {
+    padding: 8px 12px;
     background-color: #f9fafb;
-    border-radius: 8px;
     border: 1px solid #e5e7eb;
+    border-radius: 8px;
   }
-  :global([data-theme="dark"]) .demo-sensitivity-item {
+  :global([data-theme="dark"]) .demo-impact-box {
     background-color: #111827;
     border-color: #374151;
+  }
+  .demo-impact-box p {
+    margin: 0;
+    line-height: 1.5;
+  }
+  .demo-impact-highlight {
+    font-weight: 600;
   }
 </style>
 
@@ -546,37 +662,36 @@ import { siteConfig } from "../config";
     // ─── CMS-Aligned Ordinal Logistic Regression ───
     //
     // Coefficients calibrated to CMS 2025 measure weights.
+    // See /blog/star-rating-predictor-methodology for full derivation.
     //
-    // CMS weight shares (2025 MA-PD):
-    //   HEDIS clinical composite: ~12 of 81 weighted pts (15%) — mixed wt 1–3
-    //   CAHPS experience:         ~8 of 81 weighted pts (10%) — wt 2 each
-    //   Medication adherence:     9 of 81 weighted pts  (11%) — wt 3 × 3 measures
-    //   Readmission (PCR):        3 of 81 weighted pts  (4%)  — wt 3 × 1 measure
+    // CMS weight shares (2025 MA-PD, 81 total weighted pts):
+    //   HEDIS clinical composite: ~12 pts (15%) — mixed wt 1–3
+    //   CAHPS experience:         ~8 pts  (10%) — wt 2 × 4 measures
+    //   Medication adherence:      9 pts  (11%) — wt 3 × 3 measures
+    //   Readmission (PCR):         3 pts  (4%)  — wt 3 × 1 measure
     //
-    // Per-unit weights are scaled so total range contribution is proportional
-    // to CMS weight share across each slider's realistic operating range.
-    //
-    // Target contributions across realistic slider ranges:
-    //   HEDIS:     0.08 × 40pp  = 3.2  (37%)
-    //   CAHPS:     1.50 × 2.3u  = 3.45 (25%)   ← was 0.9, too low
-    //   MedAdh:    0.06 × 42pp  = 2.52 (28%)
-    //   Readmit:  -0.08 × 14pp  = 1.12 (10%)   ← was -0.15, too strong
-    //
-    // Intercepts calibrated to the 2025 MA-PD star distribution:
-    //   ~99% of plans ≥2★, ~95% ≥3★, ~42% ≥4★, ~2% 5★
-    //   Average overall rating: 3.92 (CMS Fact Sheet, Oct 2024)
+    // Intercepts calibrated to 2025 MA-PD star distribution:
+    //   avg 3.92, ~42% ≥4★, ~2% 5★ (CMS Fact Sheet, Oct 2024)
     //
     const intercepts = [-10.1, -11.76, -15.1, -18.17]; // α₂, α₃, α₄, α₅
     const weights = {
-      hedis: 0.08,          // per percentage point (wt 1–3 composite)
+      hedis: 0.08,          // per pp (wt 1–3 composite)
       cahps: 1.50,          // per unit on 2.5–4.8 scale (wt 2, 4 measures)
-      medAdherence: 0.06,   // per percentage point (wt 3, triple-weighted)
-      readmission: -0.08,   // per percentage point (wt 3, inverse measure)
+      medAdherence: 0.06,   // per pp (wt 3, triple-weighted)
+      readmission: -0.08,   // per pp (wt 3, inverse measure)
     };
 
-    // Reward factor: CMS adds 0–0.4 to summary rating for plans at ≥4★
-    // for 3+ consecutive years (or showing significant improvement).
     const REWARD_FACTOR = 0.4;
+
+    // Improvement step sizes for plain-language guidance
+    // These represent feasible 1-year improvement targets
+    const STEP = { hedis: 5, cahps: 0.3, med: 5, readmit: -2 };
+    const LABELS = {
+      hedis: "HEDIS composite",
+      cahps: "CAHPS satisfaction",
+      med: "medication adherence",
+      readmit: "readmission rate",
+    };
 
     function sigmoid(x: number): number {
       return 1 / (1 + Math.exp(-x));
@@ -591,13 +706,12 @@ import { siteConfig } from "../config";
 
     function computeExpected(z: number): { expected: number; normalized: number[] } {
       const cumProbs = intercepts.map((a) => sigmoid(a + z));
-
       const probs = [
-        1 - cumProbs[0],              // P(Y=1)
-        cumProbs[0] - cumProbs[1],     // P(Y=2)
-        cumProbs[1] - cumProbs[2],     // P(Y=3)
-        cumProbs[2] - cumProbs[3],     // P(Y=4)
-        cumProbs[3],                   // P(Y=5)
+        1 - cumProbs[0],
+        cumProbs[0] - cumProbs[1],
+        cumProbs[1] - cumProbs[2],
+        cumProbs[2] - cumProbs[3],
+        cumProbs[3],
       ].map((p) => Math.max(0, p));
 
       const total = probs.reduce((s, p) => s + p, 0);
@@ -644,37 +758,55 @@ import { siteConfig } from "../config";
         }
       });
 
-      // Update probability bars
+      // ─── QBP financial context ───
+      const qbpEl = document.getElementById("qbp-callout");
+      const qbpText = document.getElementById("qbp-text");
+      if (qbpEl && qbpText) {
+        qbpEl.classList.remove("qbp-eligible", "qbp-near", "qbp-below");
+        if (expected >= 4.0) {
+          qbpEl.classList.add("qbp-eligible");
+          qbpText.textContent = "≥4★ — Eligible for Quality Bonus Payments (5% premium increase, ~$50M+ for large plans).";
+        } else if (expected >= 3.5) {
+          qbpEl.classList.add("qbp-near");
+          const gap = (4.0 - expected).toFixed(1);
+          qbpText.textContent = `${gap}★ below the 4.0 QBP threshold. Plans below 4.0★ do not qualify for quality bonus payments (~5% premium increase).`;
+        } else {
+          qbpEl.classList.add("qbp-below");
+          qbpText.textContent = "Below 3.5★ — no QBP eligibility. At ≤2.5★ for 3 consecutive years, CMS may terminate the contract.";
+        }
+      }
+
+      // Update probability bars (largest-remainder rounding to ensure sum = 100%)
+      const rawPcts = normalized.map((p) => p * 100);
+      const floored = rawPcts.map((p) => Math.floor(p));
+      let remainder = 100 - floored.reduce((a, b) => a + b, 0);
+      const remainders = rawPcts.map((p, i) => ({ i, r: p - floored[i] }));
+      remainders.sort((a, b) => b.r - a.r);
+      for (let j = 0; j < remainder; j++) floored[remainders[j].i]++;
+
       for (let s = 1; s <= 5; s++) {
         const bar = document.querySelector(`[data-star-prob="${s}"]`) as HTMLElement;
         const pct = document.querySelector(`[data-star-pct="${s}"]`) as HTMLElement;
         if (bar && pct) {
-          const p = normalized[s - 1] * 100;
-          bar.style.width = p + "%";
-          pct.textContent = Math.round(p) + "%";
+          bar.style.width = rawPcts[s - 1] + "%";
+          pct.textContent = floored[s - 1] + "%";
         }
       }
 
       // ─── Threshold visualization ───
-      // Map z to a 0–100% position on the threshold track.
-      // The track represents the range from "deep 1★" to "deep 5★".
-      // We use the intercept range (negated, since z needs to exceed -α_k)
-      // plus some padding.
-      const zMin = -intercepts[0] - 5; // well below ≥2★ threshold
-      const zMax = -intercepts[3] + 5; // well above ≥5★ threshold
+      const zMin = -intercepts[0] - 5;
+      const zMax = -intercepts[3] + 5;
       const zRange = zMax - zMin;
 
-      // Position threshold markers
       for (let t = 0; t < 4; t++) {
         const marker = document.querySelector(`[data-threshold="${t}"]`) as HTMLElement;
         if (marker) {
-          const cutZ = -intercepts[t]; // z value where P(Y≥k) = 50%
+          const cutZ = -intercepts[t];
           const pct = ((cutZ - zMin) / zRange) * 100;
           marker.style.left = Math.max(0, Math.min(100, pct)) + "%";
         }
       }
 
-      // Position z indicator
       const zIndicator = document.getElementById("z-indicator");
       const zLabel = document.getElementById("z-label");
       if (zIndicator && zLabel) {
@@ -683,30 +815,76 @@ import { siteConfig } from "../config";
         zLabel.textContent = `z=${z.toFixed(1)}`;
       }
 
-      // ─── Sensitivity analysis ───
-      // Marginal effect: ∂E[Y]/∂x ≈ (E[Y|x+δ] - E[Y|x-δ]) / (2δ)
-      // Shows how much the predicted rating changes per +1 unit of each input
-      const delta = 0.5;
-      const sensHedis = (computeExpected(computeZ(hedis + delta, cahps, med, readmit)).expected -
-                         computeExpected(computeZ(hedis - delta, cahps, med, readmit)).expected) / (2 * delta);
-      const sensCahps = (computeExpected(computeZ(hedis, cahps + delta, med, readmit)).expected -
-                         computeExpected(computeZ(hedis, cahps - delta, med, readmit)).expected) / (2 * delta);
-      const sensMed =   (computeExpected(computeZ(hedis, cahps, med + delta, readmit)).expected -
-                         computeExpected(computeZ(hedis, cahps, med - delta, readmit)).expected) / (2 * delta);
-      const sensRead =  (computeExpected(computeZ(hedis, cahps, med, readmit + delta)).expected -
-                         computeExpected(computeZ(hedis, cahps, med, readmit - delta)).expected) / (2 * delta);
+      // ─── Plain-language impact guidance ───
+      // Compute the star gain from a feasible improvement in each input
+      const scenarios = [
+        {
+          gain: computeExpected(computeZ(
+            Math.min(hedis + STEP.hedis, 95), cahps, med, readmit)).expected - rawExpected,
+          label: LABELS.hedis,
+          from: `${hedis}%`,
+          to: `${Math.min(hedis + STEP.hedis, 95)}%`,
+          atMax: hedis >= 93,
+        },
+        {
+          gain: computeExpected(computeZ(
+            hedis, Math.min(cahps + STEP.cahps, 4.8), med, readmit)).expected - rawExpected,
+          label: LABELS.cahps,
+          from: cahps.toFixed(1),
+          to: Math.min(cahps + STEP.cahps, 4.8).toFixed(1),
+          atMax: cahps >= 4.6,
+        },
+        {
+          gain: computeExpected(computeZ(
+            hedis, cahps, Math.min(med + STEP.med, 92), readmit)).expected - rawExpected,
+          label: LABELS.med,
+          from: `${med}%`,
+          to: `${Math.min(med + STEP.med, 92)}%`,
+          atMax: med >= 90,
+        },
+        {
+          gain: computeExpected(computeZ(
+            hedis, cahps, med, Math.max(readmit + STEP.readmit, 8))).expected - rawExpected,
+          label: LABELS.readmit,
+          from: `${readmit}%`,
+          to: `${Math.max(readmit + STEP.readmit, 8)}%`,
+          atMax: readmit <= 9,
+        },
+      ];
 
-      const sensEl = (id: string, val: number, suffix: string) => {
-        const el = document.getElementById(id);
-        if (el) {
-          const sign = val >= 0 ? "+" : "";
-          el.textContent = `${sign}${val.toFixed(3)}${suffix}`;
+      // Sort by gain (largest positive first)
+      scenarios.sort((a, b) => b.gain - a.gain);
+
+      const guidanceEl = document.getElementById("impact-guidance");
+      if (guidanceEl) {
+        const top = scenarios[0];
+        const second = scenarios[1];
+
+        let html = "";
+
+        if (top.atMax && second.atMax) {
+          html = `<p class="text-xs demo-subtext">All inputs are near their performance ceiling. Focus on sustaining current levels to maintain the reward factor.</p>`;
+        } else if (top.gain < 0.01) {
+          html = `<p class="text-xs demo-subtext">At this performance level, further gains require moving multiple inputs simultaneously. Diminishing returns are expected in the tails of the logistic curve.</p>`;
+        } else {
+          const topGain = top.gain >= 0.1
+            ? `+${top.gain.toFixed(1)}★`
+            : `+${top.gain.toFixed(2)}★`;
+          html = `<p class="text-xs demo-subtext">`;
+          html += `<span class="demo-impact-highlight">Highest-impact lever:</span> Improving <strong>${top.label}</strong> from ${top.from} → ${top.to} would shift the predicted rating by <strong>${topGain}</strong>.`;
+
+          if (!second.atMax && second.gain >= 0.02) {
+            const secGain = second.gain >= 0.1
+              ? `+${second.gain.toFixed(1)}★`
+              : `+${second.gain.toFixed(2)}★`;
+            html += ` Next best: <strong>${second.label}</strong> (${second.from} → ${second.to}, ${secGain}).`;
+          }
+
+          html += `</p>`;
         }
-      };
-      sensEl("sens-hedis", sensHedis, "/pp");
-      sensEl("sens-cahps", sensCahps, "/pt");
-      sensEl("sens-med", sensMed, "/pp");
-      sensEl("sens-readmit", sensRead, "/pp");
+
+        guidanceEl.innerHTML = html;
+      }
     }
 
     // Bind sliders + reward toggle
