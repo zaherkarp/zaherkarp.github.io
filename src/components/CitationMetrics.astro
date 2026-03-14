@@ -1,0 +1,169 @@
+---
+import { siteConfig } from "../config";
+const hasPublications = siteConfig.publications && siteConfig.publications.length > 0;
+
+// Fetch live citation counts from Semantic Scholar at build time (parallel)
+async function fetchCitationCounts() {
+  const publications = siteConfig.publications || [];
+  const counts = new Map<string, number>();
+
+  const results = await Promise.allSettled(
+    publications
+      .filter((pub) => pub.semanticScholarId)
+      .map(async (pub) => {
+        const res = await fetch(
+          `https://api.semanticscholar.org/graph/v1/paper/${pub.semanticScholarId}?fields=citationCount`
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { title: pub.title, count: data.citationCount };
+      })
+  );
+
+  for (const result of results) {
+    if (result.status === "fulfilled" && result.value && typeof result.value.count === "number") {
+      counts.set(result.value.title, result.value.count);
+    }
+  }
+  return counts;
+}
+
+const liveCounts = hasPublications ? await fetchCitationCounts() : new Map();
+
+const publications = (siteConfig.publications || []).map((pub) => ({
+  ...pub,
+  citationCount: liveCounts.get(pub.title) ?? pub.citationCount ?? 0,
+}));
+
+const maxCitations = hasPublications
+  ? Math.max(...publications.map((p) => p.citationCount))
+  : 0;
+---
+
+{
+  hasPublications && (
+    <section id="citation-metrics" class="citation-section p-8 sm:p-12 md:p-16 lg:p-24 pt-0 sm:pt-0 md:pt-0 lg:pt-0">
+      <div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+          <div class="lg:col-span-4" />
+
+          <div class="lg:col-span-8">
+            <div class="pub-chart" id="citation-chart">
+              <h3 class="pub-chart-title text-sm font-medium uppercase tracking-wider mb-6">
+                Citation Metrics
+              </h3>
+              <div class="space-y-4">
+                {publications.map((pub) => {
+                  const pct = maxCitations > 0 ? (pub.citationCount / maxCitations) * 100 : 0;
+                  return (
+                    <div class="pub-bar-row">
+                      <div class="flex items-baseline justify-between gap-4 mb-1.5">
+                        <span class="pub-bar-label text-xs sm:text-sm font-medium truncate">
+                          {pub.title.length > 50 ? pub.title.slice(0, 50) + "…" : pub.title}
+                        </span>
+                        <span
+                          class="pub-bar-count text-sm sm:text-base font-bold font-mono shrink-0"
+                          style={`color: ${siteConfig.accentColor}`}
+                        >
+                          {pub.citationCount}
+                        </span>
+                      </div>
+                      <div class="pub-bar-track">
+                        <div
+                          class="pub-bar-fill"
+                          data-width={pct}
+                          style={`width: 0%; background-color: ${siteConfig.accentColor}`}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .citation-section {
+    background-color: #f9fafb;
+  }
+  :global([data-theme="dark"]) .citation-section {
+    background-color: #111827;
+  }
+
+  .pub-chart-title {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .pub-chart-title {
+    color: #9ca3af;
+  }
+
+  .pub-bar-label {
+    color: #374151;
+  }
+  :global([data-theme="dark"]) .pub-bar-label {
+    color: #d1d5db;
+  }
+
+  :global([data-theme="dark"]) .pub-bar-count {
+    color: #60a5fa !important;
+  }
+
+  .pub-bar-track {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  :global([data-theme="dark"]) .pub-bar-track {
+    background-color: #1f2937;
+  }
+
+  .pub-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const chart = document.getElementById("citation-chart");
+    if (!chart) return;
+
+    const bars = chart.querySelectorAll<HTMLElement>(".pub-bar-fill");
+    let animated = false;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            observer.disconnect();
+
+            bars.forEach((bar, i) => {
+              const targetWidth = bar.getAttribute("data-width") || "0";
+              if (prefersReducedMotion) {
+                bar.style.width = targetWidth + "%";
+              } else {
+                setTimeout(() => {
+                  bar.style.width = targetWidth + "%";
+                }, i * 200);
+              }
+            });
+          }
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(chart);
+  });
+</script>
