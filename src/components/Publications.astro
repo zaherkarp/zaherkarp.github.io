@@ -1,0 +1,351 @@
+---
+import { siteConfig } from "../config";
+const hasPublications = siteConfig.publications && siteConfig.publications.length > 0;
+const maxCitations = hasPublications
+  ? Math.max(...siteConfig.publications.map((p) => p.citationCount || 0))
+  : 0;
+---
+
+{
+  hasPublications && (
+    <section id="publications" class="pub-section p-8 sm:p-12 md:p-16 lg:p-24">
+      <div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+          <div class="lg:col-span-4">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold pub-heading">
+              Publications
+            </h2>
+            <div
+              class="w-[75px] h-[5px] mt-2 rounded-full"
+              style={`background-color: ${siteConfig.accentColor}`}
+            />
+          </div>
+
+          <div class="lg:col-span-8">
+            {/* Citation Metrics Bars */}
+            <div class="pub-chart mb-10 sm:mb-12" id="citation-chart">
+              <h3 class="pub-chart-title text-sm font-medium uppercase tracking-wider mb-6">
+                Citation Metrics
+              </h3>
+              <div class="space-y-4">
+                {siteConfig.publications.map((pub) => {
+                  const pct = maxCitations > 0 ? ((pub.citationCount || 0) / maxCitations) * 100 : 0;
+                  return (
+                    <div class="pub-bar-row">
+                      <div class="flex items-baseline justify-between gap-4 mb-1.5">
+                        <span class="pub-bar-label text-xs sm:text-sm font-medium truncate">
+                          {pub.title.length > 50 ? pub.title.slice(0, 50) + "…" : pub.title}
+                        </span>
+                        <span
+                          class="pub-bar-count text-sm sm:text-base font-bold font-mono shrink-0"
+                          style={`color: ${siteConfig.accentColor}`}
+                        >
+                          {pub.citationCount || 0}
+                        </span>
+                      </div>
+                      <div class="pub-bar-track">
+                        <div
+                          class="pub-bar-fill"
+                          data-width={pct}
+                          style={`width: 0%; background-color: ${siteConfig.accentColor}`}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Publication Cards */}
+            <div class="space-y-8">
+              {siteConfig.publications.map((pub) => (
+                <article class="group relative">
+                  <div class="block relative p-4 sm:p-6 md:p-8 pub-card rounded-xl sm:rounded-2xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    {pub.link && (
+                      <a
+                        href={pub.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="absolute inset-0 z-[1] rounded-xl sm:rounded-2xl"
+                        aria-label={pub.title}
+                      />
+                    )}
+
+                    {pub.link && (
+                      <div class="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center pub-arrow-btn rounded-full text-white transition-all duration-300">
+                        <svg
+                          class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 17L17 7M17 7H7M17 7V17"
+                          />
+                        </svg>
+                      </div>
+                    )}
+
+                    <div class="space-y-3">
+                      <div class="flex items-center gap-3 flex-wrap">
+                        <span
+                          class="text-sm font-mono font-bold px-2 py-0.5 rounded"
+                          style={`color: ${siteConfig.accentColor}; background-color: ${siteConfig.accentColor}15`}
+                        >
+                          {pub.year}
+                        </span>
+                        <span class="pub-journal text-xs sm:text-sm font-medium">
+                          {pub.journal}
+                        </span>
+                      </div>
+
+                      <h3 class="text-xl sm:text-2xl font-bold pub-title pr-12 sm:pr-14 md:pr-16">
+                        {pub.title}
+                      </h3>
+
+                      <p class="pub-authors text-sm">
+                        {pub.authors.split(/(Karp Z)/).map((part) =>
+                          part === "Karp Z" ? (
+                            <span class="font-bold" style={`color: ${siteConfig.accentColor}`}>
+                              {part}
+                            </span>
+                          ) : (
+                            part
+                          )
+                        )}
+                      </p>
+
+                      <p class="pub-description text-base sm:text-lg leading-relaxed pr-12 sm:pr-14 md:pr-16">
+                        {pub.description}
+                      </p>
+
+                      {pub.skills && pub.skills.length > 0 && (
+                        <div class="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
+                          {pub.skills.map((skill) => (
+                            <span class="px-2.5 sm:px-3 py-1 sm:py-1.5 pub-skill-tag rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-300">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {pub.citations && (
+                        <div class="relative z-[2] flex flex-wrap gap-2 sm:gap-3 pt-2">
+                          {pub.citations.googleScholar && (
+                            <a
+                              href={pub.citations.googleScholar.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                                <path d="M21 21l-6 -6" />
+                              </svg>
+                              {pub.citations.googleScholar.label || "Google Scholar"}
+                            </a>
+                          )}
+                          {pub.citations.researchGate && (
+                            <a
+                              href={pub.citations.researchGate.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" />
+                                <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" />
+                              </svg>
+                              {pub.citations.researchGate.label || "ResearchGate"}
+                            </a>
+                          )}
+                          {pub.citations.pubmed && (
+                            <a
+                              href={pub.citations.pubmed.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="citation-link inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium border transition-all duration-300 hover:shadow-sm"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                                <path d="M10 13l-1 2l1 2" />
+                                <path d="M14 13l1 2l-1 2" />
+                              </svg>
+                              {pub.citations.pubmed.label || "PubMed"}
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .pub-section {
+    background-color: #ffffff;
+  }
+  :global([data-theme="dark"]) .pub-section {
+    background-color: #0f172a;
+  }
+
+  .pub-heading {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .pub-heading {
+    color: #f9fafb;
+  }
+
+  .pub-chart-title {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .pub-chart-title {
+    color: #9ca3af;
+  }
+
+  .pub-bar-label {
+    color: #374151;
+  }
+  :global([data-theme="dark"]) .pub-bar-label {
+    color: #d1d5db;
+  }
+
+  :global([data-theme="dark"]) .pub-bar-count {
+    color: #60a5fa !important;
+  }
+
+  .pub-bar-track {
+    width: 100%;
+    height: 8px;
+    background-color: #f3f4f6;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  :global([data-theme="dark"]) .pub-bar-track {
+    background-color: #1f2937;
+  }
+
+  .pub-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pub-card {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+  }
+  .pub-card:hover {
+    background-color: #ffffff;
+    border-color: #d1d5db;
+  }
+  :global([data-theme="dark"]) .pub-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  :global([data-theme="dark"]) .pub-card:hover {
+    background-color: #1e293b;
+    border-color: #4b5563;
+  }
+
+  .pub-arrow-btn {
+    background-color: #111827;
+  }
+  .group:hover .pub-arrow-btn {
+    background-color: #374151;
+  }
+  :global([data-theme="dark"]) .pub-arrow-btn {
+    background-color: #374151;
+  }
+  :global([data-theme="dark"]) .group:hover .pub-arrow-btn {
+    background-color: #4b5563;
+  }
+
+  .pub-title {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .pub-title {
+    color: #f9fafb;
+  }
+
+  .pub-journal {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .pub-journal {
+    color: #9ca3af;
+  }
+
+  .pub-authors {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .pub-authors {
+    color: #9ca3af;
+  }
+
+  .pub-description {
+    color: #4b5563;
+  }
+  :global([data-theme="dark"]) .pub-description {
+    color: #9ca3af;
+  }
+
+  .pub-skill-tag {
+    background-color: #111827;
+    color: #ffffff;
+  }
+  :global([data-theme="dark"]) .pub-skill-tag {
+    background-color: #374151;
+    color: #e5e7eb;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const chart = document.getElementById("citation-chart");
+    if (!chart) return;
+
+    const bars = chart.querySelectorAll<HTMLElement>(".pub-bar-fill");
+    let animated = false;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            observer.disconnect();
+
+            bars.forEach((bar, i) => {
+              const targetWidth = bar.getAttribute("data-width") || "0";
+              if (prefersReducedMotion) {
+                bar.style.width = targetWidth + "%";
+              } else {
+                setTimeout(() => {
+                  bar.style.width = targetWidth + "%";
+                }, i * 200);
+              }
+            });
+          }
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(chart);
+  });
+</script>
