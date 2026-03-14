@@ -59,54 +59,89 @@ export const siteConfig = {
     "Stata"
   ],
   publications: [
-    {
-      title: "Clinic Environments and Interactions: Examination of a Community Health Center",
-      authors: "Karp Z, Hassett M, Rinehart D, Gilchrist V",
-      journal: "HERD: Health Environments Research & Design Journal",
-      year: 2019,
-      citationCount: 24,
-      link: "https://journals.sagepub.com/doi/abs/10.1177/1937586719834729",
-      description:
-        "Led comprehensive research study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants.",
-      skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=11399498824498589520", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/331570926_Clinic_Environments_and_Interactions_Examination_of_a_Community_Health_Center", label: "Reads" },
-        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/30894019/", label: "PubMed" },
-      },
+  {
+    title: "Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial",
+    authors: "Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z, Legler C, Grob R",
+    journal: "Academic Medicine",
+    year: 2019,
+    link: "https://pubmed.ncbi.nlm.nih.gov/31348072/",
+    description:
+      "Pilot experimental curriculum trial evaluating approaches to broadening medical students' exposure to the range of illness experiences, with a focus on depression education.",
+    skills: ["Curriculum Evaluation", "Medical Education", "Mixed Methods Research"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
+      pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/31348072/", label: "PubMed" },
     },
-    {
-      title: "Medicare Shared Savings Program: Savings and Baseline Expenditures",
-      authors: "Karp Z, Smith M",
-      journal: "Journal of Health Economics & Outcomes Research",
-      year: 2016,
-      citationCount: 15,
-      link: "https://github.com/zaherkarp/medicare-shared-savings-analysis",
-      description:
-        "Analysis examining the relationship between Medicare Shared Savings Program (MSSP) Accountable Care Organization savings and baseline expenditures. Published findings on cost patterns in value-based care.",
-      skills: ["Logistic Regression", "Healthcare Economics", "Value-Based Care", "ACO Analytics", "Stata", "SAS"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=5765814482786120498", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/303684652_Medicare_Shared_Savings_Program", label: "Reads" },
-      },
+  },
+  {
+    title: "Influence of environmental design on team interactions across 3 family medicine clinics: perceptions of communication, efficiency, and privacy",
+    authors: "Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfenter T, Pandhi N",
+    journal: "Health Environments Research & Design Journal",
+    year: 2019,
+    link: "https://pubmed.ncbi.nlm.nih.gov/30913920/",
+    description:
+      "Led comprehensive mixed-methods study on how environmental design influences team interactions in family medicine clinics. Secured $18,000 grant, conducted 120 hours of observations, facilitated 9 focus groups with 40 participants.",
+    skills: ["Mixed Methods Research", "Grant Writing", "Human Subjects Protocols", "NVivo"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
+      researchGate: { url: "https://www.researchgate.net/publication/332030639", label: "ResearchGate" },
+      pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/30913920/", label: "PubMed" },
     },
-    {
-      title: "Depression Curriculum: Broadening Medical Student Exposure to Illness Experiences",
-      authors: "Karp Z, Carnes M, Beasley J",
-      journal: "Academic Psychiatry",
-      year: 2015,
-      citationCount: 12,
-      link: "https://github.com/zaherkarp/depression-curriculum-evaluation",
-      description:
-        "Evaluation of a medical student depression curriculum. Published peer-reviewed research on broadening medical students' exposure to the range of illness experiences with a focus on depression education.",
-      skills: ["Univariate Statistical Analysis", "Medical Education", "Stata"],
-      citations: {
-        googleScholar: { url: "https://scholar.google.com/scholar?cites=15568564972028498984", label: "Citations" },
-        researchGate: { url: "https://www.researchgate.net/publication/280717178_Depression_Curriculum", label: "Reads" },
-        pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/26107169/", label: "PubMed" },
-      },
+  },
+  {
+    title: "Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings",
+    authors: "Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N",
+    journal: "International Journal of Healthcare Management",
+    year: 2018,
+    link: "https://www.tandfonline.com/doi/abs/10.1080/20479700.2018.1507062",
+    description:
+      "Analysis of cost patterns and savings achievement across Medicare Shared Savings Program ACOs, finding that higher-baseline-cost organizations were more likely to achieve shared savings.",
+    skills: ["Healthcare Economics", "ACO Analytics", "Value-Based Care", "Stata", "SAS"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
     },
-  ],
+  },
+  {
+    title: "An efficient process of gathering diverse community opinions to inform an intervention",
+    authors: "Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z",
+    journal: "Implementation Science (Proceedings of the 3rd Biennial Conference of the Society for Implementation Research Collaboration)",
+    year: 2016,
+    link: "https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6",
+    description:
+      "Methodological contribution on gathering diverse community opinions to inform health system interventions, presented at a national implementation science conference.",
+    skills: ["Community Engagement", "Implementation Science", "Qualitative Research"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
+    },
+  },
+  {
+    title: "Approaches and challenges to optimizing primary care teams' electronic health record usage",
+    authors: "Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P",
+    journal: "Journal of Innovation in Health Informatics",
+    year: 2014,
+    link: "https://pubmed.ncbi.nlm.nih.gov/25584902/",
+    description:
+      "Qualitative study examining how primary care teams use and optimize EHR systems, identifying key barriers and facilitators to effective adoption.",
+    skills: ["EHR Optimization", "Qualitative Research", "Grounded Theory", "Primary Care"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
+      pubmed: { url: "https://pubmed.ncbi.nlm.nih.gov/25584902/", label: "PubMed" },
+    },
+  },
+  {
+    title: "Approaches and challenges to optimizing the use of electronic health records in primary care (preliminary findings)",
+    authors: "Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P",
+    journal: "Proceedings of World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education",
+    year: 2012,
+    link: "https://www.learntechlib.org/p/41869/",
+    description:
+      "Conference proceedings presenting preliminary findings on EHR optimization challenges in primary care settings.",
+    skills: ["EHR Optimization", "Health Informatics", "Primary Care"],
+    citations: {
+      googleScholar: { url: "https://scholar.google.com/citations?user=exrRbXMAAAAJ", label: "Google Scholar" },
+    },
+  },
+],
   projects: [
     {
       name: "Client-Side Stars Analytics Dashboard (Single-File HTML)",
