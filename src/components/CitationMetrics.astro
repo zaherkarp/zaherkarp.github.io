@@ -33,7 +33,7 @@ const liveCounts = hasPublications ? await fetchCitationCounts() : new Map();
 const publications = (siteConfig.publications || []).map((pub) => ({
   ...pub,
   citationCount: liveCounts.get(pub.title) ?? pub.citationCount ?? 0,
-}));
+})).sort((a, b) => b.citationCount - a.citationCount);
 
 const maxCitations = hasPublications
   ? Math.max(...publications.map((p) => p.citationCount))

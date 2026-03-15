@@ -3,17 +3,14 @@ import { siteConfig } from "../config";
 
 const username = "zaherkarp";
 
-// Fetch GitHub user data and repos at build time
+// Fetch GitHub user data, repos, and contribution calendar at build time
 async function fetchGitHubData() {
   try {
-    const [userRes, reposRes, eventsRes] = await Promise.allSettled([
+    const [userRes, reposRes] = await Promise.allSettled([
       fetch(`https://api.github.com/users/${username}`, {
         headers: { Accept: "application/vnd.github.v3+json" },
       }),
       fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`, {
-        headers: { Accept: "application/vnd.github.v3+json" },
-      }),
-      fetch(`https://api.github.com/users/${username}/events/public?per_page=100`, {
         headers: { Accept: "application/vnd.github.v3+json" },
       }),
     ]);
@@ -28,18 +25,56 @@ async function fetchGitHubData() {
         ? await reposRes.value.json()
         : [];
 
-    const events =
-      eventsRes.status === "fulfilled" && eventsRes.value.ok
-        ? await eventsRes.value.json()
-        : [];
+    // Fetch contribution calendar via GitHub's public profile page scraping alternative:
+    // Use the undocumented but stable contributions JSON endpoint
+    let contributionDays: { date: string; count: number }[] = [];
+    try {
+      // GitHub provides contribution data via the public contributions page
+      const contribRes = await fetch(
+        `https://github.com/users/${username}/contributions`,
+        { headers: { Accept: "text/html" } }
+      );
+      if (contribRes.ok) {
+        const html = await contribRes.text();
+        // Parse the contribution calendar HTML for data-date and data-level attributes
+        const dayRegex = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*data-level="(\d)"/g;
+        // Also try the newer format with data-count
+        const dayRegexAlt = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*data-count="(\d+)"/g;
+        let match;
+        const seen = new Set<string>();
 
-    return { user, repos, events };
+        // Try data-count format first (more accurate)
+        while ((match = dayRegexAlt.exec(html)) !== null) {
+          if (!seen.has(match[1])) {
+            seen.add(match[1]);
+            contributionDays.push({ date: match[1], count: parseInt(match[2], 10) });
+          }
+        }
+
+        // Fallback to data-level format if no data-count found
+        if (contributionDays.length === 0) {
+          while ((match = dayRegex.exec(html)) !== null) {
+            if (!seen.has(match[1])) {
+              seen.add(match[1]);
+              // Convert level (0-4) to approximate counts
+              const level = parseInt(match[2], 10);
+              const approxCount = [0, 1, 3, 6, 10][level] || 0;
+              contributionDays.push({ date: match[1], count: approxCount });
+            }
+          }
+        }
+      }
+    } catch {
+      // Contribution fetching is best-effort
+    }
+
+    return { user, repos, contributionDays };
   } catch {
-    return { user: null, repos: [], events: [] };
+    return { user: null, repos: [], contributionDays: [] };
   }
 }
 
-const { user, repos, events } = await fetchGitHubData();
+const { user, repos, contributionDays } = await fetchGitHubData();
 
 // Calculate language breakdown from repos
 const languageCounts: Record<string, number> = {};
@@ -71,18 +106,17 @@ const languageColors: Record<string, string> = {
   Rust: "#dea584",
 };
 
-// Build contribution heatmap from events (last 52 weeks)
+// Build contribution heatmap from contribution calendar data (last 52 weeks)
 const now = new Date();
 const weeksBack = 52;
 const dayMs = 86400000;
 const startDate = new Date(now.getTime() - weeksBack * 7 * dayMs);
 startDate.setDate(startDate.getDate() - startDate.getDay()); // align to Sunday
 
-// Count events per day
+// Index contribution days by date
 const dayCounts: Record<string, number> = {};
-for (const event of events) {
-  const d = event.created_at?.slice(0, 10);
-  if (d) dayCounts[d] = (dayCounts[d] || 0) + 1;
+for (const day of contributionDays) {
+  dayCounts[day.date] = day.count;
 }
 
 // Build grid: 52 weeks x 7 days
