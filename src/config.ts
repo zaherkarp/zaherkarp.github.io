@@ -34,7 +34,7 @@ export const siteConfig = {
     blog: "/blog",
   },
   aboutMe:
-    "I build healthcare data systems that connect quality measurement, revenue, and operations. My work spans Medicare Star Ratings, HEDIS measure pipelines, ACO/MSSP analytics, and clinical data integration across Epic, claims, and eligibility sources. I focus on scalable data engineering -- dbt models, SQL pipelines, cloud infrastructure -- designed to integrate into real clinical and payer workflows. I'm always open to conversations about analytics that ship as products, not reports.",
+    "I started in writing and editing, spent eight years in mixed-methods health services research at UW-Madison, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The thread across all of it is an interest in complex systems, not numbers for their own sake. The numbers and tools are just the best available instrument for whatever system I'm studying. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources. I build with Python and SQL and I care most about analytics that ship as products, not reports.",
   skills: [
     "HEDIS / Quality Measurement",
     "Medicare Star Ratings",
