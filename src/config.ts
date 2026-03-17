@@ -214,9 +214,12 @@ export const siteConfig = {
     {
       company: "Sustainable Clarity",
       title: "Principal",
-      dateRange: "Sep 2025",
+      dateRange: "2007 - 2014, Sep 2025",
       bullets: [
-        "Providing data engineering consulting",
+        "Managed up to 8 mentored copy editors, graphic designers, and photographers at a time to create print-ready books and dossiers",
+        "Wrote articles syndicated by national newswires (Thomson Reuters, LexisNexis, New York Times)",
+        "Edited and indexed client manuscripts published as books, peer-reviewed journals, articles, dissertations, grants, and newsletters",
+        "Currently providing data engineering consulting",
       ],
     },
     {
