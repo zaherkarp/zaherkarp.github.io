@@ -213,13 +213,10 @@ export const siteConfig = {
     },
     {
       company: "Sustainable Clarity",
-      title: "Principal",
-      dateRange: "2007 - 2014, Sep 2025",
+      title: "Data Engineering Consultant",
+      dateRange: "Sep 2025 - Oct 2025",
       bullets: [
-        "Managed up to 8 mentored copy editors, graphic designers, and photographers at a time to create print-ready books and dossiers",
-        "Wrote articles syndicated by national newswires (Thomson Reuters, LexisNexis, New York Times)",
-        "Edited and indexed client manuscripts published as books, peer-reviewed journals, articles, dissertations, grants, and newsletters",
-        "Currently providing data engineering consulting",
+        "Data engineering consulting between roles",
       ],
     },
     {
@@ -262,6 +259,16 @@ export const siteConfig = {
         "Studied cancer prevention in those with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index",
         "Evaluated behavioral health care management program fidelity and reported recommendations",
         "Presented research findings at national conferences",
+      ],
+    },
+    {
+      company: "Sustainable Clarity",
+      title: "Principal",
+      dateRange: "2007 - 2014",
+      bullets: [
+        "Managed up to 8 mentored copy editors, graphic designers, and photographers at a time to create print-ready books and dossiers",
+        "Wrote articles syndicated by national newswires (Thomson Reuters, LexisNexis, New York Times)",
+        "Edited and indexed client manuscripts published as books, peer-reviewed journals, articles, dissertations, grants, and newsletters",
       ],
     },
   ],
