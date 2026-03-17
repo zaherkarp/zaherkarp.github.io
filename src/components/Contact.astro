@@ -1,0 +1,187 @@
+---
+import { siteConfig } from "../config";
+---
+
+<section id="contact" class="contact-section p-8 sm:p-12 md:p-16 lg:p-24">
+  <div class="max-w-4xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+      <div class="lg:col-span-4">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold contact-heading">
+          Contact
+        </h2>
+        <div
+          class="w-[75px] h-[5px] mt-2 rounded-full"
+          style={`background-color: ${siteConfig.accentColor}`}
+        />
+      </div>
+
+      <div class="lg:col-span-8 space-y-6">
+        <p class="contact-text text-base sm:text-lg">
+          Interested in connecting? Reach out through any of the channels below.
+        </p>
+
+        <div class="space-y-4">
+          {siteConfig.social?.email && (
+            <a
+              href="#"
+              data-email={btoa(siteConfig.social.email)}
+              class="contact-email-link contact-link-card flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg" style={`background-color: ${siteConfig.accentColor}15`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={siteConfig.accentColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" />
+                  <path d="M3 7l9 6l9 -6" />
+                </svg>
+              </div>
+              <div>
+                <div class="contact-link-label text-sm font-medium">Email</div>
+                <div class="contact-link-value text-sm" style={`color: ${siteConfig.accentColor}`}>
+                  {siteConfig.social.email}
+                </div>
+              </div>
+            </a>
+          )}
+
+          {siteConfig.social?.linkedin && (
+            <a
+              href={siteConfig.social.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="contact-link-card flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg" style={`background-color: ${siteConfig.accentColor}15`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={siteConfig.accentColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M8 11v5" />
+                  <path d="M8 8v.01" />
+                  <path d="M12 16v-5" />
+                  <path d="M16 16v-3a2 2 0 1 0 -4 0" />
+                  <path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" />
+                </svg>
+              </div>
+              <div>
+                <div class="contact-link-label text-sm font-medium">LinkedIn</div>
+                <div class="contact-link-value text-sm" style={`color: ${siteConfig.accentColor}`}>
+                  linkedin.com/in/zkarp
+                </div>
+              </div>
+            </a>
+          )}
+
+          {siteConfig.social?.github && (
+            <a
+              href={siteConfig.social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="contact-link-card flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg" style={`background-color: ${siteConfig.accentColor}15`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={siteConfig.accentColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+                </svg>
+              </div>
+              <div>
+                <div class="contact-link-label text-sm font-medium">GitHub</div>
+                <div class="contact-link-value text-sm" style={`color: ${siteConfig.accentColor}`}>
+                  github.com/zaherkarp
+                </div>
+              </div>
+            </a>
+          )}
+
+          {siteConfig.social?.researchgate && (
+            <a
+              href={siteConfig.social.researchgate}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="contact-link-card flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg" style={`background-color: ${siteConfig.accentColor}15`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={siteConfig.accentColor} stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" />
+                  <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" />
+                </svg>
+              </div>
+              <div>
+                <div class="contact-link-label text-sm font-medium">ResearchGate</div>
+                <div class="contact-link-value text-sm" style={`color: ${siteConfig.accentColor}`}>
+                  researchgate.net/profile/Zaher-Karp
+                </div>
+              </div>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailLinks = document.querySelectorAll('.contact-email-link');
+    emailLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const encodedEmail = link.getAttribute('data-email');
+        if (encodedEmail) {
+          const email = atob(encodedEmail);
+          window.location.href = `mailto:${email}`;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .contact-section {
+    background-color: #ffffff;
+  }
+  :global([data-theme="dark"]) .contact-section {
+    background-color: #0f172a;
+  }
+
+  .contact-heading {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .contact-heading {
+    color: #f9fafb;
+  }
+
+  .contact-text {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .contact-text {
+    color: #9ca3af;
+  }
+
+  .contact-link-card {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    text-decoration: none;
+  }
+  .contact-link-card:hover {
+    border-color: #d1d5db;
+  }
+  :global([data-theme="dark"]) .contact-link-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  :global([data-theme="dark"]) .contact-link-card:hover {
+    background-color: #1e293b;
+    border-color: #4b5563;
+  }
+
+  .contact-link-label {
+    color: #111827;
+  }
+  :global([data-theme="dark"]) .contact-link-label {
+    color: #f9fafb;
+  }
+
+  .contact-link-value {
+    opacity: 0.9;
+  }
+</style>
