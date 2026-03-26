@@ -254,6 +254,11 @@ const publicRepoCount = user?.public_repos || repos.filter((r: any) => !r.fork).
           </div>
         )}
 
+        {/* Private repos note */}
+        <p class="gh-note text-sm italic">
+          Most production work lives in private repos. Public repos reflect personal projects, research tools, and open learning work.
+        </p>
+
         {/* Top repos */}
         {topRepos.length > 0 && (
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -445,6 +450,13 @@ const publicRepoCount = user?.public_repos || repos.filter((r: any) => !r.fork).
     color: #6b7280;
   }
   :global([data-theme="dark"]) .gh-repo-meta {
+    color: #9ca3af;
+  }
+
+  .gh-note {
+    color: #6b7280;
+  }
+  :global([data-theme="dark"]) .gh-note {
     color: #9ca3af;
   }
 </style>
