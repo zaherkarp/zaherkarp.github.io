@@ -34,29 +34,28 @@ export const siteConfig = {
     blog: "/blog",
   },
   aboutMe:
-    "I started in writing and editing, spent eight years in mixed-methods health services research at UW-Madison, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The thread across all of it is an interest in complex systems, not numbers for their own sake. The numbers and tools are just the best available instrument for whatever system I'm studying. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources. I build with Python and SQL and I care most about analytics that ship as products, not reports.",
-  skills: [
-    "HEDIS / Quality Measurement",
-    "Medicare Star Ratings",
-    "Clinical Data Integration (EHR/Claims)",
-    "HIPAA / Healthcare Data Governance",
-    "Value-Based Care (ACO/MSSP)",
-    "AWS (S3, Glue)",
-    "Azure Data Factory",
-    "Databricks",
-    "SQL (Postgres, Redshift, SQL Server, MariaDB)",
-    "Python (pandas, PySpark)",
-    "dbt",
-    "Bash",
-    "Tableau",
-    "Power BI",
-    "Sisense",
-    "Epic Clarity Analytics",
-    "Veradigm Analytics",
-    "Cerner Analytics",
-    "athenahealth Analytics",
-    "SAS",
-    "Stata"
+    "I started in writing and editing, spent eight years in mixed-methods health services research at UW-Madison, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The thread across all of it is an interest in complex systems, not numbers for their own sake. The numbers and tools are just the best available instrument for whatever system I'm studying. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources. I build with Python and SQL and I care most about analytics that ship as products, not reports. I continue to engage with research questions at the edges of the field \u2014 my writing focuses on methodology problems in healthcare data that don't have clean answers yet.",
+  skillCategories: [
+    {
+      label: "Clinical Quality & Regulatory",
+      skills: ["HEDIS / Quality Measurement", "Value-Based Care (ACO/MSSP)", "Medicare Star Ratings", "HIPAA / Healthcare Data Governance"],
+    },
+    {
+      label: "Data Engineering",
+      skills: ["SQL (Postgres, Redshift, SQL Server, MariaDB)", "Python (pandas, PySpark)", "dbt", "Bash", "AWS (S3, Glue)", "Azure Data Factory", "Databricks"],
+    },
+    {
+      label: "Clinical Systems",
+      skills: ["Epic Clarity Analytics", "Cerner Analytics", "athenahealth Analytics", "Veradigm Analytics", "Clinical Data Integration (EHR/Claims)"],
+    },
+    {
+      label: "Analytics & BI",
+      skills: ["Tableau", "Power BI", "Sisense"],
+    },
+    {
+      label: "Statistics & Research Methods",
+      skills: ["SAS", "Stata"],
+    },
   ],
   publications: [
   {
@@ -154,17 +153,17 @@ export const siteConfig = {
 ],
   projects: [
     {
+      name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
+      description:
+        "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
+      link: "https://zaherkarp.com/skillsprout/",
+      skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
+    },
+    {
       name: "Client-Side Stars Analytics Dashboard (Single-File HTML)",
       description:
         "Standalone, in-browser dashboard implemented as a single HTML file using Chart.js 4.4.1, PapaParse 5.4.1, jsPDF 2.5.1, and chartjs-plugin-datalabels to visualize local CSV data and generate PDF reports with no server dependency and no data leaving the user's machine.",
       skills: ["Chart.js", "PapaParse", "jsPDF", "JavaScript", "HTML", "Client-Side Analytics"],
-    },
-    {
-    name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
-    description:
-        "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
-        link: "https://github.com/zaherkarp/skillsprout",
-        skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
     },
     {
       name: "Lessons Learned from healthfinch's Charlie Practice Automation: A Case Study",
@@ -224,11 +223,10 @@ export const siteConfig = {
       title: "Healthcare Analytics Manager, Embedded Refills and Care Gaps",
       dateRange: "Aug 2020 - Aug 2025",
       bullets: [
-        "Built SQL views and dashboards and led analytics incident response",
-        "Reduced storage costs by half by optimizing legacy storage (Amazon Web Services S3)",
-        "Designed and implemented systems and workflows to support self-service of labels for aggregation and comparison",
-        "Redesigned legacy analytics, reducing code by 75% for major customer segments using common procedures and shared stored parameters",
-        "Designed and implemented systems and workflows for analytic security and identity, allowing for enhanced protection, SSO integration, and insight into user activity and flow",
+        "Redesigned AWS S3 cloud storage architecture, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
+        "Built self-service aggregation systems that reduced reporting turnaround from monthly to on-demand daily, enabling faster decision cycles for clinical and operational teams",
+        "Developed unified financial tracking dashboards monitoring $MM+ in revenue and contract performance for executive stakeholders",
+        "Improved production data quality by validating against RxNorm and clinical quality standards across the analytics platform",
       ],
     },
     {
@@ -236,7 +234,10 @@ export const siteConfig = {
       title: "Healthcare Analytics Manager",
       dateRange: "Jan 2019 - Jul 2020",
       bullets: [
-        "Developed 0-1 analytics systems across storage, warehouses, SQL dashboards, and analytic security/governance systems",
+        "As the company's first analytics hire, built HIPAA- and HITRUST-compliant reporting infrastructure from scratch, establishing the data foundation the product ran on",
+        "Designed reusable SQL scripts deployed across 50+ health systems, standardizing performance benchmarks used in sales and marketing",
+        "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
+        "Led ROI modeling and sales support that contributed to $1MM+ in recurring revenue by translating clinical workflow data into customer-facing value demonstrations",
       ],
     },
     {
@@ -244,9 +245,10 @@ export const siteConfig = {
       title: "Healthcare Analytics Specialist",
       dateRange: "Dec 2017 - Dec 2018",
       bullets: [
-        "Designed analytics for customers to optimize their protocol use and clinical workflows as a data analyst/engineer",
-        "Performed Epic Clarity, athenahealth, Cerner, and Veradigm data wrangling in varieties of SQL for healthfinch's Practice Automation Platform",
-        "Helped healthcare systems achieve 4-6x return on investment through data-driven workflow optimization",
+        "As the company's first analytics hire, built HIPAA- and HITRUST-compliant reporting infrastructure from scratch, establishing the data foundation the product ran on",
+        "Designed reusable SQL scripts deployed across 50+ health systems, standardizing performance benchmarks used in sales and marketing",
+        "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
+        "Led ROI modeling and sales support that contributed to $1MM+ in recurring revenue by translating clinical workflow data into customer-facing value demonstrations",
       ],
     },
     {
@@ -254,11 +256,9 @@ export const siteConfig = {
       title: "Assistant Researcher",
       dateRange: "Dec 2015 - Jun 2018",
       bullets: [
-        "Measured results of organization-wide change initiatives with segmentation and regression after modeling data using Stata and SAS",
-        "Determined care delivery changes in clinic panel data using interrupted time series",
-        "Studied cancer prevention in those with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index",
-        "Evaluated behavioral health care management program fidelity and reported recommendations",
-        "Presented research findings at national conferences",
+        "Served as lead statistician on ACO cost research, guiding methodology, analysis, and board compliance for a multi-site published study",
+        "Integrated EMR, claims, and satisfaction survey sources to identify high-cost populations and evaluate quality of care using regression and interrupted time series",
+        "Assessed implementation fidelity for a care coordination pilot and delivered formal recommendations to program leadership",
       ],
     },
     {

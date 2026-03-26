@@ -142,8 +142,8 @@ import { siteConfig } from "../config";
       </h1>
       <p
         class="mt-4 sm:mt-6 md:mt-8 text-pretty text-base sm:text-lg md:text-xl/8 font-medium hero-subtitle animate-fade-in animation-delay-400"
+        set:html="Healthcare Data Engineering &mdash; I make clinical quality methodology production-ready"
       >
-        {siteConfig.title}
       </p>
     </div>
   </div>
@@ -154,7 +154,7 @@ import { siteConfig } from "../config";
       siteConfig.social?.email && (
         <a
           href="#"
-          data-email={btoa(siteConfig.social.email)}
+          id="hero-email-link"
           aria-label="Email"
           class="email-link transition-colors duration-300 hover:text-[var(--accent-color)]"
         >
@@ -364,17 +364,15 @@ import { siteConfig } from "../config";
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const emailLinks = document.querySelectorAll('.email-link');
-    emailLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
+    const user = 'email';
+    const domain = 'zaherkarp.com';
+    const heroEmailLink = document.getElementById('hero-email-link');
+    if (heroEmailLink) {
+      heroEmailLink.addEventListener('click', (e) => {
         e.preventDefault();
-        const encodedEmail = link.getAttribute('data-email');
-        if (encodedEmail) {
-          const email = atob(encodedEmail);
-          window.location.href = `mailto:${email}`;
-        }
+        window.location.href = 'mailto:' + user + '@' + domain;
       });
-    });
+    }
   });
 </script>
 

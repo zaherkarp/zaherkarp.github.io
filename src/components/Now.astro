@@ -1,0 +1,27 @@
+---
+import { siteConfig } from "../config";
+---
+
+<section id="now" class="p-8 sm:p-12 md:p-16 lg:p-24">
+  <div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+      <div class="lg:col-span-4">
+        <h2
+          class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold text-gray-900"
+        >
+          Now
+        </h2>
+        <div
+          class="w-[75px] h-[5px] mt-2 rounded-full"
+          style={`background-color: ${siteConfig.accentColor}`}
+        >
+        </div>
+      </div>
+
+      <div class="lg:col-span-8">
+        <p class="text-lg sm:text-xl md:text-2xl leading-relaxed text-gray-600" set:html="Right now I&rsquo;m at Baltimore Health Analytics building Stars Console, a production Medicare Advantage analytics platform, where I lead the data engineering and methodology behind the quality measurement calculator. I&rsquo;m focused on the places where CMS Technical Notes and production reality diverge &mdash; which turns out to be most of them.">
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

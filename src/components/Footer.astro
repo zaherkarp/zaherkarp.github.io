@@ -24,9 +24,9 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
             siteConfig.social?.email && (
               <a
                 href="#"
-                data-email={btoa(siteConfig.social.email)}
+                id="footer-email-link"
                 aria-label="Email"
-                class="email-link text-gray-600 transition-colors duration-300 hover:text-[var(--accent-color)]"
+                class="footer-email-link text-gray-600 transition-colors duration-300 hover:text-[var(--accent-color)]"
                 style={`--accent-color: ${siteConfig.accentColor}`}
               >
                 <svg
@@ -321,16 +321,14 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const emailLinks = document.querySelectorAll('.email-link');
-    emailLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
+    const user = 'email';
+    const domain = 'zaherkarp.com';
+    const footerEmailLink = document.getElementById('footer-email-link');
+    if (footerEmailLink) {
+      footerEmailLink.addEventListener('click', (e) => {
         e.preventDefault();
-        const encodedEmail = link.getAttribute('data-email');
-        if (encodedEmail) {
-          const email = atob(encodedEmail);
-          window.location.href = `mailto:${email}`;
-        }
+        window.location.href = 'mailto:' + user + '@' + domain;
       });
-    });
+    }
   });
 </script>
