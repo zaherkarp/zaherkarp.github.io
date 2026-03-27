@@ -18,8 +18,7 @@ function MatchCard({ match, index }: { match: TransitionMatch; index: number }) 
     long_term_reskill: { bg: "#7c3aed", label: "Long-Term Reskill" },
   };
   const cat = categoryColors[match.category];
-  const paySign = match.payDelta >= 0 ? "+" : "";
-  const payFormatted = `${paySign}$${Math.abs(match.payDelta).toLocaleString()}`;
+  const zoneDeltaLabel = match.zoneDelta > 0 ? `+${match.zoneDelta}` : match.zoneDelta === 0 ? "same" : `${match.zoneDelta}`;
 
   return (
     <div
@@ -37,12 +36,8 @@ function MatchCard({ match, index }: { match: TransitionMatch; index: number }) 
           <span className="match-score" title="Skill overlap score">
             {(match.overlapScore * 100).toFixed(0)}% match
           </span>
-          <span
-            className="match-pay"
-            style={{ color: match.payDelta >= 0 ? "#059669" : "#dc2626" }}
-            title="Pay difference from current role"
-          >
-            {payFormatted}/yr
+          <span className="match-zone" title="Job Zone delta">
+            Zone {zoneDeltaLabel}
           </span>
           <span className="match-expand">{expanded ? "▲" : "▼"}</span>
         </div>
@@ -53,8 +48,7 @@ function MatchCard({ match, index }: { match: TransitionMatch; index: number }) 
           <div className="match-meta-row">
             <span>O*NET: {match.occupation.code}</span>
             <span>Zone {match.occupation.zone}</span>
-            <span>Growth: {match.occupation.growth}</span>
-            <span>${match.occupation.medianPay.toLocaleString()}/yr</span>
+            <span>{match.occupation.category}</span>
           </div>
 
           <div className="match-section">
@@ -534,9 +528,9 @@ export default function SkillSproutDemo() {
       {/* Attribution */}
       <div className="ss-attribution">
         <p>
-          Occupation data from{" "}
-          <a href="https://www.onetonline.org/" target="_blank" rel="noopener noreferrer">O*NET OnLine</a>.
-          Transition framework informed by{" "}
+          Full O*NET 28.3 database ({allOccupations.length.toLocaleString()} occupations, 65 skill/knowledge dimensions) from{" "}
+          <a href="https://www.onetcenter.org/database.html" target="_blank" rel="noopener noreferrer">O*NET Resource Center</a>{" "}
+          (CC BY 4.0). Transition framework informed by{" "}
           <a href="https://www.anthropic.com/research/the-macroeconomic-impact-of-artificial-intelligence" target="_blank" rel="noopener noreferrer">
             Anthropic's AI economic impact research
           </a>{" "}

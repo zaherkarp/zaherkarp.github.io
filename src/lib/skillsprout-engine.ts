@@ -2,17 +2,18 @@
  * SkillSprout Career Trajectory Engine
  *
  * Client-side matching engine that computes career transition recommendations
- * using O*NET occupation and skill data. Exposes a request/response API that
- * supports iterative refinement (filter by category, adjust weights, exclude
- * occupations already seen, request more results).
+ * using the full O*NET 28.3 database (1,016 occupations, 65 skill/knowledge
+ * dimensions). Exposes a request/response API supporting iterative refinement.
  *
  * Transition categories (per Anthropic's AI economic-impact framework):
- *   - Ready Now:       ≥70% skill overlap, same or lower Job Zone
- *   - Trainable:       40-69% skill overlap, Zone delta ≤ 1
- *   - Long-Term Reskill: 15-39% skill overlap OR Zone delta ≥ 2
+ *   - Ready Now:        ≥55% weighted skill overlap, same or lower Job Zone
+ *   - Trainable:        30-54% overlap, Zone delta ≤ 1
+ *   - Long-Term Reskill: 10-29% overlap OR Zone delta ≥ 2
  *
- * The engine uses Jaccard-like overlap weighted by skill rarity (IDF) so that
- * common skills like "communication" don't dominate the score.
+ * Matching uses IDF-weighted Jaccard overlap so that ubiquitous skills
+ * (e.g., "Speaking", "Active Listening") don't dominate the score while
+ * specialized skills (e.g., "Medicine and Dentistry", "Physics") carry
+ * more weight.
  */
 
 import { occupations, type OnetOccupation } from "../data/onet-occupations";
@@ -59,7 +60,6 @@ export interface TransitionMatch {
   trainingPaths: TrainingPath[];
   category: "ready_now" | "trainable" | "long_term_reskill";
   zoneDelta: number;
-  payDelta: number;
 }
 
 export interface TrajectoryResponse {
@@ -71,11 +71,16 @@ export interface TrajectoryResponse {
   longTermReskill: TransitionMatch[];
   totalMatches: number;
   turn: number;
-  suggestions: string[];         // Hints for the next iterative request
+  suggestions: string[];
   error?: string;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────
+
+/** Extract skill names from an occupation as a lowercase Set. */
+function skillNamesOf(occ: OnetOccupation): Set<string> {
+  return new Set(occ.skills.map(s => s.name.toLowerCase()));
+}
 
 /** Compute inverse document frequency for each skill across the corpus. */
 function computeIdf(): Map<string, number> {
@@ -84,7 +89,7 @@ function computeIdf(): Map<string, number> {
   for (const occ of occupations) {
     const seen = new Set<string>();
     for (const s of occ.skills) {
-      const key = s.toLowerCase();
+      const key = s.name.toLowerCase();
       if (!seen.has(key)) {
         skillDocFreq.set(key, (skillDocFreq.get(key) || 0) + 1);
         seen.add(key);
@@ -102,21 +107,24 @@ const IDF = computeIdf();
 
 function idfWeight(skill: string, rarityMultiplier: number): number {
   const base = IDF.get(skill.toLowerCase()) ?? Math.log(occupations.length);
-  // Scale so common skills ~1, rare skills up to ~rarityMultiplier
-  return 1 + (base - 1) * (rarityMultiplier - 1) / (Math.log(occupations.length) - 1 || 1);
+  const maxIdf = Math.log(occupations.length);
+  return 1 + (base - 1) * (rarityMultiplier - 1) / (maxIdf - 1 || 1);
 }
 
 function resolveOccupation(query: string): OnetOccupation | null {
   const q = query.toLowerCase().trim();
+  if (!q) return null;
   // Exact code match
-  const byCode = occupations.find((o) => o.code === q);
+  const byCode = occupations.find((o) => o.code.toLowerCase() === q);
   if (byCode) return byCode;
   // Exact title match
   const byTitle = occupations.find((o) => o.title.toLowerCase() === q);
   if (byTitle) return byTitle;
-  // Partial title match
-  const partial = occupations.find((o) => o.title.toLowerCase().includes(q));
-  if (partial) return partial;
+  // Partial title match (prefer shorter titles = more specific)
+  const partials = occupations
+    .filter((o) => o.title.toLowerCase().includes(q))
+    .sort((a, b) => a.title.length - b.title.length);
+  if (partials.length > 0) return partials[0];
   // Partial code match
   const partialCode = occupations.find((o) => o.code.includes(q));
   return partialCode ?? null;
@@ -130,8 +138,7 @@ function classifyImportance(idfScore: number): "critical" | "important" | "nice-
 
 function estimateTrainingMonths(skill: string, zoneDelta: number): number {
   const base = IDF.get(skill.toLowerCase()) ?? 2;
-  // Higher IDF = more specialized = longer training
-  const months = Math.max(1, Math.round(base * 2 + zoneDelta * 3));
+  const months = Math.max(1, Math.round(base * 1.5 + Math.max(0, zoneDelta) * 3));
   return Math.min(months, 36);
 }
 
@@ -139,51 +146,71 @@ function suggestResources(skill: string): string[] {
   const s = skill.toLowerCase();
   const resources: string[] = [];
 
-  // Programming / tech skills
-  const techSkills = ["python", "r", "sql", "java", "javascript", "typescript", "c++", "c#",
-    "go", "rust", "react", "node.js", "ruby", "swift", "kotlin", "html/css"];
-  if (techSkills.some(t => s.includes(t))) {
-    resources.push("freeCodeCamp", "Codecademy", "MIT OpenCourseWare");
-  }
+  // Map O*NET canonical skill/knowledge names to learning resources
+  const resourceMap: [string[], string[]][] = [
+    [
+      ["computers and electronics", "programming", "telecommunications"],
+      ["freeCodeCamp", "Codecademy", "MIT OpenCourseWare"],
+    ],
+    [
+      ["mathematics", "physics", "chemistry"],
+      ["Khan Academy", "MIT OpenCourseWare", "Coursera"],
+    ],
+    [
+      ["engineering and technology", "design", "mechanical"],
+      ["Coursera Engineering", "edX", "LinkedIn Learning"],
+    ],
+    [
+      ["medicine and dentistry", "therapy and counseling", "biology"],
+      ["Coursera Health", "CDC TRAIN", "Khan Academy Biology"],
+    ],
+    [
+      ["administration and management", "personnel and human resources"],
+      ["Google Project Management Certificate", "LinkedIn Learning", "edX MicroMasters"],
+    ],
+    [
+      ["economics and accounting", "management of financial resources"],
+      ["Khan Academy Finance", "Coursera Finance", "edX"],
+    ],
+    [
+      ["law and government", "public safety and security"],
+      ["Coursera Law", "edX Legal Studies", "LinkedIn Learning"],
+    ],
+    [
+      ["education and training", "sociology and anthropology", "psychology"],
+      ["Coursera Education", "edX Social Science", "Khan Academy"],
+    ],
+    [
+      ["building and construction", "production and processing"],
+      ["Trade school / apprenticeship", "Union training programs", "OSHA certification"],
+    ],
+    [
+      ["fine arts", "communications and media"],
+      ["Skillshare", "MasterClass", "LinkedIn Learning"],
+    ],
+    [
+      ["customer and personal service", "sales and marketing"],
+      ["HubSpot Academy", "Google Digital Marketing", "LinkedIn Learning"],
+    ],
+    [
+      ["food production", "transportation"],
+      ["Industry certification programs", "Community college courses", "Online training"],
+    ],
+    [
+      ["systems analysis", "systems evaluation", "operations analysis", "technology design"],
+      ["Coursera Systems Engineering", "MIT OpenCourseWare", "edX"],
+    ],
+    [
+      ["complex problem solving", "critical thinking", "judgment and decision making"],
+      ["Coursera Critical Thinking", "edX", "LinkedIn Learning"],
+    ],
+  ];
 
-  // Data / ML
-  if (["machine learning", "deep learning", "data science", "statistics", "data analysis",
-       "natural language processing", "computer vision", "generative ai", "data engineering",
-       "data visualization", "data warehousing"].some(t => s.includes(t) || t.includes(s))) {
-    resources.push("Coursera (Andrew Ng ML)", "fast.ai", "Khan Academy Statistics");
-  }
-
-  // Cloud / DevOps
-  if (["cloud", "aws", "azure", "gcp", "docker", "kubernetes", "devops", "ci/cd"].some(t => s.includes(t))) {
-    resources.push("AWS Skill Builder", "A Cloud Guru", "Linux Foundation Training");
-  }
-
-  // Healthcare
-  if (["nursing", "patient care", "ehr", "hipaa", "medical", "clinical", "pharmacy",
-       "epidemiology", "public health", "biostatistics"].some(t => s.includes(t) || t.includes(s))) {
-    resources.push("Coursera Public Health", "CDC TRAIN", "AHIMA certification");
-  }
-
-  // Design
-  if (["design", "figma", "adobe", "ui/ux", "ux research", "accessibility"].some(t => s.includes(t) || t.includes(s))) {
-    resources.push("Google UX Design Certificate", "Interaction Design Foundation", "Figma tutorials");
-  }
-
-  // Business
-  if (["project management", "agile", "business analysis", "leadership", "financial",
-       "accounting", "marketing", "sales"].some(t => s.includes(t) || t.includes(s))) {
-    resources.push("Google Project Management Certificate", "LinkedIn Learning", "edX MicroMasters");
-  }
-
-  // Trades
-  if (["hvac", "electrical wiring", "plumbing", "welding", "machining", "carpentry",
-       "automotive", "construction"].some(t => s.includes(t) || t.includes(s))) {
-    resources.push("Local trade school / apprenticeship", "Union training programs", "OSHA certification");
-  }
-
-  // Cybersecurity
-  if (["cybersecurity", "information security", "penetration testing", "cryptography"].some(t => s.includes(t))) {
-    resources.push("CompTIA Security+", "SANS Institute", "TryHackMe");
+  for (const [keywords, recs] of resourceMap) {
+    if (keywords.some(k => s.includes(k) || k.includes(s))) {
+      resources.push(...recs);
+      break;
+    }
   }
 
   if (resources.length === 0) {
@@ -203,14 +230,13 @@ function computeMatch(
 ): TransitionMatch | null {
   if (source.code === target.code) return null;
 
-  const targetSkills = new Set(target.skills.map(s => s.toLowerCase()));
+  const targetSkills = skillNamesOf(target);
   const shared: string[] = [];
   const missing: SkillGap[] = [];
 
   let sharedWeightedSum = 0;
   let unionWeightedSum = 0;
 
-  // All skills in the union
   const allSkills = new Set([...sourceSkills, ...targetSkills]);
 
   for (const skill of allSkills) {
@@ -222,7 +248,6 @@ function computeMatch(
     }
   }
 
-  // Missing = in target but not in source
   for (const skill of targetSkills) {
     if (!sourceSkills.has(skill)) {
       const idfVal = IDF.get(skill) ?? 2;
@@ -232,9 +257,7 @@ function computeMatch(
 
   const overlapScore = unionWeightedSum > 0 ? sharedWeightedSum / unionWeightedSum : 0;
   const zoneDelta = target.zone - source.zone;
-  const payDelta = target.medianPay - source.medianPay;
 
-  // Classify
   let category: "ready_now" | "trainable" | "long_term_reskill";
   if (overlapScore >= 0.55 && zoneDelta <= 0) {
     category = "ready_now";
@@ -243,10 +266,9 @@ function computeMatch(
   } else if (overlapScore >= 0.10) {
     category = "long_term_reskill";
   } else {
-    return null; // Too dissimilar
+    return null;
   }
 
-  // Sort missing by importance
   missing.sort((a, b) => {
     const order = { critical: 0, important: 1, "nice-to-have": 2 };
     return order[a.importance] - order[b.importance];
@@ -269,7 +291,6 @@ function computeMatch(
     trainingPaths,
     category,
     zoneDelta,
-    payDelta,
   };
 }
 
@@ -278,9 +299,16 @@ function computeMatch(
 export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryResponse {
   const turn = req.turn ?? 1;
 
-  // Resolve source occupation
   const source = resolveOccupation(req.sourceOccupation);
   if (!source) {
+    // Suggest closest title matches
+    const q = req.sourceOccupation.toLowerCase();
+    const suggestions = occupations
+      .map(o => ({ title: o.title, dist: levenshteinLike(q, o.title.toLowerCase()) }))
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 5)
+      .map(s => s.title);
+
     return {
       success: false,
       source: null,
@@ -291,16 +319,16 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
       totalMatches: 0,
       turn,
       suggestions: [
-        "Try a different job title (e.g., 'Software Developer', 'Registered Nurse')",
-        `Available occupations: ${occupations.slice(0, 5).map(o => o.title).join(", ")}...`,
+        `Did you mean: ${suggestions.join(", ")}?`,
+        "Try a standard O*NET job title or SOC code (e.g., '15-1252.00')",
       ],
-      error: `Could not find occupation matching "${req.sourceOccupation}". Try a standard job title.`,
+      error: `Could not find occupation matching "${req.sourceOccupation}". 1,016 O*NET occupations are available.`,
     };
   }
 
   const additionalSkills = (req.additionalSkills ?? []).map(s => s.toLowerCase());
   const sourceSkills = new Set([
-    ...source.skills.map(s => s.toLowerCase()),
+    ...source.skills.map(s => s.name.toLowerCase()),
     ...additionalSkills,
   ]);
 
@@ -323,11 +351,7 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
     const match = computeMatch(source, sourceSkills, target, rarityWeight);
     if (!match || match.overlapScore < minScore) continue;
 
-    // Category filter
     if (categoryFilter !== "all" && match.category !== categoryFilter) continue;
-
-    // Boost preferred categories in sorting
-    const preferred = preferredCategories.has(target.category.toLowerCase());
 
     switch (match.category) {
       case "ready_now":
@@ -342,7 +366,6 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
     }
   }
 
-  // Sort each bucket by overlap score descending, with preferred categories boosted
   const sortFn = (a: TransitionMatch, b: TransitionMatch) => {
     const aBoost = preferredCategories.has(a.occupation.category.toLowerCase()) ? 0.1 : 0;
     const bBoost = preferredCategories.has(b.occupation.category.toLowerCase()) ? 0.1 : 0;
@@ -361,10 +384,9 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
 
   const totalMatches = readyNow.length + trainable.length + longTermReskill.length;
 
-  // Generate suggestions for iterative refinement
   const suggestions: string[] = [];
   if (readyNow.length > maxPer) {
-    suggestions.push(`${readyNow.length - maxPer} more Ready Now matches available — increase maxPerCategory or exclude seen codes`);
+    suggestions.push(`${readyNow.length - maxPer} more Ready Now matches available`);
   }
   if (trainable.length > maxPer) {
     suggestions.push(`${trainable.length - maxPer} more Trainable matches available`);
@@ -372,23 +394,8 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
   if (longTermReskill.length > maxPer) {
     suggestions.push(`${longTermReskill.length - maxPer} more Long-Term Reskill matches available`);
   }
-  if (trimmed.longTermReskill.length === 0 && categoryFilter === "all") {
-    suggestions.push("Try adding additional skills or lowering minScore to see Long-Term Reskill options");
-  }
   if (additionalSkills.length === 0) {
-    suggestions.push("Add your additional skills (e.g., certifications, side projects) to improve matching");
-  }
-
-  // Suggest categories where user has few matches
-  const occupationCategories = [...new Set(occupations.map(o => o.category))];
-  const matchedCategories = new Set([
-    ...trimmed.readyNow.map(m => m.occupation.category),
-    ...trimmed.trainable.map(m => m.occupation.category),
-    ...trimmed.longTermReskill.map(m => m.occupation.category),
-  ]);
-  const unseenCategories = occupationCategories.filter(c => !matchedCategories.has(c));
-  if (unseenCategories.length > 0 && unseenCategories.length <= 4) {
-    suggestions.push(`Explore transitions to: ${unseenCategories.join(", ")}`);
+    suggestions.push("Add your additional skills to improve matching accuracy");
   }
 
   return {
@@ -402,7 +409,7 @@ export function getCareerTrajectories(req: TrajectoryRequest): TrajectoryRespons
   };
 }
 
-/** List all available occupations (for autocomplete / test case reference). */
+/** List all available occupations (for autocomplete). */
 export function listOccupations(): { code: string; title: string; category: string }[] {
   return occupations.map(o => ({ code: o.code, title: o.title, category: o.category }));
 }
@@ -410,4 +417,18 @@ export function listOccupations(): { code: string; title: string; category: stri
 /** Get a single occupation by code or title. */
 export function getOccupation(query: string): OnetOccupation | null {
   return resolveOccupation(query);
+}
+
+// ── Utility ────────────────────────────────────────────────────────
+
+/** Simple substring-based distance for "did you mean" suggestions. */
+function levenshteinLike(a: string, b: string): number {
+  if (b.includes(a)) return 0;
+  if (a.includes(b)) return 0;
+  // Count shared words
+  const aWords = new Set(a.split(/\s+/));
+  const bWords = new Set(b.split(/\s+/));
+  let shared = 0;
+  for (const w of aWords) if (bWords.has(w)) shared++;
+  return -shared + Math.abs(a.length - b.length) * 0.01;
 }
