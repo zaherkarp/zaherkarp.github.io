@@ -1,0 +1,583 @@
+---
+import SkillSproutDemo from '../../components/SkillSproutDemo.tsx';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import BaseHead from '../../components/BaseHead.astro';
+import '../../styles/global.css';
+---
+
+<html lang="en">
+  <head>
+    <BaseHead
+      title="SkillSprout — Career Trajectory Explorer | Zaher Karp"
+      description="Interactive O*NET-powered career trajectory engine. Discover Ready Now, Trainable, and Long-Term Reskill job transitions with skill gap analysis and training paths."
+      canonicalURL="https://zaherkarp.com/skillsprout/"
+    />
+    <style>
+      /* ── Layout ────────────────────────────────────────────── */
+      .ss-page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .ss-hero {
+        margin-bottom: 2rem;
+      }
+      .ss-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        color: var(--accent, #3b82f6);
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      .ss-hero .ss-subtitle {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        opacity: 0.7;
+        max-width: 640px;
+        line-height: 1.6;
+      }
+      .ss-hero .ss-divider {
+        width: 75px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--accent, #3b82f6);
+        margin-top: 0.75rem;
+      }
+      .ss-back-link {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        color: var(--accent, #3b82f6);
+        text-decoration: none;
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      .ss-back-link:hover { text-decoration: underline; }
+
+      /* ── Demo container ────────────────────────────────────── */
+      .ss-demo {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.875rem;
+      }
+
+      /* Controls */
+      .ss-controls {
+        background: var(--bg-alt, #1f2937);
+        border: 1px solid var(--border, #374151);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .ss-input-group { margin-bottom: 1rem; }
+      .ss-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+        opacity: 0.7;
+      }
+      .ss-input-row {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .ss-input {
+        flex: 1;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        border: 1px solid var(--border, #374151);
+        background: var(--bg, #111827);
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.85rem;
+      }
+      .ss-input::placeholder { opacity: 0.4; }
+      .ss-input:focus {
+        outline: none;
+        border-color: var(--accent, #3b82f6);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+
+      /* Buttons */
+      .ss-btn {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border, #374151);
+        background: var(--bg, #111827);
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .ss-btn:hover { border-color: var(--accent, #3b82f6); }
+      .ss-btn-primary {
+        background: var(--accent, #3b82f6);
+        color: white;
+        border-color: transparent;
+        font-weight: 600;
+      }
+      .ss-btn-primary:hover { opacity: 0.9; }
+      .ss-btn-secondary { opacity: 0.7; }
+      .ss-btn-more {
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
+        text-align: center;
+        background: var(--bg-alt, #1f2937);
+      }
+      .ss-btn-browse { min-width: 2.5rem; text-align: center; }
+      .ss-btn-add {
+        background: var(--accent, #3b82f6);
+        color: white;
+        border-color: transparent;
+      }
+      .ss-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      /* Occupation dropdown */
+      .ss-occ-dropdown {
+        position: relative;
+        margin-top: 0.5rem;
+        border: 1px solid var(--border, #374151);
+        border-radius: 8px;
+        background: var(--bg, #111827);
+        max-height: 300px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .ss-occ-search {
+        padding: 0.5rem 0.8rem;
+        border: none;
+        border-bottom: 1px solid var(--border, #374151);
+        background: transparent;
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.8rem;
+      }
+      .ss-occ-search:focus { outline: none; }
+      .ss-occ-list {
+        overflow-y: auto;
+        max-height: 240px;
+      }
+      .ss-occ-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+        border: none;
+        background: none;
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.8rem;
+        cursor: pointer;
+        text-align: left;
+      }
+      .ss-occ-item:hover { background: var(--bg-alt, #1f2937); }
+      .ss-occ-cat {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+
+      /* Filter tabs */
+      .ss-filter-tabs {
+        display: flex;
+        gap: 0.25rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      .ss-filter-tab {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        border: 1px solid var(--border, #374151);
+        background: transparent;
+        color: inherit;
+        font-family: inherit;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .ss-filter-tab:hover { border-color: var(--accent, #3b82f6); }
+      .ss-filter-tab.active {
+        background: var(--accent, #3b82f6);
+        color: white;
+        border-color: transparent;
+      }
+
+      /* Results */
+      .ss-results { margin-bottom: 1.5rem; }
+      .ss-results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .ss-results-header h3 {
+        font-size: 1rem;
+        font-weight: 400;
+      }
+      .ss-results-header strong { color: var(--accent, #3b82f6); }
+      .ss-turn-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        background: var(--bg-alt, #1f2937);
+        border: 1px solid var(--border, #374151);
+        opacity: 0.6;
+      }
+
+      .ss-source-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .ss-source-label {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        margin-right: 0.3rem;
+      }
+
+      /* Match cards */
+      .ss-match-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+      @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .match-card {
+        border: 1px solid var(--border, #374151);
+        border-radius: 10px;
+        overflow: hidden;
+        animation: fadeSlideIn 0.3s ease both;
+      }
+      .match-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .match-card-header:hover { background: var(--bg-alt, #1f2937); }
+      .match-card-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        min-width: 0;
+      }
+      .match-category-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+      }
+      .match-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .match-card-stats {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+      .match-score { font-weight: 600; color: var(--accent, #3b82f6); }
+      .match-pay { font-weight: 500; }
+      .match-expand { opacity: 0.4; font-size: 0.7rem; }
+
+      .match-card-details {
+        padding: 0 1rem 1rem;
+        border-top: 1px solid var(--border, #374151);
+      }
+      .match-meta-row {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.7rem;
+        opacity: 0.5;
+        padding: 0.6rem 0;
+        flex-wrap: wrap;
+      }
+      .match-section { margin-top: 0.75rem; }
+      .match-section h5 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.6;
+        margin-bottom: 0.4rem;
+      }
+
+      /* Skill tags */
+      .skill-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+      .skill-tag {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border, #374151);
+        background: var(--bg-alt, #1f2937);
+      }
+      .skill-tag.shared { border-color: #059669; color: #34d399; }
+      .skill-tag.source { border-color: rgba(59, 130, 246, 0.3); color: var(--accent, #60a5fa); }
+      .skill-tag.gap { border-color: #d97706; color: #fbbf24; }
+      .skill-tag.gap-critical { border-color: #dc2626; color: #f87171; }
+      .gap-badge { margin-left: 0.25rem; font-size: 0.6rem; }
+
+      /* Training paths */
+      .training-paths { display: flex; flex-direction: column; gap: 0.4rem; }
+      .training-path-item {
+        display: grid;
+        grid-template-columns: 1fr auto 2fr;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid var(--border, #374151);
+        align-items: center;
+      }
+      .training-path-item:last-child { border-bottom: none; }
+      .tp-skill { font-weight: 600; }
+      .tp-months {
+        color: var(--accent, #3b82f6);
+        font-weight: 500;
+        text-align: center;
+      }
+      .tp-resources { opacity: 0.6; font-size: 0.7rem; }
+
+      /* API log */
+      .api-log {
+        margin-top: 1.5rem;
+        border: 1px solid var(--border, #374151);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 0.75rem;
+      }
+      .api-log-header {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border, #374151);
+        background: var(--bg-alt, #1f2937);
+      }
+      .api-log-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ef4444;
+      }
+      .api-log-dot.yellow { background: #eab308; }
+      .api-log-dot.green { background: #22c55e; }
+      .api-log-title {
+        margin-left: 0.5rem;
+        opacity: 0.5;
+        font-size: 0.7rem;
+      }
+      .api-log-body {
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 0.5rem 0.8rem;
+        background: var(--bg, #111827);
+      }
+      .api-log-entry {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.15rem 0;
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      .api-log-prefix {
+        flex-shrink: 0;
+        width: 3.5rem;
+        font-weight: 600;
+      }
+      .api-log-entry.request .api-log-prefix { color: #3b82f6; }
+      .api-log-entry.response .api-log-prefix { color: #22c55e; }
+      .api-log-entry.comment .api-log-prefix { opacity: 0.4; }
+      .api-log-text { word-break: break-word; }
+
+      /* Suggestions */
+      .ss-suggestions {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        background: var(--bg-alt, #1f2937);
+        border: 1px solid var(--border, #374151);
+      }
+      .ss-suggestions h4 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.5;
+        margin-bottom: 0.4rem;
+      }
+      .ss-suggestions ul {
+        list-style: none;
+        padding: 0;
+      }
+      .ss-suggestions li {
+        font-size: 0.75rem;
+        padding: 0.2rem 0;
+        opacity: 0.7;
+      }
+      .ss-suggestions li::before {
+        content: "→ ";
+        color: var(--accent, #3b82f6);
+      }
+
+      /* Error */
+      .ss-error {
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #dc2626;
+        background: rgba(220, 38, 38, 0.1);
+        margin-bottom: 1rem;
+      }
+      .ss-error p { font-size: 0.85rem; margin-bottom: 0.3rem; }
+      .ss-error-suggestion { opacity: 0.7; font-size: 0.8rem; }
+
+      .ss-no-results {
+        padding: 2rem;
+        text-align: center;
+        opacity: 0.5;
+      }
+
+      /* Test Suite */
+      .ss-test-suite {
+        margin-top: 1.5rem;
+        border: 1px solid var(--border, #374151);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .ss-test-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        background: var(--bg-alt, #1f2937);
+      }
+      .ss-test-header:hover { opacity: 0.9; }
+      .ss-test-header h4 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .ss-test-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .ss-test-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+      .ss-test-badge.pass { background: #059669; color: white; }
+      .ss-test-badge.fail { background: #dc2626; color: white; }
+      .ss-test-body { padding: 0.75rem 1rem; }
+      .ss-test-themes {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+      .ss-test-results {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .ss-test-row {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--border, #374151);
+        align-items: flex-start;
+      }
+      .ss-test-row:last-child { border-bottom: none; }
+      .ss-test-icon { font-size: 0.8rem; flex-shrink: 0; margin-top: 0.1rem; }
+      .ss-test-row.pass .ss-test-icon { color: #22c55e; }
+      .ss-test-row.fail .ss-test-icon { color: #ef4444; }
+      .ss-test-info { flex: 1; min-width: 0; }
+      .ss-test-id {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        margin-right: 0.3rem;
+      }
+      .ss-test-name { font-size: 0.8rem; font-weight: 500; }
+      .ss-test-desc {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        margin-top: 0.2rem;
+        line-height: 1.4;
+      }
+      .ss-test-failure {
+        font-size: 0.7rem;
+        color: #f87171;
+        margin-top: 0.2rem;
+      }
+
+      /* Attribution */
+      .ss-attribution {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border, #374151);
+        font-size: 0.7rem;
+        opacity: 0.4;
+        line-height: 1.6;
+      }
+      .ss-attribution a { color: var(--accent, #3b82f6); }
+
+      /* Light mode overrides */
+      @media (prefers-color-scheme: light) {
+        .ss-controls,
+        .ss-occ-dropdown { background: #f3f4f6; }
+        .ss-input, .api-log-body { background: #fff; }
+        .match-card-header:hover { background: #f3f4f6; }
+        .skill-tag { background: #f3f4f6; }
+        .skill-tag.shared { color: #059669; }
+        .skill-tag.source { color: #2563eb; }
+        .skill-tag.gap { color: #b45309; }
+        .skill-tag.gap-critical { color: #dc2626; }
+        .api-log-header { background: #f3f4f6; }
+        .ss-suggestions { background: #f3f4f6; }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main class="ss-page">
+      <a href="/" class="ss-back-link">← back to portfolio</a>
+
+      <div class="ss-hero">
+        <h1>SkillSprout</h1>
+        <div class="ss-divider"></div>
+        <p class="ss-subtitle">
+          Career trajectory explorer powered by the full O*NET 28.3 database —
+          1,016 occupations, 65 skill/knowledge dimensions. Enter <em>any</em> occupation
+          to discover <strong>Ready Now</strong>, <strong>Trainable</strong>, and
+          <strong>Long-Term Reskill</strong> transitions with skill gap analysis and
+          training paths. Iterate using the session API — add skills, filter, and paginate.
+        </p>
+      </div>
+
+      <SkillSproutDemo client:load />
+    </main>
+    <Footer />
+  </body>
+</html>
