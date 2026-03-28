@@ -122,12 +122,12 @@ function categoryFromCode(code) {
 
 // ── Build final dataset ────────────────────────────────────────────
 
-const occupations = [];
+// First pass: build all occupations, some will have empty skills
+const occupationsRaw = [];
 
 for (const occ of occupationRows) {
   const code = occ["O*NET-SOC Code"];
   const title = occ["Title"];
-  const description = occ["Description"] || "";
   const zone = jobZoneMap.get(code) || 3;
   const category = categoryFromCode(code);
 
@@ -153,7 +153,7 @@ for (const occ of occupationRows) {
   skills.sort((a, b) => b.importance - a.importance);
   const topSkills = skills.slice(0, 15);
 
-  occupations.push({
+  occupationsRaw.push({
     code,
     title,
     zone,
@@ -161,6 +161,56 @@ for (const occ of occupationRows) {
     skills: topSkills,
   });
 }
+
+// ── Fill empty skills via SOC family inheritance ───────────────────
+// Many O*NET occupations (especially newer SOC codes and "All Other"
+// catch-all codes) lack direct skill/knowledge survey data. For these,
+// inherit skills from the closest related occupation in the same SOC
+// family. Fallback order:
+//   1. Same 6-digit broad occupation (e.g., 15-1252.xx → 15-1251.00)
+//   2. Same 4-digit minor group (e.g., 15-12xx → other 15-12xx)
+//   3. Same 2-digit major group (e.g., 15-xxxx → other 15-xxxx)
+
+const codeIndex = new Map(occupationsRaw.map(o => [o.code, o]));
+
+function findDonor(code) {
+  const prefix6 = code.substring(0, 7); // e.g., "15-1252"
+  const prefix4 = code.substring(0, 5); // e.g., "15-12"
+  const prefix2 = code.substring(0, 2); // e.g., "15"
+
+  // Try same broad occupation first
+  for (const o of occupationsRaw) {
+    if (o.code !== code && o.code.startsWith(prefix6) && o.skills.length > 0) return o;
+  }
+  // Try same minor group
+  for (const o of occupationsRaw) {
+    if (o.code !== code && o.code.startsWith(prefix4) && o.skills.length > 0) return o;
+  }
+  // Try same major group
+  for (const o of occupationsRaw) {
+    if (o.code !== code && o.code.startsWith(prefix2) && o.skills.length > 0) return o;
+  }
+  return null;
+}
+
+let inheritCount = 0;
+for (const occ of occupationsRaw) {
+  if (occ.skills.length === 0) {
+    const donor = findDonor(occ.code);
+    if (donor) {
+      occ.skills = [...donor.skills]; // Copy skills from donor
+      inheritCount++;
+    }
+  }
+}
+
+const stillEmpty = occupationsRaw.filter(o => o.skills.length === 0);
+console.log(`\nSkill inheritance: ${inheritCount} occupations inherited from SOC family`);
+if (stillEmpty.length > 0) {
+  console.log(`  Still empty: ${stillEmpty.length} (${stillEmpty.map(o => o.code).join(", ")})`);
+}
+
+const occupations = occupationsRaw;
 
 console.log(`\nProcessed ${occupations.length} occupations`);
 
