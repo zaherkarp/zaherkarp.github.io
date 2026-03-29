@@ -54,7 +54,7 @@ export const siteConfig = {
     },
     {
       label: "Statistics & Research Methods",
-      skills: ["SAS", "Stata"],
+      skills: ["SAS", "Stata", "Mixed Methods Research", "Survey Design", "Interrupted Time Series"],
     },
   ],
   publications: [
@@ -153,13 +153,6 @@ export const siteConfig = {
 ],
   projects: [
     {
-      name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
-      description:
-        "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
-      link: "https://zaherkarp.com/skillsprout/",
-      skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
-    },
-    {
       name: "Client-Side Stars Analytics Dashboard (Single-File HTML)",
       description:
         "Standalone, in-browser dashboard implemented as a single HTML file using Chart.js 4.4.1, PapaParse 5.4.1, jsPDF 2.5.1, and chartjs-plugin-datalabels to visualize local CSV data and generate PDF reports with no server dependency and no data leaving the user's machine.",
@@ -173,13 +166,6 @@ export const siteConfig = {
       skills: ["Linear Regression", "Statistics", "Sisense", "Epic Clarity"],
     },
     {
-      name: "UW Health Patient Relations Survey Redesign",
-      description:
-        "Redesigned primary care patient survey for UW Health Patient Relations/Resources department. Conducted pretesting with patient interviews to ensure survey validity and usability improvements.",
-      link: "",
-      skills: ["Survey Design", "Patient Experience", "Healthcare Quality", "Qualtrics"],
-    },
-    {
       name: "Care Delivery Workflow Changes",
       description:
         "Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. Measured impact of change initiatives with segmentation and regression modeling.",
@@ -187,11 +173,25 @@ export const siteConfig = {
       skills: ["Stata", "SAS", "Time Series Analysis", "Outpatient Analytics"],
     },
     {
+      name: "UW Health Patient Relations Survey Redesign",
+      description:
+        "Redesigned primary care patient survey for UW Health Patient Relations/Resources department. Conducted pretesting with patient interviews to ensure survey validity and usability improvements.",
+      link: "",
+      skills: ["Survey Design", "Patient Experience", "Healthcare Quality", "Qualtrics"],
+    },
+    {
       name: "Cancer Prevention in Mental Health Populations",
       description:
         "Conducted research studying cancer prevention screening rates in patients with co-morbid severe mental illness using logistic regression and the Elixhauser Comorbidity Index.",
       link: "",
       skills: ["Logistic Regression", "Population Health", "Healthcare Disparities", "SAS"],
+    },
+    {
+      name: "Skill-Based Job Transition Discovery Platform (O*NET-Powered MVP)",
+      description:
+        "Production-minded MVP web application built with FastAPI, PostgreSQL, and Redis/Celery that leverages O*NET occupation and skill data plus baseline deterministic matching and logistic-regression calibration to generate Ready Now, Trainable, and Long-Term Reskill job transition recommendations with skill gap analysis, training path suggestions, and a feedback-driven learning system.",
+      link: "https://zaherkarp.com/skillsprout/",
+      skills: ["FastAPI", "PostgreSQL", "SQLAlchemy", "Redis", "Celery", "scikit-learn", "Logistic Regression", "O*NET", "Python", "Pydantic"],
     },
     {
       name: "Law School Graduation Rates Analysis",
@@ -206,55 +206,59 @@ export const siteConfig = {
       company: "Baltimore Health Analytics",
       title: "Lead Data Engineer",
       dateRange: "Nov 2025 - Present",
+      context: "The person who makes sure the methodology is right before it ships to health plans.",
       bullets: [
-        "Data engineering and technical leadership for analytics to proactively monitor, measure, and improve Medicare Star Rating scores",
+        "Leading data engineering and methodology for a Medicare Advantage analytics platform in Python and SQL, working within a legacy Rails orchestration layer",
+        "Building HEDIS measure pipelines and Star Rating simulation models that turn CMS Technical Notes into production-grade, testable logic",
+        "Designing data architecture across several small databases for claims, eligibility, and clinical quality integration across multiple health plan contracts",
       ],
     },
     {
       company: "Sustainable Clarity",
       title: "Data Engineering Consultant",
       dateRange: "Sep 2025 - Oct 2025",
-      bullets: [
-        "Data engineering consulting between roles",
-      ],
+      context: "Brief independent consulting engagement between roles.",
+      bullets: [],
     },
     {
       company: "Health Catalyst",
       title: "Healthcare Analytics Manager, Embedded Refills and Care Gaps",
       dateRange: "Aug 2020 - Aug 2025",
+      context: "Owned the data platform for a clinical quality product used by health systems nationwide.",
       bullets: [
-        "Redesigned AWS S3 cloud storage architecture, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
-        "Built self-service aggregation systems that reduced reporting turnaround from monthly to on-demand daily, enabling faster decision cycles for clinical and operational teams",
-        "Developed unified financial tracking dashboards monitoring $MM+ in revenue and contract performance for executive stakeholders",
-        "Improved production data quality by validating against RxNorm and clinical quality standards across the analytics platform",
+        "Redesigned AWS S3 cloud storage architecture into a medallion (bronze/silver/gold) ELT pattern with Python and dbt, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
+        "Built self-service aggregation systems in SQL and Python within a Rails-based ETL pipeline that reduced reporting turnaround from monthly to on-demand daily",
+        "Developed unified financial tracking dashboards in Tableau and Power BI monitoring $MM+ in revenue and contract performance for executive stakeholders",
+        "Improved production data quality by validating against RxNorm and clinical quality standards across the Redshift-based analytics platform",
       ],
     },
     {
       company: "healthfinch",
       title: "Healthcare Analytics Manager",
       dateRange: "Jan 2019 - Jul 2020",
+      context: "Promoted to lead the analytics function and tie it directly to revenue.",
       bullets: [
-        "As the company's first analytics hire, built HIPAA- and HITRUST-compliant reporting infrastructure from scratch, establishing the data foundation the product ran on",
-        "Designed reusable SQL scripts deployed across 50+ health systems, standardizing performance benchmarks used in sales and marketing",
-        "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
         "Led ROI modeling and sales support that contributed to $1MM+ in recurring revenue by translating clinical workflow data into customer-facing value demonstrations",
+        "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
+        "Managed analytics roadmap and cross-functional stakeholder relationships across product, engineering, and customer success teams",
       ],
     },
     {
       company: "healthfinch",
       title: "Healthcare Analytics Specialist",
       dateRange: "Dec 2017 - Dec 2018",
+      context: "First analytics hire — built the reporting infrastructure from zero.",
       bullets: [
-        "As the company's first analytics hire, built HIPAA- and HITRUST-compliant reporting infrastructure from scratch, establishing the data foundation the product ran on",
+        "First analytics hire — built HIPAA- and HITRUST-compliant reporting infrastructure from scratch, establishing the data foundation the product ran on",
         "Designed reusable SQL scripts deployed across 50+ health systems, standardizing performance benchmarks used in sales and marketing",
-        "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
-        "Led ROI modeling and sales support that contributed to $1MM+ in recurring revenue by translating clinical workflow data into customer-facing value demonstrations",
+        "Stood up Sisense BI platform and built the initial dashboard suite for internal and external reporting",
       ],
     },
     {
       company: "University of Wisconsin-Madison, Department of Family Medicine and Community Health",
       title: "Assistant Researcher",
       dateRange: "Dec 2015 - Jun 2018",
+      context: "The research role where I learned that the tools to study complex healthcare systems didn't exist yet.",
       bullets: [
         "Served as lead statistician on ACO cost research, guiding methodology, analysis, and board compliance for a multi-site published study",
         "Integrated EMR, claims, and satisfaction survey sources to identify high-cost populations and evaluate quality of care using regression and interrupted time series",
