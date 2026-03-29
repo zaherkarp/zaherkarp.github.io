@@ -54,7 +54,7 @@ export const siteConfig = {
     },
     {
       label: "Statistics & Research Methods",
-      skills: ["SAS", "Stata"],
+      skills: ["SAS", "Stata", "Mixed Methods Research", "Survey Design", "Interrupted Time Series"],
     },
   ],
   publications: [
@@ -217,9 +217,8 @@ export const siteConfig = {
       company: "Sustainable Clarity",
       title: "Data Engineering Consultant",
       dateRange: "Sep 2025 - Oct 2025",
-      bullets: [
-        "Data engineering consulting between roles",
-      ],
+      context: "Brief independent consulting engagement between roles.",
+      bullets: [],
     },
     {
       company: "Health Catalyst",
@@ -227,17 +226,17 @@ export const siteConfig = {
       dateRange: "Aug 2020 - Aug 2025",
       context: "Owned the data platform for a clinical quality product used by health systems nationwide.",
       bullets: [
-        "Redesigned AWS S3 cloud storage architecture, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
-        "Built self-service aggregation systems that reduced reporting turnaround from monthly to on-demand daily, enabling faster decision cycles for clinical and operational teams",
-        "Developed unified financial tracking dashboards monitoring $MM+ in revenue and contract performance for executive stakeholders",
-        "Improved production data quality by validating against RxNorm and clinical quality standards across the analytics platform",
+        "Redesigned AWS S3 cloud storage architecture with Python and dbt, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
+        "Built self-service aggregation systems in SQL and Python that reduced reporting turnaround from monthly to on-demand daily, enabling faster decision cycles for clinical and operational teams",
+        "Developed unified financial tracking dashboards in Tableau and Power BI monitoring $MM+ in revenue and contract performance for executive stakeholders",
+        "Improved production data quality by validating against RxNorm and clinical quality standards across the Redshift-based analytics platform",
       ],
     },
     {
       company: "healthfinch",
       title: "Healthcare Analytics Manager",
       dateRange: "Jan 2019 - Jul 2020",
-      context: "Scaled analytics from a one-person operation into a revenue-driving function.",
+      context: "Promoted to lead the analytics function and tie it directly to revenue.",
       bullets: [
         "Led ROI modeling and sales support that contributed to $1MM+ in recurring revenue by translating clinical workflow data into customer-facing value demonstrations",
         "Built dashboards that drove 7x growth in internal user adoption and eliminated 400+ hours of manual reporting preparation annually",
