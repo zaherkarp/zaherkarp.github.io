@@ -208,9 +208,9 @@ export const siteConfig = {
       dateRange: "Nov 2025 - Present",
       context: "The person who makes sure the methodology is right before it ships to health plans.",
       bullets: [
-        "Leading data engineering and methodology for a Medicare Advantage analytics platform in Python and SQL on AWS",
+        "Leading data engineering and methodology for a Medicare Advantage analytics platform in Python and SQL, working within a legacy Rails orchestration layer",
         "Building HEDIS measure pipelines and Star Rating simulation models that turn CMS Technical Notes into production-grade, testable logic",
-        "Designing the data architecture for claims, eligibility, and clinical quality data integration across multiple health plan contracts",
+        "Designing data architecture across several small databases for claims, eligibility, and clinical quality integration across multiple health plan contracts",
       ],
     },
     {
@@ -226,8 +226,8 @@ export const siteConfig = {
       dateRange: "Aug 2020 - Aug 2025",
       context: "Owned the data platform for a clinical quality product used by health systems nationwide.",
       bullets: [
-        "Redesigned AWS S3 cloud storage architecture with Python and dbt, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
-        "Built self-service aggregation systems in SQL and Python that reduced reporting turnaround from monthly to on-demand daily, enabling faster decision cycles for clinical and operational teams",
+        "Redesigned AWS S3 cloud storage architecture into a medallion (bronze/silver/gold) ELT pattern with Python and dbt, cutting infrastructure costs by 50% and reducing pipeline load times by a full day",
+        "Built self-service aggregation systems in SQL and Python within a Rails-based ETL pipeline that reduced reporting turnaround from monthly to on-demand daily",
         "Developed unified financial tracking dashboards in Tableau and Power BI monitoring $MM+ in revenue and contract performance for executive stakeholders",
         "Improved production data quality by validating against RxNorm and clinical quality standards across the Redshift-based analytics platform",
       ],
