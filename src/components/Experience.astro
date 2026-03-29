@@ -52,6 +52,12 @@ const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
                       </span>
                     </div>
 
+                    {exp.context && (
+                      <p class="text-sm sm:text-base text-gray-500 italic mb-3">
+                        {exp.context}
+                      </p>
+                    )}
+
                     <ul class="space-y-2">
                       {exp.bullets.map((bullet) => (
                         <li class="flex items-start">
