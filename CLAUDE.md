@@ -13,7 +13,7 @@ Redesign from Astro/TypeScript/Tailwind to pure HTML/CSS.
 No framework. No npm. No build step for the main site.
 Blog pipeline has a build step (Python) — see Blog section below.
 
-**Current status:** Mockup complete (v18). Implementation not started.
+**Current status:** Implementation complete and pushed to github.com/zaherkarp/github.io-redesign. Swap to zaherkarp.github.io main repo pending; project URL is blocked by the custom-domain redirect on the user site, so preview is local-only until the swap.
 **Target repo:** github.io-redesign (new GitHub repo)
 **Deployment:** GitHub Pages, project site at zaherkarp.github.io/github.io-redesign/
 **Swap plan:** When ready, copy files into zaherkarp.github.io main repo and push.
@@ -28,6 +28,22 @@ The live site at zaherkarp.github.io stays untouched until the swap.
 - No external CSS frameworks.
 - No preprocessors.
 - No bundlers.
+
+---
+
+## Google Fonts and analytics
+
+**Google Fonts import URL:**
+```
+https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap
+```
+Do not change this URL or swap the font without discussion.
+
+**GoatCounter site code:** `zaher-karp`
+Script format (one script tag before `</body>`, on every page):
+```html
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+```
 
 ---
 
@@ -90,9 +106,12 @@ github.io-redesign/
 
 **Hero:**
   No h1 nameplate. Name appears in nav (anchor) and psql block (data) only.
-  Sequence: domain sentence → claim (italic, green left border) → contact → psql.
+  Sequence: domain sentence → claim (italic, blue left border) → contact → psql.
   psql block: exact \x expanded display format. white-space: pre.
   Field alignment: name/title/focus padded to 6 chars so pipes align.
+  psql prompt string: `resume_db=#` (not `zaher_resume_db=#`). The name
+  appears once inside the record as a field value; it must not also
+  appear in the prompt string.
 
 **Inline stack lines:**
   Each experience entry ends with a .exp-stack Courier line.
@@ -102,10 +121,71 @@ github.io-redesign/
 **Footer:**
   Plain Garamond. Small caps labels. Blue links. No Courier.
 
-**GoatCounter:**
-  One script tag before </body>.
-  Site code: TBD — Z to provide.
-  Placeholder in v18: <!-- <script data-goatcounter="..."> -->
+**Name appearances policy:**
+  "Zaher Karp" appears in exactly three visible places — nav anchor,
+  psql `name` field value, footer copyright. Each is load-bearing. Do
+  not add additional visible instances. Invisible metadata instances
+  (title tag, OG tags, JSON-LD, sitemap) are correct and necessary.
+
+**Tool vs method:**
+  Tools are software, platforms, languages, and libraries. Methods are
+  analytical or statistical approaches. Methods stay in prose. Tools
+  go in the .exp-stack line. Example: interrupted time series is a
+  method — it stays in prose. Stata is a tool — it goes in the stack
+  line.
+
+**Mobile nav:**
+  Nav wraps on medium screens. This is acceptable and intentional. Do
+  not add a hamburger menu. If the wrap looks accidental, reduce link
+  label length: Publications → Pubs, Speaking → Talks, Education →
+  Edu, Service stays.
+
+**Mobile career arc:**
+  The career arc requires horizontal scroll below 580px. This is
+  accepted and intentional. Do not build a simplified mobile SVG
+  unless explicitly requested. The scroll affordance mask
+  (fade-right gradient) is already in the CSS.
+
+**Writing section update rule:**
+  The writing section in index.html is hardcoded. It is not generated
+  by build_blog.py. When new posts are published, update the writing
+  section manually. Show the 6 most recent posts. The "View all
+  writing" link points to /blog/.
+
+**Stats table:**
+  The stats table currently has five rows. Each row must have a
+  defensible number. "50+ clinical organizations served" spans
+  multiple roles and contexts — if this feels misleading, remove the
+  row rather than inflate or deflate the number. Do not add rows
+  without discussion.
+
+**Testimonials:**
+  Two testimonials, both from Health Catalyst. This is intentional
+  and complete for now. Do not treat it as a gap to fill.
+
+**Domain sentence:**
+  The current domain sentence ("Sixteen years building production
+  analytics in regulated healthcare — where measurement errors have
+  regulatory and financial consequences") is approved but flagged for
+  potential revision. A proposed alternative is: "In Medicare
+  Advantage, a measurement error in a HEDIS pipeline is a contractual
+  event, not a data quality incident." Do not change it without
+  explicit instruction.
+
+**.exp-stack contrast:**
+  The .exp-stack lines use --text-dim (#787878 light / #666670 dark)
+  at 0.78rem. Contrast ratio is borderline at AA for this size. Do
+  not change the color. Flag it for manual accessibility testing
+  before the swap.
+
+**Experience entry expand rule:**
+  The two longest experience entries (Health Catalyst and UW-Madison)
+  use a `<details>`/`<summary>` expand pattern for paragraphs two
+  onward. The lead paragraph of each entry stays visible always. The
+  expand trigger label is "More detail" and the collapse label is
+  "Less". The pattern matches the existing testimonial expand
+  implementation. Do not apply this pattern to other sections without
+  discussion.
 
 ---
 
@@ -193,11 +273,31 @@ Z to decide which to commit as /resume.pdf.
 
 ---
 
+## Pre-swap testing checklist
+
+Before executing the swap (TO-DO #10), walk this list in a browser
+against the local preview or swap-target URL:
+
+- [ ] All internal anchor links resolve
+- [ ] All external links open correctly
+- [ ] Dark mode renders correctly in both Chrome and Safari
+- [ ] GoatCounter fires on page load (check network tab)
+- [ ] Resume PDF downloads
+- [ ] Career arc SVG renders at 320px viewport width
+- [ ] Scroll behavior works on nav links
+- [ ] No horizontal overflow on any section except career arc
+- [ ] Print: nav and footer collapse, content renders on two pages maximum
+- [ ] Lighthouse accessibility score above 90
+- [ ] Expand/collapse works on Health Catalyst and UW-Madison entries
+- [ ] Expand/collapse works on both testimonials
+
+---
+
 ## TO-DOs (in priority order)
 
-1. Create github.io-redesign repo and enable GitHub Pages
-2. Copy v18 mockup as index.html — this is the starting point
-3. Set up blog pipeline (build_blog.py + GitHub Action)
+1. ~~Create github.io-redesign repo and enable GitHub Pages~~ — done
+2. ~~Copy v18 mockup as index.html~~ — done
+3. ~~Set up blog pipeline (build_blog.py + GitHub Action)~~ — done
 4. Migrate blog posts from live site to src/content/blog/
    (a) delete current test fixtures:
        find src/content/blog -maxdepth 1 -name '*.md' ! -name '_*.md' -delete
@@ -205,12 +305,15 @@ Z to decide which to commit as /resume.pdf.
    (c) fix building-my-site.md (no frontmatter in live source)
    (d) run python scripts/build_blog.py and spot-check output
    (e) delete src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md
-5. Add GoatCounter script tag (Z to provide site code)
-6. Confirm email address before shipping
-7. Add scroll behavior to nav links (smooth scroll, active state)
-8. Mobile nav: test wrapping behavior, consider hamburger if needed
-9. Commit /resume.pdf — Z to decide which version
-10. Swap: copy finished files into zaherkarp.github.io main, push
+5. ~~Add GoatCounter script tag~~ — done (site code `zaher-karp`)
+6. Confirm email address (`zaher@zaherkarp.com`) before swap
+7. ~~Add scroll behavior to nav links (smooth scroll, active state)~~ — done
+   (CSS `scroll-behavior: smooth` + `:has(:target)` active state)
+8. ~~Mobile nav: test wrapping behavior, consider hamburger if needed~~ —
+   decided: wrap is intentional, no hamburger (see Design decisions §Mobile nav)
+9. Commit `/resume.pdf` — Z to decide which version
+10. Run pre-swap testing checklist (see §Pre-swap testing checklist)
+11. Swap: copy finished files into zaherkarp.github.io main, push
 
 ---
 
@@ -254,3 +357,10 @@ healthfinch = prior employer, acquired by Health Catalyst in 2020
 Health Catalyst = prior employer (2020-2025)
 Yau pivot = the design decision to use a single narrow column (640px)
   rather than the Tufte three-column grid. Named after Nathan Yau (FlowingData).
+
+---
+
+## Working agreement
+
+If you think something looks wrong or should be improved, flag it and ask
+before changing it. Do not make unrequested changes.

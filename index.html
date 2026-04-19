@@ -539,6 +539,29 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 .testimonial-details summary::before { content: "+ "; }
 .testimonial-details[open] summary::before { content: "− "; }
 
+/* Experience entry expand (Health Catalyst, UW-Madison only) */
+.exp-details { margin-top: 0.5rem; }
+
+.exp-details-summary {
+  font-size: var(--size-caption);
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--blue);
+  cursor: pointer;
+  list-style: none;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.exp-details-summary::-webkit-details-marker { display: none; }
+.exp-details-summary::before { content: "+ "; }
+.exp-details[open] .exp-details-summary::before { content: "− "; }
+
+/* "More detail" when closed, "Less" when open */
+.exp-details .exp-label-open { display: none; }
+.exp-details[open] .exp-label-closed { display: none; }
+.exp-details[open] .exp-label-open { display: inline; }
+
 .testimonial-full {
   font-size: var(--size-caption);
   font-style: italic;
@@ -662,7 +685,7 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
     <p class="hero-domain">Sixteen years building production analytics in regulated healthcare — where measurement errors have regulatory and financial consequences.</p>
 
     <p class="hero-claim">
-      I build production analytics systems for Medicare Advantage organizations — the kind where measurement accuracy is a contractual obligation, not a quality goal.
+      In healthcare, a wrong number has external consequences — regulatory, contractual, financial. I build systems designed around that reality.
     </p>
 
     <p class="hero-contact">
@@ -673,10 +696,10 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
 
     <div class="hero-specimen"
          aria-label="Zaher Karp profile: Lead Data Engineer, Analytics Engineering and Data Platform, Medicare Advantage HEDIS CMS Stars, SQL Python dbt AWS Azure Databricks, building connections and open to collaboration">
-<span class="prompt">zaher_resume_db=#</span> \x
+<span class="prompt">resume_db=#</span> \x
 <span class="comment">Expanded display is on.</span>
 
-<span class="prompt">zaher_resume_db=#</span> SELECT * FROM zaher;
+<span class="prompt">resume_db=#</span> SELECT * FROM zaher;
 <span class="comment">-[ RECORD 1 ]-----------------------------</span>
 <span class="keyword">name  </span> | <span class="value">Zaher Karp</span>
 <span class="keyword">title </span> | <span class="value">Lead Data Engineer</span>
@@ -685,7 +708,7 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
 <span class="keyword">stack </span> | <span class="value">SQL · Python · dbt · AWS · Azure · Databricks</span>
 <span class="keyword">status</span> | <span class="status">building connections · open to collaboration</span>
 
-<span class="prompt">zaher_resume_db=#</span> <span class="hero-cursor"></span></div>
+<span class="prompt">resume_db=#</span> <span class="hero-cursor"></span></div>
   </div>
 
 
@@ -850,11 +873,11 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
     </div>
     <div class="exp-body">
       <p>
-        Leading the data engineering and analytics methodology function for a Medicare
-        Advantage quality platform — managing direct reports, providing technical guidance
-        and code review across the engineering team, coordinating data science and QA
-        across two geographies, owning the product roadmap, and serving as the primary
-        translator between CMS regulatory guidance and organizational priorities.
+        I lead the data engineering and analytics methodology function for a Medicare
+        Advantage quality platform. The role spans direct management, code review across
+        the engineering team, and coordination of data science and QA across two
+        geographies — with the product roadmap and the CMS-to-organizational-priorities
+        translation sitting in the middle of all of it.
       </p>
       <p>
         CMS Star Rating methodology is published in Technical Notes that run to hundreds
@@ -897,24 +920,28 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
         and Databricks, an architectural shift that required rebuilding the analytics
         layer while maintaining continuity of service for existing clients.
       </p>
-      <p>
-        The core data governance challenge was ensuring that a medication adherence rate
-        meant the same thing regardless of which EHR it was calculated from. The ELT
-        pipeline I inherited ran for multiple days and produced outputs that were difficult
-        to trace to their source. The redesign was an auditability and data governance
-        decision. Medallion architecture — bronze for raw ingestion, silver for documented
-        business logic, gold for analytic output — means every transformation has a name,
-        a location, and a test. The consequence was a same-day pipeline, but the more
-        important consequence was that the data could be interrogated. RxNorm validation
-        across the platform serving fifty-plus health systems means the question "why does
-        this adherence rate look wrong for this plan" has a traceable answer.
-      </p>
-      <p>
-        HIPAA compliance was an architectural constraint throughout — not a certification
-        but a set of requirements that shaped every decision about data storage, access
-        control, and transmission across a platform handling protected health information
-        at scale.
-      </p>
+      <details class="exp-details">
+        <summary class="exp-details-summary"><span class="exp-label-closed">More detail</span><span class="exp-label-open">Less</span></summary>
+        <p>
+          Data governance came down to one question: does a medication adherence rate mean
+          the same thing across Epic, Cerner, athenahealth, and Veradigm? The ELT pipeline
+          I inherited ran for multiple days and produced outputs that were difficult to
+          trace to their source. The redesign was an auditability and data governance
+          decision. Medallion architecture — bronze for raw ingestion, silver for documented
+          business logic, gold for analytic output — means every transformation has a name,
+          a location, and a test. Same-day runtime was a side effect; the design goal was
+          auditability — every metric could be traced back through silver to its raw
+          source. RxNorm validation across the platform serving fifty-plus health systems
+          means the question "why does this adherence rate look wrong for this plan" has
+          a traceable answer.
+        </p>
+        <p>
+          HIPAA compliance was an architectural constraint throughout — not a certification
+          but a set of requirements that shaped every decision about data storage, access
+          control, and transmission across a platform handling protected health information
+          at scale.
+        </p>
+      </details>
     </div>
     <span class="exp-stack">dbt · Redshift · AWS → Azure · Databricks · Python · Tableau · Power BI</span>
   </div>
@@ -938,10 +965,10 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
         success.
       </p>
       <p>
-        The harder problem was ROI modeling — using linear regression on clinical workflow
-        data to produce customer-facing value demonstrations that contributed to over a
-        million dollars in recurring revenue. Built dashboards that drove sevenfold growth
-        in internal user adoption and eliminated four hundred hours of annual manual
+        ROI modeling was the commercially critical work — linear regression on clinical
+        workflow data, translated into client-facing reports that supported over a million
+        dollars in recurring revenue. Built dashboards that drove sevenfold growth in
+        internal user adoption and eliminated four hundred hours of annual manual
         reporting preparation.
       </p>
     </div>
@@ -965,23 +992,29 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
         the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple
         UW Institute for Clinical and Translational Research awards.
       </p>
-      <p>
-        The Wisconsin Longitudinal Study — a fifty-year cohort of ten thousand adults
-        integrating survey, health, and administrative records — taught me what
-        longitudinal data quality problems actually look like: cohort attrition,
-        measurement drift, linkage failure across administrative sources that were never
-        designed to be linked. Methodological training included Contemporary Qualitative
-        Interviewing Methods at the University of Oxford (2014).
-      </p>
-      <p>
-        A sustained research thread on primary care redesign used grounded theory for
-        qualitative analysis of field notes and focus group transcripts, and interrupted
-        time series analysis to measure the effect of care delivery change initiatives on
-        clinic panel data. The ACO cost research integrated EMR, claims, and patient
-        satisfaction data in Stata and SAS to produce cohort analyses showing that
-        higher-baseline-cost organizations were more likely to achieve shared savings —
-        published in the International Journal of Healthcare Management in 2018.
-      </p>
+      <details class="exp-details">
+        <summary class="exp-details-summary"><span class="exp-label-closed">More detail</span><span class="exp-label-open">Less</span></summary>
+        <p>
+          The Wisconsin Longitudinal Study — a fifty-year cohort of ten thousand adults
+          integrating survey, health, and administrative records — taught me what
+          longitudinal data quality problems actually look like: cohort attrition,
+          measurement drift, linkage failure across administrative sources that were never
+          designed to be linked. Methodological training included Contemporary Qualitative
+          Interviewing Methods at the University of Oxford (2014).
+        </p>
+        <p>
+          A sustained research thread on primary care redesign used grounded theory for
+          qualitative analysis of field notes and focus group transcripts, and interrupted
+          time series analysis to measure the effect of care delivery change initiatives on
+          clinic panel data.
+        </p>
+        <p>
+          The ACO cost research integrated EMR, claims, and patient
+          satisfaction data in Stata and SAS to produce cohort analyses showing that
+          higher-baseline-cost organizations were more likely to achieve shared savings —
+          published in the International Journal of Healthcare Management in 2018.
+        </p>
+      </details>
     </div>
     <span class="exp-stack">Stata · SAS · NVivo · SPSS · REDCap</span>
   </div>
@@ -1094,9 +1127,9 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
       <p>Analyzed organization-wide care delivery changes using interrupted time series
       analysis on clinic panel data. The methodological question was whether observed
       changes in care patterns were attributable to redesign initiatives or to secular
-      trends — which requires a study design that can separate the two. Segmentation and
-      regression modeling applied to longitudinal outpatient panel data across multiple
-      clinic sites.</p>
+      trends — which requires a study design that can separate the two. The design
+      combined segmentation with regression across multiple clinic sites to isolate the
+      redesign effect from background drift.</p>
     </div>
     <span class="project-stack">Stata · SAS · interrupted time series · outpatient analytics</span>
   </div>
@@ -1107,12 +1140,12 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
     <span class="project-num">06</span>
     <span class="project-title">Practice Automation Analytics — healthfinch Charlie</span>
     <div class="project-body">
-      <p>Analytics developed for a case study examining healthfinch's Charlie Practice
-      Automation Platform implementation across multiple community health centers at
-      OCHIN, Inc. Focus on workflow optimization and return on investment achieved through
-      data-driven clinical decision support. Linear regression on clinical workflow data
-      translated operational changes into customer-facing value demonstrations that
-      contributed to contract renewals and new sales.</p>
+      <p>I built the analytics for a case study of healthfinch's Charlie deployment
+      across multiple community health centers at OCHIN. The case study asked two
+      questions: how did clinician workflows change after Charlie deployment, and what
+      was the ROI for the health centers that adopted it? Linear regression on the
+      workflow data produced quantified outcome measures that the commercial team used
+      in renewal conversations and new-customer pitches.</p>
     </div>
     <span class="project-stack">linear regression · Sisense · Epic Clarity · SQL</span>
   </div>
