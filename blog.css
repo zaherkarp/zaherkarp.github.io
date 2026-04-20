@@ -4,13 +4,14 @@
 */
 
 :root {
-  --bg:       #fafaf8;
-  --surface:  #f0f0ee;
-  --rule:     #e0e0de;
-  --text:     #181818;
-  --text-sec: #484848;
-  --text-dim: #787878;
-  --blue:     #1a5fa8;
+  /* Tufte palette — cream paper, charcoal ink, rust accent */
+  --bg:       #fffff8;
+  --surface:  #f7f2e8;
+  --rule:     #d6d2c8;
+  --text:     #2a2a2a;
+  --text-sec: #4a4238;
+  --muted:    #766f64;
+  --accent:   #8b2e19;
 
   --size-caption: 0.78rem;
   --size-body:    1rem;
@@ -19,13 +20,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:       #14151a;
-    --surface:  #1c1d24;
-    --rule:     #24252e;
-    --text:     #e6e6e2;
-    --text-sec: #aaaaaa;
-    --text-dim: #666670;
-    --blue:     #4d8fd4;
+    /* Tufte dark variant A — warm near-black, bright cream, saturated rust */
+    --bg:       #201b14;
+    --surface:  #2b2418;
+    --rule:     #3a3024;
+    --text:     #f5ecd7;
+    --text-sec: #d4c7a9;
+    --muted:    #b0a48a;
+    --accent:   #e06940;
   }
 }
 
@@ -45,7 +47,7 @@ body {
   background: var(--bg);
 }
 
-:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .page {
   max-width: 640px;
@@ -54,12 +56,12 @@ body {
 }
 
 a {
-  color: var(--blue);
+  color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.15s ease;
 }
-a:hover { border-bottom-color: var(--blue); }
+a:hover { border-bottom-color: var(--accent); }
 
 /* NAV */
 nav {
@@ -77,7 +79,7 @@ nav {
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--muted);
   border-bottom: none;
   padding: 0.3rem 0;
   position: relative;
@@ -87,7 +89,7 @@ nav {
   position: absolute;
   bottom: 0; left: 0;
   width: 0; height: 1px;
-  background: var(--blue);
+  background: var(--accent);
   transition: width 0.2s ease;
 }
 .nav-links a:hover { color: var(--text); }
@@ -98,7 +100,7 @@ nav {
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.12em;
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-bottom: 1rem;
 }
@@ -116,7 +118,7 @@ nav {
 .writing-date {
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(var(--size-caption) * 0.88);
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-bottom: 0.1rem;
   letter-spacing: 0.04em;
@@ -131,12 +133,12 @@ nav {
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--muted);
   border-bottom: none;
   display: inline-block;
   margin-bottom: 2rem;
 }
-.back-link:hover { color: var(--blue); }
+.back-link:hover { color: var(--accent); }
 
 .blog-header { margin-bottom: 2rem; }
 
@@ -155,7 +157,7 @@ nav {
   align-items: baseline;
   gap: 0.5rem 1rem;
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
 }
 
 .blog-date {
@@ -204,15 +206,15 @@ nav {
 .blog-body h3 { font-size: 1.15rem; }
 .blog-body h4 { font-size: 1rem; font-variant: small-caps; letter-spacing: 0.06em; color: var(--text-sec); }
 
-.blog-body a { color: var(--blue); border-bottom: 1px solid var(--rule); }
-.blog-body a:hover { border-bottom-color: var(--blue); }
+.blog-body a { color: var(--accent); border-bottom: 1px solid var(--rule); }
+.blog-body a:hover { border-bottom-color: var(--accent); }
 
 .blog-body ul,
 .blog-body ol { margin: 0 0 1.1rem 1.4rem; max-width: 34em; }
 .blog-body li { margin-bottom: 0.35rem; }
 
 .blog-body blockquote {
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--accent);
   padding-left: 1rem;
   margin: 1.25rem 0;
   color: var(--text-sec);
@@ -241,7 +243,7 @@ nav {
   font-size: calc(var(--size-caption) * 0.95);
   line-height: 1.6;
   background: var(--surface);
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--accent);
   padding: 0.85rem 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -275,7 +277,7 @@ nav {
 .blog-body figure { margin: 1.5rem 0; }
 .blog-body figcaption {
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
   margin-top: 0.4rem;
   text-align: center;
 }
@@ -326,12 +328,12 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
   color: var(--text-sec);
   line-height: 1.85;
 }
-.footer-contact a { color: var(--blue); border-bottom: none; }
-.footer-contact a:hover { border-bottom-color: var(--blue); }
+.footer-contact a { color: var(--accent); border-bottom: none; }
+.footer-contact a:hover { border-bottom-color: var(--accent); }
 .footer-contact .contact-label {
   font-variant: small-caps;
   letter-spacing: 0.06em;
-  color: var(--text-dim);
+  color: var(--muted);
   margin-right: 0.35rem;
 }
 .footer-links {
@@ -347,5 +349,5 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
   letter-spacing: 0.08em;
   color: var(--text-sec);
 }
-.footer-links a:hover { color: var(--blue); }
-.footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--text-dim); }
+.footer-links a:hover { color: var(--accent); }
+.footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }

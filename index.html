@@ -60,51 +60,15 @@
 </script>
 
 <style>
-
-/*
-  v18 CHANGES FROM v17
-  ====================
-  COLOR SCHEME: Option B — Scientific Paper
-    Light: #fafaf8 bg, #181818 text, #1a5fa8 accent (blue)
-    Dark:  #14151a bg, #e6e6e2 text, #4d8fd4 accent (blue)
-    Single accent color throughout UI.
-    Career arc bars: independent color system, unchanged.
-
-  NAMEPLATE REMOVED:
-    h1 "Zaher Karp" removed from hero.
-    Name now appears in: nav (anchor), psql block (data).
-    Two instances, both doing distinct work.
-    Hero collapses: domain sentence → claim → contact → psql.
-
-  STATUS FIELD:
-    "open to conversations" replaced with
-    "building connections · open to collaboration"
-    Color: Solarized orange.
-    Light: #cb4b16 (canonical Solarized orange, strong contrast on #fafaf8)
-    Dark:  #d4693a (warm adjusted, holds contrast on #14151a)
-    Used on exactly one element. Nowhere else.
-
-  ALL V17 CONTENT CARRIED FORWARD.
-
-  NOTES FOR CLAUDE CODE:
-  - Stars dashboard live demo = blog post URL for now
-  - GoatCounter script tag before </body>, site code TBD
-  - Email address: confirm before shipping
-  - Blog pipeline (build_blog.py + GitHub Action) is separate workstream
-  - New repo: zaherkarp-portfolio, GitHub Pages project site
-    deploys to zaherkarp.github.io/zaherkarp-portfolio/
-    Swap to zaherkarp.github.io main when ready.
-*/
-
 :root {
-  --bg:       #fafaf8;
-  --surface:  #f0f0ee;
-  --rule:     #e0e0de;
-  --text:     #181818;
-  --text-sec: #484848;
-  --text-dim: #787878;
-  --blue:     #1a5fa8;
-  --orange:   #cb4b16;   /* Solarized orange — status field only */
+  /* Tufte palette — cream paper, charcoal ink, rust accent */
+  --bg:       #fffff8;
+  --surface:  #f7f2e8;
+  --rule:     #d6d2c8;
+  --text:     #2a2a2a;
+  --text-sec: #4a4238;
+  --muted:    #766f64;
+  --accent:   #8b2e19;
 
   --size-caption: 0.78rem;
   --size-body:    1rem;
@@ -114,14 +78,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:       #14151a;
-    --surface:  #1c1d24;
-    --rule:     #24252e;
-    --text:     #e6e6e2;
-    --text-sec: #aaaaaa;
-    --text-dim: #666670;
-    --blue:     #4d8fd4;
-    --orange:   #d4693a;   /* warm adjusted for dark bg */
+    /* Tufte dark variant A — warm near-black, bright cream, saturated rust */
+    --bg:       #201b14;
+    --surface:  #2b2418;
+    --rule:     #3a3024;
+    --text:     #f5ecd7;
+    --text-sec: #d4c7a9;
+    --muted:    #b0a48a;
+    --accent:   #e06940;
   }
 }
 
@@ -142,7 +106,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .page {
   max-width: 640px;
@@ -153,12 +117,12 @@ body {
 p { margin-bottom: 1rem; max-width: 34em; }
 
 a {
-  color: var(--blue);
+  color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.15s ease;
 }
-a:hover { border-bottom-color: var(--blue); }
+a:hover { border-bottom-color: var(--accent); }
 
 hr {
   border: none;
@@ -176,7 +140,7 @@ section { padding: var(--gap) 0 1rem; }
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.12em;
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-bottom: 1rem;
   font-weight: 400;
@@ -212,7 +176,7 @@ nav {
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--muted);
   border-bottom: none;
   position: relative;
   padding: 0.3rem 0;
@@ -223,7 +187,7 @@ nav {
   position: absolute;
   bottom: 0; left: 0;
   width: 0; height: 1px;
-  background: var(--blue);
+  background: var(--accent);
   transition: width 0.2s ease;
 }
 
@@ -265,7 +229,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 
 .hero-domain {
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
   margin-bottom: 1.25rem;
   display: block;
   max-width: 38em;
@@ -277,7 +241,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   font-style: italic;
   line-height: 1.6;
   color: var(--text-sec);
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--accent);
   padding-left: 1rem;
   max-width: 28em;
   margin-bottom: 0.75rem;
@@ -296,7 +260,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   color: var(--text-sec);
   border-bottom: 1px solid var(--rule);
 }
-.hero-contact a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+.hero-contact a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 /*
   psql \x expanded display.
@@ -309,7 +273,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   line-height: 1.85;
   color: var(--text);
   background: var(--surface);
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--accent);
   padding: 0.85rem 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -317,17 +281,17 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   max-width: 100%;
 }
 
-.hero-specimen .prompt  { color: var(--text-dim); user-select: none; }
-.hero-specimen .keyword { color: var(--blue); }
+.hero-specimen .prompt  { color: var(--muted); user-select: none; }
+.hero-specimen .keyword { color: var(--accent); }
 .hero-specimen .value   { color: var(--text); }
-.hero-specimen .comment { color: var(--text-dim); }
+.hero-specimen .comment { color: var(--muted); }
 /* orange: status field only, nowhere else on page */
-.hero-specimen .status  { color: var(--orange); }
+.hero-specimen .status  { color: var(--accent); }
 
 .hero-cursor {
   display: inline-block;
   width: 0.4em; height: 0.8em;
-  background: var(--blue);
+  background: var(--accent);
   vertical-align: text-bottom;
   opacity: 0;
   animation: cursor-blink 1s step-end 3s infinite;
@@ -343,7 +307,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.12em;
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-bottom: 0.6rem;
 }
@@ -403,7 +367,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 .stats-table th:first-child {
   text-align: right;
   padding-right: 1.1rem;
-  color: var(--blue);
+  color: var(--accent);
   width: 3rem;
 }
 
@@ -418,12 +382,12 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   margin-bottom: 0.1rem;
 }
 
-.exp-role.current::before { content: "● "; color: var(--blue); font-size: 0.55em; vertical-align: middle; }
-.exp-role.past::before    { content: "○ "; color: var(--text-dim); font-size: 0.55em; vertical-align: middle; }
+.exp-role.current::before { content: "● "; color: var(--accent); font-size: 0.55em; vertical-align: middle; }
+.exp-role.past::before    { content: "○ "; color: var(--muted); font-size: 0.55em; vertical-align: middle; }
 
 .exp-meta {
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
   display: flex;
   flex-wrap: wrap;
   gap: 0 0.65rem;
@@ -436,7 +400,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 .exp-stack {
   font-family: 'Courier New', Courier, monospace;
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-top: 0.4rem;
   line-height: 1.6;
@@ -448,7 +412,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 
 .project-num {
   font-size: var(--size-caption);
-  color: var(--blue);
+  color: var(--accent);
   display: block;
   margin-bottom: 0.15rem;
 }
@@ -464,13 +428,13 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 .project-body p { font-size: var(--size-body); color: var(--text); max-width: 34em; margin-bottom: 0.4rem; }
 
 .project-links { font-size: var(--size-caption); margin-top: 0.3rem; }
-.project-links a { color: var(--blue); border-bottom: none; margin-right: 0.75rem; }
-.project-links a:hover { border-bottom-color: var(--blue); }
+.project-links a { color: var(--accent); border-bottom: none; margin-right: 0.75rem; }
+.project-links a:hover { border-bottom-color: var(--accent); }
 
 .project-stack {
   font-family: 'Courier New', Courier, monospace;
   font-size: var(--size-caption);
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-top: 0.4rem;
 }
@@ -481,7 +445,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 .writing-date {
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(var(--size-caption) * 0.88);
-  color: var(--text-dim);
+  color: var(--muted);
   display: block;
   margin-bottom: 0.1rem;
   letter-spacing: 0.04em;
@@ -492,13 +456,13 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 
 /* PUBLICATIONS */
 .pub-entry  { margin-bottom: 1.35rem; }
-.pub-year   { font-size: var(--size-caption); color: var(--text-dim); display: block; margin-bottom: 0.1rem; }
+.pub-year   { font-size: var(--size-caption); color: var(--muted); display: block; margin-bottom: 0.1rem; }
 .pub-title  { font-size: var(--size-body); color: var(--text); display: block; margin-bottom: 0.08rem; }
 .pub-authors{ font-size: var(--size-caption); color: var(--text-sec); display: block; margin-bottom: 0.06rem; }
 .pub-journal{ font-size: var(--size-caption); color: var(--text-sec); }
 .pub-links  { font-size: calc(var(--size-caption) * 0.9); margin-top: 0.15rem; }
-.pub-links a{ color: var(--blue); border-bottom: none; margin-right: 0.5rem; }
-.pub-links a:hover { border-bottom-color: var(--blue); }
+.pub-links a{ color: var(--accent); border-bottom: none; margin-right: 0.5rem; }
+.pub-links a:hover { border-bottom-color: var(--accent); }
 
 /* TESTIMONIALS */
 .testimonial-entry { margin-bottom: 1.75rem; }
@@ -528,7 +492,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.08em;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   list-style: none;
   display: inline-block;
@@ -546,7 +510,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.08em;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   list-style: none;
   display: inline-block;
@@ -592,7 +556,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 
 /* EDUCATION */
 .edu-entry { margin-bottom: 1.35rem; }
-.edu-year        { font-size: var(--size-caption); color: var(--text-dim); display: block; margin-bottom: 0.08rem; }
+.edu-year        { font-size: var(--size-caption); color: var(--muted); display: block; margin-bottom: 0.08rem; }
 .edu-degree      { font-size: var(--size-body); font-weight: 500; color: var(--text); display: block; margin-bottom: 0.05rem; }
 .edu-institution { font-size: var(--size-caption); color: var(--text-sec); display: block; margin-bottom: 0.2rem; }
 .edu-notes       { font-size: var(--size-caption); color: var(--text-sec); }
@@ -600,7 +564,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 /* SERVICE */
 .service-entry { margin-bottom: 1rem; }
 .service-role  { font-size: var(--size-body); font-weight: 500; color: var(--text); display: block; margin-bottom: 0.05rem; }
-.service-meta  { font-size: var(--size-caption); color: var(--text-dim); margin-bottom: 0.15rem; display: block; }
+.service-meta  { font-size: var(--size-caption); color: var(--muted); margin-bottom: 0.15rem; display: block; }
 .service-note  { font-size: var(--size-caption); color: var(--text-sec); }
 
 /* FOOTER */
@@ -616,13 +580,13 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
   max-width: none;
 }
 
-.footer-contact a { color: var(--blue); border-bottom: none; }
-.footer-contact a:hover { border-bottom-color: var(--blue); }
+.footer-contact a { color: var(--accent); border-bottom: none; }
+.footer-contact a:hover { border-bottom-color: var(--accent); }
 
 .footer-contact .contact-label {
   font-variant: small-caps;
   letter-spacing: 0.06em;
-  color: var(--text-dim);
+  color: var(--muted);
   margin-right: 0.35rem;
 }
 
@@ -641,8 +605,8 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
   color: var(--text-sec);
 }
 
-.footer-links a:hover { color: var(--blue); }
-.footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--text-dim); }
+.footer-links a:hover { color: var(--accent); }
+.footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }
 
 /* SECTION REVEAL */
 @supports (animation-timeline: view()) {
