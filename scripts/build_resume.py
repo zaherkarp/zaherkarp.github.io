@@ -36,7 +36,7 @@ from markdown_it import MarkdownIt
 from weasyprint import HTML
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "resume.md"
+SRC = ROOT / "src" / "content" / "resume.md"
 OUT = ROOT / "resume.pdf"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 FONT_DIR = Path(__file__).resolve().parent / "fonts"
@@ -155,7 +155,7 @@ def render() -> None:
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape([]),  # body is pre-rendered HTML
     )
-    template = env.get_template("resume.html")
+    template = env.get_template("resume/resume.html")
     html = template.render(
         name=name,
         body=body,

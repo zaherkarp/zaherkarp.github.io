@@ -185,7 +185,7 @@ def build_article_jsonld(post: dict) -> str:
 
 
 def render_post(env: Environment, post: dict, current_year: int) -> str:
-    template = env.get_template("post.html")
+    template = env.get_template("blog/post.html")
     return template.render(
         page_title=f"{post['title']} — Zaher Karp",
         page_description=post["description"],
@@ -205,7 +205,7 @@ def render_post(env: Environment, post: dict, current_year: int) -> str:
 
 
 def render_index(env: Environment, posts: list[dict], current_year: int) -> str:
-    template = env.get_template("index.html")
+    template = env.get_template("blog/index.html")
     return template.render(
         page_title="Writing — Zaher Karp",
         page_description="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and production analytics.",

@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/content/blog/**'
       - 'scripts/build_blog.py'
-      - 'scripts/templates/**'
+      - 'scripts/templates/blog/**'
       - 'scripts/requirements.txt'
       - '.github/workflows/build_blog.yml'
   workflow_dispatch: {}
