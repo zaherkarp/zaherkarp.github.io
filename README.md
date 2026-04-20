@@ -92,7 +92,7 @@ Complete:
 Open (see CLAUDE.md TO-DOs for full list):
 
 1. Create GitHub repo + enable Pages
-2. Confirm email (`zaher@zaherkarp.com`)
+2. Confirm email (`me@zaherkarp.com`)
 3. Commit a `/resume.pdf`
 4. Real blog migration — see `src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md`
 5. Swap into the `zaherkarp.github.io` main repo
