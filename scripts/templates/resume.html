@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ name }} — Resume</title>
+<style>
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('file://{{ font_dir }}/EBGaramond-Variable.ttf') format('truetype-variations');
+  font-weight: 400 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('file://{{ font_dir }}/EBGaramond-Italic-Variable.ttf') format('truetype-variations');
+  font-weight: 400 700;
+  font-style: italic;
+}
+
+/* Print uses the CLAUDE.md print-override tokens: white paper,
+   near-black text, rust accent, 0.75in margins, light rule weight. */
+@page {
+  size: auto;
+  margin: 0.75in;
+}
+
+:root {
+  --text: #1a1a1a;
+  --text-sec: #4a4a4a;
+  --text-dim: #766f64;  /* --muted from CLAUDE.md */
+  --rule: #d6d2c8;
+  --accent: #8b2e19;    /* Tufte rust */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 10.5pt;
+}
+
+body {
+  font-family: 'EB Garamond', Georgia, serif;
+  color: var(--text);
+  line-height: 1.38;
+  background: white;
+}
+
+/* Header block: name + contact */
+.hdr-name {
+  font-size: 20pt;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin-bottom: 2pt;
+}
+.hdr-contact {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 8.5pt;
+  color: var(--text-sec);
+  letter-spacing: 0.01em;
+  margin-bottom: 10pt;
+}
+
+/* Section headers (## in markdown → <h2>) */
+h2 {
+  font-size: 9pt;
+  font-variant: small-caps;
+  letter-spacing: 0.14em;
+  color: var(--text-sec);
+  font-weight: 500;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 2pt;
+  margin: 11pt 0 5pt 0;
+  page-break-after: avoid;
+}
+
+/* Summary paragraph (directly after Summary h2) */
+h2 + p {
+  font-size: 10.5pt;
+  margin-bottom: 2pt;
+}
+
+/* Role header block (post-processed <header class="role">) */
+.role {
+  margin: 7pt 0 1pt 0;
+  page-break-inside: avoid;
+}
+.role-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+}
+.role-where {
+  font-size: 11pt;
+  color: var(--text);
+}
+.role-where .role-org { font-weight: 600; }
+.role-where .role-sep { color: var(--text-dim); margin: 0 0.25em; }
+.role-where .role-title { font-weight: 400; }
+.role-date {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 9pt;
+  color: var(--text-sec);
+  white-space: nowrap;
+}
+.role-stack {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-size: 8.5pt;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-top: 1pt;
+}
+
+/* Experience bullets */
+ul {
+  list-style-type: disc;
+  margin: 3pt 0 4pt 14pt;
+  padding: 0;
+}
+li {
+  margin-bottom: 2pt;
+  line-height: 1.36;
+  font-size: 10.5pt;
+  page-break-inside: avoid;
+}
+
+/* Sub-headings inside UW entry (bold inline, no H3) */
+.exp p strong:only-child,
+.exp > p > strong { /* preserve bold-inline subheaders without making them H3 */
+  display: block;
+  margin-top: 4pt;
+  font-weight: 600;
+}
+
+/* Skills: bold category + inline list */
+.skills p {
+  margin: 2pt 0;
+  font-size: 10pt;
+}
+.skills p strong {
+  font-weight: 600;
+}
+
+/* Education: one line per entry */
+.education p {
+  margin: 1pt 0;
+  font-size: 10pt;
+}
+
+/* Awards: single line, centered */
+.awards p {
+  margin-top: 3pt;
+  font-size: 9.5pt;
+  color: var(--text-sec);
+  text-align: center;
+}
+
+/* Inline emphasis */
+em {
+  font-style: italic;
+}
+strong {
+  font-weight: 600;
+}
+
+/* Tighten widows/orphans near page breaks */
+p, li { orphans: 2; widows: 2; }
+</style>
+</head>
+<body>
+{{ body | safe }}
+</body>
+</html>

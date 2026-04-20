@@ -71,19 +71,72 @@ github.io-redesign/
 
 ---
 
-## Design decisions — locked, do not change without discussion
+## Design decisions/tokens — locked, do not change without discussion
 
-**Color scheme:** Option B — Scientific Paper
-  Light: #fafaf8 bg, #181818 text, #1a5fa8 blue accent
-  Dark:  #14151a bg, #e6e6e2 text, #4d8fd4 blue accent
-  Orange (#cb4b16 light / #d4693a dark): status field in psql block ONLY.
-  Single accent color throughout UI. No yellow, no green, no cyan in UI layer.
+Palette: Tufte (cream paper and printed ink). Swapped from Scientific Paper
+after mockup review. Light mode evokes Tufte's book-design heritage. Dark
+mode is variant A (amped contrast) because the original dark was too gentle
+against the warm-black ground.
 
-**Typography:**
-  Base font size: 21px
-  EB Garamond: all prose, section labels, nav, footer
-  Courier New: data specimens only (psql block, exp-stack lines, writing dates)
-  Three sizes: --size-caption (0.78rem), --size-body (1rem), --size-name (clamp)
+Light mode:
+  --bg:     #fffff8    /* Tufte cream. Warmer than #fafaf8. */
+  --text:   #2a2a2a    /* Charcoal body. Softer than pure black on cream. */
+  --muted:  #766f64    /* Warm gray: dates, metadata, stack lines. */
+  --accent: #8b2e19    /* Rust: rules, links, hero-claim border, labels. */
+
+Dark mode (variant A, amped):
+  --bg:     #201b14    /* Warm near-black. Deeper than #1a1a17. */
+  --text:   #f5ecd7    /* Bright cream. Brighter than #e8e4d6 so body reads. */
+  --muted:  #b0a48a    /* Warm mid-tone. Brighter than the original #928e7e. */
+  --accent: #e06940    /* Saturated rust. Original #c4573e muddied on dark. */
+
+Single accent throughout the UI. No secondary UI color. No blue, green,
+amber, cyan, or orange anywhere in the chrome. The psql status field uses
+--accent (same token as all other accent use).
+
+Typography:
+  --font-body:    EB Garamond, Georgia, serif
+  --font-mono:    'Courier New', ui-monospace, monospace
+  Why: Garamond matches Tufte's book lineage. Courier is system-available,
+  so no second Google Font request and graceful fallback on older systems.
+
+  --size-caption: 0.78rem   /* metadata, stack lines, writing dates */
+  --size-body:    1rem      /* all prose */
+  --size-name:    clamp(...) /* hero name — keep the existing clamp() */
+
+  Base: 21px. Why: Garamond reads small under 18px. 21px gives it room
+  and pairs with the 640px Yau-pivot column — large type in a narrow
+  column keeps line length inside the 55-75-character sweet spot.
+
+Italic policy (unchanged from prior section):
+  Reserved for pull quotes, testimonials, hero claim. Blog prose em/i
+  renders as non-italic font-weight: 500. See .blog-body em in blog.css.
+
+Rules (horizontal dividers and section underlines):
+  --rule-light: 2px
+  --rule-dark:  3px
+  Why: equivalent weights read as weaker on dark. The 1px bump preserves
+  perceptual equivalence across modes. Print uses light weight (see below).
+
+Spacing (reconcile against actual CSS; these are the intended tokens):
+  --space-xs:      0.25rem   /* tight element gaps */
+  --space-sm:      0.5rem    /* inline gaps between related items */
+  --space-md:      1rem      /* paragraph rhythm */
+  --space-lg:      2rem      /* between experience entries */
+  --space-xl:      3rem      /* between major sub-sections */
+  --space-section: 4rem      /* between page regions */
+  Why: named tokens so changes are systematic, not ad hoc. If the current
+  style.css uses raw rem values, audit and replace on next pass; do not
+  rewrite in bulk without verification.
+
+Print overrides (inside @media print):
+  Force --bg: #ffffff and --text: #1a1a1a for maximum paper contrast.
+  Use --rule-light weight everywhere (print reads as a light medium).
+  Hide: nav, footer GoatCounter script, any animations, career arc SVG.
+  Page size: auto. Margins: 0.75in.
+  Why: the career arc's 800px viewBox exceeds printable column width.
+  Print-lock to light tokens because paper is always a light medium
+  regardless of the reader's screen mode.
 
 **Italic policy:**
   Italic reserved for: pull quotes, testimonials, hero claim only.
@@ -106,7 +159,7 @@ github.io-redesign/
 
 **Hero:**
   No h1 nameplate. Name appears in nav (anchor) and psql block (data) only.
-  Sequence: domain sentence → claim (italic, blue left border) → contact → psql.
+  Sequence: domain sentence → claim (italic, rust left border using --accent) → contact → psql.
   psql block: exact \x expanded display format. white-space: pre.
   Field alignment: name/title/focus padded to 6 chars so pipes align.
   psql prompt string: `resume_db=#` (not `zaher_resume_db=#`). The name
@@ -119,7 +172,7 @@ github.io-redesign/
   Color: --text-dim. No accent color.
 
 **Footer:**
-  Plain Garamond. Small caps labels. Blue links. No Courier.
+  Plain Garamond. Small caps labels. Rust links (--accent). No Courier.
 
 **Name appearances policy:**
   "Zaher Karp" appears in exactly three visible places — nav anchor,
@@ -197,7 +250,7 @@ All prose, dates, links, and stack lines in v18 are correct and approved.
 **Live site:** zaherkarp.github.io (Astro) — use for gap analysis only.
 Do not copy structure or CSS from the live site.
 
-**Email:** zaher@zaherkarp.com (confirm before shipping)
+**Email:** me@zaherkarp.com (confirm before shipping)
 
 **Links:**
   Stars dashboard: links to blog post (no standalone demo URL yet)
@@ -258,18 +311,38 @@ The link target: zaherkarp.github.io/blog (or /blog once on the new site).
 
 ---
 
-## Resume
+## Resume pipeline
 
-/resume.pdf is a manually maintained file. It is NOT generated.
-It is committed to the repo as a static asset.
-The footer links to it as a PDF download.
+/resume.pdf is generated from /resume.md on every push.
+Source of truth is the markdown. The PDF is a build artifact.
 
-TO-DO: Decide whether to build resume.html with print CSS (print once to PDF,
-commit the PDF, never touch the HTML again) or use existing resume PDF from
-prior work. Do not build a generation pipeline for the resume — no build step.
+Build script: scripts/build_resume.py
+  Uses markdown-it-py + Jinja2 + WeasyPrint
+  Reads resume.md at repo root
+  Applies scripts/templates/resume.html (print CSS, Tufte palette)
+  Regex post-pass wraps role-header blocks (org | title / date / stack)
+  in a structured <header class="role"> element for CSS targeting
+  Renders directly to resume.pdf at repo root
+  Target: 1–2 pages, US Letter, ATS-parseable (single column, no tables)
 
-Current resume versions exist from prior work (full, one-page, ATS-optimized).
-Z to decide which to commit as /resume.pdf.
+Bundled fonts (OFL-licensed, committed):
+  scripts/fonts/EBGaramond-Variable.ttf
+  scripts/fonts/EBGaramond-Italic-Variable.ttf
+  scripts/fonts/OFL.txt
+
+Local dev setup (macOS, one-time):
+  brew install pango            # WeasyPrint needs pango + cairo + glib
+  pip install -r scripts/requirements.txt
+  DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python scripts/build_resume.py
+
+GitHub Action: .github/workflows/build_resume.yml
+  Triggers on resume.md, templates, fonts, or the build script
+  Installs pango/cairo/glib on Ubuntu runner, runs build_resume.py,
+  commits regenerated resume.pdf back to the repo
+  Requires: Settings → Actions → Workflow permissions → Read and write
+
+Do not rebuild resume.pdf by hand. Edit resume.md and push; CI regenerates
+the PDF. If you need a local render, use the command above.
 
 ---
 
@@ -306,12 +379,12 @@ against the local preview or swap-target URL:
    (d) run python scripts/build_blog.py and spot-check output
    (e) delete src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md
 5. ~~Add GoatCounter script tag~~ — done (site code `zaher-karp`)
-6. Confirm email address (`zaher@zaherkarp.com`) before swap
+6. Confirm email address (`me@zaherkarp.com`) before swap
 7. ~~Add scroll behavior to nav links (smooth scroll, active state)~~ — done
    (CSS `scroll-behavior: smooth` + `:has(:target)` active state)
 8. ~~Mobile nav: test wrapping behavior, consider hamburger if needed~~ —
    decided: wrap is intentional, no hamburger (see Design decisions §Mobile nav)
-9. Commit `/resume.pdf` — Z to decide which version
+9. ~~Commit `/resume.pdf`~~ — done (generated by scripts/build_resume.py from resume.md)
 10. Run pre-swap testing checklist (see §Pre-swap testing checklist)
 11. Swap: copy finished files into zaherkarp.github.io main, push
 
@@ -322,7 +395,6 @@ against the local preview or swap-target URL:
 - Do not install npm, node, or any JS build tooling
 - Do not add CSS frameworks (Tailwind, Bootstrap, etc.)
 - Do not add React, Vue, or any frontend framework
-- Do not create a generation pipeline for the resume
 - Do not change the 640px max-width or reintroduce a multi-column grid
 - Do not change the color scheme without discussion
 - Do not change the career arc SVG coordinates without recalculating
