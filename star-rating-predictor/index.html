@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicare Star Rating Predictor — Zaher Karp</title>
+<meta name="description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings. Four quality levers, cut-point visualization, no data leaves your machine.">
+<link rel="canonical" href="https://zaherkarp.com/star-rating-predictor/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="Medicare Star Rating Predictor">
+<meta property="og:description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings. Four quality levers, cut-point visualization, no data leaves your machine.">
+<meta property="og:url" content="https://zaherkarp.com/star-rating-predictor/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Medicare Star Rating Predictor">
+<meta name="twitter:description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Medicare Star Rating Predictor",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0" },
+  "description": "Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings.",
+  "author": { "@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com" }
+}
+</script>
+
+<style>
+:root {
+  --bg:       #fffff8;
+  --surface:  #f7f2e8;
+  --rule:     #d6d2c8;
+  --text:     #2a2a2a;
+  --text-sec: #4a4238;
+  --muted:    #766f64;
+  --accent:   #8b2e19;
+  --size-caption: 0.78rem;
+  --size-body:    1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #201b14;
+    --surface:  #2b2418;
+    --rule:     #3a3024;
+    --text:     #f5ecd7;
+    --text-sec: #d4c7a9;
+    --muted:    #b0a48a;
+    --accent:   #e06940;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 21px; background: var(--bg); color: var(--text); }
+body { font-family: 'EB Garamond', Georgia, serif; font-size: var(--size-body); line-height: 1.7; background: var(--bg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: var(--accent); }
+
+nav {
+  padding: 1.6rem 0 1.4rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: baseline;
+  flex-wrap: wrap; gap: 0.5rem 1rem;
+}
+.nav-name { font-size: var(--size-body); color: var(--text); border-bottom: none; }
+.nav-back {
+  font-size: var(--size-caption);
+  font-variant: small-caps; letter-spacing: 0.1em;
+  color: var(--muted); border-bottom: none;
+}
+.nav-back:hover { color: var(--text); }
+
+.intro { padding: 2.5rem 0 1.5rem; }
+.intro h1 {
+  font-size: 1.5rem; font-weight: 500; color: var(--text);
+  margin-bottom: 0.75rem; line-height: 1.3;
+}
+.intro p { font-size: var(--size-body); color: var(--text); margin-bottom: 0.9rem; max-width: 34em; }
+.intro .sub { font-size: var(--size-caption); color: var(--muted); margin-bottom: 0.6rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1.5rem 1.25rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.card-head {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rule); display: inline-block; }
+.card-title {
+  margin-left: 0.35rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--size-caption);
+  color: var(--muted);
+}
+
+.input-group { margin-bottom: 1.15rem; }
+.input-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;
+}
+.input-label {
+  font-size: calc(var(--size-caption) * 1.05);
+  color: var(--text-sec); font-weight: 500;
+  display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+}
+.weight-badge {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.72);
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: var(--muted);
+  background: var(--bg);
+}
+.weight-badge.triple { color: var(--accent); border-color: var(--accent); }
+
+.help-tip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1px solid var(--rule);
+  color: var(--muted); background: var(--bg);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px; line-height: 1; cursor: help;
+  text-decoration: none;
+}
+.help-tip::after { content: "?"; }
+
+.value-out {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--size-caption);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.slider-wrap { position: relative; }
+.slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px;
+  background: var(--rule);
+  border-radius: 9999px; outline: none; cursor: pointer;
+  display: block;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.slider::-moz-range-thumb {
+  width: 16px; height: 16px; border: 2px solid var(--bg);
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.pctl-marks { position: absolute; top: 0; left: 0; right: 0; height: 100%; pointer-events: none; }
+.pctl-mark {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px; height: 10px;
+  background: var(--muted); opacity: 0.45;
+}
+.pctl-mark.median { height: 12px; width: 2px; opacity: 0.7; }
+
+.range-label {
+  display: flex; justify-content: space-between;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.78);
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.reward-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 0.25rem; margin-top: 0.25rem;
+}
+.toggle {
+  position: relative; display: inline-block; width: 34px; height: 18px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--rule); border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+.toggle-slider::before {
+  content: ""; position: absolute;
+  width: 12px; height: 12px; left: 3px; bottom: 3px;
+  background: var(--bg); border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+.reward-val { font-family: 'Courier New', Courier, monospace; font-size: var(--size-caption); font-weight: 600; color: var(--accent); margin-right: 0.6rem; }
+
+.divider { height: 1px; background: var(--rule); margin: 1.25rem 0; }
+
+.section-label-sm {
+  font-size: calc(var(--size-caption) * 0.9);
+  font-variant: small-caps; letter-spacing: 0.12em;
+  color: var(--muted);
+  display: block; margin-bottom: 0.6rem;
+}
+
+.rating-row {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.star-row { display: flex; gap: 0.15rem; }
+.star-icon { width: 28px; height: 28px; color: var(--rule); transition: color 0.25s ease; }
+.star-icon.active { color: var(--accent); }
+.star-icon.half { color: var(--accent); opacity: 0.45; }
+.rating-num {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.9rem; font-weight: 700; color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.qbp {
+  font-size: calc(var(--size-caption) * 0.92);
+  color: var(--text-sec); line-height: 1.55;
+  padding: 0.45rem 0.7rem;
+  border-left: 3px solid var(--rule);
+  background: var(--bg);
+  margin-bottom: 1rem;
+}
+.qbp.eligible { border-left-color: var(--accent); }
+.qbp.near { border-left-color: var(--accent); opacity: 0.85; }
+.qbp.below { border-left-color: var(--muted); opacity: 0.8; }
+
+.probs { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
+.prob-row { display: flex; align-items: center; gap: 0.6rem; }
+.prob-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--size-caption);
+  color: var(--muted);
+  width: 2.2rem; text-align: right;
+}
+.bar-track {
+  flex: 1; height: 6px;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 9999px; overflow: hidden;
+}
+.bar-fill { height: 100%; background: var(--accent); border-radius: 9999px; transition: width 0.45s ease; }
+.prob-pct {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--size-caption);
+  color: var(--muted);
+  width: 2.6rem; text-align: right;
+}
+
+.threshold-box { margin: 1.25rem 0 1rem; }
+.threshold-track {
+  position: relative;
+  height: 20px;
+  background: linear-gradient(to right, var(--muted) 0%, var(--rule) 35%, var(--accent) 100%);
+  border-radius: 9999px;
+  opacity: 0.85;
+}
+.threshold-marker {
+  position: absolute; top: -2px; bottom: -2px;
+  width: 2px; background: var(--text); opacity: 0.55;
+}
+.threshold-label {
+  position: absolute; top: -15px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.78);
+  color: var(--muted); white-space: nowrap;
+}
+.z-indicator {
+  position: absolute; top: -4px; bottom: -4px;
+  width: 8px; margin-left: -4px;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  border-radius: 3px;
+  transition: left 0.4s ease;
+  z-index: 2;
+}
+.z-label {
+  position: absolute; bottom: -18px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.78);
+  color: var(--accent); white-space: nowrap;
+}
+.threshold-legend {
+  display: flex; justify-content: space-between;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.78);
+  color: var(--muted);
+  margin-top: 1.6rem;
+}
+
+.impact-box {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 4px;
+  padding: 0.65rem 0.85rem;
+  font-size: calc(var(--size-caption) * 0.95);
+  color: var(--text-sec);
+  line-height: 1.55;
+}
+.impact-box strong { color: var(--text); font-weight: 600; }
+.impact-highlight {
+  font-variant: small-caps; letter-spacing: 0.08em;
+  color: var(--accent); font-weight: 500;
+}
+
+.footnote {
+  font-size: calc(var(--size-caption) * 0.88);
+  color: var(--muted);
+  margin-top: 0.75rem;
+  max-width: 42em;
+}
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 2rem 0 2rem;
+  margin-top: 2rem;
+  font-size: var(--size-caption);
+  color: var(--muted);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
+}
+footer a { color: var(--muted); border-bottom: none; }
+footer a:hover { color: var(--accent); }
+
+@media (max-width: 540px) {
+  .card { padding: 1.1rem 0.9rem; }
+  .rating-num { font-size: 1.6rem; }
+  .star-icon { width: 24px; height: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <a class="nav-back" href="/#projects">← Back to projects</a>
+  </nav>
+
+  <div class="intro">
+    <p class="sub">Interactive demo</p>
+    <h1>What if you could predict your plan&rsquo;s Star Rating?</h1>
+    <p>
+      Every year, CMS assigns a Star Rating to each Medicare Advantage contract — 1 to 5 stars, derived from 42 measures across 9 domains. Below 4.0, a plan forfeits the 5% Quality Bonus Payment. For a 200,000-member plan, that single tenth-of-a-star cliff can be worth $50–80 million.
+    </p>
+    <p>
+      The predictor below uses ordinal logistic regression, calibrated to CMS 2025 measure weights and the MA-PD star distribution, and collapses the 42 measures into four high-leverage inputs. Move the sliders. Watch the rating, the probability distribution, and the cut-point visualization update. For the full methodology, see <a href="/blog/star-rating-predictor-methodology/">the methodology post</a>.
+    </p>
+  </div>
+
+  <div class="card" role="region" aria-label="Star Rating predictor">
+    <div class="card-head">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="card-title">star_rating_predictor.py</span>
+    </div>
+
+    <div class="input-group">
+      <div class="input-row">
+        <label class="input-label" for="hedis-rate">
+          HEDIS composite rate
+          <span class="weight-badge">wt 1–3×</span>
+          <span class="help-tip" title="Weighted average of clinical quality measures: breast cancer screening, colorectal screening, A1C control, blood pressure control, statin therapy, and others. Each measure is individually weighted 1–3× by CMS." aria-label="HEDIS composite help"></span>
+        </label>
+        <span class="value-out" id="hedis-rate-val">75%</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="hedis-rate" class="slider" min="55" max="95" value="75">
+        <div class="pctl-marks" aria-hidden="true">
+          <span class="pctl-mark" style="left: 25%"></span>
+          <span class="pctl-mark median" style="left: 50%"></span>
+          <span class="pctl-mark" style="left: 75%"></span>
+        </div>
+      </div>
+      <div class="range-label"><span>55%</span><span>25th · 50th · 75th pctl</span><span>95%</span></div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-row">
+        <label class="input-label" for="cahps-score">
+          CAHPS member satisfaction
+          <span class="weight-badge">wt 2×</span>
+          <span class="help-tip" title="Consumer Assessment of Healthcare Providers and Systems survey. Covers provider communication, access to care, customer service, and care coordination. Survey response rates affect measurement precision." aria-label="CAHPS help"></span>
+        </label>
+        <span class="value-out" id="cahps-score-val">3.5</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="cahps-score" class="slider" min="2.5" max="4.8" step="0.1" value="3.5">
+        <div class="pctl-marks" aria-hidden="true">
+          <span class="pctl-mark" style="left: 25%"></span>
+          <span class="pctl-mark median" style="left: 50%"></span>
+          <span class="pctl-mark" style="left: 75%"></span>
+        </div>
+      </div>
+      <div class="range-label"><span>2.5</span><span>25th · 50th · 75th pctl</span><span>4.8</span></div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-row">
+        <label class="input-label" for="med-adherence">
+          Medication adherence (PDC)
+          <span class="weight-badge triple">wt 3×</span>
+          <span class="help-tip" title="Proportion of Days Covered (PDC) ≥80% across three measures: diabetes meds, RAS antagonists (hypertension), and statins (cholesterol). CMS measures the % of members hitting PDC ≥80%. As little as 3 percentage points can separate a 3-star from a 5-star rating." aria-label="Medication adherence help"></span>
+        </label>
+        <span class="value-out" id="med-adherence-val">70%</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="med-adherence" class="slider" min="50" max="92" value="70">
+        <div class="pctl-marks" aria-hidden="true">
+          <span class="pctl-mark" style="left: 25%"></span>
+          <span class="pctl-mark median" style="left: 50%"></span>
+          <span class="pctl-mark" style="left: 75%"></span>
+        </div>
+      </div>
+      <div class="range-label"><span>50%</span><span>25th · 50th · 75th pctl</span><span>92%</span></div>
+    </div>
+
+    <div class="input-group">
+      <div class="input-row">
+        <label class="input-label" for="readmission">
+          Readmission rate
+          <span class="weight-badge triple">wt 3× ▼</span>
+          <span class="help-tip" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure — lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years." aria-label="Readmission help"></span>
+        </label>
+        <span class="value-out" id="readmission-val">15%</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="readmission" class="slider" min="8" max="22" value="15">
+        <div class="pctl-marks" aria-hidden="true">
+          <span class="pctl-mark" style="left: 25%"></span>
+          <span class="pctl-mark median" style="left: 50%"></span>
+          <span class="pctl-mark" style="left: 75%"></span>
+        </div>
+      </div>
+      <div class="range-label"><span>8%</span><span>25th · 50th · 75th pctl</span><span>22%</span></div>
+    </div>
+
+    <div class="reward-row">
+      <label class="input-label" for="reward-toggle">
+        CMS reward factor
+        <span class="help-tip" title="Plans at ≥4 stars for 3+ consecutive years receive up to +0.4 stars added to their summary rating before final rounding. This is the mechanism behind sustained quality bonus payments." aria-label="Reward factor help"></span>
+      </label>
+      <div>
+        <span class="reward-val" id="reward-val">Off</span>
+        <label class="toggle">
+          <input type="checkbox" id="reward-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <span class="section-label-sm">Predicted rating</span>
+
+    <div class="rating-row">
+      <div class="star-row" id="star-display">
+        <svg class="star-icon" data-star="1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star-icon" data-star="2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star-icon" data-star="3" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star-icon" data-star="4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star-icon" data-star="5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <span class="rating-num" id="rating-number">3.5</span>
+    </div>
+
+    <div class="qbp" id="qbp-callout" aria-live="polite">
+      <span id="qbp-text"></span>
+    </div>
+
+    <div class="probs" id="prob-bars">
+      <div class="prob-row"><span class="prob-label">5★</span><div class="bar-track"><div class="bar-fill" data-star-prob="5" style="width: 0%"></div></div><span class="prob-pct" data-star-pct="5">0%</span></div>
+      <div class="prob-row"><span class="prob-label">4★</span><div class="bar-track"><div class="bar-fill" data-star-prob="4" style="width: 0%"></div></div><span class="prob-pct" data-star-pct="4">0%</span></div>
+      <div class="prob-row"><span class="prob-label">3★</span><div class="bar-track"><div class="bar-fill" data-star-prob="3" style="width: 0%"></div></div><span class="prob-pct" data-star-pct="3">0%</span></div>
+      <div class="prob-row"><span class="prob-label">2★</span><div class="bar-track"><div class="bar-fill" data-star-prob="2" style="width: 0%"></div></div><span class="prob-pct" data-star-pct="2">0%</span></div>
+      <div class="prob-row"><span class="prob-label">1★</span><div class="bar-track"><div class="bar-fill" data-star-prob="1" style="width: 0%"></div></div><span class="prob-pct" data-star-pct="1">0%</span></div>
+    </div>
+
+    <span class="section-label-sm">Ordinal thresholds</span>
+    <div class="threshold-box">
+      <div class="threshold-track" id="threshold-track">
+        <div class="threshold-marker" data-threshold="0"><span class="threshold-label">≥2</span></div>
+        <div class="threshold-marker" data-threshold="1"><span class="threshold-label">≥3</span></div>
+        <div class="threshold-marker" data-threshold="2"><span class="threshold-label">≥4</span></div>
+        <div class="threshold-marker" data-threshold="3"><span class="threshold-label">≥5</span></div>
+        <div class="z-indicator" id="z-indicator"><span class="z-label" id="z-label">z</span></div>
+      </div>
+      <div class="threshold-legend"><span>1★ region</span><span>5★ region</span></div>
+    </div>
+
+    <span class="section-label-sm">What would move the needle?</span>
+    <div class="impact-box" id="impact-guidance" aria-live="polite">
+      <p>Adjust sliders to see guidance.</p>
+    </div>
+
+    <p class="footnote">
+      Synthetic coefficients calibrated to CMS 2025 measure weights and MA-PD star distribution. Not trained on contract-level data. Does not include case-mix (CAI) adjustment. <a href="/blog/star-rating-predictor-methodology/">Full methodology →</a>
+    </p>
+  </div>
+
+  <footer>
+    <span>© 2026 Zaher Karp</span>
+    <span><a href="/">zaherkarp.com</a> · <a href="/blog/star-rating-predictor-methodology/">Methodology</a></span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var hedisSlider   = document.getElementById("hedis-rate");
+  var cahpsSlider   = document.getElementById("cahps-score");
+  var medSlider     = document.getElementById("med-adherence");
+  var readmitSlider = document.getElementById("readmission");
+  var rewardToggle  = document.getElementById("reward-toggle");
+  if (!hedisSlider || !cahpsSlider || !medSlider || !readmitSlider) return;
+
+  var hedisVal   = document.getElementById("hedis-rate-val");
+  var cahpsVal   = document.getElementById("cahps-score-val");
+  var medVal     = document.getElementById("med-adherence-val");
+  var readmitVal = document.getElementById("readmission-val");
+  var rewardVal  = document.getElementById("reward-val");
+  var ratingNum  = document.getElementById("rating-number");
+  var stars      = document.querySelectorAll("#star-display .star-icon");
+
+  // Coefficients calibrated to CMS 2025 measure weights and MA-PD distribution.
+  // See /blog/star-rating-predictor-methodology/ for the derivation.
+  var intercepts = [-10.1, -11.76, -15.1, -18.17];
+  var weights = {
+    hedis: 0.08,
+    cahps: 1.50,
+    medAdherence: 0.06,
+    readmission: -0.08
+  };
+  var REWARD_FACTOR = 0.4;
+
+  var STEP = { hedis: 5, cahps: 0.3, med: 5, readmit: -2 };
+  var LABELS = {
+    hedis: "HEDIS composite",
+    cahps: "CAHPS satisfaction",
+    med: "medication adherence",
+    readmit: "readmission rate"
+  };
+
+  function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+  function computeZ(hedis, cahps, med, readmit) {
+    return weights.hedis * hedis +
+           weights.cahps * cahps +
+           weights.medAdherence * med +
+           weights.readmission * readmit;
+  }
+
+  function computeExpected(z) {
+    var cum = intercepts.map(function (a) { return sigmoid(a + z); });
+    var raw = [
+      1 - cum[0],
+      cum[0] - cum[1],
+      cum[1] - cum[2],
+      cum[2] - cum[3],
+      cum[3]
+    ].map(function (p) { return Math.max(0, p); });
+    var total = raw.reduce(function (s, p) { return s + p; }, 0);
+    var normalized = raw.map(function (p) { return p / total; });
+    var expected = normalized.reduce(function (s, p, i) { return s + p * (i + 1); }, 0);
+    return { expected: expected, normalized: normalized };
+  }
+
+  function setQbp(expected) {
+    var el = document.getElementById("qbp-callout");
+    var text = document.getElementById("qbp-text");
+    if (!el || !text) return;
+    el.classList.remove("eligible", "near", "below");
+    if (expected >= 4.0) {
+      el.classList.add("eligible");
+      text.textContent = "≥4★ — eligible for Quality Bonus Payments (≈5% premium increase, ~$50M+ for large plans).";
+    } else if (expected >= 3.5) {
+      el.classList.add("near");
+      var gap = (4.0 - expected).toFixed(1);
+      text.textContent = gap + "★ below the 4.0 QBP threshold. Plans below 4.0★ do not qualify for quality bonus payments.";
+    } else {
+      el.classList.add("below");
+      text.textContent = "Below 3.5★ — no QBP eligibility. At ≤2.5★ for 3 consecutive years, CMS may terminate the contract.";
+    }
+  }
+
+  function largestRemainder(raw) {
+    var floored = raw.map(function (p) { return Math.floor(p); });
+    var sum = floored.reduce(function (a, b) { return a + b; }, 0);
+    var remainder = 100 - sum;
+    var idx = raw.map(function (p, i) { return { i: i, r: p - floored[i] }; });
+    idx.sort(function (a, b) { return b.r - a.r; });
+    for (var j = 0; j < remainder; j++) floored[idx[j].i]++;
+    return floored;
+  }
+
+  function updateProbs(normalized) {
+    var rawPcts = normalized.map(function (p) { return p * 100; });
+    var intPcts = largestRemainder(rawPcts);
+    for (var s = 1; s <= 5; s++) {
+      var bar = document.querySelector('[data-star-prob="' + s + '"]');
+      var pct = document.querySelector('[data-star-pct="' + s + '"]');
+      if (bar && pct) {
+        bar.style.width = rawPcts[s - 1] + "%";
+        pct.textContent = intPcts[s - 1] + "%";
+      }
+    }
+  }
+
+  function updateThresholds(z) {
+    var zMin = -intercepts[0] - 5;
+    var zMax = -intercepts[3] + 5;
+    var zRange = zMax - zMin;
+    for (var t = 0; t < 4; t++) {
+      var marker = document.querySelector('[data-threshold="' + t + '"]');
+      if (!marker) continue;
+      var cutZ = -intercepts[t];
+      var pct = ((cutZ - zMin) / zRange) * 100;
+      marker.style.left = Math.max(0, Math.min(100, pct)) + "%";
+    }
+    var zInd = document.getElementById("z-indicator");
+    var zLab = document.getElementById("z-label");
+    if (zInd && zLab) {
+      var zPct = ((z - zMin) / zRange) * 100;
+      zInd.style.left = Math.max(0, Math.min(100, zPct)) + "%";
+      zLab.textContent = "z=" + z.toFixed(1);
+    }
+  }
+
+  function updateImpact(rawExpected, hedis, cahps, med, readmit) {
+    var scenarios = [
+      {
+        gain: computeExpected(computeZ(Math.min(hedis + STEP.hedis, 95), cahps, med, readmit)).expected - rawExpected,
+        label: LABELS.hedis,
+        from: hedis + "%",
+        to: Math.min(hedis + STEP.hedis, 95) + "%",
+        atMax: hedis >= 93
+      },
+      {
+        gain: computeExpected(computeZ(hedis, Math.min(cahps + STEP.cahps, 4.8), med, readmit)).expected - rawExpected,
+        label: LABELS.cahps,
+        from: cahps.toFixed(1),
+        to: Math.min(cahps + STEP.cahps, 4.8).toFixed(1),
+        atMax: cahps >= 4.6
+      },
+      {
+        gain: computeExpected(computeZ(hedis, cahps, Math.min(med + STEP.med, 92), readmit)).expected - rawExpected,
+        label: LABELS.med,
+        from: med + "%",
+        to: Math.min(med + STEP.med, 92) + "%",
+        atMax: med >= 90
+      },
+      {
+        gain: computeExpected(computeZ(hedis, cahps, med, Math.max(readmit + STEP.readmit, 8))).expected - rawExpected,
+        label: LABELS.readmit,
+        from: readmit + "%",
+        to: Math.max(readmit + STEP.readmit, 8) + "%",
+        atMax: readmit <= 9
+      }
+    ];
+    scenarios.sort(function (a, b) { return b.gain - a.gain; });
+
+    var el = document.getElementById("impact-guidance");
+    if (!el) return;
+    var top = scenarios[0];
+    var second = scenarios[1];
+    var html;
+
+    if (top.atMax && second.atMax) {
+      html = "<p>All inputs are near their performance ceiling. Focus on sustaining current levels to maintain the reward factor.</p>";
+    } else if (top.gain < 0.01) {
+      html = "<p>At this performance level, further gains require moving multiple inputs simultaneously. Diminishing returns in the tails of the logistic curve.</p>";
+    } else {
+      var topGain = top.gain >= 0.1 ? "+" + top.gain.toFixed(1) + "★" : "+" + top.gain.toFixed(2) + "★";
+      html = "<p><span class=\"impact-highlight\">Highest-impact lever:</span> Improving <strong>" + top.label + "</strong> from " + top.from + " &rarr; " + top.to + " would shift the predicted rating by <strong>" + topGain + "</strong>.";
+      if (!second.atMax && second.gain >= 0.02) {
+        var secGain = second.gain >= 0.1 ? "+" + second.gain.toFixed(1) + "★" : "+" + second.gain.toFixed(2) + "★";
+        html += " Next best: <strong>" + second.label + "</strong> (" + second.from + " &rarr; " + second.to + ", " + secGain + ").";
+      }
+      html += "</p>";
+    }
+    el.innerHTML = html;
+  }
+
+  function predict() {
+    var hedis   = parseFloat(hedisSlider.value);
+    var cahps   = parseFloat(cahpsSlider.value);
+    var med     = parseFloat(medSlider.value);
+    var readmit = parseFloat(readmitSlider.value);
+    var applyReward = !!(rewardToggle && rewardToggle.checked);
+
+    hedisVal.textContent   = hedis + "%";
+    cahpsVal.textContent   = cahps.toFixed(1);
+    medVal.textContent     = med + "%";
+    readmitVal.textContent = readmit + "%";
+    if (rewardVal) rewardVal.textContent = applyReward ? "+" + REWARD_FACTOR : "Off";
+
+    var z = computeZ(hedis, cahps, med, readmit);
+    var result = computeExpected(z);
+    var rawExpected = result.expected;
+    var expected = applyReward ? Math.min(5.0, rawExpected + REWARD_FACTOR) : rawExpected;
+
+    ratingNum.textContent = expected.toFixed(1);
+
+    var fullStars = Math.floor(expected);
+    var partial = expected - fullStars;
+    for (var i = 0; i < stars.length; i++) {
+      stars[i].classList.remove("active", "half");
+      if (i < fullStars) {
+        stars[i].classList.add("active");
+      } else if (i === fullStars && partial >= 0.25) {
+        stars[i].classList.add(partial >= 0.75 ? "active" : "half");
+      }
+    }
+
+    setQbp(expected);
+    updateProbs(result.normalized);
+    updateThresholds(z);
+    updateImpact(rawExpected, hedis, cahps, med, readmit);
+  }
+
+  [hedisSlider, cahpsSlider, medSlider, readmitSlider].forEach(function (s) {
+    s.addEventListener("input", predict);
+  });
+  if (rewardToggle) rewardToggle.addEventListener("change", predict);
+
+  predict();
+})();
+</script>
+
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>
