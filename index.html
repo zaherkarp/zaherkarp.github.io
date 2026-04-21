@@ -222,7 +222,7 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
 /* HERO */
 /*
   v18: nameplate removed.
-  Domain sentence → claim → contact → psql.
+  Domain sentence → claim → contact.
   No h1. Padding reduced slightly at top.
 */
 .hero { padding: 2.5rem 0 var(--gap); }
@@ -702,21 +702,6 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
       <a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a>
     </p>
 
-    <div class="hero-specimen"
-         aria-label="Zaher Karp profile: Lead Data Engineer, Analytics Engineering and Data Platform, Medicare Advantage HEDIS CMS Stars, SQL Python dbt AWS Azure Databricks, building connections and open to collaboration">
-<span class="prompt">resume_db=#</span> \x
-<span class="comment">Expanded display is on.</span>
-
-<span class="prompt">resume_db=#</span> SELECT * FROM zaher;
-<span class="comment">-[ RECORD 1 ]-----------------------------</span>
-<span class="keyword">name  </span> | <span class="value">Zaher Karp</span>
-<span class="keyword">title </span> | <span class="value">Lead Data Engineer</span>
-<span class="keyword">focus </span> | <span class="value">Analytics Engineering · Data Platform</span>
-<span class="keyword">domain</span> | <span class="value">Medicare Advantage · HEDIS · CMS Stars</span>
-<span class="keyword">stack </span> | <span class="value">SQL · Python · dbt · AWS · Azure · Databricks</span>
-<span class="keyword">status</span> | <span class="status">building connections · open to collaboration</span>
-
-<span class="prompt">resume_db=#</span> <span class="hero-cursor"></span></div>
   </div>
 
 
@@ -818,25 +803,20 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
         </td>
         <td>Years experience</td>
       </tr>
-      <tr data-series="cumulative:50">
+      <tr data-series="cumulative:3->50;ramp:2017-2020-healthfinch">
         <td>50+</td>
         <td class="stats-spark">
           <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
-            <polygon class="spark-fill" points="2,12 98,3 98,12"/>
+            <polygon class="spark-fill" points="2,11 47,11 64,2 98,2 98,12 2,12"/>
           </svg>
         </td>
         <td>Health systems</td>
       </tr>
-      <tr data-series="platforms:Epic,Cerner,Veradigm,athenahealth">
+      <tr data-series="step:1->4;at:2017-healthfinch">
         <td>4</td>
         <td class="stats-spark">
           <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
-            <g class="spark-fill">
-              <circle cx="12" cy="7" r="2.2"/>
-              <circle cx="37" cy="7" r="2.2"/>
-              <circle cx="62" cy="7" r="2.2"/>
-              <circle cx="87" cy="7" r="2.2"/>
-            </g>
+            <polygon class="spark-fill" points="2,9.5 47,9.5 47,2 98,2 98,12 2,12"/>
           </svg>
         </td>
         <td>EHR platforms</td>
@@ -1485,6 +1465,22 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
     </ul>
 
     <p class="footer-copy">© 2026 Zaher Karp. All rights reserved.</p>
+
+    <div class="hero-specimen"
+         aria-label="Zaher Karp profile: Lead Data Engineer, Analytics Engineering and Data Platform, Medicare Advantage HEDIS CMS Stars, SQL Python dbt AWS Azure Databricks, building connections and open to collaboration">
+<span class="prompt">resume_db=#</span> \x
+<span class="comment">Expanded display is on.</span>
+
+<span class="prompt">resume_db=#</span> SELECT * FROM zaher;
+<span class="comment">-[ RECORD 1 ]-----------------------------</span>
+<span class="keyword">name  </span> | <span class="value">Zaher Karp</span>
+<span class="keyword">title </span> | <span class="value">Lead Data Engineer</span>
+<span class="keyword">focus </span> | <span class="value">Analytics Engineering · Data Platform</span>
+<span class="keyword">domain</span> | <span class="value">Medicare Advantage · HEDIS · CMS Stars</span>
+<span class="keyword">stack </span> | <span class="value">SQL · Python · dbt · AWS · Azure · Databricks</span>
+<span class="keyword">status</span> | <span class="status">building connections · open to collaboration</span>
+
+<span class="prompt">resume_db=#</span> <span class="hero-cursor"></span></div>
   </footer>
 
   <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
