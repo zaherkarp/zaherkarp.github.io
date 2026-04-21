@@ -2,8 +2,8 @@
 
 {% block content %}
 <section id="writing" class="blog-index">
-  <span class="section-label">Writing</span>
-  <p class="blog-index-intro">Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and the places where CMS Technical Notes and production reality diverge.</p>
+  <span class="section-label">{{ section_label | default("Writing") }}</span>
+  <p class="blog-index-intro">{{ intro }}</p>
 
   {% for post in posts %}
   <div class="writing-entry">
@@ -12,5 +12,29 @@
     {% if post.description %}<span class="writing-desc">{{ post.description }}</span>{% endif %}
   </div>
   {% endfor %}
+
+  {% if archive_link %}
+  <p class="blog-archive-link" style="margin-top: 2rem;">
+    <a href="{{ archive_link.url }}" class="writing-title">{{ archive_link.label }}</a>
+  </p>
+  {% endif %}
+
+  {% if back_link %}
+  <p class="blog-archive-link" style="margin-top: 2rem;">
+    <a href="{{ back_link.url }}" class="writing-title">{{ back_link.label }}</a>
+  </p>
+  {% endif %}
+
+  {% if experiments %}
+  <hr style="margin: 3rem 0 2rem; border: none; border-top: 1px solid var(--rule);">
+  <span class="section-label">Experiments</span>
+  <p class="blog-index-intro">Small interactive pages that sit outside the long-form writing.</p>
+  {% for exp in experiments %}
+  <div class="writing-entry">
+    <a class="writing-title" href="{{ exp.url }}">{{ exp.title }}</a>
+    <span class="writing-desc">{{ exp.description }}</span>
+  </div>
+  {% endfor %}
+  {% endif %}
 </section>
 {% endblock %}

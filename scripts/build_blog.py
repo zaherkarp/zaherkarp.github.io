@@ -204,16 +204,19 @@ def render_post(env: Environment, post: dict, current_year: int) -> str:
     )
 
 
-def render_index(env: Environment, posts: list[dict], current_year: int) -> str:
-    template = env.get_template("blog/list.html")
-    return template.render(
-        page_title="Writing — Zaher Karp",
-        page_description="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and production analytics.",
-        canonical_url=f"{SITE_URL}/blog/",
-        posts=posts,
-        current_year=current_year,
-    )
+# Posts published before this date are treated as archive — rendered on
+# /blog/archive/ instead of /blog/. The 2009-2011 posts are undergrad-era
+# writing (sustainability, education, interviews) that predate the current
+# healthcare-data-engineering portfolio voice.
+ARCHIVE_CUTOFF = date(2019, 1, 1)
 
+EXPERIMENTS = [
+    {
+        "url": "/life-in-weeks/",
+        "title": "Life in Weeks",
+        "description": "A life, 4,680 weeks. Each square is one. Inspired by Tim Urban.",
+    },
+]
 
 SUBPAGES = [
     "/star-rating-predictor/",
@@ -222,10 +225,48 @@ SUBPAGES = [
 ]
 
 
-def write_sitemap(posts: list[dict]) -> None:
+def render_current_index(env: Environment, posts: list[dict], archive_count: int, current_year: int) -> str:
+    template = env.get_template("blog/list.html")
+    archive_link = None
+    if archive_count:
+        archive_link = {
+            "url": "/blog/archive/",
+            "label": f"Earlier writing ({archive_count} posts, 2009–2011) →",
+        }
+    return template.render(
+        page_title="Writing — Zaher Karp",
+        page_description="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and production analytics.",
+        canonical_url=f"{SITE_URL}/blog/",
+        section_label="Writing",
+        intro="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and the places where CMS Technical Notes and production reality diverge.",
+        posts=posts,
+        archive_link=archive_link,
+        experiments=EXPERIMENTS,
+        current_year=current_year,
+    )
+
+
+def render_archive_index(env: Environment, posts: list[dict], current_year: int) -> str:
+    template = env.get_template("blog/list.html")
+    return template.render(
+        page_title="Archive — Zaher Karp",
+        page_description="Earlier writing from 2009–2011, before the healthcare data engineering focus. Green building, education, and interviews.",
+        canonical_url=f"{SITE_URL}/blog/archive/",
+        section_label="Archive",
+        intro="Earlier writing from 2009–2011. Green building, education, interviews — kept online for provenance, not portfolio.",
+        posts=posts,
+        back_link={"url": "/blog/", "label": "← Current writing"},
+        current_year=current_year,
+    )
+
+
+def write_sitemap(current_posts: list[dict], archive_posts: list[dict]) -> None:
     urls = [f"{SITE_URL}/", f"{SITE_URL}/blog/"]
     urls.extend(f"{SITE_URL}{p}" for p in SUBPAGES)
-    urls.extend(f"{SITE_URL}/blog/{p['slug']}/" for p in posts)
+    urls.extend(f"{SITE_URL}/blog/{p['slug']}/" for p in current_posts)
+    if archive_posts:
+        urls.append(f"{SITE_URL}/blog/archive/")
+        urls.extend(f"{SITE_URL}/blog/{p['slug']}/" for p in archive_posts)
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
@@ -281,6 +322,9 @@ def main() -> int:
 
     posts.sort(key=lambda p: p["publish_date"], reverse=True)
 
+    current_posts = [p for p in posts if p["publish_date"] >= ARCHIVE_CUTOFF]
+    archive_posts = [p for p in posts if p["publish_date"] < ARCHIVE_CUTOFF]
+
     clean_output_dir()
 
     for post in posts:
@@ -292,12 +336,23 @@ def main() -> int:
         print(f"wrote blog/{post['slug']}/index.html")
 
     (OUT_DIR / "index.html").write_text(
-        render_index(env, posts, current_year), encoding="utf-8"
+        render_current_index(env, current_posts, len(archive_posts), current_year),
+        encoding="utf-8",
     )
-    print(f"wrote blog/index.html ({len(posts)} posts)")
+    print(f"wrote blog/index.html ({len(current_posts)} posts)")
 
-    write_sitemap(posts)
-    print(f"wrote sitemap.xml ({2 + len(SUBPAGES) + len(posts)} urls)")
+    if archive_posts:
+        archive_dir = OUT_DIR / "archive"
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        (archive_dir / "index.html").write_text(
+            render_archive_index(env, archive_posts, current_year), encoding="utf-8"
+        )
+        print(f"wrote blog/archive/index.html ({len(archive_posts)} posts)")
+
+    write_sitemap(current_posts, archive_posts)
+    archive_url_count = (1 + len(archive_posts)) if archive_posts else 0
+    total_urls = 2 + len(SUBPAGES) + len(current_posts) + archive_url_count
+    print(f"wrote sitemap.xml ({total_urls} urls)")
     return 0
 
 
