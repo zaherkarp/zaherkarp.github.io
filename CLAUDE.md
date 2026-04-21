@@ -536,6 +536,20 @@ swap is done, but the list remains useful as a standing ritual.)
     (see §Pre-push testing checklist — renamed from pre-swap, now a standing ritual)
 11. ~~Swap into the zaherkarp.github.io main repo~~ — done
     (this repo is zaherkarp.github.io; CNAME present; live at zaherkarp.com)
+12. Implement `@media print` rules in `index.html` per Design decisions §Print
+    overrides. The tokens + behavior are documented (force light, hide nav/
+    footer-GoatCounter/career-arc, --rule-light weight, 0.75in margins) but no
+    `@media print` block exists in `index.html` yet. The resume template has
+    its own print CSS; this item is about the portfolio page only.
+13. Audit `.exp-stack` contrast at 0.78rem against WCAG AA. The --text-dim
+    token sits at the borderline — measure in both light and dark modes
+    before the next substantive accessibility pass. See Design decisions
+    §.exp-stack contrast for the flagged concern.
+14. Delete merged orphan branches on GitHub:
+    `claude/landing-page-redesign-hfREs` and `claude/fix-stars-demo-fdwtU`.
+    Both are fully contained in `main` after PRs #1 and the CNAME commit.
+    A previous attempt via git push failed with HTTP 403; delete from the
+    GitHub Branches page when convenient.
 
 ---
 

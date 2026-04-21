@@ -5,7 +5,8 @@ The main page has no build step; blog posts, the resume PDF, and portfolio
 widgets (activity grid + citation counts) each have a Python build pipeline.
 
 See [CLAUDE.md](./CLAUDE.md) for design constraints and architectural decisions
-that should not drift.
+that should not drift. See [AGENTS.md](./AGENTS.md) for agent-style workflows
+(focus-group simulation, review personas) that live outside the constitution.
 
 ## Repository shape
 
@@ -97,6 +98,27 @@ Settings that must be set manually:
   (required so the CI workflows can commit regenerated HTML/PDF back)
 
 Canonical URLs point at `https://zaherkarp.com/`.
+
+## Before pushing
+
+CLAUDE.md §"Pre-push testing checklist" is the standing ritual for substantial
+pushes (anchor resolution, dark mode, GoatCounter, print layout, expand/collapse
+affordances, Lighthouse accessibility). Serve locally with `python3 -m http.server`
+and walk the list in a browser.
+
+Static checks that don't require a browser (useful before the full checklist):
+
+```bash
+# Balanced HTML tag structure
+python3 -c "from html.parser import HTMLParser; p=HTMLParser(); p.feed(open('index.html').read())"
+
+# Quick HTTP smoke test
+python3 -m http.server 8765 &
+curl -s -o /dev/null -w '%{http_code} index.html\n' http://127.0.0.1:8765/
+curl -s -o /dev/null -w '%{http_code} resume.pdf\n' http://127.0.0.1:8765/resume.pdf
+curl -s -o /dev/null -w '%{http_code} blog/\n'      http://127.0.0.1:8765/blog/
+kill %1
+```
 
 ## Maintenance rhythm
 
