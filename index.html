@@ -403,6 +403,27 @@ body:has(#contact:target)      .nav-links a[href="#contact"]::after { width: 100
   width: 3rem;
 }
 
+.stats-table .stats-spark {
+  width: 92px;
+  padding: 0.22rem 0.9rem;
+  vertical-align: middle;
+}
+
+.stats-table .stats-spark svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.stats-table .stats-spark .spark-fill   { fill: var(--text); }
+.stats-table .stats-spark .spark-muted  { fill: var(--muted); opacity: 0.35; }
+.stats-table .stats-spark .spark-tick   { stroke: var(--accent); stroke-width: 1; }
+
+@media (max-width: 480px) {
+  .stats-table .stats-spark { width: 72px; padding: 0.22rem 0.6rem; }
+}
+
 /* EXPERIENCE */
 .exp-entry { margin-bottom: 2.25rem; }
 
@@ -893,13 +914,79 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
 
   <table class="stats-table" aria-label="Career statistics">
     <caption>by the numbers</caption>
-    <thead><tr><th scope="col">n</th><th scope="col">Measure</th></tr></thead>
+    <thead><tr><th scope="col">n</th><th scope="col">shape</th><th scope="col">Measure</th></tr></thead>
     <tbody>
-      <tr><td>16+</td><td>Years experience</td></tr>
-      <tr><td>50+</td><td>Health systems</td></tr>
-      <tr><td>4</td><td>EHR platforms</td></tr>
-      <tr><td>6</td><td>Peer-reviewed publications</td></tr>
-      <tr><td>17</td><td>Conference presentations</td></tr>
+      <tr data-series="span:2009-2026;transition:2020">
+        <td>16+</td>
+        <td class="stats-spark">
+          <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <rect class="spark-fill" x="2" y="5" width="96" height="4"/>
+            <line class="spark-tick" x1="64" y1="2" x2="64" y2="12"/>
+          </svg>
+        </td>
+        <td>Years experience</td>
+      </tr>
+      <tr data-series="count:50">
+        <td>50+</td>
+        <td class="stats-spark">
+          <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <g class="spark-fill">
+              <circle cx="2.5" cy="2" r="1"/><circle cx="12.5" cy="2" r="1"/><circle cx="22.5" cy="2" r="1"/><circle cx="32.5" cy="2" r="1"/><circle cx="42.5" cy="2" r="1"/><circle cx="52.5" cy="2" r="1"/><circle cx="62.5" cy="2" r="1"/><circle cx="72.5" cy="2" r="1"/><circle cx="82.5" cy="2" r="1"/><circle cx="92.5" cy="2" r="1"/>
+              <circle cx="2.5" cy="4.5" r="1"/><circle cx="12.5" cy="4.5" r="1"/><circle cx="22.5" cy="4.5" r="1"/><circle cx="32.5" cy="4.5" r="1"/><circle cx="42.5" cy="4.5" r="1"/><circle cx="52.5" cy="4.5" r="1"/><circle cx="62.5" cy="4.5" r="1"/><circle cx="72.5" cy="4.5" r="1"/><circle cx="82.5" cy="4.5" r="1"/><circle cx="92.5" cy="4.5" r="1"/>
+              <circle cx="2.5" cy="7"   r="1"/><circle cx="12.5" cy="7"   r="1"/><circle cx="22.5" cy="7"   r="1"/><circle cx="32.5" cy="7"   r="1"/><circle cx="42.5" cy="7"   r="1"/><circle cx="52.5" cy="7"   r="1"/><circle cx="62.5" cy="7"   r="1"/><circle cx="72.5" cy="7"   r="1"/><circle cx="82.5" cy="7"   r="1"/><circle cx="92.5" cy="7"   r="1"/>
+              <circle cx="2.5" cy="9.5" r="1"/><circle cx="12.5" cy="9.5" r="1"/><circle cx="22.5" cy="9.5" r="1"/><circle cx="32.5" cy="9.5" r="1"/><circle cx="42.5" cy="9.5" r="1"/><circle cx="52.5" cy="9.5" r="1"/><circle cx="62.5" cy="9.5" r="1"/><circle cx="72.5" cy="9.5" r="1"/><circle cx="82.5" cy="9.5" r="1"/><circle cx="92.5" cy="9.5" r="1"/>
+              <circle cx="2.5" cy="12"  r="1"/><circle cx="12.5" cy="12"  r="1"/><circle cx="22.5" cy="12"  r="1"/><circle cx="32.5" cy="12"  r="1"/><circle cx="42.5" cy="12"  r="1"/><circle cx="52.5" cy="12"  r="1"/><circle cx="62.5" cy="12"  r="1"/><circle cx="72.5" cy="12"  r="1"/><circle cx="82.5" cy="12"  r="1"/><circle cx="92.5" cy="12"  r="1"/>
+            </g>
+          </svg>
+        </td>
+        <td>Health systems</td>
+      </tr>
+      <tr data-series="platforms:Epic,Cerner,Veradigm,athenahealth">
+        <td>4</td>
+        <td class="stats-spark">
+          <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <g class="spark-fill">
+              <circle cx="12" cy="7" r="2.2"/>
+              <circle cx="37" cy="7" r="2.2"/>
+              <circle cx="62" cy="7" r="2.2"/>
+              <circle cx="87" cy="7" r="2.2"/>
+            </g>
+          </svg>
+        </td>
+        <td>EHR platforms</td>
+      </tr>
+      <tr data-series="pubs:2012:1,2013:0,2014:1,2015:0,2016:1,2017:0,2018:1,2019:2">
+        <td>6</td>
+        <td class="stats-spark">
+          <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <rect class="spark-fill"  x="0.5" y="7"  width="9" height="6"/>
+            <rect class="spark-muted" x="13"  y="12.5" width="9" height="0.5"/>
+            <rect class="spark-fill"  x="25.5" y="7"  width="9" height="6"/>
+            <rect class="spark-muted" x="38"  y="12.5" width="9" height="0.5"/>
+            <rect class="spark-fill"  x="50.5" y="7"  width="9" height="6"/>
+            <rect class="spark-muted" x="63"  y="12.5" width="9" height="0.5"/>
+            <rect class="spark-fill"  x="75.5" y="7"  width="9" height="6"/>
+            <rect class="spark-fill"  x="88"  y="1"  width="9" height="12"/>
+          </svg>
+        </td>
+        <td>Peer-reviewed publications</td>
+      </tr>
+      <tr data-series="talks:2010:1,2011:0,2012:2,2013:0,2014:2,2015:6,2016:2,2017:2;plus_one_unknown_year">
+        <td>17</td>
+        <td class="stats-spark">
+          <svg viewBox="0 0 100 14" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-hidden="true">
+            <rect class="spark-fill"  x="0.5" y="11" width="9" height="2"/>
+            <rect class="spark-muted" x="13"  y="12.5" width="9" height="0.5"/>
+            <rect class="spark-fill"  x="25.5" y="9"  width="9" height="4"/>
+            <rect class="spark-muted" x="38"  y="12.5" width="9" height="0.5"/>
+            <rect class="spark-fill"  x="50.5" y="9"  width="9" height="4"/>
+            <rect class="spark-fill"  x="63"  y="1"  width="9" height="12"/>
+            <rect class="spark-fill"  x="75.5" y="9"  width="9" height="4"/>
+            <rect class="spark-fill"  x="88"  y="9"  width="9" height="4"/>
+          </svg>
+        </td>
+        <td>Conference presentations</td>
+      </tr>
     </tbody>
   </table>
 
