@@ -1,8 +1,8 @@
 ---
 title: "How the Star Rating Predictor Works"
 description: "The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser."
-publishDate: 2026-04-13
-draft: true
+publishDate: 2026-04-12
+draft: false
 tags: ["medicare", "star-ratings", "ordinal-regression", "methodology", "statistics"]
 ---
 

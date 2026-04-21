@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Ways to Build a Web App (and What You’re Actually Choosing) — Zaher Karp</title>
+<meta name="description" content="Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves.">
+<link rel="canonical" href="https://zaherkarp.com/blog/app-design-types/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="Two Ways to Build a Web App (and What You’re Actually Choosing) — Zaher Karp">
+<meta property="og:description" content="Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves.">
+<meta property="og:url" content="https://zaherkarp.com/blog/app-design-types/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Two Ways to Build a Web App (and What You’re Actually Choosing) — Zaher Karp">
+<meta name="twitter:description" content="Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "Two Ways to Build a Web App (and What You\u2019re Actually Choosing)", "description": "Most applications boil down to server-rendered or API-driven designs. The difference isn\u2019t just technical, it shapes how your system evolves.", "datePublished": "2026-03-22T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+</script>
+
+
+
+
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Two Ways to Build a Web App (and What You’re Actually Choosing)</h1>
+    <div class="blog-meta">
+      <time datetime="2026-03-22" class="blog-date">March 22, 2026</time>
+      
+      <ul class="blog-tags">
+        <li>data-engineering</li><li>application-architecture</li><li>web-development</li><li>api-design</li><li>backend</li><li>frontend</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>There are a lot of ways to build applications.</p>
+<p>But if you zoom out far enough, most of them collapse into two camps.</p>
+<p>Server rendered, and API driven.</p>
+<p>Everything else is just flavor, tooling, and how much JavaScript you’re willing to tolerate on a given day.</p>
+<p>Server side rendering is the older model, and still one of the most straightforward. You run a web server. A user hits a route. The server returns HTML.</p>
+<p>That HTML might be static, but more often it is generated dynamically using a template engine. In Python, that might be Flask with Jinja2 or Django’s templating system. In PHP, something like Laravel. You define routes, handle requests, and return fully formed pages.</p>
+<p>The browser’s job is simple. Render what it is given.</p>
+<p>There is something very honest about this model. The server owns the state. The server decides what the user sees. You can follow the flow from request to response without needing to mentally simulate a second application running in the browser.</p>
+<p>It is also tightly coupled by design. Your backend and frontend are effectively the same thing. That can be a strength early on. It can become a constraint later.</p>
+<p>The API driven model splits that world in two.</p>
+<p>The backend still exposes routes, still handles methods like GET and POST, but instead of returning HTML, it returns data. JSON most of the time. Sometimes XML if you are feeling nostalgic or dealing with older systems.</p>
+<p>The frontend becomes its own application. It is written in JavaScript, using frameworks like React or Vue or Angular. It calls the backend, gets data, and decides how to render it.</p>
+<p>Now the browser is doing much more work. It is not just rendering. It is orchestrating.</p>
+<p>This separation gives you flexibility. The same API can power a web app, a mobile app, and anything else that can speak HTTP. Teams can work independently. The system becomes more composable.</p>
+<p>It also introduces a new class of problems. State is now shared across a boundary. You have to think about loading states, partial failures, versioning, and synchronization. What used to be one request and one response becomes a conversation.</p>
+<h2>Where containerization fits into this</h2>
+<p>Containerization does not change these two models. It changes how you package and run them.</p>
+<p>A container is just a way of saying this application, with exactly these dependencies, should run the same way everywhere. Whether that application is server rendered or API driven is almost incidental.</p>
+<p>For a server rendered app, containerization usually means bundling the web server, the application code, and its runtime into a single unit. You build it once, run it anywhere, and scale it by spinning up more identical containers. It keeps the simplicity of the model while making deployment predictable.</p>
+<p>For an API driven system, containers tend to reinforce the separation that already exists. The backend API runs in one container. The frontend might be served from another, or even from static hosting backed by a CDN. Each piece can be deployed, scaled, and versioned independently.</p>
+<p>This is where things start to feel like architecture instead of just implementation.</p>
+<p>You can scale your API without touching your frontend. You can deploy a new frontend without restarting your backend. You can introduce additional services without rewriting the entire system.</p>
+<p>But containers also make it very easy to over-separate too early. What used to be one application can quickly turn into multiple services, each with its own deployment, logging, and failure modes.</p>
+<p>The boundary between server rendered and API driven does not go away. Containers just make it easier to move that boundary around.</p>
+<p>Used well, they give you consistency and flexibility.</p>
+<p>Used poorly, they give you a distributed system before you needed one.</p>
+<h2>The part that actually matters</h2>
+<p>Neither approach is strictly better.</p>
+<p>Server rendered applications tend to be simpler to reason about and faster to get right. API driven systems tend to scale better across teams and platforms.</p>
+<p>In practice, most systems end up somewhere in between.</p>
+<p>Server rendered shells with API driven components layered in. APIs that return HTML fragments. Frontends that still rely on server side routing for critical paths.</p>
+<p>The interesting part is not which one you choose. It is understanding what you are trading.</p>
+<p>When you pick server rendering, you are choosing cohesion and simplicity.</p>
+<p>When you pick API driven, you are choosing flexibility and separation.</p>
+<p>Both are valid. Both can go very wrong.</p>
+<p>The mistake is thinking the framework you chose made the decision for you.</p>
+<p>It did not.</p>
+<p>You are still the one deciding where the boundaries are.</p>
+
+  </div>
+</article>
+
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>

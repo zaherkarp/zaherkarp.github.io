@@ -205,7 +205,7 @@ def render_post(env: Environment, post: dict, current_year: int) -> str:
 
 
 def render_index(env: Environment, posts: list[dict], current_year: int) -> str:
-    template = env.get_template("blog/index.html")
+    template = env.get_template("blog/list.html")
     return template.render(
         page_title="Writing — Zaher Karp",
         page_description="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and production analytics.",
@@ -215,12 +215,16 @@ def render_index(env: Environment, posts: list[dict], current_year: int) -> str:
     )
 
 
+SUBPAGES = [
+    "/star-rating-predictor/",
+    "/life-in-weeks/",
+    "/skillsprout/",
+]
+
+
 def write_sitemap(posts: list[dict]) -> None:
-    urls = [
-        f"{SITE_URL}/",
-        f"{SITE_URL}/blog/",
-        f"{SITE_URL}/star-rating-predictor/",
-    ]
+    urls = [f"{SITE_URL}/", f"{SITE_URL}/blog/"]
+    urls.extend(f"{SITE_URL}{p}" for p in SUBPAGES)
     urls.extend(f"{SITE_URL}/blog/{p['slug']}/" for p in posts)
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
@@ -293,7 +297,7 @@ def main() -> int:
     print(f"wrote blog/index.html ({len(posts)} posts)")
 
     write_sitemap(posts)
-    print(f"wrote sitemap.xml ({2 + len(posts)} urls)")
+    print(f"wrote sitemap.xml ({2 + len(SUBPAGES) + len(posts)} urls)")
     return 0
 
 

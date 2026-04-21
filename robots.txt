@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /src/
+Disallow: /scripts/
+Disallow: /archive/
 
 Sitemap: https://zaherkarp.com/sitemap.xml

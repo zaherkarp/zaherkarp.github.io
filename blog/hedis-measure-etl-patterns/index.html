@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates — Zaher Karp</title>
+<meta name="description" content="A practitioner&#39;s walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation.">
+<link rel="canonical" href="https://zaherkarp.com/blog/hedis-measure-etl-patterns/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates — Zaher Karp">
+<meta property="og:description" content="A practitioner&#39;s walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation.">
+<meta property="og:url" content="https://zaherkarp.com/blog/hedis-measure-etl-patterns/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates — Zaher Karp">
+<meta name="twitter:description" content="A practitioner&#39;s walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates", "description": "A practitioner's walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation.", "datePublished": "2026-03-29T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+</script>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default' });
+</script>
+
+
+
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates</h1>
+    <div class="blog-meta">
+      <time datetime="2026-03-29" class="blog-date">March 29, 2026</time>
+      
+      <ul class="blog-tags">
+        <li>HEDIS</li><li>ETL</li><li>Healthcare Data Engineering</li><li>Medicare Stars</li><li>dbt</li><li>Data Pipelines</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <h2>Why This Post Exists</h2>
+<!--
+ZAHER: Open with why there's a gap in public knowledge. NCQA publishes specifications, health plans publish rates, but nobody publishes how the pipeline works in practice. This is the post you wish existed when you first built one of these pipelines.
+-->
+<h2>The Shape of a HEDIS Measure Pipeline</h2>
+<!--
+ZAHER: Describe the high-level DAG. Consider including a mermaid diagram like:
+
+```mermaid
+graph LR
+    A[Enrollment] --> B[Eligible Population]
+<pre><code>C[Claims/Encounters] --&gt; B
+B --&gt; D[Numerator Events]
+B --&gt; E[Exclusions]
+D --&gt; F[Rate Calculation]
+E --&gt; F
+G[Supplemental Data] --&gt; F
+</code></pre>
+<pre><code>
+Explain how every HEDIS measure follows this same pattern with variations in the specifics. This is the mental model.
+--&gt;
+
+## Choosing a Representative Measure
+
+&lt;!--
+ZAHER: Explain why you're using Controlling High Blood Pressure (CBP) as the walkthrough example. It's a hybrid measure that touches both administrative (claims) and clinical (BP readings) data, which makes it representative of the complexity most pipelines need to handle.
+--&gt;
+
+## Step 1: Eligible Population Identification
+
+&lt;!--
+ZAHER: Walk through continuous enrollment checks, anchor dates, age criteria, benefit verification. Discuss the continuous enrollment gap tolerance and how you handle it in SQL/dbt. Mention the practical pain points:
+- Enrollment gaps that fall just outside tolerance windows
+- Retroactive enrollment changes
+- How you handle members who age into/out of eligibility mid-measurement year
+--&gt;
+
+## Step 2: Numerator Event Detection
+
+&lt;!--
+ZAHER: For CBP specifically: identifying qualifying BP readings across claims data and clinical data sources. Cover:
+- Value set matching for diagnosis codes, procedure codes, and encounter types
+- The difference between administrative-only and hybrid data collection
+- How you structure the SQL to match events against NCQA value sets
+- Handling multiple numerator events per member (which one wins?)
+--&gt;
+
+## Step 3: Exclusion Logic
+
+&lt;!--
+ZAHER: Walk through required exclusions and optional exclusions. Cover:
+- How exclusion hierarchies work (some exclusions override numerator compliance)
+- The lookback period differences across exclusion types
+- Pregnancy exclusion as a concrete example of why exclusion timing matters
+- How you structure exclusion logic to be auditable
+--&gt;
+
+## Step 4: Supplemental Data Integration
+
+&lt;!--
+ZAHER: This is where hybrid measures get interesting. Cover:
+- Clinical data sources: EHR extracts, HIE feeds, lab interfaces
+- How supplemental data overlays the administrative baseline
+- Data quality challenges: missing timestamps, inconsistent units, duplicate records
+- The practical difference supplemental data makes to rates (it's often 10-20+ percentage points)
+--&gt;
+
+## Step 5: Rate Calculation
+
+&lt;!--
+ZAHER: The math is simple (numerator / denominator). The engineering is not. Cover:
+- How you aggregate from member-level to measure-level rates
+- Stratification requirements (age, gender, product line)
+- How you handle the &quot;and/or&quot; logic in multi-component measures
+- Reporting entity rollups (provider, plan, contract)
+--&gt;
+
+## Step 6: Data Quality Checks That Catch Real Failures
+
+&lt;!--
+ZAHER: This is where practitioner knowledge shines. Cover the checks you actually run:
+- Rate reasonability checks (is this rate plausible for this population size?)
+- Year-over-year drift detection
+- Enrollment-to-denominator ratio sanity checks
+- Supplemental data contribution tracking
+- The most common failure modes you've seen in production
+--&gt;
+
+## Pipeline Architecture Choices
+
+&lt;!--
+ZAHER: Brief section on technology choices. How does this look in dbt? What's the model layering (staging → intermediate → mart)? How do you handle the annual measurement year boundary? How do you run this for both current-year monitoring and final submission?
+--&gt;
+
+## What I'd Tell Someone Building Their First HEDIS Pipeline
+
+&lt;!--
+ZAHER: Close with practical advice. What do you wish you knew on day one? What are the non-obvious gotchas that only experience teaches?
+--&gt;</code></pre>
+
+  </div>
+</article>
+
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>

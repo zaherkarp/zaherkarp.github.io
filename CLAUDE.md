@@ -23,7 +23,24 @@ The live site at zaherkarp.github.io stays untouched until the swap.
 
 ## Stack
 
-- HTML/CSS only. No JavaScript except GoatCounter analytics.
+- HTML/CSS only. No JavaScript except:
+  (a) GoatCounter analytics (all pages).
+  (b) The Star Rating predictor at /star-rating-predictor/ — inline
+      vanilla JS only, no CDN, no dependencies. Narrow exception
+      because the interactivity is the whole point of that page.
+  (c) The life-in-weeks grid at /life-in-weeks/ — inline vanilla JS
+      only, no CDN. Renders the 4,680-week grid client-side so the
+      "current week" stays accurate without a rebuild.
+  (d) The SkillSprout career trajectory explorer at /skillsprout/ —
+      loads the vendored @zaherkarp/skillsprout-client ES module
+      (/skillsprout/lib/skillsprout-client.js, ~900KB, bundled O*NET
+      28.3 data inside). Page shell is inline vanilla JS (~80 lines).
+      Vendored, not linked from a CDN, to keep the site self-hosted
+      and to avoid a third-party dependency surface. Do not swap to
+      a CDN without discussion.
+  (e) Blog posts load KaTeX / Mermaid / Prism from CDN, conditionally,
+      when the post contains the relevant syntax (see Blog section).
+  Do not add JS anywhere else without discussion.
 - One Google Fonts import: EB Garamond (prose) + Courier New (system, data specimens).
 - No external CSS frameworks.
 - No preprocessors.
@@ -277,15 +294,31 @@ Do not copy structure or CSS from the live site.
 **Email:** me@zaherkarp.com (confirm before shipping)
 
 **Links:**
-  Stars dashboard: /star-rating-predictor/ (standalone HTML, no build step)
+  Stars dashboard: /star-rating-predictor/ (interactive demo) + methodology post
   SkillSprout: https://zaherkarp.com/skillsprout
   Medicare Advantage Insight Engine: GitHub repo only
   ECDS Shock Index: GitHub repo only
 
-**Project sites (independent repos, not affected by swap):**
-  zaherkarp.github.io/skillsprout — own repo
-  zaherkarp.github.io/life-in-weeks — own repo
-  These are not part of this project.
+**Subpages in this repo:**
+  /star-rating-predictor/ — interactive Medicare Star Rating predictor,
+    inline vanilla JS, no CDN. Ordinal logistic regression with CMS 2025
+    weights. See the Stack section for the JS exception rationale.
+  /life-in-weeks/ — 90-year weekly life grid (Tim Urban–style),
+    inline vanilla JS, no CDN. Data (birth year, events) lives inline
+    in the page. Events are hand-maintained — edit the EVENTS array
+    directly in /life-in-weeks/index.html to add one.
+  /skillsprout/ — career trajectory explorer. Vendors the
+    @zaherkarp/skillsprout-client ES module at
+    /skillsprout/lib/skillsprout-client.js (~900KB, includes O*NET 28.3
+    data inline). The page shell is vanilla JS in index.html. To update
+    the engine, rebuild the npm package and replace the vendored bundle
+    — there is no automated sync with the upstream package.
+
+**Deprecated separate repos (as of 2026-04-19):**
+  life-in-weeks and skillsprout previously had their own GitHub Pages
+  repos at zaherkarp.github.io/life-in-weeks and zaherkarp.github.io/
+  skillsprout. Both are now served from this repo as subpages. The
+  standalone repos can be archived once the swap is complete.
 
 ---
 
@@ -370,10 +403,47 @@ the PDF. If you need a local render, use the command above.
 
 ---
 
-## Pre-swap testing checklist
+## Portfolio pipeline (activity grid + citation counts)
 
-Before executing the swap (TO-DO #10), walk this list in a browser
-against the local preview or swap-target URL:
+index.html is hand-maintained, with two build-time insertions:
+
+  1. Activity grid — a 52-week dot grid above the Writing section,
+     shaded by post count per week. Sourced from blog frontmatter.
+  2. Citation counts — Semantic Scholar lookups for publications
+     tagged with `data-sid="PMID:..."` or `data-sid="DOI:..."`.
+
+Build script: scripts/build_portfolio.py
+  Reads blog frontmatter, builds the grid HTML, injects between
+    <!-- activity-grid:start --> ... <!-- activity-grid:end --> markers.
+  For each <div class="pub-entry" data-sid="..."> it fetches citation
+    count from Semantic Scholar's public API and appends
+    <span class="pub-citations">N citations</span>.
+  Graceful degradation: if the fetch fails (rate limit, network), the
+    existing span is preserved. Running twice is idempotent.
+
+GitHub Action: .github/workflows/build_portfolio.yml
+  Triggers on:
+    - push to index.html, scripts/build_portfolio.py, or blog posts
+    - Sundays 06:00 UTC (scheduled refresh for citation counts)
+    - manual workflow_dispatch
+  Commits regenerated index.html back to the repo.
+
+Semantic Scholar's public tier is aggressively rate-limited (HTTP 429).
+The script retries with exponential backoff (1s between requests, 2s/4s
+on retry). If a lookup still fails, the weekly cron will pick it up
+on the next run. Do not add an API key without discussion.
+
+Adding a new publication with a citation count: add
+`data-sid="PMID:..."` (or `DOI:...`) to the <div class="pub-entry">,
+push, and the workflow populates it.
+
+---
+
+## Pre-push testing checklist
+
+Walk this list in a browser against the local preview before any
+substantial push. (Originally written as a pre-swap checklist; the
+swap is done, but the list remains useful as a standing ritual.)
 
 - [ ] All internal anchor links resolve
 - [ ] All external links open correctly
@@ -395,22 +465,19 @@ against the local preview or swap-target URL:
 1. ~~Create github.io-redesign repo and enable GitHub Pages~~ — done
 2. ~~Copy v18 mockup as index.html~~ — done
 3. ~~Set up blog pipeline (build_blog.py + GitHub Action)~~ — done
-4. Migrate blog posts from live site to src/content/blog/
-   (a) delete current test fixtures:
-       find src/content/blog -maxdepth 1 -name '*.md' ! -name '_*.md' -delete
-   (b) copy authoritative .md sources from the live Astro repo
-   (c) fix building-my-site.md (no frontmatter in live source)
-   (d) run python scripts/build_blog.py and spot-check output
-   (e) delete src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md
+4. ~~Migrate blog posts from live site to src/content/blog/~~ — done
+   (44 posts in src/content/blog/ on 2026-04-19; fixture marker removed)
 5. ~~Add GoatCounter script tag~~ — done (site code `zaher-karp`)
-6. Confirm email address (`me@zaherkarp.com`) before swap
+6. Confirm email address (`me@zaherkarp.com`) is the right public-facing one
 7. ~~Add scroll behavior to nav links (smooth scroll, active state)~~ — done
    (CSS `scroll-behavior: smooth` + `:has(:target)` active state)
 8. ~~Mobile nav: test wrapping behavior, consider hamburger if needed~~ —
    decided: wrap is intentional, no hamburger (see Design decisions §Mobile nav)
 9. ~~Commit `/resume.pdf`~~ — done (generated by scripts/build_resume.py from resume.md)
-10. Run pre-swap testing checklist (see §Pre-swap testing checklist)
-11. Swap: copy finished files into zaherkarp.github.io main, push
+10. Run the testing checklist below before any major push
+    (see §Pre-push testing checklist — renamed from pre-swap, now a standing ritual)
+11. ~~Swap into the zaherkarp.github.io main repo~~ — done
+    (this repo is zaherkarp.github.io; CNAME present; live at zaherkarp.com)
 
 ---
 

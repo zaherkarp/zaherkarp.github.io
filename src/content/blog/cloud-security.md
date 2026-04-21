@@ -1,7 +1,7 @@
 ---
 title: "Security Starts With the Problem You’re Trying to Solve  "
 description: "A brief description of your blog post (1-2 sentences)"
-publishDate: 2025-12-15  # Format: YYYY-MM-DD
+publishDate: 2026-01-25
 tags: ["data governance", "security"]  # Optional: add relevant tags
 ---
 

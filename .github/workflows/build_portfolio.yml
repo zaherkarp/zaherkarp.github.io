@@ -1,0 +1,56 @@
+name: Build portfolio
+
+# Regenerates activity grid + citation counts in index.html.
+#
+# Triggers:
+#   - any push that touches index.html, the build script, or a blog post
+#     (the activity grid depends on post publishDates)
+#   - weekly on Sundays to refresh citation counts even without code changes
+#   - manual dispatch for ad-hoc rebuilds
+
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'scripts/build_portfolio.py'
+      - 'scripts/requirements.txt'
+      - 'src/content/blog/**.md'
+      - '.github/workflows/build_portfolio.yml'
+  schedule:
+    - cron: '0 6 * * 0'  # Sundays 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: build-portfolio
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Regenerate activity grid + citation counts
+        run: python scripts/build_portfolio.py
+
+      - name: Commit changes (if any)
+        run: |
+          if ! git diff --quiet index.html; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "build: regenerate activity grid + citation counts"
+            git push
+          else
+            echo "No changes to index.html."
+          fi

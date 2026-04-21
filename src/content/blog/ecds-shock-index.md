@@ -1,7 +1,7 @@
 ---
 title: "The ECDS Shock Index: Modeling Distribution Risk in Medicare Advantage Stars"
 description: "ECDS adoption is not just a data modernization effort. It introduces measurable distribution risk into the Stars ecosystem."
-publishDate: 2026-02-11
+publishDate: 2026-03-15
 tags: ["medicare-advantage", "stars", "hedis", "ecds", "analytics"]
 ---
 

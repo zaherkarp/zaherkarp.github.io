@@ -1,7 +1,7 @@
 ---
 title: "Why You Probably Shouldn't Version Your Fact Table"
 description: "Most teams version their fact tables because they've modeled their dimensions incorrectly. Understanding the true grain of your table—whether it's event-based or state-based—will save you from double-counting metrics, failed audits, and painful refactoring projects in healthcare data warehouses."
-publishDate: 2025-12-24 
+publishDate: 2026-02-22
 tags: ["data modeling", "warehousing", "data architecture"]
 ---
 

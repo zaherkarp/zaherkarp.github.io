@@ -1,8 +1,8 @@
 ---
 title: "Two Ways to Build a Web App (and What You’re Actually Choosing)"
 description: "Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves."
-publishDate: 2026-02-23
-draft: true
+publishDate: 2026-03-22
+draft: false
 tags: ["data-engineering", "application-architecture", "web-development", "api-design", "backend", "frontend"]
 ---
 

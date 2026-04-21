@@ -1,7 +1,7 @@
 ---
 title: "Concurrency: The Story We Tell vs. the System We Run"
 description: "Concurrency sounds like “do more at once.” In real data systems it’s mostly coordination under constraint, and in healthcare analytics the constraints include trust, auditability, and deadlines."
-publishDate: 2025-12-29
+publishDate: 2026-03-08
 tags: ["concurrency", "data-engineering", "healthcare-analytics"]
 ---
 

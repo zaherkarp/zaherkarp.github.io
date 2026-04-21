@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Slowest Way to Learn Web Design Is the Only Way That Worked for Me — Zaher Karp</title>
+<meta name="description" content="A personal history of building and rebuilding a website across three eras, from Squarespace drag-and-drop to a pure HTML and CSS rebuild, and what the increasing friction of each step actually taught me.">
+<link rel="canonical" href="https://zaherkarp.com/blog/building-my-site/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="The Slowest Way to Learn Web Design Is the Only Way That Worked for Me — Zaher Karp">
+<meta property="og:description" content="A personal history of building and rebuilding a website across three eras, from Squarespace drag-and-drop to a pure HTML and CSS rebuild, and what the increasing friction of each step actually taught me.">
+<meta property="og:url" content="https://zaherkarp.com/blog/building-my-site/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Slowest Way to Learn Web Design Is the Only Way That Worked for Me — Zaher Karp">
+<meta name="twitter:description" content="A personal history of building and rebuilding a website across three eras, from Squarespace drag-and-drop to a pure HTML and CSS rebuild, and what the increasing friction of each step actually taught me.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "The Slowest Way to Learn Web Design Is the Only Way That Worked for Me", "description": "A personal history of building and rebuilding a website across three eras, from Squarespace drag-and-drop to a pure HTML and CSS rebuild, and what the increasing friction of each step actually taught me.", "datePublished": "2026-04-19T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+</script>
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" media="(prefers-color-scheme: dark)">
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"
+        data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/"></script>
+
+
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">The Slowest Way to Learn Web Design Is the Only Way That Worked for Me</h1>
+    <div class="blog-meta">
+      <time datetime="2026-04-19" class="blog-date">April 19, 2026</time>
+      
+      <ul class="blog-tags">
+        <li>web design</li><li>HTML</li><li>CSS</li><li>Astro</li><li>GitHub Pages</li><li>learning</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>There is a version of this story where I tell you I sat down one weekend, read a few tutorials, and built a website. That is not this story.</p>
+<p>This is the version where I spent years doing things the wrong way, got increasingly annoyed by the gap between what I wanted and what I had, and eventually realized that gap was the whole point.</p>
+<hr />
+<h2>Phase One: The WYSIWYG Years</h2>
+<p>When I built my first personal site, I used Squarespace. This was the right call. I was not a web developer. I had content I wanted to put somewhere on the internet, and Squarespace let me drag things around until they looked approximately like what I had in my head. WYSIWYG stands for What You See Is What You Get, and for a while, that was enough.</p>
+<p>The problem was not Squarespace. The problem was that I had a portfolio of magazine articles -- long-form pieces with bylines, ledes, and narrative structure -- and I needed somewhere to display them. Squarespace had beautiful templates for photographers. It had templates for restaurants and yoga studios and jewelry designers. It had a photo album feature that was genuinely elegant.</p>
+<p>So that is what I used. For articles.</p>
+<p>I forced my journalism portfolio into a photo album template. I uploaded cover images where product photos were supposed to go. I wrote article summaries in the caption field. It looked acceptable in the way that something always looks acceptable when you are the one who built it and you have stopped being able to see it clearly. Looking back, it was a photo album with words in all the wrong places.</p>
+<p>The lesson I should have taken from this experience: I did not understand what the tool was designed for, so I could not use it well. The lesson I actually took: I needed a better template.</p>
+<hr />
+<h2>Phase Two: A Template I Did Not Understand</h2>
+<p>Several years passed. I kept the Squarespace site, kept it mostly unchanged, and mostly ignored it.</p>
+<p>Then I moved to GitHub Pages with an Astro template, which is a sentence that requires some unpacking if you have not heard those words before. GitHub is where developers store code. GitHub Pages is a feature that lets you turn that code into a live website for free. Astro is a tool that helps you build websites out of reusable components. Think of it like a design system where you define what a navigation bar looks like once, and then every page uses that definition instead of rewriting it from scratch.</p>
+<p>The Astro template I picked was clean, fast, and looked professional. I changed the text, swapped in my own content, and published it. The site looked good.</p>
+<p>What I did not understand was how any of it worked.</p>
+<p>I could not tell you why changing one file affected five pages. I could not tell you what generated the HTML that browsers actually read. When something looked slightly wrong, I would poke at the CSS until it stopped looking wrong, without knowing why the change worked. I had traded a photo album I vaguely understood for a system I did not understand at all, and the output happened to look better.</p>
+<p>The gap between using a tool and understanding it is enormous, and comfortable, and very easy to stay inside of.</p>
+<hr />
+<h2>Phase Three: Burning It Down (Kindly)</h2>
+<p>I have been rebuilding the site in pure HTML and CSS.</p>
+<p>There is no framework, no template, and no tool that abstracts away the underlying decisions. Just the two languages that browsers have understood since the beginning of the web, and me, deciding every single thing explicitly.</p>
+<p>This is slow. It is occasionally maddening. And it is the first time I have actually learned anything about design.</p>
+<p>When you use a template, the designer has already made a thousand decisions: how much space goes between elements, what happens to the layout when you are on a phone, how text size scales, what color the links turn when you hover over them. You inherit those decisions without having made them. They work, which means you never have to think about them, which means you never develop an opinion about them.</p>
+<p>When you write the CSS yourself, you have to have an opinion about everything. You have to decide how much padding goes inside a card component. Then you have to look at it and decide if that was right. Then you usually have to change it. You develop taste by doing this badly many times until you start to do it less badly.</p>
+<p>Constraints are often framed as obstacles. I have started thinking about them as the mechanism by which you actually learn something. Squarespace removed the constraint of needing to understand code, and I learned nothing about code. The Astro template removed the constraint of needing to make design decisions, and I learned nothing about design. Pure HTML and CSS remove almost nothing, and the discomfort of that is exactly where the learning lives.</p>
+<hr />
+<h2>Technical Deep Dives</h2>
+<p><em>The rest of this post gets into the weeds. If you are a non-technical reader, you have the full story above. If you want to understand the tools themselves, keep going.</em></p>
+<hr />
+<h3>1. Git and GitHub Pages: Version Control as Infrastructure</h3>
+<p>Git is a system that tracks changes to files over time. Every time you make a meaningful change to your code, you take a snapshot called a commit. Those snapshots form a history you can navigate. You can see what a file looked like three weeks ago, revert a change that broke something, or understand exactly when a bug was introduced.</p>
+<p>GitHub is a platform that stores your Git history in the cloud and makes it visible to collaborators or the public.</p>
+<p>GitHub Pages is the part that is relevant here. If your GitHub repository is set up correctly and contains a valid website, GitHub will build and serve that site for free at <code>yourusername.github.io</code>. There is no server to configure, no hosting bill, and no deployment complexity beyond pushing your code to GitHub. The site updates automatically whenever you push new changes.</p>
+<p>The practical workflow looks like this: you write code on your computer, commit the changes with a short description of what you did, push it to GitHub, and within a minute your live site reflects the update. For a personal site with no database and no dynamic content, this is essentially perfect infrastructure.</p>
+<p>The harder thing to internalize about Git is that it changes how you think about working. Because nothing is ever lost (every version of every file is recoverable), you can experiment without anxiety. You can try something, decide it is wrong, and go back. This sounds minor. In practice it removes a kind of friction that quietly slows down learning.</p>
+<hr />
+<h3>2. How Astro Works: Components and Static Generation</h3>
+<p>Astro is a static site generator, which means it produces plain HTML files as output. Browsers read HTML. Everything else (JavaScript frameworks, component systems, templating languages) is a tool for generating that HTML more efficiently or managing complexity as a site grows.</p>
+<p>The core concept in Astro is the component. A component is a reusable piece of UI: a navigation bar, a footer, a card that displays an article's title and summary. You define it once in its own file, and every page that needs it simply imports it. If you want to change the navigation bar across your entire site, you change one file.</p>
+<p>Astro components have a specific structure. At the top of the file is a &quot;frontmatter&quot; block (fenced with three dashes) where you write JavaScript to fetch data, define variables, and import other components. Below that is the HTML template that uses those variables. The component file looks roughly like this:</p>
+<pre><code class="language-astro">---
+// This block runs at build time, not in the browser.
+// Define variables and import other components here.
+const title = &quot;My Site&quot;;
+import Navigation from './Navigation.astro';
+---
+
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;{title}&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;Navigation /&gt;
+    &lt;slot /&gt; &lt;!-- Child page content gets inserted here --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>When you run <code>astro build</code>, Astro processes every page, evaluates the frontmatter blocks, fills in the template variables, and writes out plain HTML files. The resulting site has no runtime JavaScript dependency unless you explicitly add one. Pages load fast because there is nothing to run -- just HTML and CSS for the browser to render.</p>
+<p>The gap I fell into with my Astro template was not understanding the build step. The files in my repository were not the files the browser was reading. Astro was transforming them. Once that distinction clicked, the entire system became legible.</p>
+<hr />
+<h3>3. The Gap Between a Template and Understanding It</h3>
+<p>Templates solve a real problem: they let you have a professional-looking site without spending months learning the underlying tools. For many people and many use cases, that is exactly the right tradeoff.</p>
+<p>The cost is that templates make poor teachers.</p>
+<p>A good template handles responsive layout, accessibility, performance, and cross-browser compatibility without surfacing any of that to you. You see a site that works. You do not see the dozen CSS rules that make it work on a phone, or the semantic HTML choices that make screen readers function correctly, or the image optimization logic that keeps it fast. The decisions are invisible because they have already been made.</p>
+<p>The specific trap is that when you need to change something (and you always eventually need to change something), you are modifying a system you do not understand. You find the property that controls the thing you want to change, tweak it until it looks right, and move on. What you do not do is understand why your change worked, what else it affected, or whether you introduced a subtle problem elsewhere.</p>
+<p>Two things helped me close this gap. The first was reading the template code with the explicit goal of understanding it rather than modifying it, treating it as something to learn from rather than just a starting point to customize. The second was building something small from scratch alongside the template, so I had to make every decision explicitly. The contrast between &quot;the template does this automatically&quot; and &quot;I have to write this myself&quot; is instructive. You start to see the template as a set of choices rather than a fixed reality.</p>
+<hr />
+<h3>4. CSS Fundamentals: Box Model, Layout, Specificity</h3>
+<p>CSS is the language that controls how HTML looks. Every element on a page (a paragraph, a button, an image) is a box. CSS determines the size of that box, its position relative to other boxes, and what it looks like.</p>
+<p><strong>The box model</strong> is the fundamental structure. Every HTML element has content at its center, surrounded by padding (space inside the box, between content and the border), then a border, then margin (space outside the box, between it and neighboring elements). When an element looks the wrong size or sits in an unexpected position, the box model is usually involved. A common gotcha: by default, <code>width</code> in CSS refers to the content area alone, not including padding or border. Switching to <code>box-sizing: border-box</code> makes <code>width</code> refer to the whole box instead. Nearly every project does this.</p>
+<pre><code class="language-css">/* Applied globally so every element uses the same sizing model */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+</code></pre>
+<p><strong>Layout</strong> used to be painful. For many years, web developers used floats and creative workarounds to build multi-column layouts. Modern CSS has two much better tools: Flexbox and CSS Grid. Flexbox is for one-dimensional layout, which means arranging elements along a single axis (a row of navigation items, a column of cards). Grid is for two-dimensional layout, which means defining a full page structure with a header, sidebar, main content area, and footer. They are often used together. Grid handles the large structure; Flexbox handles the arrangement of items within each section.</p>
+<pre><code class="language-css">/* Grid for overall page structure */
+body {
+  display: grid;
+  grid-template-areas:
+    &quot;header&quot;
+    &quot;main&quot;
+    &quot;footer&quot;;
+}
+
+/* Flexbox for navigation items within the header */
+nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+</code></pre>
+<p><strong>Specificity</strong> is how the browser resolves conflicts when multiple CSS rules target the same element. Every rule carries a specificity score based on what kind of selector it uses. An ID selector (<code>#header</code>) outweighs a class selector (<code>.header</code>), which outweighs a tag selector (<code>header</code>). When two rules conflict, higher specificity wins regardless of which rule appears later in the file.</p>
+<p>This causes problems when you are working with a template or inherited code. You try to override a style, your rule seems correct, but nothing changes. Usually the rule you are fighting has higher specificity. The brute-force solution is <code>!important</code>, which overrides everything. The correct solution is understanding why the conflict exists and writing a more specific selector or restructuring the CSS. The brute-force solution tends to compound problems over time.</p>
+<p>Building from scratch forced me to understand specificity because I could see every rule that applied to every element. There were no inherited conflicts I had not introduced myself. That constraint -- no safety net, no pre-written styles to lean on -- is exactly why it worked as a learning environment.</p>
+
+  </div>
+</article>
+
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>

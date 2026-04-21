@@ -1,7 +1,7 @@
 ---
 title: "Building a Browser-Based Star Rating Predictor: Methodology & Evidence"
 description: "Technical documentation and literature review supporting the ordinal logistic regression model used in the interactive Medicare Star Rating predictor on this site."
-publishDate: 2026-03-14
+publishDate: 2026-04-05
 tags: ["medicare", "star-ratings", "ordinal-regression", "methodology", "interactive"]
 ---
 

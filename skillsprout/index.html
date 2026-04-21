@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillSprout — Career Trajectory Explorer — Zaher Karp</title>
+<meta name="description" content="Interactive O*NET-powered career trajectory engine. Pick a starting occupation, see which adjacent roles you could move into now, with training, or as a long-term reskill. Runs entirely in your browser.">
+<link rel="canonical" href="https://zaherkarp.com/skillsprout/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="SkillSprout — Career Trajectory Explorer">
+<meta property="og:description" content="Pick a starting occupation, see which adjacent roles you could move into. Runs entirely in your browser.">
+<meta property="og:url" content="https://zaherkarp.com/skillsprout/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #fffff8; --surface: #f7f2e8; --rule: #d6d2c8;
+  --text: #2a2a2a; --text-sec: #4a4238; --muted: #766f64; --accent: #8b2e19;
+  --font-body: 'EB Garamond', Georgia, serif;
+  --font-mono: 'Courier New', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #201b14; --surface: #2b2418; --rule: #3a3024;
+    --text: #f5ecd7; --text-sec: #d4c7a9; --muted: #b0a48a; --accent: #e06940;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 21px; background: var(--bg); color: var(--text); }
+body { font-family: var(--font-body); line-height: 1.7; padding: 2rem 0 4rem; }
+.page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+nav { font-size: 0.78rem; margin-bottom: 2rem; }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover { color: var(--accent); }
+h1 { font-size: 1.7rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.25; }
+h2 { font-size: 1.05rem; font-weight: 600; margin-top: 1.75rem; margin-bottom: 0.6rem; color: var(--text); }
+.lede { color: var(--text-sec); margin-bottom: 1.5rem; max-width: 34em; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+
+.panel { background: var(--surface); border: 1px solid var(--rule); padding: 1.5rem; margin-bottom: 2rem; }
+.panel-label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; }
+
+.control { margin-bottom: 1rem; }
+.control label { display: block; font-size: 0.9rem; color: var(--text); margin-bottom: 0.3rem; }
+.control input[type=text], .control select {
+  width: 100%; padding: 0.55rem 0.75rem;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--rule); border-radius: 2px;
+  font-family: var(--font-body); font-size: 0.95rem;
+}
+.control input[type=text]:focus { outline: none; border-color: var(--accent); }
+.control .hint { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+button {
+  background: var(--accent); color: var(--bg);
+  border: none; padding: 0.6rem 1.25rem;
+  font-family: var(--font-body); font-size: 0.95rem; font-weight: 500;
+  cursor: pointer; border-radius: 2px;
+}
+button:hover { opacity: 0.9; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.source-meta { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-sec); margin-bottom: 0.5rem; }
+.source-meta .label { color: var(--muted); }
+
+.category { margin-bottom: 1.75rem; }
+.category-head { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.6rem; }
+.category-name { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.category-count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.category-hint { font-size: 0.78rem; color: var(--text-sec); font-style: italic; }
+
+.match { border-top: 1px solid var(--rule); padding: 0.75rem 0; }
+.match:first-child { border-top: none; }
+.match-head { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: baseline; cursor: pointer; }
+.match-title { color: var(--text); font-size: 0.98rem; }
+.match-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+.match-meta .score { color: var(--accent); font-weight: 600; }
+.match-details { margin-top: 0.5rem; font-size: 0.85rem; display: none; }
+.match.open .match-details { display: block; }
+.match-row { margin: 0.3rem 0; }
+.match-row .label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 0.15rem; }
+.pill { display: inline-block; padding: 0.1rem 0.4rem; margin: 0.1rem 0.2rem 0.1rem 0; border: 1px solid var(--rule); border-radius: 2px; font-size: 0.78rem; color: var(--text-sec); background: var(--bg); }
+.pill.missing { border-color: var(--accent); color: var(--accent); }
+
+.empty { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+.status { font-size: 0.85rem; color: var(--text-sec); margin-top: 1rem; min-height: 1.2em; }
+.status.error { color: var(--accent); }
+
+.caveat { font-size: 0.78rem; color: var(--muted); font-style: italic; margin-top: 1.5rem; }
+.caveat a { color: var(--muted); border-bottom: 1px solid var(--rule); }
+.caveat a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: 0.78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<nav><a href="/">← Zaher Karp</a></nav>
+
+<h1>SkillSprout — Career Trajectory Explorer</h1>
+<p class="lede">Pick a starting occupation. SkillSprout compares its skill fingerprint against 1,016 O*NET occupations using IDF-weighted Jaccard matching and returns three buckets: <em>Ready Now</em> (strong overlap, same or lower training zone), <em>Trainable</em> (mostly overlapping skills with specific gaps), and <em>Long-Term Reskill</em> (adjacent fields worth a longer runway). Runs entirely in your browser — no backend, no data leaves this page.</p>
+
+<div class="panel">
+  <div class="panel-label">inputs</div>
+
+  <div class="control">
+    <label for="occ">Starting occupation</label>
+    <input type="text" id="occ" list="occ-list" placeholder="e.g. Registered Nurses, Software Developers, Epidemiologists" autocomplete="off">
+    <datalist id="occ-list"></datalist>
+    <div class="hint">Type to autocomplete. Sourced from O*NET 28.3 (1,016 occupations).</div>
+  </div>
+
+  <div class="control">
+    <label for="extra">Additional skills <span class="hint" style="display:inline">(optional, comma-separated)</span></label>
+    <input type="text" id="extra" placeholder="e.g. SQL, Python, Mixed Methods Research">
+  </div>
+
+  <button id="go" disabled>Find trajectories</button>
+  <p class="status" id="status">Loading 1,016 occupations…</p>
+</div>
+
+<div id="results"></div>
+
+<p class="caveat">Methodology: IDF-weighted Jaccard skill overlap across O*NET 28.3 occupations, with a zone-delta adjustment to separate lateral moves from long-term reskills. Source: O*NET Database 28.3 (CC BY 4.0). The underlying engine is <a href="https://github.com/zaherkarp/skillsprout">@zaherkarp/skillsprout-client</a> — this page is a vanilla-JS shell on top of it.</p>
+
+<footer>© 2026 Zaher Karp · <a href="/">home</a> · <a href="/blog/">writing</a></footer>
+
+</div>
+
+<script type="module">
+import { listOccupations, quickSearch } from './lib/skillsprout-client.js';
+
+const $ = (id) => document.getElementById(id);
+const occInput = $('occ'), occList = $('occ-list');
+const extraInput = $('extra'), goBtn = $('go'), statusEl = $('status');
+const resultsEl = $('results');
+
+const occupations = listOccupations();
+occList.innerHTML = occupations.map(o => `<option value="${o.title.replace(/"/g,'&quot;')}" data-code="${o.code}">${o.category}</option>`).join('');
+statusEl.textContent = `${occupations.length.toLocaleString()} occupations loaded. Pick one to begin.`;
+goBtn.disabled = false;
+
+const CATEGORY_META = {
+  readyNow:        { name: 'Ready Now',        hint: 'Strong overlap; you could step in with minimal training.' },
+  trainable:       { name: 'Trainable',        hint: 'Most skills carry over; a handful of specific gaps to close.' },
+  longTermReskill: { name: 'Long-Term Reskill', hint: 'Adjacent domain; worth a multi-year runway.' },
+};
+
+function pill(label, cls = '') {
+  return `<span class="pill ${cls}">${label.replace(/</g,'&lt;')}</span>`;
+}
+
+function renderMatch(m) {
+  const zoneLabel = m.zoneDelta === 0 ? 'same zone' : (m.zoneDelta > 0 ? `+${m.zoneDelta} zone` : `${m.zoneDelta} zone`);
+  const shared = (m.sharedSkills || []).slice(0, 10).map(s => pill(s)).join('');
+  const missing = (m.missingSkills || []).slice(0, 8).map(g => pill(g.skill || g.name || String(g), 'missing')).join('');
+  return `
+    <div class="match">
+      <div class="match-head">
+        <span class="match-title">${m.occupation.title.replace(/</g,'&lt;')}</span>
+        <span class="match-meta"><span class="score">${Math.round(m.overlapScore * 100)}%</span> · ${zoneLabel} · zone ${m.occupation.zone}</span>
+      </div>
+      <div class="match-details">
+        <div class="match-row"><span class="label">O*NET code</span>${m.occupation.code} · ${m.occupation.category}</div>
+        ${shared  ? `<div class="match-row"><span class="label">Shared skills</span>${shared}</div>`  : ''}
+        ${missing ? `<div class="match-row"><span class="label">Skill gaps</span>${missing}</div>`   : ''}
+      </div>
+    </div>`;
+}
+
+function renderCategory(key, matches) {
+  const meta = CATEGORY_META[key];
+  if (!matches || matches.length === 0) {
+    return `<div class="category"><div class="category-head"><span class="category-name">${meta.name}</span><span class="category-count">0</span></div><p class="empty">No matches in this bucket for your selection.</p></div>`;
+  }
+  return `
+    <div class="category">
+      <div class="category-head">
+        <span class="category-name">${meta.name}</span>
+        <span class="category-count">${matches.length}</span>
+      </div>
+      <p class="category-hint">${meta.hint}</p>
+      ${matches.map(renderMatch).join('')}
+    </div>`;
+}
+
+function run() {
+  const query = occInput.value.trim();
+  if (!query) { statusEl.textContent = 'Enter an occupation first.'; statusEl.classList.add('error'); return; }
+  statusEl.textContent = 'Computing trajectories…';
+  statusEl.classList.remove('error');
+  resultsEl.innerHTML = '';
+
+  // defer so the status paints before the (fast but synchronous) compute
+  setTimeout(() => {
+    const extra = extraInput.value.split(',').map(s => s.trim()).filter(Boolean);
+    const resp = quickSearch(query, extra);
+    if (!resp.success || !resp.source) {
+      statusEl.textContent = resp.error || `No occupation matched "${query}". Try a title from the autocomplete list.`;
+      statusEl.classList.add('error');
+      return;
+    }
+    statusEl.textContent = `Source: ${resp.source.title} (${resp.source.code}) · ${resp.totalMatches} total matches across 1,016 occupations.`;
+    resultsEl.innerHTML = `
+      <div class="source-meta">
+        <span class="label">SOURCE</span> ${resp.source.title} · zone ${resp.source.zone} · ${resp.source.category}
+        <br><span class="label">SKILLS</span> ${(resp.sourceSkills || []).slice(0, 14).join(' · ') || '—'}
+      </div>
+      ${renderCategory('readyNow',        resp.readyNow)}
+      ${renderCategory('trainable',       resp.trainable)}
+      ${renderCategory('longTermReskill', resp.longTermReskill)}
+    `;
+  }, 0);
+}
+
+goBtn.addEventListener('click', run);
+occInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+
+// click-to-expand per match
+resultsEl.addEventListener('click', (e) => {
+  const head = e.target.closest('.match-head');
+  if (head) head.parentElement.classList.toggle('open');
+});
+</script>
+
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>

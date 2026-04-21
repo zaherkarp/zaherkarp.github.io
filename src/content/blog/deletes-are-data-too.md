@@ -1,7 +1,7 @@
 ---
 title: "Deletes Are Data Too"
 description: "Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for."
-publishDate: 2025-02-23 
+publishDate: 2025-11-16
 tags: ["data-engineering", "cdc", "data-pipelines", "data-quality", "architecture"]
 ---
 

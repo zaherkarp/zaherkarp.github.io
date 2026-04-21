@@ -1,7 +1,7 @@
 ---
 title: "What LLM Systems Teach Healthcare IT About Architecture"
 description: "Large language models force healthcare IT teams to rethink batching, memory, routing, and state management at production scale."
-publishDate: 2025-12-19
+publishDate: 2026-02-01
 tags: ["llm", "healthcare-it", "architecture", "systems-design", "ai"]
 ---
 

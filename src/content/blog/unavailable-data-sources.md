@@ -1,7 +1,7 @@
 ---
 title: "Publicly Available but Practically Unavailable"
 description: "Why healthcare executives repeatedly ask for data that technically exists, yet remains inaccessible in usable form—and how misunderstanding 'public data' quietly undermines quality, cost, and governance decisions."
-publishDate: 2025-02-01
+publishDate: 2025-11-09
 tags: ["healthcare-data", "quality-measurement", "executive-decision-making", "cms", "public-data"]
 ---
 

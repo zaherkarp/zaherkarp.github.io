@@ -1,7 +1,7 @@
 ---
 title: "Debugging GitHub Actions: The Heredoc Horror Story"
 description: "A deep dive into debugging a GitHub Actions workflow where heredoc syntax clashed with YAML parsing, leading to five different errors and one elegant solution."
-publishDate: 2025-12-21
+publishDate: 2026-02-15
 tags: ["github-actions", "yaml", "bash", "debugging"]
 ---
 

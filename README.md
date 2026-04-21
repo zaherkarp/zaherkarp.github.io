@@ -1,9 +1,8 @@
-# github.io-redesign
+# zaherkarp.github.io
 
-Personal portfolio site for Zaher Karp. Pure HTML/CSS, no framework, no npm,
-no build step for the main site. The blog has a Python build pipeline.
-
-Target deploy: GitHub Pages (`zaherkarp.github.io`).
+Personal portfolio site for Zaher Karp. Pure HTML/CSS, no framework, no npm.
+The main page has no build step; blog posts, the resume PDF, and portfolio
+widgets (activity grid + citation counts) each have a Python build pipeline.
 
 See [CLAUDE.md](./CLAUDE.md) for design constraints and architectural decisions
 that should not drift.
@@ -13,11 +12,17 @@ that should not drift.
 ```
 index.html                  Main portfolio page (inline CSS, Tufte palette)
 blog.css                    Shared stylesheet for /blog/
-blog/                       Generated blog output (do not hand-edit)
-resume.pdf                  Generated resume (do not hand-edit)
+blog/                       Generated blog output — do not hand-edit
+resume.pdf                  Generated resume — do not hand-edit
 sitemap.xml                 Generated (by build_blog.py)
 favicon.svg, og-default.png SEO / social assets
-robots.txt, .nojekyll       GitHub Pages config
+robots.txt, .nojekyll, CNAME GitHub Pages config
+
+star-rating-predictor/      Interactive Medicare Star Rating predictor
+                            (inline vanilla JS)
+life-in-weeks/              90-year life-in-weeks grid (inline vanilla JS)
+skillsprout/                Career trajectory explorer
+  lib/skillsprout-client.js   Vendored O*NET 28.3 engine (~900KB)
 
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
@@ -26,15 +31,18 @@ src/content/
 scripts/
   build_blog.py             Blog build pipeline
   build_resume.py           Resume build pipeline (WeasyPrint)
+  build_portfolio.py        Activity grid + citation counts injection
   requirements.txt
   fonts/                    EB Garamond variable TTFs (OFL)
   templates/
-    blog/                   Blog Jinja templates (base, index, post)
+    blog/                   Jinja templates (base, list, post)
     resume/                 Resume Jinja template
 
 .github/workflows/
   build_blog.yml            Builds blog + commits output on push
   build_resume.yml          Builds resume PDF + commits on push
+  build_portfolio.yml       Refreshes activity grid + citation counts
+                            (also runs weekly on a schedule)
 
 archive/                    Historical reference (not served)
   tufte-concept-v18.html    Design mockup
@@ -50,22 +58,30 @@ python3 -m http.server 8765
 # open http://localhost:8765/
 ```
 
-Blog URLs use trailing-slash paths (e.g. `/blog/concurrency/`), which `http.server`
-resolves to `<slug>/index.html`. GitHub Pages behaves the same.
+Blog URLs use trailing-slash paths (e.g. `/blog/concurrency/`), which
+`http.server` resolves to `<slug>/index.html`. GitHub Pages behaves the same.
 
-## Building the blog
+## Building the content pipelines
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r scripts/requirements.txt
-.venv/bin/python scripts/build_blog.py
+
+.venv/bin/python scripts/build_blog.py       # rebuilds /blog/ + sitemap.xml
+.venv/bin/python scripts/build_portfolio.py  # injects activity grid + citations
+
+# Resume requires pango/cairo/glib:
+#   brew install pango
+DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib \
+  .venv/bin/python scripts/build_resume.py   # regenerates /resume.pdf
 ```
 
-Outputs go to `blog/` and `sitemap.xml`. Drafts (`draft: true` in frontmatter)
-are skipped. Files in `src/content/blog/` whose names start with `_` are also
-skipped — used for in-repo notes and fixture markers.
+Drafts (`draft: true`) and files whose names start with `_` are skipped by the
+blog build. Citation lookups hit Semantic Scholar and may be rate-limited;
+the script degrades gracefully (keeps existing values) and the weekly cron
+will retry.
 
-Posts use client-side CDN for interactive features (loaded only when needed):
+Blog posts use client-side CDN loads, conditional on content:
 
 - `$...$` / `$$...$$` math → KaTeX
 - ` ```mermaid ` fenced blocks → Mermaid
@@ -73,38 +89,28 @@ Posts use client-side CDN for interactive features (loaded only when needed):
 
 ## Deploy (GitHub Pages)
 
-For a project page during development:
+Served at `https://zaherkarp.com/` (CNAME present, apex domain).
 
-1. Create the `github.io-redesign` GitHub repo.
-2. Push this tree to `main`.
-3. Settings → Pages → Source: Deploy from branch → `main` → `/ (root)`.
-4. Settings → Actions → General → Workflow permissions → **Read and write**
-   (required for the blog-build action to commit generated HTML back).
+Settings that must be set manually:
+- Settings → Pages → Source: Deploy from branch → `main` → `/ (root)`
+- Settings → Actions → General → Workflow permissions → **Read and write**
+  (required so the CI workflows can commit regenerated HTML/PDF back)
 
-The CI workflow (`.github/workflows/build_blog.yml`) triggers on pushes under
-`src/content/blog/` and `scripts/`, regenerates output, and commits back.
+Canonical URLs point at `https://zaherkarp.com/`.
 
-Canonical URLs in meta tags point at `https://zaherkarp.com/` — the final
-destination after the swap. During preview at the project URL
-(`zaherkarp.github.io/github.io-redesign/`), absolute paths resolve correctly
-but the `<link rel="canonical">` will point at the apex domain. Intentional.
+## Maintenance rhythm
 
-## Migration status
+- Write a blog post: drop `src/content/blog/<slug>.md` with frontmatter, push.
+  CI builds `/blog/<slug>/` and updates the sitemap. Manually update the 6
+  entries in `index.html`'s writing section (CLAUDE.md §Writing section
+  update rule).
+- Add a publication: add `<div class="pub-entry" data-sid="PMID:...">` to
+  `index.html` and push. The portfolio workflow populates the citation count.
+- Edit the resume: change `src/content/resume.md`, push. CI regenerates
+  `resume.pdf`.
+- Add a life-in-weeks event: edit the `EVENTS` array in
+  `life-in-weeks/index.html`.
 
-Tracking against the checklist in [CLAUDE.md](./CLAUDE.md) → TO-DOs.
+## License
 
-Complete:
-
-- v18 mockup → `index.html` (with SEO, OG, JSON-LD Person, GoatCounter)
-- Blog pipeline (`scripts/build_blog.py` + Action) with conditional KaTeX /
-  Mermaid / Prism loading
-- Shared `blog.css`, Jinja templates, sitemap generation
-- GoatCounter wired (site code `zaher-karp`, already live)
-
-Open (see CLAUDE.md TO-DOs for full list):
-
-1. Create GitHub repo + enable Pages
-2. Confirm email (`me@zaherkarp.com`)
-3. Commit a `/resume.pdf`
-4. Real blog migration — see `src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md`
-5. Swap into the `zaherkarp.github.io` main repo
+MIT. See [LICENSE.md](./LICENSE.md).

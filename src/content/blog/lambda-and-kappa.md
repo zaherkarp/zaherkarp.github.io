@@ -1,7 +1,7 @@
 ---
 title: "From Lambda to Kappa: What Modern Data Architecture Really Means for Healthcare Tech"
 description: "Why the shift away from Lambda architecture matters, what Kappa gets right (and wrong), and how healthcare APIs force us to be more pragmatic than dogmatic."
-publishDate: 2025-10-21
+publishDate: 2025-12-14
 draft: false
 tags: ["data-engineering", "healthcare", "architecture", "streaming", "apis"]
 ---

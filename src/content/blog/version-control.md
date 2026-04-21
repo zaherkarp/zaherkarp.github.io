@@ -1,7 +1,7 @@
 ---
 title: "Why Pull Requests Changed Everything in Healthcare Data Science"
 description: "How version control and pull requests transformed healthcare analytics from chaotic file management into transparent, collaborative systems that save lives."
-publishDate: 2025-12-26
+publishDate: 2026-03-01
 tags: ["healthcare-data", "version-control", "pull-requests", "collaboration", "medicare", "data-science"]
 ---
 

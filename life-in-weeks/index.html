@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life in Weeks — Zaher Karp</title>
+<meta name="description" content="A life, 4,680 weeks. Each square is a week. Inspired by Tim Urban's 'Your Life in Weeks'.">
+<link rel="canonical" href="https://zaherkarp.com/life-in-weeks/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="Life in Weeks — Zaher Karp">
+<meta property="og:description" content="A life, 4,680 weeks. Each square is a week.">
+<meta property="og:url" content="https://zaherkarp.com/life-in-weeks/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #fffff8; --surface: #f7f2e8; --rule: #d6d2c8;
+  --text: #2a2a2a; --text-sec: #4a4238; --muted: #766f64; --accent: #8b2e19;
+  --event: #a06b1a;
+  --font-body: 'EB Garamond', Georgia, serif;
+  --font-mono: 'Courier New', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #201b14; --surface: #2b2418; --rule: #3a3024;
+    --text: #f5ecd7; --text-sec: #d4c7a9; --muted: #b0a48a; --accent: #e06940;
+    --event: #d4a050;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 21px; background: var(--bg); color: var(--text); }
+body { font-family: var(--font-body); line-height: 1.7; padding: 2rem 0 4rem; }
+.page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+nav { font-size: 0.78rem; margin-bottom: 2rem; }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover { color: var(--accent); }
+h1 { font-size: 1.7rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.25; }
+.lede { color: var(--text-sec); margin-bottom: 1.5rem; max-width: 34em; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: var(--accent); }
+
+.counters { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-sec); margin-bottom: 1.5rem; }
+.counters div { margin: 0.1rem 0; }
+
+.legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 1.5rem; }
+.legend-item { display: flex; align-items: center; gap: 0.35rem; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 1px; }
+.swatch.lived   { background: var(--text); }
+.swatch.current { background: var(--accent); }
+.swatch.event   { background: var(--event); }
+.swatch.future  { background: transparent; border: 1px solid var(--rule); }
+
+.grid { display: grid; gap: 0; }
+.year-row { display: flex; align-items: center; }
+.year-row.decade-end { margin-bottom: 5px; }
+.year-label {
+  width: 80px; flex-shrink: 0;
+  font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted);
+  text-align: right; padding-right: 8px;
+}
+.year-label.hidden { visibility: hidden; }
+.weeks { display: flex; gap: 2px; }
+.week {
+  width: 7px; height: 7px; border-radius: 1px;
+  background: transparent; border: 1px solid var(--rule);
+}
+.week.lived   { background: var(--text);   border-color: var(--text); }
+.week.current { background: var(--accent); border-color: var(--accent); cursor: pointer; }
+.week.event   { background: var(--event);  border-color: var(--event); cursor: pointer; }
+
+#tooltip {
+  position: fixed; transform: translate(-50%, -100%);
+  background: var(--text); color: var(--bg);
+  font-family: var(--font-mono); font-size: 0.7rem;
+  padding: 4px 8px; border-radius: 3px;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.1s ease; z-index: 10;
+}
+#tooltip.show { opacity: 1; }
+
+footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: 0.78rem; color: var(--muted); }
+footer p { font-style: italic; }
+
+@media (max-width: 580px) {
+  .year-label { width: 60px; font-size: 0.55rem; }
+  .week { width: 6px; height: 6px; }
+  .weeks { gap: 1.5px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<nav><a href="/">← Zaher Karp</a></nav>
+
+<h1>Life in Weeks</h1>
+<p class="lede">A life, assuming 90 years, is 4,680 weeks. Each square below is one of them. Inspired by Tim Urban's <em>Your Life in Weeks</em>.</p>
+
+<div class="counters" id="counters"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch lived"></span>Lived</div>
+  <div class="legend-item"><span class="swatch current"></span>This week</div>
+  <div class="legend-item"><span class="swatch event"></span>Event</div>
+  <div class="legend-item"><span class="swatch future"></span>Future</div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div id="tooltip"></div>
+
+<footer>
+  <p>Birth year: 1985. Exact date withheld intentionally.</p>
+</footer>
+
+</div>
+
+<script>
+(() => {
+  const BIRTH = new Date(1985, 3, 1);
+  const LIFE_YEARS = 90;
+  const WEEKS_PER_YEAR = 52;
+  const TOTAL = LIFE_YEARS * WEEKS_PER_YEAR;
+  const MS_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+  const EVENTS = [
+    { date: '1985-04-01', label: '🌱 Born, April 1985' },
+    { date: '1990-09-01', label: '🏫 First day at UNIS' },
+    { date: '2003-06-01', label: '🎓 Graduated UNIS' },
+    { date: '2003-09-01', label: '📚 First day at UW-Madison (undergrad)' },
+    { date: '2007-05-15', label: '🎓 BA, UW-Madison' },
+    { date: '2011-05-01', label: 'Met my person' },
+    { date: '2013-09-01', label: '📚 Started MPH at UW-Madison' },
+    { date: '2015-05-15', label: '🎓 MPH (Biostatistics), UW-Madison' },
+    { date: '2016-02-01', label: '👶 Became father of 1' },
+    { date: '2019-02-01', label: '👶 Became father of 2' },
+    { date: '2022-08-01', label: '👶 Became father of 3' },
+    { date: '2026-03-13', label: '⚡ Built this page' },
+  ];
+
+  const weekIdx = (d) => Math.floor((d - BIRTH) / MS_WEEK);
+  const now = new Date();
+  const current = weekIdx(now);
+  const eventMap = new Map(EVENTS.map(e => [weekIdx(new Date(e.date)), e.label]));
+
+  // Counters
+  const age = (current / WEEKS_PER_YEAR).toFixed(1);
+  const pct = ((current / TOTAL) * 100).toFixed(1);
+  document.getElementById('counters').innerHTML = `
+    <div>Age: ${age} years</div>
+    <div>Week ${current} of ${TOTAL}</div>
+    <div>${pct}% complete</div>
+    <div>${TOTAL - current} weeks remaining</div>
+  `;
+
+  // Grid
+  const grid = document.getElementById('grid');
+  const birthYear = BIRTH.getFullYear();
+  let html = '';
+  for (let y = 0; y < LIFE_YEARS; y++) {
+    const showLabel = y % 5 === 0;
+    const decadeEnd = y > 0 && y % 10 === 0;
+    const label = showLabel ? `${y} / ${birthYear + y}` : '';
+    html += `<div class="year-row${decadeEnd ? ' decade-end' : ''}">`;
+    html += `<div class="year-label${showLabel ? '' : ' hidden'}">${label}</div>`;
+    html += '<div class="weeks">';
+    for (let w = 0; w < WEEKS_PER_YEAR; w++) {
+      const wi = y * WEEKS_PER_YEAR + w;
+      let cls = 'week';
+      let title = '';
+      if (eventMap.has(wi))      { cls += ' event';   title = eventMap.get(wi); }
+      else if (wi === current)   { cls += ' current'; title = `📍 Current week (week ${wi})`; }
+      else if (wi < current)     { cls += ' lived'; }
+      html += `<div class="${cls}"${title ? ` data-t="${title.replace(/"/g,'&quot;')}"` : ''}></div>`;
+    }
+    html += '</div></div>';
+  }
+  grid.innerHTML = html;
+
+  // Tooltip
+  const tip = document.getElementById('tooltip');
+  grid.addEventListener('mouseover', (e) => {
+    const t = e.target.dataset.t;
+    if (!t) return;
+    const r = e.target.getBoundingClientRect();
+    tip.textContent = t;
+    tip.style.left = (r.left + r.width / 2) + 'px';
+    tip.style.top  = (r.top - 6) + 'px';
+    tip.classList.add('show');
+  });
+  grid.addEventListener('mouseout', (e) => {
+    if (e.target.dataset.t) tip.classList.remove('show');
+  });
+})();
+</script>
+
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>

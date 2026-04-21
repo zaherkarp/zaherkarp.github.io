@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the Star Rating Predictor Works — Zaher Karp</title>
+<meta name="description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<link rel="canonical" href="https://zaherkarp.com/blog/star-rating-demo-methodology/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="How the Star Rating Predictor Works — Zaher Karp">
+<meta property="og:description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<meta property="og:url" content="https://zaherkarp.com/blog/star-rating-demo-methodology/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How the Star Rating Predictor Works — Zaher Karp">
+<meta name="twitter:description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "How the Star Rating Predictor Works", "description": "The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.", "datePublished": "2026-04-12T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+        integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+        integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRjXlZe5Bpb0kUkA" crossorigin="anonymous"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+
+
+
+
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">How the Star Rating Predictor Works</h1>
+    <div class="blog-meta">
+      <time datetime="2026-04-12" class="blog-date">April 12, 2026</time>
+      
+      <ul class="blog-tags">
+        <li>medicare</li><li>star-ratings</li><li>ordinal-regression</li><li>methodology</li><li>statistics</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>The <a href="/blog/star-rating-predictor">interactive Star Rating predictor</a> lets you adjust four quality inputs and watch a predicted Medicare Star Rating update in real time. This post explains what is happening under the hood.</p>
+<h2>The right model for ordered outcomes</h2>
+<p>Star Ratings are <strong>ordinal</strong>: 1 &lt; 2 &lt; 3 &lt; 4 &lt; 5, but the distances between levels are not equal. A plan jumping from 3 to 4 stars triggers Quality Bonus Payments worth tens of millions of dollars. A jump from 4 to 5 does not carry the same financial weight.</p>
+<p>Standard linear regression treats the outcome as continuous and assumes equal spacing. Multinomial logistic regression ignores the ordering entirely. <strong>Ordinal logistic regression</strong> — specifically the proportional odds model introduced by McCullagh (1980) — respects both the ordering and the non-equal spacing.</p>
+<p>The model estimates cumulative probabilities:</p>
+<p>$$P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)$$</p>
+<p>where $\sigma(x) = \frac{1}{1 + e^{-x}}$ is the logistic function, $\alpha_k$ are threshold parameters for each cumulative split, and $\beta$ is a shared coefficient vector that captures each input's effect across all thresholds.</p>
+<p>This is the <strong>proportional odds assumption</strong>: the effect of each predictor is constant regardless of which threshold you are crossing. It means one set of coefficients tells the full story.</p>
+<h2>From cumulative probabilities to a prediction</h2>
+<p>The cumulative model gives $P(Y \geq k)$ for each threshold. Individual star-level probabilities come from differencing:</p>
+<p>$$P(Y = 1) = 1 - P(Y \geq 2)$$</p>
+<p>$$P(Y = k) = P(Y \geq k) - P(Y \geq k+1) \quad \text{for } k = 2, 3, 4$$</p>
+<p>$$P(Y = 5) = P(Y \geq 5)$$</p>
+<p>The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the demo.</p>
+<h2>Calibration to CMS weights</h2>
+<p>The demo uses four inputs that map to real CMS Star Rating domains:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>CMS Domain</th>
+<th>CMS Weight</th>
+<th>Coefficient ($\beta$)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HEDIS Composite Rate</td>
+<td>Part C — Process &amp; Outcome</td>
+<td>1–3×</td>
+<td>+0.08 per pp</td>
+</tr>
+<tr>
+<td>CAHPS Member Satisfaction</td>
+<td>Part C — Patient Experience</td>
+<td>2×</td>
+<td>+1.50 per unit</td>
+</tr>
+<tr>
+<td>Medication Adherence</td>
+<td>Part D — Drug Measures</td>
+<td><strong>3×</strong></td>
+<td>+0.06 per pp</td>
+</tr>
+<tr>
+<td>Readmission Rate</td>
+<td>Part C — Intermediate Outcome</td>
+<td><strong>3×</strong></td>
+<td>−0.08 per pp</td>
+</tr>
+</tbody>
+</table>
+<p>The coefficients are calibrated to satisfy two constraints simultaneously:</p>
+<ol>
+<li><strong>Weight proportionality</strong>: Each input's total contribution across its realistic slider range is proportional to its share of CMS weighted points (out of 81 total for MA-PD contracts).</li>
+<li><strong>Distribution calibration</strong>: At median slider positions, the predicted distribution matches the 2025 MA-PD star distribution — average 3.92 stars, approximately 42% of contracts at 4 stars or above, roughly 2% at 5 stars.</li>
+</ol>
+<p>The four intercepts ($\alpha_2 = -10.1$, $\alpha_3 = -11.76$, $\alpha_4 = -15.1$, $\alpha_5 = -18.17$) position the thresholds so that a plan at the 50th percentile on all inputs lands around 3.2 stars.</p>
+<h2>The &quot;What Would Move the Needle?&quot; calculation</h2>
+<p>For each input, the model simulates a feasible one-year improvement:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Simulated Step</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HEDIS Composite</td>
+<td>+5 pp</td>
+<td>Achievable with targeted gap closure</td>
+</tr>
+<tr>
+<td>CAHPS Satisfaction</td>
+<td>+0.3 points</td>
+<td>Typical gain from member experience initiatives</td>
+</tr>
+<tr>
+<td>Medication Adherence</td>
+<td>+5 pp</td>
+<td>Consistent with MTM program impact</td>
+</tr>
+<tr>
+<td>Readmission Rate</td>
+<td>−2 pp</td>
+<td>Achievable with care transition programs</td>
+</tr>
+</tbody>
+</table>
+<p>It computes $E[Y \mid x_j + \Delta] - E[Y \mid x_j]$ for each input and reports the two highest-impact levers. Because the logistic function is nonlinear, the highest-impact lever changes depending on where the plan currently sits — it is largest near the ordinal cut-points and smallest in the tails.</p>
+<h2>CMS Reward Factor</h2>
+<p>Plans maintaining 4 or more stars for three consecutive years receive up to +0.4 stars added to the summary rating before final rounding. The demo toggle simulates this additive bonus.</p>
+<h2>What the model does not include</h2>
+<ol>
+<li><strong>No real training data.</strong> Coefficients are synthetic, calibrated to CMS weight shares and the published star distribution. A production model would be trained on contract-level measure scores.</li>
+<li><strong>Simplified inputs.</strong> CMS uses 42 measures across 9 domains. The four inputs here represent roughly 40% of total weighted points; the remaining 60% is absorbed into the intercepts.</li>
+<li><strong>No case-mix adjustment.</strong> CMS applies a Categorical Adjustment Index (CAI) for plans serving dual-eligible, disabled, or low-income populations. D-SNP plans should treat these predictions as pre-adjustment estimates.</li>
+<li><strong>No improvement measures.</strong> CMS awards credit for year-over-year improvement, which requires longitudinal data not modeled here.</li>
+<li><strong>Adherence treated as a single composite.</strong> The three PDC measures (diabetes, RAS, statins) have different baseline distributions and intervention profiles.</li>
+</ol>
+<p>Despite these simplifications, the model accurately represents the correct statistical framework, the correct relative importance of each domain, and the nonlinear sensitivity structure inherent in ordinal logistic regression.</p>
+<h2>References</h2>
+<ol>
+<li>McCullagh, P. (1980). Regression Models for Ordinal Data. <em>JRSS Series B</em>, 42(2), 109–142.</li>
+<li>CMS (2024). Medicare 2025 Part C &amp; D Star Ratings Technical Notes.</li>
+<li>CMS (2024). 2025 Medicare Advantage and Part D Star Ratings Fact Sheet.</li>
+<li>Kurian, N. et al. (2021). Predicting Hospital Overall Quality Star Ratings in the USA. <em>Healthcare</em>, 9(4), 486.</li>
+<li>Hohmann, N. et al. (2018). Association between Higher Generic Drug Use and Medicare Part D Star Ratings. <em>Value in Health</em>, 21(10), 1186–1191.</li>
+</ol>
+
+  </div>
+</article>
+
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 ---
 title: "America First, Global Health Last"
 subtitle: "The International Cost of a Public Health Retreat"
-publishDate: 2025-11-04
+publishDate: 2026-01-04
 tags: ["public-health", "global-health", "healthcare-policy", "data-analysis"]
 description: "A quantitative analysis of documented international health program disruptions, funding cuts, and their human toll during 2025"
 ---

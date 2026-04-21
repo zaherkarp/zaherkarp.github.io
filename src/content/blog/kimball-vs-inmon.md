@@ -1,7 +1,7 @@
 ---
 title: "Kimball vs. Inmon in Healthcare Tech: Warehouses, Marts, and APIs Walk Into a Clinic"
 description: "A practical, slightly opinionated take on Kimball and Inmon, viewed through healthcare data platforms, APIs, and the realities of shipping software."
-publishDate: 2025-10-05
+publishDate: 2025-12-07
 draft: false
 tags: ["healthcare", "data-engineering", "data-architecture", "apis", "analytics"]
 ---
