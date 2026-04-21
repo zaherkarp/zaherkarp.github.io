@@ -216,7 +216,11 @@ def render_index(env: Environment, posts: list[dict], current_year: int) -> str:
 
 
 def write_sitemap(posts: list[dict]) -> None:
-    urls = [f"{SITE_URL}/", f"{SITE_URL}/blog/"]
+    urls = [
+        f"{SITE_URL}/",
+        f"{SITE_URL}/blog/",
+        f"{SITE_URL}/star-rating-predictor/",
+    ]
     urls.extend(f"{SITE_URL}/blog/{p['slug']}/" for p in posts)
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',

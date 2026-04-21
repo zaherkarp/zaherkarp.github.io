@@ -1013,18 +1013,20 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
 
   <div class="project-entry">
     <span class="project-num">01</span>
-    <span class="project-title">Client-Side Stars Analytics Dashboard</span>
+    <span class="project-title">Client-Side Stars Rating Predictor</span>
     <div class="project-body">
       <p>The design constraint — no data leaves the user's machine — was a compliance
-      requirement, not an aesthetic one. Implemented as a single HTML file using Chart.js
-      against uploaded CSV data; jsPDF generates the report without a server round-trip.
-      Nothing to deploy, update, or maintain.</p>
+      requirement, not an aesthetic one. An ordinal logistic regression calibrated to
+      CMS 2025 measure weights runs in the browser. Four sliders collapse the 42-measure
+      surface down to the levers that actually matter, and the cut-point visualization
+      exposes the mechanism that makes a tenth of a star worth $50 million.</p>
     </div>
     <div class="project-links">
-      <a href="https://zaherkarp.github.io/blog/star-rating-predictor-methodology">Methodology post</a>
+      <a href="/star-rating-predictor/">Live demo</a>
+      <a href="/blog/star-rating-predictor-methodology/">Methodology post</a>
       <a href="https://github.com/zaherkarp/zaherkarp.github.io">GitHub</a>
     </div>
-    <span class="project-stack">Chart.js · PapaParse · jsPDF · client-side</span>
+    <span class="project-stack">Ordinal logistic regression · vanilla JS · no dependencies · client-side</span>
   </div>
 
   <hr class="light">

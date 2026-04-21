@@ -277,7 +277,7 @@ Do not copy structure or CSS from the live site.
 **Email:** me@zaherkarp.com (confirm before shipping)
 
 **Links:**
-  Stars dashboard: links to blog post (no standalone demo URL yet)
+  Stars dashboard: /star-rating-predictor/ (standalone HTML, no build step)
   SkillSprout: https://zaherkarp.com/skillsprout
   Medicare Advantage Insight Engine: GitHub repo only
   ECDS Shock Index: GitHub repo only
