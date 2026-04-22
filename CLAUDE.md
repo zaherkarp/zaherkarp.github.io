@@ -501,14 +501,33 @@ The main site (index.html) has no such scripts; no-build rule is intact.
 
 Local build:
   pip install -r scripts/requirements.txt
+  python scripts/lint_blog.py   # source-side lint (see below)
   python scripts/build_blog.py
 
 GitHub Action: .github/workflows/build_blog.yml
   Triggers on: push under src/content/blog/ or scripts/ or the workflow itself,
   plus manual workflow_dispatch
-  Runs build_blog.py
-  Commits generated HTML + sitemap.xml back to the repo
+  Runs lint_blog.py, then build_blog.py.
+  Commits generated HTML + sitemap.xml back to the repo.
   Requires: Settings → Actions → Workflow permissions → Read and write
+
+Lint step — scripts/lint_blog.py:
+  Enforces the three storage-side rules below against
+  src/content/blog/*.md (skipping drafts and `_`-prefixed files).
+  Runs before build_blog.py in CI; the build fails loud if the lint
+  fails. Run locally before pushing to catch issues pre-CI.
+  Checks:
+    1. HTML comments (`<!-- -->`) in a non-draft post — leak as
+       visible `&lt;!-- --&gt;` text.
+    2. A fenced code block nested inside an HTML comment — breaks
+       the tail of the document into escaped text.
+    3. A blockquote line starting with a Mermaid keyword
+       (`> flowchart LR`, `> graph TD`, etc.) — Mermaid never sees
+       it; arrows escape to `--&gt;`.
+  Comments or blockquotes that appear as literal examples inside a
+  fenced code block are ignored by design.
+  If the linter false-positives on a legitimate construct, fix the
+  post to match the rule — do not weaken the linter.
 
 Underscore-prefix convention:
   Any src/content/blog/_*.md is skipped by the build.
@@ -522,11 +541,13 @@ Scaffolded drafts must stay drafts — storage-side rule:
   fenced block causes markdown-it-py's HTML-block parser to drop into
   escaped-text mode for the rest of the document. Happened once on
   `hedis-measure-etl-patterns.md` (scaffolded with `ZAHER:` author notes,
-  shipped with `draft: false`).
+  shipped with `draft: false`); `scripts/lint_blog.py` now fails the CI
+  build if the pattern recurs.
   Fix the post, not the pipeline — `protect_math`, the HTML-comment
   handling, and the mermaid rewrite are all intentional; the bug was
   storage-side. Do not change `build_blog.py` or its markdown-it options
-  to work around an unfinished scaffold.
+  to work around an unfinished scaffold. Do not weaken the linter either —
+  the right response to a lint failure is always to fix the post.
   When a post is genuinely ready, remove the author-notes before
   flipping `draft: false`. Finished posts do not contain `<!-- -->`
   blocks outside of fenced code, and do not nest fenced blocks inside
@@ -552,7 +573,8 @@ Diagram storage conventions:
   prose with literal `--&gt;` arrows escaped on the page, and Mermaid
   never sees it. Happened once on `llm-inference-is-not-bigger-inference.md`
   and `what-llm-systems-teach-healthcare-it.md` (five diagrams across
-  the two posts, all converted to fenced blocks).
+  the two posts, all converted to fenced blocks); `scripts/lint_blog.py`
+  now fails CI on any `> flowchart`, `> graph`, `> sequenceDiagram`, etc.
   ASCII or Unicode box-art is fine if a diagram is small and the post
   doesn't otherwise need Mermaid — keep it inside a plain ```text fence
   so monospace and arrows render as intended.
@@ -640,6 +662,7 @@ Walk this list in a browser against the local preview before any
 substantial push. (Originally written as a pre-swap checklist; the
 swap is done, but the list remains useful as a standing ritual.)
 
+- [ ] `python scripts/lint_blog.py` is clean (if blog sources changed)
 - [ ] All internal anchor links resolve
 - [ ] All external links open correctly
 - [ ] Dark mode renders correctly in both Chrome and Safari

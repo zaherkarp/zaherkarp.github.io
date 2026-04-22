@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      - name: Lint blog sources
+        run: python scripts/lint_blog.py
+
       - name: Build blog
         run: python scripts/build_blog.py
 
