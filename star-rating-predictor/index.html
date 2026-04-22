@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medicare Star Rating Predictor — Zaher Karp</title>
-<meta name="description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings. Four quality levers, cut-point visualization, no data leaves your machine.">
+<title>Stars Cliff Simulator — Zaher Karp</title>
+<meta name="description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings. Move four quality levers, watch the probability of clearing the cliff update, and see the cut-point mechanism that makes a tenth of a star worth $50M+.">
 <link rel="canonical" href="https://zaherkarp.com/star-rating-predictor/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-<meta property="og:title" content="Medicare Star Rating Predictor">
-<meta property="og:description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings. Four quality levers, cut-point visualization, no data leaves your machine.">
+<meta property="og:title" content="Stars Cliff Simulator — the 4.0★ QBP cliff, explored">
+<meta property="og:description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings. Move four quality levers, watch the probability of clearing the cliff update, and see the cut-point mechanism that makes a tenth of a star worth $50M+.">
 <meta property="og:url" content="https://zaherkarp.com/star-rating-predictor/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Zaher Karp">
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Medicare Star Rating Predictor">
-<meta name="twitter:description" content="Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings.">
+<meta name="twitter:title" content="Stars Cliff Simulator — the 4.0★ QBP cliff, explored">
+<meta name="twitter:description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,11 +28,11 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Medicare Star Rating Predictor",
+  "name": "Stars Cliff Simulator",
   "applicationCategory": "HealthApplication",
   "operatingSystem": "Any",
   "offers": { "@type": "Offer", "price": "0" },
-  "description": "Browser-side ordinal logistic regression predictor for Medicare Advantage Star Ratings.",
+  "description": "An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings. Ordinal logistic regression, browser-side.",
   "author": { "@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com" }
 }
 </script>
@@ -252,6 +252,35 @@ nav {
 .qbp.near { border-left-color: var(--accent); opacity: 0.85; }
 .qbp.below { border-left-color: var(--muted); opacity: 0.8; }
 
+.cliff-stats {
+  display: flex; gap: 1rem; margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+.cliff-stat {
+  flex: 1 1 160px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 4px;
+  display: flex; flex-direction: column; gap: 0.2rem;
+}
+.cliff-stat.primary { border-color: var(--accent); }
+.cliff-stat-label {
+  font-size: calc(var(--size-caption) * 0.82);
+  font-variant: small-caps; letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.cliff-stat-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.35rem; font-weight: 700; color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.cliff-stat-sub {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.82);
+  color: var(--muted);
+}
+
 .probs { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
 .prob-row { display: flex; align-items: center; gap: 0.6rem; }
 .prob-label {
@@ -286,12 +315,30 @@ nav {
   position: absolute; top: -2px; bottom: -2px;
   width: 2px; background: var(--text); opacity: 0.55;
 }
+.threshold-marker.cliff {
+  top: -6px; bottom: -6px;
+  width: 4px; margin-left: -1px;
+  background: var(--accent); opacity: 1;
+}
 .threshold-label {
   position: absolute; top: -15px; left: 50%;
   transform: translateX(-50%);
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(var(--size-caption) * 0.78);
   color: var(--muted); white-space: nowrap;
+}
+.threshold-marker.cliff .threshold-label {
+  color: var(--accent); font-weight: 700;
+  top: -17px;
+}
+.threshold-sublabel {
+  position: absolute; bottom: -32px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: calc(var(--size-caption) * 0.72);
+  color: var(--accent);
+  font-variant: small-caps; letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 .z-indicator {
   position: absolute; top: -4px; bottom: -4px;
@@ -314,7 +361,7 @@ nav {
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(var(--size-caption) * 0.78);
   color: var(--muted);
-  margin-top: 1.6rem;
+  margin-top: 2.6rem;
 }
 
 .impact-box {
@@ -366,22 +413,22 @@ footer a:hover { color: var(--accent); }
   </nav>
 
   <div class="intro">
-    <p class="sub">Interactive demo</p>
-    <h1>What if you could predict your plan&rsquo;s Star Rating?</h1>
+    <p class="sub">Interactive demo · the 4.0★ cliff, explored</p>
+    <h1>The Stars Cliff Simulator</h1>
     <p>
-      Every year, CMS assigns a Star Rating to each Medicare Advantage contract — 1 to 5 stars, derived from 42 measures across 9 domains. Below 4.0, a plan forfeits the 5% Quality Bonus Payment. For a 200,000-member plan, that single tenth-of-a-star cliff can be worth $50–80 million.
+      CMS assigns each Medicare Advantage contract a Star Rating from 1 to 5, derived from 42 measures across 9 domains. One threshold in that whole system matters more than any other. At <strong>4.0★</strong>, a plan qualifies for <strong>Quality Bonus Payments</strong> — a 5% increase to its CMS benchmark. Below 4.0★, nothing. For a 200,000-member plan, that single tenth-of-a-star cliff is worth $50–80 million a year.
     </p>
     <p>
-      The predictor below uses ordinal logistic regression, calibrated to CMS 2025 measure weights and the MA-PD star distribution, and collapses the 42 measures into four high-leverage inputs. Move the sliders. Watch the rating, the probability distribution, and the cut-point visualization update. For the full methodology, see <a href="/blog/star-rating-predictor-methodology/">the methodology post</a>.
+      This simulator is built around that one number. An ordinal logistic regression, calibrated to CMS 2025 weights and the MA-PD distribution, collapses 42 measures into four high-leverage inputs. As you move the sliders, the readouts focus on the question an analyst actually asks: <em>what is the probability my plan clears the 4.0★ QBP cliff, and how far are we from it right now?</em> For the full derivation, see <a href="/blog/star-rating-predictor-methodology/">the methodology post</a>.
     </p>
   </div>
 
-  <div class="card" role="region" aria-label="Star Rating predictor">
+  <div class="card" role="region" aria-label="Stars Cliff Simulator">
     <div class="card-head">
       <span class="dot"></span>
       <span class="dot"></span>
       <span class="dot"></span>
-      <span class="card-title">star_rating_predictor.py</span>
+      <span class="card-title">stars_cliff_simulator.py</span>
     </div>
 
     <div class="input-group">
@@ -493,6 +540,19 @@ footer a:hover { color: var(--accent); }
       <span class="rating-num" id="rating-number">3.5</span>
     </div>
 
+    <div class="cliff-stats" aria-live="polite">
+      <div class="cliff-stat primary">
+        <span class="cliff-stat-label">P(clearing 4.0★ cliff)</span>
+        <span class="cliff-stat-value" id="qbp-prob">&mdash;</span>
+        <span class="cliff-stat-sub">P(Y ≥ 4) from ordinal model</span>
+      </div>
+      <div class="cliff-stat">
+        <span class="cliff-stat-label">Distance to cliff</span>
+        <span class="cliff-stat-value" id="cliff-distance">&mdash;</span>
+        <span class="cliff-stat-sub" id="cliff-distance-sub">expected ★ − 4.0</span>
+      </div>
+    </div>
+
     <div class="qbp" id="qbp-callout" aria-live="polite">
       <span id="qbp-text"></span>
     </div>
@@ -510,7 +570,7 @@ footer a:hover { color: var(--accent); }
       <div class="threshold-track" id="threshold-track">
         <div class="threshold-marker" data-threshold="0"><span class="threshold-label">≥2</span></div>
         <div class="threshold-marker" data-threshold="1"><span class="threshold-label">≥3</span></div>
-        <div class="threshold-marker" data-threshold="2"><span class="threshold-label">≥4</span></div>
+        <div class="threshold-marker cliff" data-threshold="2"><span class="threshold-label">≥4</span><span class="threshold-sublabel">QBP cliff</span></div>
         <div class="threshold-marker" data-threshold="3"><span class="threshold-label">≥5</span></div>
         <div class="z-indicator" id="z-indicator"><span class="z-label" id="z-label">z</span></div>
       </div>
@@ -552,6 +612,9 @@ footer a:hover { color: var(--accent); }
   var rewardVal  = document.getElementById("reward-val");
   var ratingNum  = document.getElementById("rating-number");
   var stars      = document.querySelectorAll("#star-display .star-icon");
+  var qbpProb    = document.getElementById("qbp-prob");
+  var cliffDist  = document.getElementById("cliff-distance");
+  var cliffSub   = document.getElementById("cliff-distance-sub");
 
   // Coefficients calibrated to CMS 2025 measure weights and MA-PD distribution.
   // See /blog/star-rating-predictor-methodology/ for the derivation.
@@ -603,14 +666,28 @@ footer a:hover { color: var(--accent); }
     el.classList.remove("eligible", "near", "below");
     if (expected >= 4.0) {
       el.classList.add("eligible");
-      text.textContent = "≥4★ — eligible for Quality Bonus Payments (≈5% premium increase, ~$50M+ for large plans).";
+      text.textContent = "Above the 4.0★ cliff — plan qualifies for Quality Bonus Payments (≈5% premium increase, ~$50M+ for large plans).";
     } else if (expected >= 3.5) {
       el.classList.add("near");
-      var gap = (4.0 - expected).toFixed(1);
-      text.textContent = gap + "★ below the 4.0 QBP threshold. Plans below 4.0★ do not qualify for quality bonus payments.";
+      text.textContent = "In the dead zone (3.5–3.99★). Rounds to 3.5★, no QBP. This is the band where investment returns are most nonlinear — a fraction of a star decides tens of millions of dollars.";
     } else {
       el.classList.add("below");
       text.textContent = "Below 3.5★ — no QBP eligibility. At ≤2.5★ for 3 consecutive years, CMS may terminate the contract.";
+    }
+  }
+
+  function setCliffStats(probGte4, expected, rewardOn) {
+    if (qbpProb) {
+      qbpProb.textContent = Math.round(probGte4 * 100) + "%";
+    }
+    if (cliffDist) {
+      var delta = expected - 4.0;
+      var sign = delta >= 0 ? "+" : "−";
+      cliffDist.textContent = sign + Math.abs(delta).toFixed(2) + "★";
+    }
+    if (cliffSub) {
+      var label = expected >= 4.0 ? "above the 4.0 QBP threshold" : "below the 4.0 QBP threshold";
+      cliffSub.textContent = rewardOn ? label + " (incl. +0.4 reward)" : label;
     }
   }
 
@@ -743,7 +820,9 @@ footer a:hover { color: var(--accent); }
       }
     }
 
+    var probGte4 = result.normalized[3] + result.normalized[4];
     setQbp(expected);
+    setCliffStats(probGte4, expected, applyReward);
     updateProbs(result.normalized);
     updateThresholds(z);
     updateImpact(rawExpected, hedis, cahps, med, readmit);

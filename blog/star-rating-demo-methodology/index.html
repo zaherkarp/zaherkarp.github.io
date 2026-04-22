@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How the Star Rating Predictor Works — Zaher Karp</title>
-<meta name="description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<title>How the Stars Cliff Simulator Works — Zaher Karp</title>
+<meta name="description" content="A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1–5 star outcome, how P(clearing 4.0★) falls out of the model for free, and what the distance-to-cliff readout actually measures.">
 <link rel="canonical" href="https://zaherkarp.com/blog/star-rating-demo-methodology/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-<meta property="og:title" content="How the Star Rating Predictor Works — Zaher Karp">
-<meta property="og:description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<meta property="og:title" content="How the Stars Cliff Simulator Works — Zaher Karp">
+<meta property="og:description" content="A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1–5 star outcome, how P(clearing 4.0★) falls out of the model for free, and what the distance-to-cliff readout actually measures.">
 <meta property="og:url" content="https://zaherkarp.com/blog/star-rating-demo-methodology/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Zaher Karp">
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="How the Star Rating Predictor Works — Zaher Karp">
-<meta name="twitter:description" content="The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.">
+<meta name="twitter:title" content="How the Stars Cliff Simulator Works — Zaher Karp">
+<meta name="twitter:description" content="A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1–5 star outcome, how P(clearing 4.0★) falls out of the model for free, and what the distance-to-cliff readout actually measures.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "Article", "headline": "How the Star Rating Predictor Works", "description": "The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser.", "datePublished": "2026-04-12T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+{"@context": "https://schema.org", "@type": "Article", "headline": "How the Stars Cliff Simulator Works", "description": "A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1\u20135 star outcome, how P(clearing 4.0\u2605) falls out of the model for free, and what the distance-to-cliff readout actually measures.", "datePublished": "2026-04-12T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -65,7 +65,7 @@
 <article class="blog-article">
   <a href="/blog/" class="back-link">&larr; Back to writing</a>
   <header class="blog-header">
-    <h1 class="blog-title">How the Star Rating Predictor Works</h1>
+    <h1 class="blog-title">How the Stars Cliff Simulator Works</h1>
     <div class="blog-meta">
       <time datetime="2026-04-12" class="blog-date">April 12, 2026</time>
       
@@ -76,7 +76,8 @@
     </div>
   </header>
   <div class="blog-body">
-    <p>The <a href="/blog/star-rating-predictor">interactive Star Rating predictor</a> lets you adjust four quality inputs and watch a predicted Medicare Star Rating update in real time. This post explains what is happening under the hood.</p>
+    <p>The <a href="/star-rating-predictor/">Stars Cliff Simulator</a> is a public, teaching-oriented demo focused on one number — the 4.0★ Quality Bonus Payment threshold that separates Medicare Advantage plans that qualify for QBPs from the 3.5–3.99★ &quot;dead zone&quot; that does not. You adjust four quality inputs and watch the probability of clearing the 4.0★ cliff, the distance to it, and the underlying predicted rating update in real time. This post is the short explainer — what is happening under the hood, and why the cliff-focused readouts are free statistics from the model, not bolted-on heuristics.</p>
+<p>It is not about the internal Client-Side Stars Rating Predictor I maintain at Baltimore Health Analytics, which is a different tool with a different audience and a private source tree. The simulator shares an ordinal-regression skeleton with the internal tool — that is the right structural fit for Star Ratings — but this post is strictly about the public simulator. For the long methodology and literature review, see the <a href="/blog/star-rating-predictor-methodology/">methodology and evidence post</a>.</p>
 <h2>The right model for ordered outcomes</h2>
 <p>Star Ratings are <strong>ordinal</strong>: 1 &lt; 2 &lt; 3 &lt; 4 &lt; 5, but the distances between levels are not equal. A plan jumping from 3 to 4 stars triggers Quality Bonus Payments worth tens of millions of dollars. A jump from 4 to 5 does not carry the same financial weight.</p>
 <p>Standard linear regression treats the outcome as continuous and assumes equal spacing. Multinomial logistic regression ignores the ordering entirely. <strong>Ordinal logistic regression</strong> — specifically the proportional odds model introduced by McCullagh (1980) — respects both the ordering and the non-equal spacing.</p>
@@ -89,9 +90,14 @@
 <p>$$P(Y = 1) = 1 - P(Y \geq 2)$$</p>
 <p>$$P(Y = k) = P(Y \geq k) - P(Y \geq k+1) \quad \text{for } k = 2, 3, 4$$</p>
 <p>$$P(Y = 5) = P(Y \geq 5)$$</p>
-<p>The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the demo.</p>
+<p>The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the simulator.</p>
+<h2>The cliff is a free statistic</h2>
+<p>The question a Stars analyst actually cares about is not &quot;what is my expected rating?&quot; but &quot;will we clear 4.0★ and qualify for Quality Bonus Payments?&quot; The ordinal model produces this directly:</p>
+<p>$$P(\text{clearing 4.0★ cliff}) = P(Y = 4) + P(Y = 5) = P(Y \geq 4)$$</p>
+<p>This falls out of the cumulative structure without any additional modeling — it is the <code>(α₄ + βᵀX)</code> threshold evaluated through the sigmoid. The simulator displays this as the hero statistic under the predicted rating. A linear regression on stars could produce a point estimate of the expected rating, but it could not produce this probability. That is the reason ordinal is the right tool for the cliff: the most useful scalar the page could report is a side-effect of the model's structure, not a post-hoc transformation.</p>
+<p>The <strong>distance-to-cliff</strong> readout, $E[Y] - 4.0$, is complementary. P(clearing) tells you how likely you are to clear the threshold in the model's probabilistic sense; distance-to-cliff tells you how close the point estimate sits to it in the units you're adjusting. When the reward factor toggle is active, distance incorporates its +0.4 additive bonus; P(clearing) reflects the underlying latent probability, since the reward factor is a deterministic CMS add-on rather than a shift in the ordinal structure.</p>
 <h2>Calibration to CMS weights</h2>
-<p>The demo uses four inputs that map to real CMS Star Rating domains:</p>
+<p>The simulator uses four inputs that map to real CMS Star Rating domains:</p>
 <table>
 <thead>
 <tr>
@@ -169,7 +175,7 @@
 </table>
 <p>It computes $E[Y \mid x_j + \Delta] - E[Y \mid x_j]$ for each input and reports the two highest-impact levers. Because the logistic function is nonlinear, the highest-impact lever changes depending on where the plan currently sits — it is largest near the ordinal cut-points and smallest in the tails.</p>
 <h2>CMS Reward Factor</h2>
-<p>Plans maintaining 4 or more stars for three consecutive years receive up to +0.4 stars added to the summary rating before final rounding. The demo toggle simulates this additive bonus.</p>
+<p>Plans maintaining 4 or more stars for three consecutive years receive up to +0.4 stars added to the summary rating before final rounding. The simulator's toggle simulates this additive bonus.</p>
 <h2>What the model does not include</h2>
 <ol>
 <li><strong>No real training data.</strong> Coefficients are synthetic, calibrated to CMS weight shares and the published star distribution. A production model would be trained on contract-level measure scores.</li>

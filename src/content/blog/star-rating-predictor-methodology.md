@@ -1,21 +1,27 @@
 ---
-title: "Building a Browser-Based Star Rating Predictor: Methodology & Evidence"
-description: "Technical documentation and literature review supporting the ordinal logistic regression model used in the interactive Medicare Star Rating predictor on this site."
+title: "The Stars Cliff Simulator: Methodology & Evidence"
+description: "The statistical methodology and published literature behind the Stars Cliff Simulator — a public, teaching-oriented ordinal logistic regression tool focused on the 4.0★ Quality Bonus Payment threshold."
 publishDate: 2026-04-05
 tags: ["medicare", "star-ratings", "ordinal-regression", "methodology", "interactive"]
 ---
 
 ## TL;DR for Executives
 
-- **What it does:** The interactive demo predicts a Medicare Star Rating (1–5) from four quality inputs using a statistical model that runs entirely in your browser.
-- **Why it matters:** Plans at ≥4 stars qualify for Quality Bonus Payments (QBPs) — a 5% premium increase worth $50M+ annually for large contracts. The 4-star threshold is the single most consequential cliff in managed care economics.
-- **What it shows you:** Which quality lever — HEDIS, CAHPS, medication adherence, or readmission — delivers the most star improvement at your plan's current performance level, so you can prioritize investment.
+- **What it does:** The [Stars Cliff Simulator](/star-rating-predictor/) is an interactive, teaching-oriented demo focused on one number — the 4.0★ Quality Bonus Payment threshold. Move four quality inputs; watch the probability of clearing the 4.0★ cliff update in real time.
+- **Why it matters:** Plans at ≥4.0★ qualify for Quality Bonus Payments (QBPs) — a 5% premium increase worth $50M+ annually for large contracts. The 4.0★ threshold is the single most consequential cliff in managed care economics, and the 3.5–3.99★ "dead zone" is where quality-improvement ROI is most nonlinear.
+- **What it shows you:** The probability of clearing 4.0★, the distance from the cliff in expected stars, and which of the four quality levers — HEDIS, CAHPS, medication adherence, or readmission — delivers the most star improvement at your plan's current performance level.
 
 ---
 
-The interactive demo on this site lets visitors adjust four healthcare quality inputs and watch a predicted Medicare Star Rating update in real time. This post documents the statistical approach, explains why ordinal logistic regression is the right tool for the job, and cites the CMS methodology and published research that inform the model's design.
+## Scope: what this post documents (and what it does not)
 
-## What the Demo Does
+This post is the methodology and evidence appendix for the **Stars Cliff Simulator**, the public interactive tool on this site at [/star-rating-predictor/](/star-rating-predictor/). The simulator is a single-page, browser-side demo built for a general audience — students, analysts new to Medicare Advantage, non-technical stakeholders who need to understand the shape of the cliff and the ordinal structure that produces it.
+
+It is *not* the same thing as the internal Client-Side Stars Rating Predictor I maintain at Baltimore Health Analytics. That internal tool is a cut-point dashboard that runs against live measure feeds to project contract-level cut-point crossings for remediation planning; its source is private, and this post does not describe it. The two tools share a statistical skeleton (ordinal logistic regression with cut-point visualization) because ordinal models are the right structural fit for Star Ratings — not because one is a rewrite of the other.
+
+With that distinction out of the way: the simulator lets visitors adjust four healthcare quality inputs and watch a predicted Medicare Star Rating update in real time, with the readouts focused on clearing the 4.0★ QBP cliff. This post documents the statistical approach, explains why ordinal logistic regression is the right tool for the job, and cites the CMS methodology and published research that inform the model's design.
+
+## What the Simulator Does
 
 Four sliders control inputs that map to real CMS Star Rating domains:
 
@@ -26,15 +32,17 @@ Four sliders control inputs that map to real CMS Star Rating domains:
 | Medication Adherence (D-SNP) | Proportion of Days Covered (PDC) ≥80% across three measures: diabetes medications, RAS antagonists, and statins | Part D — Drug Measures | **3×** |
 | Readmission Rate | Plan All-Cause Readmissions (PCR) within 30 days | Part C — Intermediate Outcome | **3×** |
 
-The output includes:
+The output foregrounds the 4.0★ cliff:
 
-- A predicted overall Star Rating on a 1–5 scale with full probability distribution
-- **Quality Bonus Payment context** — whether the predicted rating would qualify for QBPs, how far from the threshold, and the financial implications
+- **P(clearing 4.0★ cliff)** — the probability that the underlying ordinal model places the plan at 4★ or 5★. This is the hero statistic and the question a Stars analyst actually asks.
+- **Distance to cliff** — expected rating minus 4.0, with sign. Quantifies the margin in the same units the user is manipulating.
+- A predicted overall Star Rating (expected value) on a 1–5 scale with the full probability distribution across all five star levels
+- An **ordinal threshold visualization** with the 3→4 cut-point highlighted as the QBP cliff, showing where the linear predictor falls relative to each cut-point
 - **Plain-language impact guidance** — which quality lever offers the largest star gain from a feasible improvement at the current performance level
-- An **ordinal threshold visualization** showing where the linear predictor falls relative to cut-points
 - National **percentile markers** (25th, 50th, 75th) on each slider for benchmarking
+- A contextual callout that distinguishes three regimes: above the cliff, the 3.5–3.99★ "dead zone," and below 3.5★
 
-An optional **CMS Reward Factor** toggle adds up to +0.4 stars, simulating the bonus CMS grants to plans maintaining ≥4 stars for 3+ consecutive years.
+An optional **CMS Reward Factor** toggle adds up to +0.4 stars, simulating the bonus CMS grants to plans maintaining ≥4 stars for 3+ consecutive years. When active, the distance-to-cliff readout incorporates the reward; the P(clearing) readout reports the raw ordinal probability, because the reward factor is a deterministic add-on rather than a shift in the underlying latent.
 
 ## The Financial Stakes: Quality Bonus Payments
 
@@ -45,9 +53,7 @@ The stakes are asymmetric:
 - **3.5–3.99★**: Plans round to 3.5★ and receive no bonus, despite being close. This is the "dead zone."
 - **≥4.0★**: Full QBP eligibility. The reward factor can push plans that sustain 4★+ even higher.
 
-This cliff function is why quality improvement ROI is heavily nonlinear — a 0.1-star improvement from 3.9 to 4.0 can be worth tens of millions, while the same improvement from 4.3 to 4.4 has essentially zero marginal financial impact.
-
-The demo surfaces this context directly below the predicted rating, so users can immediately see where their plan stands relative to the QBP cliff.
+This cliff function is why quality improvement ROI is heavily nonlinear — a 0.1-star improvement from 3.9 to 4.0 can be worth tens of millions, while the same improvement from 4.3 to 4.4 has essentially zero marginal financial impact. The simulator is designed around this asymmetry: the hero readouts are about the cliff, not about the point estimate.
 
 ## Why Ordinal Logistic Regression?
 
@@ -71,7 +77,7 @@ McCullagh showed that the proportional odds model provides interpretable odds ra
 
 ## CMS Star Ratings Methodology
 
-CMS publishes annual Technical Notes that detail exactly how Star Ratings are calculated. The key points relevant to this demo:
+CMS publishes annual Technical Notes that detail exactly how Star Ratings are calculated. The key points relevant to the simulator:
 
 ### Measure Structure
 
@@ -126,11 +132,11 @@ CAHPS survey scores evaluate member satisfaction across dimensions like provider
 
 CMS applies a **Reward Factor** of up to +0.4 stars to plans that have maintained ≥4-star overall ratings for three or more consecutive years. This bonus is additive — applied to the weighted summary rating before final rounding — and can be the difference between a 3.5-star and a 4-star plan qualifying for quality bonus payments.
 
-The demo includes a toggle to simulate this factor, reflecting its material impact on final ratings.
+The simulator includes a toggle to simulate this factor, reflecting its material impact on final ratings.
 
 ### Improvement Measures
 
-CMS also evaluates **year-over-year improvement** in certain measures. Plans showing statistically significant improvement may receive credit even if their absolute level remains below the top cut-point. The current demo does not model improvement measures, as they require longitudinal data (prior-year performance), but they represent a meaningful path to higher ratings for plans in the 3.0–3.5★ range that are on an upward trajectory.
+CMS also evaluates **year-over-year improvement** in certain measures. Plans showing statistically significant improvement may receive credit even if their absolute level remains below the top cut-point. The simulator does not model improvement measures, as they require longitudinal data (prior-year performance), but they represent a meaningful path to higher ratings for plans in the 3.0–3.5★ range that are on an upward trajectory.
 
 ## Published Precedent: Ordinal Logistic Regression for Star Ratings
 
@@ -169,11 +175,11 @@ Demonstrated that ordinal outcome analysis substantially improves statistical po
 
 Together, these studies validate using a small number of composite quality inputs in an ordinal logistic framework to predict a 1–5 star outcome.
 
-## How the Demo Model Works
+## How the Simulator's Model Works
 
 ### Architecture
 
-The demo implements a **cumulative logit model** (proportional odds) entirely in client-side JavaScript. The core equation:
+The simulator implements a **cumulative logit model** (proportional odds) entirely in client-side JavaScript. The core equation:
 
 $$P(Y \geq k \mid X) = \sigma(\alpha_k + \beta_1 \cdot \text{HEDIS} + \beta_2 \cdot \text{CAHPS} + \beta_3 \cdot \text{MedAdherence} + \beta_4 \cdot \text{Readmission})$$
 
@@ -193,7 +199,7 @@ $$P(Y = 4) = P(Y \geq 4) - P(Y \geq 5)$$
 
 $$P(Y = 5) = P(Y \geq 5)$$
 
-The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the UI.
+The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the UI. The **P(clearing 4.0★)** hero statistic is simply $P(Y = 4) + P(Y = 5)$ from this same distribution — a free statistic the ordinal model produces without any extra math, and the most policy-relevant scalar the model can report.
 
 ### Coefficient Calibration
 
@@ -214,7 +220,7 @@ From the 2025 Technical Notes, the 81 total weighted points for MA-PD contracts 
 | Readmission (PCR) | 1 measure | **3** | **3** | 4% |
 | Other Part C & D | ~28 measures | 1–3 | ~49 | 60% |
 
-The demo's four inputs represent 40% of total CMS weighted points. The "other" 60% is held constant (absorbed into the intercepts), a standard approach when building a reduced-form predictor from the most policy-relevant measures.
+The simulator's four inputs represent 40% of total CMS weighted points. The "other" 60% is held constant (absorbed into the intercepts), a standard approach when building a reduced-form predictor from the most policy-relevant measures.
 
 #### Resulting Coefficients
 
@@ -241,7 +247,7 @@ When the CMS Reward Factor toggle is enabled, +0.4 is added to $E[Y]$, capped at
 
 ### Impact Guidance
 
-The demo computes **scenario-based impact guidance** for each input by simulating a feasible one-year improvement:
+The simulator computes **scenario-based impact guidance** for each input by simulating a feasible one-year improvement:
 
 | Input | Simulated Improvement | Rationale |
 |-------|----------------------|-----------|
@@ -260,7 +266,7 @@ The ordinal threshold bar shows the four cut-points ($-\alpha_2, -\alpha_3, -\al
 
 ## Limitations and Disclaimers
 
-This demo uses **synthetic weights** that are not trained on actual CMS contract-level data. The model is illustrative:
+The simulator uses **synthetic weights** that are not trained on actual CMS contract-level data. The model is illustrative — a teaching tool, not a production predictor:
 
 1. **No real training data.** Actual Star Rating prediction would require contract-level measure scores linked to final ratings, which CMS publishes but which would need proper train/test splitting and cross-validation.
 
@@ -268,7 +274,7 @@ This demo uses **synthetic weights** that are not trained on actual CMS contract
 
 3. **Proportional odds assumption.** We assume the effect of each predictor is constant across all threshold cutpoints. In practice, this assumption should be tested with a Brant test or graphical method (Harrell, 2001). For star ratings, the assumption is plausible for HEDIS and adherence (monotonic quality measures) but may be violated for readmission rate, where plans with extreme values may face nonlinear threshold effects.
 
-4. **No case-mix adjustment (CAI).** This is the most important limitation for D-SNP and other plans serving high-acuity populations. CMS applies a **Categorical Adjustment Index (CAI)** that adjusts measure-level stars for the proportion of enrollees who are dual-eligible (Medicare + Medicaid), disabled, or low-income subsidy recipients. CAI adjustments can shift individual measure stars by up to a full level. Plans serving predominantly dual-eligible populations should interpret the demo's predictions as *pre-adjustment* estimates — actual final ratings may differ substantially. A future version could include a D-SNP population toggle to approximate CAI effects.
+4. **No case-mix adjustment (CAI).** This is the most important limitation for D-SNP and other plans serving high-acuity populations. CMS applies a **Categorical Adjustment Index (CAI)** that adjusts measure-level stars for the proportion of enrollees who are dual-eligible (Medicare + Medicaid), disabled, or low-income subsidy recipients. CAI adjustments can shift individual measure stars by up to a full level. Plans serving predominantly dual-eligible populations should interpret the simulator's predictions as *pre-adjustment* estimates — actual final ratings may differ substantially. A future version could include a D-SNP population toggle to approximate CAI effects.
 
 5. **No interaction terms.** The model assumes additive effects. In reality, HEDIS and medication adherence are partially overlapping constructs (adherence measures feed into HEDIS composites for some plans), and the joint effect of poor readmission + poor CAHPS may be super-additive. A production model would test for interactions.
 
@@ -276,9 +282,9 @@ This demo uses **synthetic weights** that are not trained on actual CMS contract
 
 7. **No improvement measures.** CMS awards credit for statistically significant year-over-year improvement, which can boost ratings for plans on an upward trajectory even if absolute levels remain modest. This requires longitudinal data and is not modeled here.
 
-8. **Adherence is treated as a single composite.** The three PDC measures (diabetes, RAS, statins) have different baseline distributions and different intervention profiles. Statin adherence typically runs 5–8 points higher than diabetes adherence. The demo's single slider is a weighted average, but operational improvement strategies should target each measure independently.
+8. **Adherence is treated as a single composite.** The three PDC measures (diabetes, RAS, statins) have different baseline distributions and different intervention profiles. Statin adherence typically runs 5–8 points higher than diabetes adherence. The single slider is a weighted average, but operational improvement strategies should target each measure independently.
 
-Despite these simplifications, the demo accurately represents:
+Despite these simplifications, the simulator accurately represents:
 - The correct statistical framework (ordinal logistic regression) for a 1–5 ordered outcome
 - The correct direction and CMS-proportional relative importance of each input domain
 - The probabilistic nature of quality prediction (showing full distributions, not just point estimates)

@@ -1,14 +1,16 @@
 ---
-title: "How the Star Rating Predictor Works"
-description: "The statistical model behind the interactive Star Rating predictor: ordinal logistic regression calibrated to CMS 2025 weights, running entirely in your browser."
+title: "How the Stars Cliff Simulator Works"
+description: "A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1–5 star outcome, how P(clearing 4.0★) falls out of the model for free, and what the distance-to-cliff readout actually measures."
 publishDate: 2026-04-12
 draft: false
 tags: ["medicare", "star-ratings", "ordinal-regression", "methodology", "statistics"]
 ---
 
-# How the Star Rating Predictor Works
+# How the Stars Cliff Simulator Works
 
-The [interactive Star Rating predictor](/blog/star-rating-predictor) lets you adjust four quality inputs and watch a predicted Medicare Star Rating update in real time. This post explains what is happening under the hood.
+The [Stars Cliff Simulator](/star-rating-predictor/) is a public, teaching-oriented demo focused on one number — the 4.0★ Quality Bonus Payment threshold that separates Medicare Advantage plans that qualify for QBPs from the 3.5–3.99★ "dead zone" that does not. You adjust four quality inputs and watch the probability of clearing the 4.0★ cliff, the distance to it, and the underlying predicted rating update in real time. This post is the short explainer — what is happening under the hood, and why the cliff-focused readouts are free statistics from the model, not bolted-on heuristics.
+
+It is not about the internal Client-Side Stars Rating Predictor I maintain at Baltimore Health Analytics, which is a different tool with a different audience and a private source tree. The simulator shares an ordinal-regression skeleton with the internal tool — that is the right structural fit for Star Ratings — but this post is strictly about the public simulator. For the long methodology and literature review, see the [methodology and evidence post](/blog/star-rating-predictor-methodology/).
 
 ## The right model for ordered outcomes
 
@@ -34,11 +36,21 @@ $$P(Y = k) = P(Y \geq k) - P(Y \geq k+1) \quad \text{for } k = 2, 3, 4$$
 
 $$P(Y = 5) = P(Y \geq 5)$$
 
-The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the demo.
+The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the simulator.
+
+## The cliff is a free statistic
+
+The question a Stars analyst actually cares about is not "what is my expected rating?" but "will we clear 4.0★ and qualify for Quality Bonus Payments?" The ordinal model produces this directly:
+
+$$P(\text{clearing 4.0★ cliff}) = P(Y = 4) + P(Y = 5) = P(Y \geq 4)$$
+
+This falls out of the cumulative structure without any additional modeling — it is the `(α₄ + βᵀX)` threshold evaluated through the sigmoid. The simulator displays this as the hero statistic under the predicted rating. A linear regression on stars could produce a point estimate of the expected rating, but it could not produce this probability. That is the reason ordinal is the right tool for the cliff: the most useful scalar the page could report is a side-effect of the model's structure, not a post-hoc transformation.
+
+The **distance-to-cliff** readout, $E[Y] - 4.0$, is complementary. P(clearing) tells you how likely you are to clear the threshold in the model's probabilistic sense; distance-to-cliff tells you how close the point estimate sits to it in the units you're adjusting. When the reward factor toggle is active, distance incorporates its +0.4 additive bonus; P(clearing) reflects the underlying latent probability, since the reward factor is a deterministic CMS add-on rather than a shift in the ordinal structure.
 
 ## Calibration to CMS weights
 
-The demo uses four inputs that map to real CMS Star Rating domains:
+The simulator uses four inputs that map to real CMS Star Rating domains:
 
 | Input | CMS Domain | CMS Weight | Coefficient ($\beta$) |
 |-------|------------|------------|----------------------|
@@ -69,7 +81,7 @@ It computes $E[Y \mid x_j + \Delta] - E[Y \mid x_j]$ for each input and reports 
 
 ## CMS Reward Factor
 
-Plans maintaining 4 or more stars for three consecutive years receive up to +0.4 stars added to the summary rating before final rounding. The demo toggle simulates this additive bonus.
+Plans maintaining 4 or more stars for three consecutive years receive up to +0.4 stars added to the summary rating before final rounding. The simulator's toggle simulates this additive bonus.
 
 ## What the model does not include
 
