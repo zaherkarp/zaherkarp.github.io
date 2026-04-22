@@ -31,6 +31,7 @@ src/content/
 
 scripts/
   build_blog.py             Blog build pipeline
+  lint_blog.py              Source-side lint (runs before build in CI)
   build_resume.py           Resume build pipeline (WeasyPrint)
   build_portfolio.py        Activity grid + citation counts injection
   requirements.txt
@@ -68,6 +69,7 @@ Blog URLs use trailing-slash paths (e.g. `/blog/concurrency/`), which
 python3 -m venv .venv
 .venv/bin/pip install -r scripts/requirements.txt
 
+.venv/bin/python scripts/lint_blog.py        # source-side lint (see below)
 .venv/bin/python scripts/build_blog.py       # rebuilds /blog/ + sitemap.xml
 .venv/bin/python scripts/build_portfolio.py  # injects activity grid + citations
 
@@ -77,10 +79,17 @@ DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib \
   .venv/bin/python scripts/build_resume.py   # regenerates /resume.pdf
 ```
 
+`lint_blog.py` catches three storage-level mistakes before they ship: HTML
+comments in a non-draft post (leak as visible `&lt;!-- --&gt;` text), fenced
+code blocks nested inside an HTML comment (break the tail of the document),
+and blockquote-as-diagram (`> flowchart LR` — Mermaid never sees it). It runs
+before `build_blog.py` in CI and blocks the build on violations. See
+[CLAUDE.md](./CLAUDE.md) §Blog pipeline for the rule text.
+
 Drafts (`draft: true`) and files whose names start with `_` are skipped by the
-blog build. Citation lookups hit Semantic Scholar and may be rate-limited;
-the script degrades gracefully (keeps existing values) and the weekly cron
-will retry.
+blog build (and by the linter). Citation lookups hit Semantic Scholar and may
+be rate-limited; the script degrades gracefully (keeps existing values) and
+the weekly cron will retry.
 
 Blog posts use client-side CDN loads, conditional on content:
 
@@ -109,6 +118,10 @@ and walk the list in a browser.
 Static checks that don't require a browser (useful before the full checklist):
 
 ```bash
+# Blog source lint (catches HTML-comment leaks, blockquote-as-diagram,
+# and fenced blocks nested inside HTML comments)
+python3 scripts/lint_blog.py
+
 # Balanced HTML tag structure
 python3 -c "from html.parser import HTMLParser; p=HTMLParser(); p.feed(open('index.html').read())"
 

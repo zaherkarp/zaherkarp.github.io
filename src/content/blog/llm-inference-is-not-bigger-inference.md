@@ -45,11 +45,13 @@ You cannot just batch and wait.
 
 LLM systems use **continuous batching**, dynamically inserting and removing requests as tokens complete.
 
-> flowchart LR  
-> A[Incoming Requests] --> B[Continuous Batching Engine]  
-> B --> C[GPU Batch]  
-> C --> D[Token Completion]  
-> D --> B  
+```mermaid
+flowchart LR
+    A[Incoming Requests] --> B[Continuous Batching Engine]
+    B --> C[GPU Batch]
+    C --> D[Token Completion]
+    D --> B
+```
 
 The batch is fluid, not fixed.
 
@@ -73,11 +75,13 @@ Running both on the same GPUs causes interference and latency jitter.
 
 High-performance systems separate them.
 
-> flowchart LR  
-> A[Client Request] --> B[Prefill Pool]  
-> B --> C[KV State Transfer]  
-> C --> D[Decode Pool]  
-> D --> E[Streaming Tokens to Client]  
+```mermaid
+flowchart LR
+    A[Client Request] --> B[Prefill Pool]
+    B --> C[KV State Transfer]
+    C --> D[Decode Pool]
+    D --> E[Streaming Tokens to Client]
+```
 
 Prefill is like loading the full patient history into memory.  
 Decode is writing the note sentence by sentence.
@@ -122,12 +126,14 @@ LLMs benefit from prefix-aware routing.
 
 If replica A holds the KV cache for a conversation, routing the next request to replica B destroys cache locality.
 
-> flowchart LR  
-> A[Router]  
-> A -->|Prefix Hash| B[Replica 1]  
-> A -->|Prefix Hash| C[Replica 2]  
-> B --> D[KV Cache]  
-> C --> E[KV Cache]  
+```mermaid
+flowchart LR
+    A[Router]
+    A -->|Prefix Hash| B[Replica 1]
+    A -->|Prefix Hash| C[Replica 2]
+    B --> D[KV Cache]
+    C --> E[KV Cache]
+```
 
 In applied healthcare IT, this mirrors longitudinal care systems. Context matters. Routing must respect state.
 
@@ -141,11 +147,13 @@ LLMs increasingly use **Mixture-of-Experts (MoE)**:
 - Sharded expert layers  
 - Token-level routing  
 
-> flowchart TD  
-> A[Token] --> B[Shared Attention]  
-> B --> C1[Expert 1]  
-> B --> C2[Expert 2]  
-> B --> C3[Expert N]  
+```mermaid
+flowchart TD
+    A[Token] --> B[Shared Attention]
+    B --> C1[Expert 1]
+    B --> C2[Expert 2]
+    B --> C3[Expert N]
+```
 
 This is one distributed model with dynamic internal traffic.
 

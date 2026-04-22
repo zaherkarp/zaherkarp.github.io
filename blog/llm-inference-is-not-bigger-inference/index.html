@@ -32,6 +32,11 @@
 </script>
 
 
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default' });
+</script>
+
 
 
 </head>
@@ -97,13 +102,12 @@
 </ul>
 <p>You cannot just batch and wait.</p>
 <p>LLM systems use <strong>continuous batching</strong>, dynamically inserting and removing requests as tokens complete.</p>
-<blockquote>
-<p>flowchart LR<br />
-A[Incoming Requests] --&gt; B[Continuous Batching Engine]<br />
-B --&gt; C[GPU Batch]<br />
-C --&gt; D[Token Completion]<br />
-D --&gt; B</p>
-</blockquote>
+<pre class="mermaid">flowchart LR
+    A[Incoming Requests] --> B[Continuous Batching Engine]
+    B --> C[GPU Batch]
+    C --> D[Token Completion]
+    D --> B
+</pre>
 <p>The batch is fluid, not fixed.</p>
 <p>In healthcare IT terms: this is the difference between a nightly HEDIS job and a real-time clinical documentation assistant.</p>
 <hr />
@@ -120,13 +124,12 @@ D --&gt; B</p>
 </ul>
 <p>Running both on the same GPUs causes interference and latency jitter.</p>
 <p>High-performance systems separate them.</p>
-<blockquote>
-<p>flowchart LR<br />
-A[Client Request] --&gt; B[Prefill Pool]<br />
-B --&gt; C[KV State Transfer]<br />
-C --&gt; D[Decode Pool]<br />
-D --&gt; E[Streaming Tokens to Client]</p>
-</blockquote>
+<pre class="mermaid">flowchart LR
+    A[Client Request] --> B[Prefill Pool]
+    B --> C[KV State Transfer]
+    C --> D[Decode Pool]
+    D --> E[Streaming Tokens to Client]
+</pre>
 <p>Prefill is like loading the full patient history into memory.<br />
 Decode is writing the note sentence by sentence.</p>
 <p>Treating them as identical workloads is architectural laziness.</p>
@@ -158,14 +161,13 @@ LLMs persist.</p>
 </ul>
 <p>LLMs benefit from prefix-aware routing.</p>
 <p>If replica A holds the KV cache for a conversation, routing the next request to replica B destroys cache locality.</p>
-<blockquote>
-<p>flowchart LR<br />
-A[Router]<br />
-A --&gt;|Prefix Hash| B[Replica 1]<br />
-A --&gt;|Prefix Hash| C[Replica 2]<br />
-B --&gt; D[KV Cache]<br />
-C --&gt; E[KV Cache]</p>
-</blockquote>
+<pre class="mermaid">flowchart LR
+    A[Router]
+    A -->|Prefix Hash| B[Replica 1]
+    A -->|Prefix Hash| C[Replica 2]
+    B --> D[KV Cache]
+    C --> E[KV Cache]
+</pre>
 <p>In applied healthcare IT, this mirrors longitudinal care systems. Context matters. Routing must respect state.</p>
 <hr />
 <h3>5. Mixture-of-Experts Is Not Replication</h3>
@@ -175,13 +177,12 @@ C --&gt; E[KV Cache]</p>
 <li>Sharded expert layers</li>
 <li>Token-level routing</li>
 </ul>
-<blockquote>
-<p>flowchart TD<br />
-A[Token] --&gt; B[Shared Attention]<br />
-B --&gt; C1[Expert 1]<br />
-B --&gt; C2[Expert 2]<br />
-B --&gt; C3[Expert N]</p>
-</blockquote>
+<pre class="mermaid">flowchart TD
+    A[Token] --> B[Shared Attention]
+    B --> C1[Expert 1]
+    B --> C2[Expert 2]
+    B --> C3[Expert N]
+</pre>
 <p>This is one distributed model with dynamic internal traffic.</p>
 <p>Not just more replicas.</p>
 <hr />

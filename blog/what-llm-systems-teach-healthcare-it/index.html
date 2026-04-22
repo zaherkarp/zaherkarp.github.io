@@ -32,6 +32,11 @@
 </script>
 
 
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default' });
+</script>
+
 
 
 </head>
@@ -93,13 +98,12 @@
 Models run overnight.<br />
 Reports are generated.</p>
 <p>LLMs operate continuously.</p>
-<blockquote>
-<p>flowchart LR<br />
-A[User Prompt] --&gt; B[Scheduler]<br />
-B --&gt; C[GPU Decode]<br />
-C --&gt; B<br />
-C --&gt; D[Stream Output]</p>
-</blockquote>
+<pre class="mermaid">flowchart LR
+    A[User Prompt] --> B[Scheduler]
+    B --> C[GPU Decode]
+    C --> B
+    C --> D[Stream Output]
+</pre>
 <p>This resembles streaming analytics more than traditional model serving.</p>
 <p>If we embed LLMs into documentation workflows or appeals drafting, batch infrastructure will not suffice.</p>
 <hr />

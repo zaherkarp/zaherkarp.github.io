@@ -40,11 +40,13 @@ Reports are generated.
 
 LLMs operate continuously.
 
-> flowchart LR  
-> A[User Prompt] --> B[Scheduler]  
-> B --> C[GPU Decode]  
-> C --> B  
-> C --> D[Stream Output]  
+```mermaid
+flowchart LR
+    A[User Prompt] --> B[Scheduler]
+    B --> C[GPU Decode]
+    C --> B
+    C --> D[Stream Output]
+```
 
 This resembles streaming analytics more than traditional model serving.
 
