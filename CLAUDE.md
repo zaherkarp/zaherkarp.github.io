@@ -514,6 +514,33 @@ Underscore-prefix convention:
   Any src/content/blog/_*.md is skipped by the build.
   Used for fixture markers, meta-docs, and not-yet-ready drafts kept on disk.
 
+Scaffolded drafts must stay drafts — storage-side rule:
+  A post outline with `<!-- author-note -->` HTML comments (and/or a fenced
+  ```mermaid / ```code block nested inside one of those comments) must ship
+  with `draft: true` or an `_`-prefixed filename. Otherwise the comments
+  leak onto the live page as literal `&lt;!-- ... --&gt;` text, and a nested
+  fenced block causes markdown-it-py's HTML-block parser to drop into
+  escaped-text mode for the rest of the document. Happened once on
+  `hedis-measure-etl-patterns.md` (scaffolded with `ZAHER:` author notes,
+  shipped with `draft: false`).
+  Fix the post, not the pipeline — `protect_math`, the HTML-comment
+  handling, and the mermaid rewrite are all intentional; the bug was
+  storage-side. Do not change `build_blog.py` or its markdown-it options
+  to work around an unfinished scaffold.
+  When a post is genuinely ready, remove the author-notes before
+  flipping `draft: false`. Finished posts do not contain `<!-- -->`
+  blocks outside of fenced code, and do not nest fenced blocks inside
+  HTML comments under any circumstances.
+
+Formula storage conventions:
+  Inline math: `$...$`. Display math: `$$...$$`. KaTeX auto-renders
+  both at page load (see Stack §(e), conditional CDN). `$` inside
+  fenced code blocks or inline backticks is shielded by `protect_math`
+  in build_blog.py — don't escape shell `$VAR`s or hand-write `\$`.
+  Do not nest display math inside a list item or blockquote where
+  blank lines would break the `$$...$$` pair across blocks; put
+  display math in its own paragraph.
+
 The portfolio writing section shows 6 recent posts with a "View all
 writing" link pointing to /blog/. The writing section in index.html is
 hand-maintained (see Design decisions §Writing section update rule).
