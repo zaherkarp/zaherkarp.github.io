@@ -1,0 +1,186 @@
+/* Minimal typographic styling, inherits the Tufte-cream palette from
+   the parent site so the subpage doesn't clash on nav traversal. */
+
+:root {
+  --bg: #fffff8;
+  --surface: #f7f2e8;
+  --rule: #d6d2c8;
+  --text: #2a2a2a;
+  --text-sec: #4a4238;
+  --muted: #766f64;
+  --accent: #8b2e19;
+  --font-body: 'EB Garamond', Georgia, serif;
+  --font-head: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'Courier New', ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #201b14;
+    --surface: #2b2418;
+    --rule: #3a3024;
+    --text: #f5ecd7;
+    --text-sec: #d4c7a9;
+    --muted: #b0a48a;
+    --accent: #e06940;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 19px; background: var(--bg); color: var(--text); }
+body {
+  font-family: var(--font-body);
+  line-height: 1.65;
+  padding: 2rem 0 4rem;
+}
+
+.page { max-width: 65ch; margin: 0 auto; padding: 0 1.25rem; }
+
+nav.back { font-size: 0.85rem; margin-bottom: 2rem; }
+nav.back a { color: var(--muted); text-decoration: none; }
+nav.back a:hover { color: var(--accent); }
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+}
+h1 { font-size: 1.9rem; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+h2 {
+  font-size: 1.15rem;
+  margin: 2.5rem 0 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.lede { color: var(--text-sec); margin-bottom: 1.5rem; font-size: 1.05rem; }
+
+p { margin: 0 0 1rem; }
+
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: var(--accent); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--surface);
+  padding: 0.05em 0.3em;
+  border-radius: 2px;
+}
+
+/* Wider frame than the reading column for charts and map, but still
+   capped so a 4K monitor doesn't blow the plots up to unreadable. */
+.wide { max-width: 960px; margin: 1rem auto; padding: 0 1rem; }
+
+.controls {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  color: var(--text-sec);
+}
+.controls .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  align-items: center;
+}
+.controls label { display: inline-flex; align-items: center; gap: 0.4rem; }
+.controls .slider-group {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 10rem;
+}
+.controls .slider-group .label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.controls input[type="range"] { width: 100%; accent-color: var(--accent); }
+.controls input[type="radio"] { accent-color: var(--accent); }
+
+button#run {
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  padding: 0.55rem 1.2rem;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fffff8;
+  border-radius: 3px;
+  cursor: pointer;
+}
+button#run:hover { filter: brightness(1.08); }
+button#run:disabled { opacity: 0.55; cursor: wait; }
+
+.status {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0.75rem 0;
+  min-height: 1.2rem;
+}
+.status.err { color: var(--accent); }
+
+.selection {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-sec);
+  margin: 0.5rem 0 1rem;
+}
+.selection b { color: var(--accent); font-weight: 600; }
+
+.chart { width: 100%; margin: 1rem 0 2rem; }
+
+details {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1.5rem 0;
+}
+details summary {
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  color: var(--text-sec);
+}
+details[open] summary { margin-bottom: 0.75rem; }
+details p { font-size: 0.95rem; }
+details ul { margin: 0.5rem 0 1rem 1.25rem; }
+
+.math {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* Narrow-viewport rules. Plotly does its own resizing, but we give it
+   a tighter outer padding and let controls stack cleanly. */
+@media (max-width: 640px) {
+  html { font-size: 18px; }
+  .wide { padding: 0 0.5rem; }
+  .controls .row { gap: 1rem; }
+  .controls .slider-group { min-width: 100%; }
+  h1 { font-size: 1.55rem; }
+  h2 { font-size: 1.05rem; }
+}
