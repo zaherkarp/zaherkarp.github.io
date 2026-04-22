@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator — Zaher Karp</title>
+<meta name="description" content="Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.">
+<link rel="canonical" href="https://zaherkarp.com/blog/two-states-one-pathogen/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:title" content="Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator — Zaher Karp">
+<meta property="og:description" content="Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.">
+<meta property="og:url" content="https://zaherkarp.com/blog/two-states-one-pathogen/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator — Zaher Karp">
+<meta name="twitter:description" content="Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator", "description": "Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.", "datePublished": "2026-04-22T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}}
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+        integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+        integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRjXlZe5Bpb0kUkA" crossorigin="anonymous"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+
+
+
+
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</h1>
+    <div class="blog-meta">
+      <time datetime="2026-04-22" class="blog-date">April 22, 2026</time>
+      
+      <ul class="blog-tags">
+        <li>epidemiology</li><li>stochastic-modeling</li><li>seirv</li><li>tau-leaping</li><li>measles</li><li>interactive</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <h2>TL;DR</h2>
+<ul>
+<li><strong>What it does:</strong> The <a href="/epidemic-simulation/">interactive simulator</a> runs a stochastic SEIRV outbreak in the browser for any two US states, seeded with state-level vaccination coverage for either measles or seasonal flu.</li>
+<li><strong>Why it matters:</strong> Same virus, same seeds, same population — different coverage. The curves diverge, and the gap between them is what coverage thresholds actually buy you.</li>
+<li><strong>What the ribbon means:</strong> One stochastic run is not a forecast. A hundred runs, summarized as a median and a 95% band, is an honest picture of the distribution of plausible outcomes.</li>
+</ul>
+<hr />
+<p>A claim that sounds too strong, but isn't: in one US state a measles introduction smolders out in a week, and in another state two weeks later it has infected thirty thousand people. Same virus, same five index cases, same population. The only difference is the fraction of the population that carries protective immunity. The simulator on this site runs that experiment live, in your browser, using a stochastic compartment model seeded with state-level vaccination coverage data.</p>
+<p>This post documents the model, the arithmetic behind the <code>R_eff</code> number printed under each curve, and the honest caveats that come with a well-mixed population model.</p>
+<h2>The Model</h2>
+<p>The engine is a discrete-time stochastic <strong>SEIRV</strong> model simulated by <strong>Poisson tau-leaping</strong>. Each person in the simulated population lives in one of five compartments:</p>
+<ul>
+<li><strong>S</strong> — susceptible</li>
+<li><strong>E</strong> — exposed (infected but not yet infectious)</li>
+<li><strong>I</strong> — infectious</li>
+<li><strong>R</strong> — recovered (immune)</li>
+<li><strong>V</strong> — vaccinated (immune by prior immunization)</li>
+</ul>
+<p>At each short time step $\tau$, the model draws Poisson random numbers for the count of new exposures, new infections, and new recoveries given the current state, then updates the compartments. We run the same outbreak a hundred times by default and plot the <strong>median</strong> and the <strong>95% band</strong> across replicates. The ribbon is what most matters. A single stochastic run is a coin flip wearing a lab coat; an ensemble of runs is the distribution itself.</p>
+<h2>Measles versus Flu</h2>
+<p>Measles is the most contagious infectious disease in routine circulation. Its basic reproduction number is around 15, meaning that in a fully susceptible population one case seeds roughly fifteen more. The herd-immunity threshold implied by that number is about 93%, which is why MMR coverage in the mid-80s is a genuine public health alarm and coverage above 95% is a hard-won victory.</p>
+<p>Seasonal flu sits at the other end. With an R of about 1.5 and a vaccine that prevents roughly 45% of infections in a typical year, flu fades out on its own in small populations more often than not. The interactive makes those statements visual rather than numerical: in a low-coverage state a measles introduction explodes; in the same state a flu introduction usually dies quietly.</p>
+<p>Parameters used in the simulator:</p>
+<table>
+<thead>
+<tr>
+<th>Disease</th>
+<th style="text-align:right">$R_0$</th>
+<th style="text-align:right">Latent ($1/\sigma$)</th>
+<th style="text-align:right">Infectious ($1/\gamma$)</th>
+<th style="text-align:right">Vaccine efficacy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Measles</td>
+<td style="text-align:right">15.0</td>
+<td style="text-align:right">10 days</td>
+<td style="text-align:right">8 days</td>
+<td style="text-align:right">0.97 (MMR)</td>
+</tr>
+<tr>
+<td>Flu</td>
+<td style="text-align:right">1.5</td>
+<td style="text-align:right">2 days</td>
+<td style="text-align:right">4 days</td>
+<td style="text-align:right">0.45</td>
+</tr>
+</tbody>
+</table>
+<p>These are textbook values. Real estimates vary by strain, season, and study, and a defensible range for each is easy to find in the literature; these are chosen because they reproduce the qualitative shape correctly.</p>
+<h2>Deterministic Skeleton</h2>
+<p>The deterministic analog of this model is the standard SEIR ODE with a pre-vaccinated subpopulation:</p>
+<p>$$
+\begin{aligned}
+\tfrac{dS}{dt} &= -\beta\, S\, I\, /\, N \\
+\tfrac{dE}{dt} &= \beta\, S\, I\, /\, N - \sigma E \\
+\tfrac{dI}{dt} &= \sigma E - \gamma I \\
+\tfrac{dR}{dt} &= \gamma I
+\end{aligned}
+$$</p>
+<p>$V$ is constant. $N = S + E + I + R + V$. We use frequency-dependent mixing — dividing the hazard by the full population $N$, including $V$. Vaccinated individuals do not participate in infection events but they still occupy the mixing pool, so their presence dilutes the per-contact hazard on the susceptibles. <strong>That dilution is the mechanical origin of herd immunity in this formulation.</strong></p>
+<h2>Stochastic Tau-Leaping</h2>
+<p>The stochastic version replaces each rate with a Poisson-distributed count of events in a short window $\tau$:</p>
+<p>$$
+\begin{aligned}
+n_{SE} &\sim \text{Poisson}(\beta\, S\, I\, /\, N \cdot \tau) \\
+n_{EI} &\sim \text{Poisson}(\sigma E \cdot \tau) \\
+n_{IR} &\sim \text{Poisson}(\gamma I \cdot \tau)
+\end{aligned}
+$$</p>
+<p>$$
+S \mathrel{-}= n_{SE}, \quad E \mathrel{+}= n_{SE} - n_{EI}, \quad I \mathrel{+}= n_{EI} - n_{IR}, \quad R \mathrel{+}= n_{IR}
+$$</p>
+<p>Each count is clamped to the current compartment size before applying, so tau-leaping cannot take more people from a compartment than are in it. The integration step is fixed at $\tau = 0.1$ days, short enough that the Poisson approximation to the event-driven Gillespie trajectory is tight for the $R$-values we run.</p>
+<p>Why tau-leaping and not an exact Gillespie algorithm? Gillespie is the gold standard — it advances time to the next event — but for a population of $10^5$ and an $R_0$ of 15, &quot;the next event&quot; happens roughly every second of simulated time, and running 100 replicates to 180 days inside a Pyodide kernel inside a browser tab is not a fight worth picking. Tau-leaping trades exactness for two orders of magnitude of speedup, and at $\tau = 0.1$ days the bias is well below the stochastic variance across replicates. The ribbon absorbs it.</p>
+<h2>The $R_{\text{eff}}(0)$ Printed Under Each Curve</h2>
+<p>The effective reproduction number at the start of the outbreak, given pre-existing vaccinated protection, is:</p>
+<p>$$
+R_{\text{eff}}(0) = R_0 \cdot \frac{S(0)}{N} \approx R_0 \cdot (1 - \text{coverage} \cdot \text{ve})
+$$</p>
+<p>That is the number reported under each epidemic-curve plot. It's the single most important thing on the chart.</p>
+<ul>
+<li><strong>$R_{\text{eff}}(0) < 1$</strong> — the outbreak is subcritical in expectation. Fade-out dominates. Most runs never produce an outbreak at all, and the ones that do are small.</li>
+<li><strong>$R_{\text{eff}}(0) \approx 1$</strong> — the dynamics are bimodal. Whether any given introduction takes off is genuinely stochastic: it depends on which way the first few Poisson draws fall. You'll see this in the histogram as a spike at zero and a separate mass at high attack rates.</li>
+<li><strong>$R_{\text{eff}}(0) \gg 1$</strong> — almost every introduction produces an outbreak, and the only remaining question is how large. The histogram concentrates around the $R$-dependent final-size threshold.</li>
+</ul>
+<p>The measles-vs-flu contrast is essentially this: in the same state, measles lands solidly in the third regime while flu lands in the first or second. One pathogen, one population, one picture of coverage — three different dynamical regimes.</p>
+<h2>Reading the Ensemble</h2>
+<p>The <strong>epidemic curve</strong> shows the number of currently infectious people across the outbreak, per state. The solid line is the median across replicates at each day, and the shaded ribbon is the central 95% band. When two states' ribbons barely overlap, that gap is the signal: their outbreaks really are different, not just noise. When the ribbon is very wide and starts near zero, the state is in the fade-out regime; many runs never produced an outbreak at all.</p>
+<p>The <strong>attack-rate histogram</strong> shows the final share of the population that was ever infected, across replicates. A narrow spike near zero means most runs fizzled. A broad mass near the $R$-dependent attack-rate threshold means almost every seeded introduction became an outbreak. A bimodal distribution — spike at zero plus mass at high attack rates — is the signature of a pathogen near its takeoff threshold.</p>
+<p>The order here matters. Summary → distribution → threshold. Anyone who reports only &quot;the curve&quot; from a single stochastic run and calls it a forecast is reporting one sample from the ribbon.</p>
+<h2>Honest Caveats</h2>
+<p>The model is <strong>well-mixed</strong>. Everyone in a state contacts everyone else with equal probability, which is wrong in ways that matter. Real outbreaks propagate through households, schools, workplaces, and commuting networks, and unvaccinated people cluster within those structures. A state-average coverage of 94% can coexist with schools at 70%, and that is usually where measles outbreaks actually start. A well-mixed model with the state-average coverage will systematically understate the risk in a state with high between-school variance.</p>
+<p>The model has no age structure, no waning immunity, no imported cases beyond the initial seed, and no behavior change in response to an outbreak. The coverage numbers are approximate 2022–2023 CDC figures (SchoolVaxView for MMR; FluVaxView for flu) and will drift as new seasons are reported.</p>
+<p>Treat the interactive as a <strong>teaching tool</strong> for why coverage thresholds matter — not as a forecast for any particular state. The value it delivers is the shape of the response: how the ensemble changes when you move from 96% coverage to 88%, holding everything else fixed.</p>
+<h2>Why a Browser</h2>
+<p>The simulator runs entirely in the user's browser via <a href="https://pyodide.org/">Pyodide</a>, with <a href="https://plotly.com/javascript/">Plotly.js</a> rendering the charts. No server, no API, no data leaves the machine. That's partly a privacy posture and partly a statement about what the tool is for: a public-facing explainer that should survive any future of this website — including the future in which there is no server behind it at all — is best built with the scientific Python stack shipped as WebAssembly.</p>
+<p>A hundred tau-leaped SEIRV replicates to day 180 for two states completes in a few seconds on a laptop. That's fast enough that the interaction loop — click two states, toggle the disease, run again — feels like an experiment rather than a render.</p>
+<hr />
+<p><strong>Try it:</strong> <a href="/epidemic-simulation/">Two states, one pathogen →</a></p>
+
+  </div>
+</article>
+
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>

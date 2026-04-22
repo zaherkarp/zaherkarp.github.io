@@ -28,16 +28,9 @@
   <h1>Two states, one pathogen</h1>
   <p class="lede">A stochastic SEIRV epidemic simulator that runs in your browser. Pick two US states, pick measles or flu, and watch how the same germ behaves very differently depending on local coverage.</p>
 
-  <p>Here is a claim that sounds too strong: in one US state a measles introduction smolders out in a week, and in another state two weeks later it has infected thirty thousand people. Same virus, same five index cases, same population. The only difference is the fraction of the population that carries protective immunity. The simulator below runs that experiment live, in your browser, using a stochastic compartment model seeded with state-level vaccination coverage data.</p>
-
-  <h2>The model</h2>
-  <p>The engine is a discrete-time stochastic SEIRV model simulated by Poisson tau-leaping. Each person lives in one of five compartments: susceptible, exposed, infectious, recovered, or vaccinated. At each short time step the model draws Poisson random numbers for the count of new exposures, new infections, and new recoveries given the current state, then updates the compartments. We run the same outbreak a hundred times and plot the median and the 95% band across replicates. The ribbon is what most matters. A single stochastic run is not a forecast; an ensemble of runs is an honest picture of the distribution of plausible outcomes.</p>
-
-  <h2>Measles versus flu</h2>
-  <p>Measles is the most contagious infectious disease in routine circulation. Its basic reproduction number is around 15, meaning that in a fully susceptible population one case seeds roughly fifteen more. The herd-immunity threshold implied by that number is about 93%, which is why MMR coverage in the mid-80s is a genuine public health alarm and coverage above 95% is a hard-won victory. Seasonal flu sits at the other end. With an R of about 1.5 and a vaccine that prevents roughly 45% of infections in a typical year, flu fades out on its own in small populations more often than not. The interactive makes those statements visual rather than numerical: in a low-coverage state a measles introduction explodes; in the same state a flu introduction usually dies quietly.</p>
-
-  <h2>The interactive</h2>
   <p>Click two states on the map (a third click replaces the oldest selection). Toggle the disease. Adjust the sliders if you want more or fewer replicates, a larger population, or a longer horizon. Then press Run.</p>
+
+  <p>The model, the math, and the honest caveats live in the companion post: <a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator →</a></p>
 </div>
 
 <div class="wide">
@@ -73,39 +66,7 @@
 </div>
 
 <div class="page">
-  <h2>Reading the charts</h2>
-  <p>The epidemic curve shows the number of currently infectious people across the outbreak, per state. The solid line is the median across replicates at each day, and the shaded ribbon is the central 95% band. When two states' ribbons barely overlap, that gap is the signal: their outbreaks really are different, not just noise. When the ribbon is very wide and starts near zero, the state is in the fade-out regime; many runs never produced an outbreak at all.</p>
-  <p>The attack-rate histogram shows the final share of the population that was ever infected, across replicates. A narrow spike near zero means most runs fizzled. A broad mass near the R-dependent attack-rate threshold means almost every seeded introduction became an outbreak. A bimodal distribution (a spike at zero and a mass at high attack rates) is the signature of a pathogen near its takeoff threshold; whether any given introduction takes off is genuinely stochastic.</p>
-
-  <h2>Caveats</h2>
-  <p>The model is well-mixed. Everyone in a state contacts everyone else with equal probability, which is wrong in ways that matter. Real outbreaks propagate through households, schools, workplaces, and commuting networks, and unvaccinated people cluster within those structures. A state-average coverage of 94% can coexist with schools at 70%, and that is usually where measles outbreaks actually start. The model also has no age structure, no waning immunity, no imported cases beyond the initial seed, and no behavior change in response to an outbreak. The coverage numbers are approximate 2022-2023 CDC figures and will drift as new seasons are reported. Treat the interactive as a teaching tool for why coverage thresholds matter, not as a forecast for any particular state.</p>
-
-  <details>
-    <summary>Appendix: the math</summary>
-    <p>The deterministic analog of this model is the standard SEIR ODE with a pre-vaccinated subpopulation:</p>
-    <div class="math">dS/dt = -&beta; S I / N
-dE/dt =  &beta; S I / N - &sigma; E
-dI/dt =  &sigma; E - &gamma; I
-dR/dt =  &gamma; I
-V is constant. N = S + E + I + R + V.</div>
-    <p>We use frequency-dependent mixing, dividing by the full population N (including V). Vaccinated individuals do not participate in infection events but they still occupy the mixing pool, so their presence dilutes the per-contact hazard of the susceptibles. That dilution is the mechanical origin of herd immunity in this formulation.</p>
-    <p>The stochastic version replaces each rate with a Poisson-distributed count of events in a short window &tau;:</p>
-    <div class="math">n_SE ~ Poisson(&beta; S I / N &middot; &tau;)
-n_EI ~ Poisson(&sigma; E &middot; &tau;)
-n_IR ~ Poisson(&gamma; I &middot; &tau;)
-S -= n_SE; E += n_SE - n_EI; I += n_EI - n_IR; R += n_IR</div>
-    <p>Each count is clamped to the current compartment size before applying, so tau-leaping cannot take more people from a compartment than are in it. The integration step is fixed at 0.1 days, short enough that the Poisson approximation to the event-driven Gillespie trajectory is tight for the R-values we run.</p>
-    <p>The effective reproduction number at the start of the outbreak, given pre-existing vaccinated protection, is:</p>
-    <div class="math">R_eff(0) = R0 &middot; S(0) / N
-         &asymp; R0 &middot; (1 - coverage &middot; ve)</div>
-    <p>That is the number reported under each epidemic-curve plot. When R_eff(0) &lt; 1 the outbreak is subcritical in expectation and fade-out dominates. When R_eff(0) is near 1 the dynamics are bimodal. Well above 1, almost every introduction produces an outbreak, and the only remaining question is how large.</p>
-    <p>Disease parameters used:</p>
-    <ul>
-      <li><b>Measles:</b> R0 = 15.0, 1/&sigma; = 10 days (latent), 1/&gamma; = 8 days (infectious), VE = 0.97 for MMR.</li>
-      <li><b>Flu:</b> R0 = 1.5, 1/&sigma; = 2 days, 1/&gamma; = 4 days, VE = 0.45.</li>
-    </ul>
-    <p>These are textbook values. Real estimates vary by strain, season, and study, and a defensible range for each is easy to find in the literature.</p>
-  </details>
+  <p>For the model setup, the tau-leaping arithmetic, how to read the ensemble, and the caveats that come with a well-mixed population model, see the companion post: <a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator →</a></p>
 
   <footer>
     <p>Source: <a href="sim.py">sim.py</a>, <a href="app.js">app.js</a>, <a href="data.js">data.js</a>. Python runs in the browser via <a href="https://pyodide.org/">Pyodide</a>; charts are <a href="https://plotly.com/javascript/">Plotly.js</a>. Coverage data from CDC SchoolVaxView (MMR) and FluVaxView (flu), 2022-2023.</p>
