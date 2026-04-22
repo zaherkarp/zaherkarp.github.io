@@ -84,8 +84,8 @@
     --rule:     #3a3024;
     --text:     #f5ecd7;
     --text-sec: #d4c7a9;
-    --muted:    #b0a48a;
-    --accent:   #e06940;
+    --muted:    #c2b8a0;
+    --accent:   #e05e3e;
   }
 }
 
@@ -719,11 +719,9 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
     </p>
     <p>
       Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration
-      across claims and eligibility sources. I care most about analytics that ship as
-      products — systems with audit trails and validated outputs, not reports that cannot
-      be traced to their source. I am leading a data function and moving deliberately into
-      organizational leadership, because the problems I want to work on require change at
-      a scale that individual technical contribution cannot reach.
+      across claims and eligibility sources. I am leading a data function and moving
+      deliberately into organizational leadership, because the problems I want to work
+      on require change at a scale that individual technical contribution cannot reach.
     </p>
     <p>
       The return to public writing in late 2025 was deliberate. Five years of building
@@ -741,53 +739,63 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
            role="img"
            aria-label="Writing and editing 2007 to 2014. Research at UW-Madison 2009 to 2018. healthfinch 2017 to 2020 acquired by Health Catalyst. Health Catalyst 2020 to 2025 AWS to Azure Databricks migration. Baltimore Health Analytics 2025 to present.">
 
-        <text x="0" y="14" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" fill="#888880">Writing &amp; Editing</text>
-        <rect x="0" y="19" width="295" height="22" fill="#d4cfc4" rx="3"/>
+        <text x="0" y="14" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" style="fill: var(--muted)">Writing &amp; Editing</text>
+        <rect x="0" y="19" width="295" height="22" style="fill: var(--muted)" fill-opacity="0.55" rx="3"/>
 
-        <text x="84" y="61" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" fill="#888880">Research — UW–Madison</text>
-        <rect x="84" y="66" width="379" height="22" fill="#8a6800" opacity="0.55" rx="3"/>
+        <text x="84" y="61" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" style="fill: var(--muted)">Research — UW–Madison</text>
+        <rect x="84" y="66" width="379" height="22" style="fill: var(--muted)" fill-opacity="0.85" rx="3"/>
 
-        <text x="421" y="128" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" fill="#888880">healthfinch</text>
-        <rect x="421" y="133" width="126" height="22" fill="#1a7a72" opacity="0.55" rx="3"/>
+        <text x="421" y="128" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" style="fill: var(--muted)">healthfinch</text>
+        <rect x="421" y="133" width="126" height="22" style="fill: var(--muted)" fill-opacity="0.55" rx="3"/>
 
-        <line x1="547" y1="155" x2="547" y2="194" stroke="#1a7a72" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.65"/>
-        <polygon points="542,192 547,200 552,192" fill="#1a7a72" opacity="0.65"/>
-        <text x="552" y="178" font-family="'EB Garamond',Georgia,serif" font-size="11" fill="#1a7a72" opacity="0.85">acquired 2020</text>
+        <line x1="547" y1="155" x2="547" y2="194" style="stroke: var(--muted)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.65"/>
+        <polygon points="542,192 547,200 552,192" style="fill: var(--muted)" opacity="0.65"/>
+        <text x="552" y="178" font-family="'EB Garamond',Georgia,serif" font-size="11" style="fill: var(--muted)" opacity="0.85">acquired 2020</text>
 
-        <text x="547" y="213" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" fill="#888880">Health Catalyst</text>
-        <rect x="547" y="218" width="211" height="22" fill="#1a7a72" rx="3"/>
-        <text x="549" y="253" font-family="'EB Garamond',Georgia,serif" font-size="10" fill="#888880" opacity="0.75">AWS → Azure · Databricks · dbt</text>
+        <text x="547" y="213" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="14" style="fill: var(--muted)">Health Catalyst</text>
+        <rect x="547" y="218" width="211" height="22" style="fill: var(--muted)" fill-opacity="0.85" rx="3"/>
+        <text x="549" y="253" font-family="'EB Garamond',Georgia,serif" font-size="10" style="fill: var(--muted)" opacity="0.75">AWS → Azure · Databricks · dbt</text>
 
-        <text x="800" y="269" text-anchor="end" font-family="'EB Garamond',Georgia,serif" font-size="14" fill="#2d6e2d">Baltimore Health Analytics</text>
-        <rect x="758" y="274" width="30" height="22" fill="#2d6e2d" rx="3"/>
-        <polygon points="788,274 800,285 788,296" fill="#2d6e2d"/>
+        <text x="800" y="269" text-anchor="end" font-family="'EB Garamond',Georgia,serif" font-size="14" style="fill: var(--accent)">Baltimore Health Analytics</text>
+        <rect x="758" y="274" width="30" height="22" style="fill: var(--accent)" rx="3"/>
+        <polygon points="788,274 800,285 788,296" style="fill: var(--accent)"/>
 
-        <line x1="0" y1="305" x2="798" y2="305" stroke="#d4cfc4" stroke-width="0.75"/>
+        <line x1="0" y1="305" x2="798" y2="305" style="stroke: var(--rule)" stroke-width="0.75"/>
 
-        <line x1="0"   y1="302" x2="0"   y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="0"    y="318" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2007</text>
+        <line x1="0"   y1="302" x2="0"   y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="0"    y="318" text-anchor="start" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2007</text>
 
-        <line x1="84"  y1="302" x2="84"  y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="84"   y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2009</text>
+        <line x1="84"  y1="302" x2="84"  y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="84"   y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2009</text>
 
-        <line x1="295" y1="302" x2="295" y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="295"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2014</text>
+        <line x1="295" y1="302" x2="295" y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="295"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2014</text>
 
-        <line x1="421" y1="302" x2="421" y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="421"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2017</text>
+        <line x1="421" y1="302" x2="421" y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="421"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2017</text>
 
-        <line x1="547" y1="302" x2="547" y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="547"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2020</text>
+        <line x1="547" y1="302" x2="547" y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="547"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2020</text>
 
-        <line x1="758" y1="302" x2="758" y2="308" stroke="#d4cfc4" stroke-width="0.75"/>
-        <text x="758"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#888880">2025</text>
+        <line x1="758" y1="302" x2="758" y2="308" style="stroke: var(--rule)" stroke-width="0.75"/>
+        <text x="758"  y="318" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--muted)">2025</text>
 
-        <line x1="798" y1="302" x2="798" y2="308" stroke="#2d6e2d" stroke-width="0.75"/>
-        <text x="800"  y="318" text-anchor="end" font-family="'EB Garamond',Georgia,serif" font-size="12" fill="#2d6e2d">now</text>
+        <line x1="798" y1="302" x2="798" y2="308" style="stroke: var(--accent)" stroke-width="0.75"/>
+        <text x="800"  y="318" text-anchor="end" font-family="'EB Garamond',Georgia,serif" font-size="12" style="fill: var(--accent)">now</text>
 
       </svg>
     </div>
   </div>
+  <script>
+    // On narrow viewports, start the career arc scrolled to "now" so mobile
+    // readers see the current role first rather than "Writing & Editing 2007".
+    (function () {
+      if (window.matchMedia && window.matchMedia('(max-width: 639px)').matches) {
+        var el = document.querySelector('.career-arc-scroll');
+        if (el) { el.scrollLeft = el.scrollWidth; }
+      }
+    })();
+  </script>
 
   <table class="stats-table" aria-label="Career statistics">
     <caption>by the numbers</caption>
@@ -1290,14 +1298,10 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; }
   </section>
 
   <p>
-    Nine podium presentations and workshops at national venues between 2010 and 2017,
-    including the Society for Implementation Research Collaboration Conference, the
-    AAMC Integrating Quality Meeting, and the World Conference on E-Learning in
-    Corporate, Government, Healthcare, and Higher Education. Four appearances at the
-    National Collaborative for Improving Primary Care through Industrial and Systems
-    Engineering. Eight additional posters at national and regional venues. A poster
-    co-authored with Nancy Pandhi received the Patient Choice Award (2 of 45) at the
-    North American Primary Care Research Group Conference, 2015.
+    Seventeen podium presentations, workshops, and posters at national and regional
+    venues between 2010 and 2017, in healthcare services research and primary care
+    systems engineering. A co-authored poster received the Patient Choice Award
+    (2 of 45) at the North American Primary Care Research Group Conference, 2015.
   </p>
 
   <details class="speaking-details">

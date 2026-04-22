@@ -25,9 +25,11 @@ The live site at zaherkarp.github.io stays untouched until the swap.
 
 - HTML/CSS only. No JavaScript except:
   (a) GoatCounter analytics (all pages).
-  (b) The Star Rating predictor at /star-rating-predictor/ — inline
+  (b) The Stars Cliff Simulator at /star-rating-predictor/ — inline
       vanilla JS only, no CDN, no dependencies. Narrow exception
       because the interactivity is the whole point of that page.
+      (URL path is kept stable; the page is titled "Stars Cliff
+      Simulator" and focuses on the 4.0★ QBP cliff.)
   (c) The life-in-weeks grid at /life-in-weeks/ — inline vanilla JS
       only, no CDN. Renders the 4,680-week grid client-side so the
       "current week" stays accurate without a rebuild.
@@ -40,11 +42,46 @@ The live site at zaherkarp.github.io stays untouched until the swap.
       a CDN without discussion.
   (e) Blog posts load KaTeX / Mermaid / Prism from CDN, conditionally,
       when the post contains the relevant syntax (see Blog section).
+  (f) The stochastic epidemic simulator at /epidemic-simulation/ —
+      Python (sim.py) runs in the browser via Pyodide; charts render
+      via Plotly.js; both load from CDN. External files split into
+      app.js (UI + Pyodide glue), data.js (CDC coverage + state
+      geometry), sim.py (model), styles.css. Served under the
+      Blog-experiment subpages exception below. This is the only
+      subpage on the site that depends on third-party CDN runtimes
+      outside blog-post conditional loads.
+  (g) Tiny one-purpose inline UX script on index.html. Currently: a
+      one-shot scroll-to-right on the career-arc container for viewports
+      <640px, so mobile readers see the current role first instead of
+      "Writing & Editing 2007." Narrow exception with the same posture
+      as (b)–(d); not a general JS license.
   Do not add JS anywhere else without discussion.
 - One Google Fonts import: EB Garamond (prose) + Courier New (system, data specimens).
 - No external CSS frameworks.
 - No preprocessors.
 - No bundlers.
+
+**Blog-experiment subpages — narrow exception:**
+  One-off interactive subpages may break the inline-vanilla-JS-only
+  rule when static HTML cannot reasonably express the idea — a
+  stochastic simulator, a Pyodide-hosted model, a viz that genuinely
+  needs a charting library. Pure HTML/CSS remains the strong default
+  and the ambition for everything the rest of the site does.
+  Rules for the lane:
+    - URL-scoped to its own subdirectory. No cross-contamination with
+      index.html, blog chrome, or other subpages.
+    - External JS/CSS files live only inside that subpage's directory.
+    - CDN dependencies allowed only when the page cannot reasonably
+      work without them. Document the dependency and why in the Stack
+      list above.
+    - GoatCounter script still appears on every page.
+    - The lane does NOT apply to index.html, the blog pipeline
+      templates, or any chrome-bearing page. Those stay pure HTML/CSS.
+  Currently served under this exception: /epidemic-simulation/.
+  Other subpages (/star-rating-predictor/, /life-in-weeks/,
+  /skillsprout/) predate this lane and stay within their original
+  inline-vanilla-JS pattern — do not re-platform them without
+  discussion. Do not widen the exception without discussion.
 
 ---
 
@@ -85,6 +122,12 @@ github.io-redesign/
 │   ├── archive/index.html          # Archive listing (pre-2019 posts)
 │   └── <slug>/index.html           # Post pages (all posts, current + archive)
 │
+│   # INTERACTIVE SUBPAGES (served as-is, no build step)
+├── star-rating-predictor/          # Stars Cliff Simulator (inline JS)
+├── life-in-weeks/                  # 90-year weekly life grid (inline JS)
+├── skillsprout/                    # Career trajectory explorer (vendored ES module)
+├── epidemic-simulation/            # Stochastic SEIRV sim (Pyodide + Plotly, external files)
+│
 │   # SOURCE CONTENT
 ├── src/content/
 │   ├── blog/*.md                   # Blog post sources (frontmatter + markdown)
@@ -94,6 +137,7 @@ github.io-redesign/
 ├── scripts/
 │   ├── build_blog.py
 │   ├── build_resume.py
+│   ├── build_portfolio.py          # Activity grid + citation counts
 │   ├── requirements.txt
 │   ├── fonts/                      # EB Garamond variable TTFs (OFL)
 │   └── templates/
@@ -133,8 +177,19 @@ Light mode:
 Dark mode (variant A, amped):
   --bg:     #201b14    /* Warm near-black. Deeper than #1a1a17. */
   --text:   #f5ecd7    /* Bright cream. Brighter than #e8e4d6 so body reads. */
-  --muted:  #b0a48a    /* Warm mid-tone. Brighter than the original #928e7e. */
-  --accent: #e06940    /* Saturated rust. Original #c4573e muddied on dark. */
+  --muted:  #c2b8a0    /* Warm mid-tone. AAA-contrast (8.7:1) for small text. */
+  --accent: #e05e3e    /* Red-rust. Hue ≈12°, aligned with light accent (≈11°). */
+
+  Dark-palette history (2026-04):
+    The dark --accent was retuned twice in one session. Started at #e06940
+    (saturated orange-rust, AA 5.1:1) — which the council judged "dominated
+    the page" because --accent appears 32+ times across links, section
+    labels, project numbers, details summaries, psql keywords, and activity
+    dots. First retune to #d94a3a (redshift) failed AA at 4.05:1. Final
+    value #e05e3e keeps the redshift and restores AA at 4.75:1.
+    The dark --muted was raised from #b0a48a to #c2b8a0 (AA 6.9:1 → AAA
+    8.7:1) in the same pass to ease the ~15 small-text classes that use it
+    (dates, stack lines, writing descriptions, psql specimen metadata).
 
 Single accent throughout the UI. No secondary UI color. No blue, green,
 amber, cyan, or orange anywhere in the chrome. The psql status field uses
@@ -196,7 +251,16 @@ Print overrides (inside @media print):
   ViewBox 0 0 800 320. Coordinates verified and explicit.
   Direct labels above bars. Proportional time axis (42.1px/year, 19 years).
   Acquisition connector: healthfinch → Health Catalyst (dashed, arrow).
-  Bar colors: independent of UI scheme (warm palette, data-encoded).
+  Bar colors are mode-aware via CSS custom properties — past bars use
+  `var(--muted)` with alternating fill-opacity (0.55 / 0.85) to encode
+  acquisition continuity within the muted family; the BHA (current)
+  bar, axis tick at 2025, and "now" label use `var(--accent)`.
+  Acquisition connector (line, arrow, text) uses `var(--muted)` — the
+  dashed arrow carries the acquisition signal, not its color.
+  Previously (pre-2026-04) the bars used hardcoded hex fills in a warm
+  palette independent of the UI scheme; the council flagged this as
+  chartjunk per tufte-css precedent (which uses no color to encode data)
+  and the bars were collapsed to the current two-token pattern.
   Do not change SVG coordinates without recalculating from scratch.
 
 **Hero:**
@@ -251,7 +315,11 @@ Print overrides (inside @media print):
   The career arc requires horizontal scroll below 580px. This is
   accepted and intentional. Do not build a simplified mobile SVG
   unless explicitly requested. The scroll affordance mask
-  (fade-right gradient) is already in the CSS.
+  (fade-right gradient) is in the CSS.
+  On viewports <640px the container opens scrolled to the right
+  (to "now") via a small inline script — see Stack §(g). Without
+  this, mobile readers landed on "Writing & Editing 2007" as the
+  visible part of the chart, which inverts the chart's intent.
 
 **Writing section update rule:**
   The writing section in index.html is hardcoded. It is not generated
@@ -328,15 +396,21 @@ Do not copy structure or CSS from the live site.
 **Email:** me@zaherkarp.com (confirm before shipping)
 
 **Links:**
-  Stars dashboard: /star-rating-predictor/ (interactive demo) + methodology post
+  Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
+  Client-Side Stars Rating Predictor (internal, BHA): no link — private source
   SkillSprout: https://zaherkarp.com/skillsprout
   Medicare Advantage Insight Engine: GitHub repo only
   ECDS Shock Index: GitHub repo only
+  Epidemic simulator: /epidemic-simulation/ + /blog/two-states-one-pathogen/
 
 **Subpages in this repo:**
-  /star-rating-predictor/ — interactive Medicare Star Rating predictor,
-    inline vanilla JS, no CDN. Ordinal logistic regression with CMS 2025
-    weights. See the Stack section for the JS exception rationale.
+  /star-rating-predictor/ — "Stars Cliff Simulator." Public, teaching-
+    oriented demo focused on the 4.0★ QBP cliff. Inline vanilla JS,
+    no CDN. Ordinal logistic regression with CMS 2025 weights. Hero
+    readouts are P(clearing 4.0★) = P(Y≥4) and distance-to-cliff
+    (E[Y] − 4.0). See the Stack section for the JS exception rationale,
+    and Stars tools distinction below for how this differs from the
+    internal BHA predictor.
   /life-in-weeks/ — 90-year weekly life grid (Tim Urban–style),
     inline vanilla JS, no CDN. Data (birth year, events) lives inline
     in the page. Events are hand-maintained — edit the EVENTS array
@@ -347,12 +421,35 @@ Do not copy structure or CSS from the live site.
     data inline). The page shell is vanilla JS in index.html. To update
     the engine, rebuild the npm package and replace the vendored bundle
     — there is no automated sync with the upstream package.
+  /epidemic-simulation/ — stochastic SEIRV epidemic simulator, companion
+    to /blog/two-states-one-pathogen/. Python (sim.py) runs in the
+    browser via Pyodide; charts via Plotly.js; both load from CDN.
+    External files: app.js (UI + Pyodide glue), data.js (CDC coverage +
+    US state geometry), sim.py (model), styles.css. Only subpage
+    served under the Blog-experiment subpages exception — see Stack
+    section. Has a writing entry on the homepage but no project card.
 
 **Deprecated separate repos (as of 2026-04-19):**
   life-in-weeks and skillsprout previously had their own GitHub Pages
   repos at zaherkarp.github.io/life-in-weeks and zaherkarp.github.io/
   skillsprout. Both are now served from this repo as subpages. The
   standalone repos can be archived once the swap is complete.
+
+**Stars tools distinction — two tools, do not conflate:**
+  1. Stars Cliff Simulator — public, at /star-rating-predictor/.
+     Teaching-oriented, synthetic weights, 4.0★ QBP cliff focus.
+     Project card 02 on index.html. Both Stars methodology blog
+     posts describe this tool.
+  2. Client-Side Stars Rating Predictor — internal, built at Baltimore
+     Health Analytics. Cut-point dashboard running against live measure
+     feeds for contract-level remediation planning. Source is private.
+     Project card 01 on index.html (intentionally no live-demo link,
+     no GitHub link, no methodology post). Shares an ordinal-regression
+     skeleton with the simulator because that is the right structural
+     fit for Star Ratings — not because one is a rewrite of the other.
+  A future agent should not "consolidate" the two project cards, cross-
+  link the internal tool to the public methodology posts, or add a
+  GitHub/demo link to card 01. That would misrepresent the tools.
 
 ---
 
@@ -387,9 +484,10 @@ Experiments section:
   Rendered at the bottom of blog/index.html. Hard-coded list in
   build_blog.py (EXPERIMENTS constant) pointing to small interactive
   pages that don't fit the long-form format. Currently: /life-in-weeks/.
-  /star-rating-predictor/ and /skillsprout/ are deliberately NOT listed
-  here — they have first-class project cards on the homepage, and
-  adding them to an Experiments appendix would demote them.
+  /star-rating-predictor/ (Stars Cliff Simulator), /skillsprout/, and
+  /epidemic-simulation/ are deliberately NOT listed here — they have
+  first-class project cards or writing-section entries on the homepage,
+  and adding them to an Experiments appendix would demote them.
 
 Shared prose styles live in /blog.css (referenced by all generated pages).
 Portfolio index.html keeps its CSS inline — do not extract.
@@ -416,13 +514,9 @@ Underscore-prefix convention:
   Any src/content/blog/_*.md is skipped by the build.
   Used for fixture markers, meta-docs, and not-yet-ready drafts kept on disk.
 
-Blog posts on live site (zaherkarp.github.io/blog) still need to be migrated.
-Migration = copy .md source files into src/content/blog/.
-Do not rewrite post content during migration.
-See TO-DO #4 for the wipe-before-copy order of operations.
-
-The portfolio writing section shows 6 recent posts with a "View all writing" link.
-The link target: zaherkarp.github.io/blog (or /blog once on the new site).
+The portfolio writing section shows 6 recent posts with a "View all
+writing" link pointing to /blog/. The writing section in index.html is
+hand-maintained (see Design decisions §Writing section update rule).
 
 ---
 
