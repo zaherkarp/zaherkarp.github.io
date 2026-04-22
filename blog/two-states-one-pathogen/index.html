@@ -37,7 +37,7 @@
         integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
         integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRjXlZe5Bpb0kUkA" crossorigin="anonymous"
-        onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
 
 
 
@@ -94,7 +94,7 @@
 <li><strong>R</strong> — recovered (immune)</li>
 <li><strong>V</strong> — vaccinated (immune by prior immunization)</li>
 </ul>
-<p>At each short time step $\tau$, the model draws Poisson random numbers for the count of new exposures, new infections, and new recoveries given the current state, then updates the compartments. We run the same outbreak a hundred times by default and plot the <strong>median</strong> and the <strong>95% band</strong> across replicates. The ribbon is what most matters. A single stochastic run is a coin flip wearing a lab coat; an ensemble of runs is the distribution itself.</p>
+<p>At each short time step \(\tau\), the model draws Poisson random numbers for the count of new exposures, new infections, and new recoveries given the current state, then updates the compartments. We run the same outbreak a hundred times by default and plot the <strong>median</strong> and the <strong>95% band</strong> across replicates. The ribbon is what most matters. A single stochastic run is a coin flip wearing a lab coat; an ensemble of runs is the distribution itself.</p>
 <h2>Measles versus Flu</h2>
 <p>Measles is the most contagious infectious disease in routine circulation. Its basic reproduction number is around 15, meaning that in a fully susceptible population one case seeds roughly fifteen more. The herd-immunity threshold implied by that number is about 93%, which is why MMR coverage in the mid-80s is a genuine public health alarm and coverage above 95% is a hard-won victory.</p>
 <p>Seasonal flu sits at the other end. With an R of about 1.5 and a vaccine that prevents roughly 45% of infections in a typical year, flu fades out on its own in small populations more often than not. The interactive makes those statements visual rather than numerical: in a low-coverage state a measles introduction explodes; in the same state a flu introduction usually dies quietly.</p>
@@ -103,9 +103,9 @@
 <thead>
 <tr>
 <th>Disease</th>
-<th style="text-align:right">$R_0$</th>
-<th style="text-align:right">Latent ($1/\sigma$)</th>
-<th style="text-align:right">Infectious ($1/\gamma$)</th>
+<th style="text-align:right">\(R_0\)</th>
+<th style="text-align:right">Latent (\(1/\sigma\))</th>
+<th style="text-align:right">Infectious (\(1/\gamma\))</th>
 <th style="text-align:right">Vaccine efficacy</th>
 </tr>
 </thead>
@@ -129,44 +129,44 @@
 <p>These are textbook values. Real estimates vary by strain, season, and study, and a defensible range for each is easy to find in the literature; these are chosen because they reproduce the qualitative shape correctly.</p>
 <h2>Deterministic Skeleton</h2>
 <p>The deterministic analog of this model is the standard SEIR ODE with a pre-vaccinated subpopulation:</p>
-<p>$$
+<p>\[
 \begin{aligned}
 \tfrac{dS}{dt} &= -\beta\, S\, I\, /\, N \\
 \tfrac{dE}{dt} &= \beta\, S\, I\, /\, N - \sigma E \\
 \tfrac{dI}{dt} &= \sigma E - \gamma I \\
 \tfrac{dR}{dt} &= \gamma I
 \end{aligned}
-$$</p>
-<p>$V$ is constant. $N = S + E + I + R + V$. We use frequency-dependent mixing — dividing the hazard by the full population $N$, including $V$. Vaccinated individuals do not participate in infection events but they still occupy the mixing pool, so their presence dilutes the per-contact hazard on the susceptibles. <strong>That dilution is the mechanical origin of herd immunity in this formulation.</strong></p>
+\]</p>
+<p>\(V\) is constant. \(N = S + E + I + R + V\). We use frequency-dependent mixing — dividing the hazard by the full population \(N\), including \(V\). Vaccinated individuals do not participate in infection events but they still occupy the mixing pool, so their presence dilutes the per-contact hazard on the susceptibles. <strong>That dilution is the mechanical origin of herd immunity in this formulation.</strong></p>
 <h2>Stochastic Tau-Leaping</h2>
-<p>The stochastic version replaces each rate with a Poisson-distributed count of events in a short window $\tau$:</p>
-<p>$$
+<p>The stochastic version replaces each rate with a Poisson-distributed count of events in a short window \(\tau\):</p>
+<p>\[
 \begin{aligned}
 n_{SE} &\sim \text{Poisson}(\beta\, S\, I\, /\, N \cdot \tau) \\
 n_{EI} &\sim \text{Poisson}(\sigma E \cdot \tau) \\
 n_{IR} &\sim \text{Poisson}(\gamma I \cdot \tau)
 \end{aligned}
-$$</p>
-<p>$$
+\]</p>
+<p>\[
 S \mathrel{-}= n_{SE}, \quad E \mathrel{+}= n_{SE} - n_{EI}, \quad I \mathrel{+}= n_{EI} - n_{IR}, \quad R \mathrel{+}= n_{IR}
-$$</p>
-<p>Each count is clamped to the current compartment size before applying, so tau-leaping cannot take more people from a compartment than are in it. The integration step is fixed at $\tau = 0.1$ days, short enough that the Poisson approximation to the event-driven Gillespie trajectory is tight for the $R$-values we run.</p>
-<p>Why tau-leaping and not an exact Gillespie algorithm? Gillespie is the gold standard — it advances time to the next event — but for a population of $10^5$ and an $R_0$ of 15, &quot;the next event&quot; happens roughly every second of simulated time, and running 100 replicates to 180 days inside a Pyodide kernel inside a browser tab is not a fight worth picking. Tau-leaping trades exactness for two orders of magnitude of speedup, and at $\tau = 0.1$ days the bias is well below the stochastic variance across replicates. The ribbon absorbs it.</p>
-<h2>The $R_{\text{eff}}(0)$ Printed Under Each Curve</h2>
+\]</p>
+<p>Each count is clamped to the current compartment size before applying, so tau-leaping cannot take more people from a compartment than are in it. The integration step is fixed at \(\tau = 0.1\) days, short enough that the Poisson approximation to the event-driven Gillespie trajectory is tight for the \(R\)-values we run.</p>
+<p>Why tau-leaping and not an exact Gillespie algorithm? Gillespie is the gold standard — it advances time to the next event — but for a population of \(10^5\) and an \(R_0\) of 15, &quot;the next event&quot; happens roughly every second of simulated time, and running 100 replicates to 180 days inside a Pyodide kernel inside a browser tab is not a fight worth picking. Tau-leaping trades exactness for two orders of magnitude of speedup, and at \(\tau = 0.1\) days the bias is well below the stochastic variance across replicates. The ribbon absorbs it.</p>
+<h2>The \(R_{\text{eff}}(0)\) Printed Under Each Curve</h2>
 <p>The effective reproduction number at the start of the outbreak, given pre-existing vaccinated protection, is:</p>
-<p>$$
+<p>\[
 R_{\text{eff}}(0) = R_0 \cdot \frac{S(0)}{N} \approx R_0 \cdot (1 - \text{coverage} \cdot \text{ve})
-$$</p>
+\]</p>
 <p>That is the number reported under each epidemic-curve plot. It's the single most important thing on the chart.</p>
 <ul>
-<li><strong>$R_{\text{eff}}(0) < 1$</strong> — the outbreak is subcritical in expectation. Fade-out dominates. Most runs never produce an outbreak at all, and the ones that do are small.</li>
-<li><strong>$R_{\text{eff}}(0) \approx 1$</strong> — the dynamics are bimodal. Whether any given introduction takes off is genuinely stochastic: it depends on which way the first few Poisson draws fall. You'll see this in the histogram as a spike at zero and a separate mass at high attack rates.</li>
-<li><strong>$R_{\text{eff}}(0) \gg 1$</strong> — almost every introduction produces an outbreak, and the only remaining question is how large. The histogram concentrates around the $R$-dependent final-size threshold.</li>
+<li><strong>\(R_{\text{eff}}(0) < 1\)</strong> — the outbreak is subcritical in expectation. Fade-out dominates. Most runs never produce an outbreak at all, and the ones that do are small.</li>
+<li><strong>\(R_{\text{eff}}(0) \approx 1\)</strong> — the dynamics are bimodal. Whether any given introduction takes off is genuinely stochastic: it depends on which way the first few Poisson draws fall. You'll see this in the histogram as a spike at zero and a separate mass at high attack rates.</li>
+<li><strong>\(R_{\text{eff}}(0) \gg 1\)</strong> — almost every introduction produces an outbreak, and the only remaining question is how large. The histogram concentrates around the \(R\)-dependent final-size threshold.</li>
 </ul>
 <p>The measles-vs-flu contrast is essentially this: in the same state, measles lands solidly in the third regime while flu lands in the first or second. One pathogen, one population, one picture of coverage — three different dynamical regimes.</p>
 <h2>Reading the Ensemble</h2>
 <p>The <strong>epidemic curve</strong> shows the number of currently infectious people across the outbreak, per state. The solid line is the median across replicates at each day, and the shaded ribbon is the central 95% band. When two states' ribbons barely overlap, that gap is the signal: their outbreaks really are different, not just noise. When the ribbon is very wide and starts near zero, the state is in the fade-out regime; many runs never produced an outbreak at all.</p>
-<p>The <strong>attack-rate histogram</strong> shows the final share of the population that was ever infected, across replicates. A narrow spike near zero means most runs fizzled. A broad mass near the $R$-dependent attack-rate threshold means almost every seeded introduction became an outbreak. A bimodal distribution — spike at zero plus mass at high attack rates — is the signature of a pathogen near its takeoff threshold.</p>
+<p>The <strong>attack-rate histogram</strong> shows the final share of the population that was ever infected, across replicates. A narrow spike near zero means most runs fizzled. A broad mass near the \(R\)-dependent attack-rate threshold means almost every seeded introduction became an outbreak. A bimodal distribution — spike at zero plus mass at high attack rates — is the signature of a pathogen near its takeoff threshold.</p>
 <p>The order here matters. Summary → distribution → threshold. Anyone who reports only &quot;the curve&quot; from a single stochastic run and calls it a forecast is reporting one sample from the ribbon.</p>
 <h2>Honest Caveats</h2>
 <p>The model is <strong>well-mixed</strong>. Everyone in a state contacts everyone else with equal probability, which is wrong in ways that matter. Real outbreaks propagate through households, schools, workplaces, and commuting networks, and unvaccinated people cluster within those structures. A state-average coverage of 94% can coexist with schools at 70%, and that is usually where measles outbreaks actually start. A well-mixed model with the state-average coverage will systematically understate the risk in a state with high between-school variance.</p>

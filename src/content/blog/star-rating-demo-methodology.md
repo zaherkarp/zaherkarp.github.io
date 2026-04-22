@@ -20,39 +20,39 @@ Standard linear regression treats the outcome as continuous and assumes equal sp
 
 The model estimates cumulative probabilities:
 
-$$P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)$$
+\[P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)\]
 
-where $\sigma(x) = \frac{1}{1 + e^{-x}}$ is the logistic function, $\alpha_k$ are threshold parameters for each cumulative split, and $\beta$ is a shared coefficient vector that captures each input's effect across all thresholds.
+where \(\sigma(x) = \frac{1}{1 + e^{-x}}\) is the logistic function, \(\alpha_k\) are threshold parameters for each cumulative split, and \(\beta\) is a shared coefficient vector that captures each input's effect across all thresholds.
 
 This is the **proportional odds assumption**: the effect of each predictor is constant regardless of which threshold you are crossing. It means one set of coefficients tells the full story.
 
 ## From cumulative probabilities to a prediction
 
-The cumulative model gives $P(Y \geq k)$ for each threshold. Individual star-level probabilities come from differencing:
+The cumulative model gives \(P(Y \geq k)\) for each threshold. Individual star-level probabilities come from differencing:
 
-$$P(Y = 1) = 1 - P(Y \geq 2)$$
+\[P(Y = 1) = 1 - P(Y \geq 2)\]
 
-$$P(Y = k) = P(Y \geq k) - P(Y \geq k+1) \quad \text{for } k = 2, 3, 4$$
+\[P(Y = k) = P(Y \geq k) - P(Y \geq k+1) \quad \text{for } k = 2, 3, 4\]
 
-$$P(Y = 5) = P(Y \geq 5)$$
+\[P(Y = 5) = P(Y \geq 5)\]
 
-The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the simulator.
+The expected value \(E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)\) gives the predicted star rating displayed in the simulator.
 
 ## The cliff is a free statistic
 
 The question a Stars analyst actually cares about is not "what is my expected rating?" but "will we clear 4.0★ and qualify for Quality Bonus Payments?" The ordinal model produces this directly:
 
-$$P(\text{clearing 4.0★ cliff}) = P(Y = 4) + P(Y = 5) = P(Y \geq 4)$$
+\[P(\text{clearing 4.0★ cliff}) = P(Y = 4) + P(Y = 5) = P(Y \geq 4)\]
 
 This falls out of the cumulative structure without any additional modeling — it is the `(α₄ + βᵀX)` threshold evaluated through the sigmoid. The simulator displays this as the hero statistic under the predicted rating. A linear regression on stars could produce a point estimate of the expected rating, but it could not produce this probability. That is the reason ordinal is the right tool for the cliff: the most useful scalar the page could report is a side-effect of the model's structure, not a post-hoc transformation.
 
-The **distance-to-cliff** readout, $E[Y] - 4.0$, is complementary. P(clearing) tells you how likely you are to clear the threshold in the model's probabilistic sense; distance-to-cliff tells you how close the point estimate sits to it in the units you're adjusting. When the reward factor toggle is active, distance incorporates its +0.4 additive bonus; P(clearing) reflects the underlying latent probability, since the reward factor is a deterministic CMS add-on rather than a shift in the ordinal structure.
+The **distance-to-cliff** readout, \(E[Y] - 4.0\), is complementary. P(clearing) tells you how likely you are to clear the threshold in the model's probabilistic sense; distance-to-cliff tells you how close the point estimate sits to it in the units you're adjusting. When the reward factor toggle is active, distance incorporates its +0.4 additive bonus; P(clearing) reflects the underlying latent probability, since the reward factor is a deterministic CMS add-on rather than a shift in the ordinal structure.
 
 ## Calibration to CMS weights
 
 The simulator uses four inputs that map to real CMS Star Rating domains:
 
-| Input | CMS Domain | CMS Weight | Coefficient ($\beta$) |
+| Input | CMS Domain | CMS Weight | Coefficient (\(\beta\)) |
 |-------|------------|------------|----------------------|
 | HEDIS Composite Rate | Part C — Process & Outcome | 1–3× | +0.08 per pp |
 | CAHPS Member Satisfaction | Part C — Patient Experience | 2× | +1.50 per unit |
@@ -64,7 +64,7 @@ The coefficients are calibrated to satisfy two constraints simultaneously:
 1. **Weight proportionality**: Each input's total contribution across its realistic slider range is proportional to its share of CMS weighted points (out of 81 total for MA-PD contracts).
 2. **Distribution calibration**: At median slider positions, the predicted distribution matches the 2025 MA-PD star distribution — average 3.92 stars, approximately 42% of contracts at 4 stars or above, roughly 2% at 5 stars.
 
-The four intercepts ($\alpha_2 = -10.1$, $\alpha_3 = -11.76$, $\alpha_4 = -15.1$, $\alpha_5 = -18.17$) position the thresholds so that a plan at the 50th percentile on all inputs lands around 3.2 stars.
+The four intercepts (\(\alpha_2 = -10.1\), \(\alpha_3 = -11.76\), \(\alpha_4 = -15.1\), \(\alpha_5 = -18.17\)) position the thresholds so that a plan at the 50th percentile on all inputs lands around 3.2 stars.
 
 ## The "What Would Move the Needle?" calculation
 
@@ -77,7 +77,7 @@ For each input, the model simulates a feasible one-year improvement:
 | Medication Adherence | +5 pp | Consistent with MTM program impact |
 | Readmission Rate | −2 pp | Achievable with care transition programs |
 
-It computes $E[Y \mid x_j + \Delta] - E[Y \mid x_j]$ for each input and reports the two highest-impact levers. Because the logistic function is nonlinear, the highest-impact lever changes depending on where the plan currently sits — it is largest near the ordinal cut-points and smallest in the tails.
+It computes \(E[Y \mid x_j + \Delta] - E[Y \mid x_j]\) for each input and reports the two highest-impact levers. Because the logistic function is nonlinear, the highest-impact lever changes depending on where the plan currently sits — it is largest near the ordinal cut-points and smallest in the tails.
 
 ## CMS Reward Factor
 

@@ -493,11 +493,24 @@ Shared prose styles live in /blog.css (referenced by all generated pages).
 Portfolio index.html keeps its CSS inline — do not extract.
 
 Client-side CDN features on blog posts, loaded conditionally:
-  KaTeX 0.16.11     — only when post contains `$...$` or `$$...$$`
+  KaTeX 0.16.11     — only when post contains `\(...\)` or `\[...\]`
   Mermaid 11        — only when post contains ```mermaid fenced blocks
   Prism 1.29.0      — only when post contains other fenced code blocks
 No Python deps for any of these — they load at render time, not build time.
 The main site (index.html) has no such scripts; no-build rule is intact.
+
+Math delimiters — do not switch back to `$...$`:
+  LaTeX-style `\(...\)` (inline) and `\[...\]` (display) are used instead
+  of TeX-style `$...$` / `$$...$$`. Dollar signs are reserved for currency
+  in prose. The original pipeline tried to auto-detect math by pairing any
+  two `$` in a paragraph, which wrongly matched currency ("**$4.6 billion**
+  ($1.9 billion cut)") and corrupted both the markdown (literal `**`
+  surviving) and the KaTeX output (garbage rendered as math). Switching
+  delimiters makes the distinction unambiguous at the source level, so
+  no heuristic is needed. Posts currently using the new delimiters:
+  star-rating-demo-methodology.md, star-rating-predictor-methodology.md,
+  two-states-one-pathogen.md. Migration history is in the git log under
+  "Migrate math delimiters to \\(...\\) / \\[...\\]".
 
 Local build:
   pip install -r scripts/requirements.txt

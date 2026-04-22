@@ -7,9 +7,12 @@ renders each to blog/<slug>/index.html using Jinja2 templates,
 rebuilds blog/index.html listing, regenerates sitemap.xml.
 
 Design notes:
-- Math ($...$ and $$...$$) is protected before markdown parsing
-  and restored after, so asterisks inside expressions don't get
-  parsed as emphasis. KaTeX auto-render handles client-side.
+- Math uses LaTeX-style delimiters: \(...\) for inline and \[...\]
+  for display. Dollar signs are deliberately not supported — posts
+  mix currency amounts with prose, and $...$ pairs would collide.
+  Math is stashed before markdown parsing so backslashes and other
+  LaTeX syntax aren't mangled, then restored verbatim for KaTeX
+  auto-render to pick up client-side.
 - Fenced `mermaid` blocks are rewritten to <pre class="mermaid">
   so Mermaid.js picks them up.
 - draft: true posts are excluded from both output and listing.
@@ -36,13 +39,10 @@ OUT_DIR = ROOT / "blog"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 SITE_URL = "https://zaherkarp.com"
 
-MATH_DISPLAY_RE = re.compile(r"\$\$(.+?)\$\$", re.DOTALL)
-# Pandoc-style inline math boundaries: the opening `$` must not be preceded by a
-# word character, and the closing `$` must not be followed by one. This prevents
-# currency amounts ("$4.6 billion ... $1.9 billion") from being mis-matched as
-# inline math, which previously corrupted both markdown formatting and KaTeX output.
-MATH_INLINE_RE = re.compile(r"(?<![\w\\$])\$(?!\s)([^\n$]+?)(?<!\s)\$(?![\w$])")
-# Fenced code blocks and inline code — regions where `$` must NOT be interpreted as math.
+MATH_DISPLAY_RE = re.compile(r"\\\[(.+?)\\\]", re.DOTALL)
+MATH_INLINE_RE = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
+# Fenced code blocks and inline code — regions where math delimiters must NOT
+# be interpreted (a shell tutorial can legitimately contain `\(` or `\[`).
 CODE_REGION_RE = re.compile(r"(?:^```[\s\S]*?^```)|(?:`[^`\n]+`)", re.MULTILINE)
 MERMAID_PRE_RE = re.compile(
     r'<pre><code class="language-mermaid">(.*?)</code></pre>',
@@ -52,9 +52,10 @@ MERMAID_PRE_RE = re.compile(
 
 def protect_math(text: str) -> tuple[str, list[str]]:
     """
-    Replace $...$ / $$...$$ math with placeholders, but only in prose regions.
-    Code fences and inline code are passed through untouched so shell/YAML
-    syntax (e.g. `${{ inputs.title }}` or `$VAR`) isn't mis-read as math.
+    Replace \\(...\\) / \\[...\\] math with placeholders, but only in prose
+    regions. Code fences and inline code are passed through untouched so
+    examples that legitimately contain backslash-paren or backslash-bracket
+    aren't mis-read as math.
     """
     stash: list[str] = []
 

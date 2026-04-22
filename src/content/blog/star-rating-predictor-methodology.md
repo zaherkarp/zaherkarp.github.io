@@ -61,9 +61,9 @@ Star Ratings are an **ordinal outcome**: 1 < 2 < 3 < 4 < 5, but the distances be
 
 Standard linear regression treats the outcome as continuous and assumes equal spacing. Multinomial logistic regression ignores the ordering entirely. **Ordinal (proportional odds) logistic regression** respects both the ordering and the non-equal spacing by modeling cumulative probabilities:
 
-$$P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)$$
+\[P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)\]
 
-where $\sigma$ is the logistic function $\sigma(x) = \frac{1}{1 + e^{-x}}$, $\alpha_k$ are threshold parameters (intercepts) for each cumulative split, and $\beta$ is a shared coefficient vector.
+where \(\sigma\) is the logistic function \(\sigma(x) = \frac{1}{1 + e^{-x}}\), \(\alpha_k\) are threshold parameters (intercepts) for each cumulative split, and \(\beta\) is a shared coefficient vector.
 
 This is the **proportional odds model** introduced by McCullagh (1980), the standard approach for ordinal outcomes in biomedical research.
 
@@ -164,7 +164,7 @@ This is the most direct methodological precedent: Hohmann et al. **explicitly us
 > **Xie, Z., St. Clair, P., Goldman, D. P., & Joyce, G. F.** (2023). Is There a Relationship Between Part D Medication Adherence and Part C Intermediate Outcomes Star Ratings Measures? *Journal of Managed Care & Specialty Pharmacy*, 29(8), 918–925.
 > [PMC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10397682/)
 
-Analyzed 366 contracts and found medication adherence measures explained **27–29% of variance** in related clinical outcomes ($R^2$ = 0.27–0.29). Each unit increase in adherence increased odds of top-quartile performance by factors of 4.13–4.69, providing strong empirical support for adherence as a key predictor.
+Analyzed 366 contracts and found medication adherence measures explained **27–29% of variance** in related clinical outcomes (\(R^2\) = 0.27–0.29). Each unit increase in adherence increased odds of top-quartile performance by factors of 4.13–4.69, providing strong empirical support for adherence as a key predictor.
 
 ### Lingsma et al. (2021) — Why Ordinal Beats Binary
 
@@ -181,25 +181,25 @@ Together, these studies validate using a small number of composite quality input
 
 The simulator implements a **cumulative logit model** (proportional odds) entirely in client-side JavaScript. The core equation:
 
-$$P(Y \geq k \mid X) = \sigma(\alpha_k + \beta_1 \cdot \text{HEDIS} + \beta_2 \cdot \text{CAHPS} + \beta_3 \cdot \text{MedAdherence} + \beta_4 \cdot \text{Readmission})$$
+\[P(Y \geq k \mid X) = \sigma(\alpha_k + \beta_1 \cdot \text{HEDIS} + \beta_2 \cdot \text{CAHPS} + \beta_3 \cdot \text{MedAdherence} + \beta_4 \cdot \text{Readmission})\]
 
-Four threshold parameters ($\alpha_2, \alpha_3, \alpha_4, \alpha_5$) define the cumulative splits. The shared coefficient vector $\beta$ captures each input's effect across all thresholds (the proportional odds assumption).
+Four threshold parameters (\(\alpha_2, \alpha_3, \alpha_4, \alpha_5\)) define the cumulative splits. The shared coefficient vector \(\beta\) captures each input's effect across all thresholds (the proportional odds assumption).
 
 ### Converting Cumulative Probabilities to Category Probabilities
 
-The cumulative model yields $P(Y \geq k)$ for each threshold. Individual category probabilities are obtained by differencing:
+The cumulative model yields \(P(Y \geq k)\) for each threshold. Individual category probabilities are obtained by differencing:
 
-$$P(Y = 1) = 1 - P(Y \geq 2)$$
+\[P(Y = 1) = 1 - P(Y \geq 2)\]
 
-$$P(Y = 2) = P(Y \geq 2) - P(Y \geq 3)$$
+\[P(Y = 2) = P(Y \geq 2) - P(Y \geq 3)\]
 
-$$P(Y = 3) = P(Y \geq 3) - P(Y \geq 4)$$
+\[P(Y = 3) = P(Y \geq 3) - P(Y \geq 4)\]
 
-$$P(Y = 4) = P(Y \geq 4) - P(Y \geq 5)$$
+\[P(Y = 4) = P(Y \geq 4) - P(Y \geq 5)\]
 
-$$P(Y = 5) = P(Y \geq 5)$$
+\[P(Y = 5) = P(Y \geq 5)\]
 
-The expected value $E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)$ gives the predicted star rating displayed in the UI. The **P(clearing 4.0★)** hero statistic is simply $P(Y = 4) + P(Y = 5)$ from this same distribution — a free statistic the ordinal model produces without any extra math, and the most policy-relevant scalar the model can report.
+The expected value \(E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)\) gives the predicted star rating displayed in the UI. The **P(clearing 4.0★)** hero statistic is simply \(P(Y = 4) + P(Y = 5)\) from this same distribution — a free statistic the ordinal model produces without any extra math, and the most policy-relevant scalar the model can report.
 
 ### Coefficient Calibration
 
@@ -235,15 +235,15 @@ These proportions track the CMS weight shares when accounting for scale differen
 
 #### Intercept Calibration
 
-The four intercepts ($\alpha_2 = -10.1$, $\alpha_3 = -11.76$, $\alpha_4 = -15.1$, $\alpha_5 = -18.17$) are set so that at median input values:
+The four intercepts (\(\alpha_2 = -10.1\), \(\alpha_3 = -11.76\), \(\alpha_4 = -15.1\), \(\alpha_5 = -18.17\)) are set so that at median input values:
 
-$$P(Y \geq 2) \approx 0.99, \quad P(Y \geq 3) \approx 0.95, \quad P(Y \geq 4) \approx 0.40, \quad P(Y \geq 5) \approx 0.03$$
+\[P(Y \geq 2) \approx 0.99, \quad P(Y \geq 3) \approx 0.95, \quad P(Y \geq 4) \approx 0.40, \quad P(Y \geq 5) \approx 0.03\]
 
 This produces an expected rating of ~3.2★ at default slider positions (representing a middling plan), consistent with the real-world distribution where most plans cluster between 3.0 and 4.5 stars.
 
 ### Reward Factor
 
-When the CMS Reward Factor toggle is enabled, +0.4 is added to $E[Y]$, capped at 5.0. This models the CMS mechanism where sustained high performance receives an additive bonus before final rounding.
+When the CMS Reward Factor toggle is enabled, +0.4 is added to \(E[Y]\), capped at 5.0. This models the CMS mechanism where sustained high performance receives an additive bonus before final rounding.
 
 ### Impact Guidance
 
@@ -256,13 +256,13 @@ The simulator computes **scenario-based impact guidance** for each input by simu
 | Medication Adherence | +5 percentage points | Consistent with MTM program impact in published literature |
 | Readmission Rate | −2 percentage points | Achievable with care transition programs, though harder for D-SNP populations |
 
-For each input, the model computes $E[Y \mid x_j + \Delta] - E[Y \mid x_j]$ and reports the two highest-impact levers in plain language (e.g., "Improving medication adherence from 70% → 75% would shift the predicted rating by +0.3★").
+For each input, the model computes \(E[Y \mid x_j + \Delta] - E[Y \mid x_j]\) and reports the two highest-impact levers in plain language (e.g., "Improving medication adherence from 70% → 75% would shift the predicted rating by +0.3★").
 
 Because the logistic function is nonlinear, impact varies across the input space — it is largest near the ordinal cut-points and smallest in the tails. This means the highest-impact lever changes depending on where your plan currently sits.
 
 ### Threshold Visualization
 
-The ordinal threshold bar shows the four cut-points ($-\alpha_2, -\alpha_3, -\alpha_4, -\alpha_5$) on a linear predictor scale, with a moving indicator for the current $z$ value. This makes visible the core mechanism of the proportional odds model: the linear predictor $z$ crossing successive thresholds shifts probability mass from lower to higher star categories.
+The ordinal threshold bar shows the four cut-points (\(-\alpha_2, -\alpha_3, -\alpha_4, -\alpha_5\)) on a linear predictor scale, with a moving indicator for the current \(z\) value. This makes visible the core mechanism of the proportional odds model: the linear predictor \(z\) crossing successive thresholds shifts probability mass from lower to higher star categories.
 
 ## Limitations and Disclaimers
 
