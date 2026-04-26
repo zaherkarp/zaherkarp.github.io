@@ -658,7 +658,11 @@ figure.gantt-figure figcaption {
    ============================================================ */
 figure.sankey-figure {
   margin: 1.2rem 0;
-  max-width: 640px;
+  max-width: 760px;     /* viewBox extended to 700-wide so the
+                           rightmost target labels (Health Info Tech,
+                           associate's degree) fit without clipping;
+                           max-width bumped to keep the rendered size
+                           close to the prior 640/600 = 1.067x scale. */
 }
 figure.sankey-figure svg {
   width: 100%;
@@ -1943,7 +1947,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
             Example transition pathway for a Medical Assistant. Bar widths reflect the share of candidates routed to each target occupation; stroke widths echo the same magnitude.
           </figcaption>
 
-          <svg viewBox="0 0 600 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
+          <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
 
             <!-- ==========================================================
                  CATEGORY HEADERS at the top.
@@ -1951,10 +1955,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
                  left-aligned over their respective target groups.
                  Faint italic to read as labels not titles.
                  ========================================================== -->
-            <g font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#6a6a6a">
+            <g font-family="et-book, Palatino, Georgia, serif" font-size="11" font-style="italic" fill="#6a6a6a">
               <text x="370" y="24">ready now</text>
               <text x="370" y="92">trainable</text>
-              <text x="370" y="200">long-term reskill</text>
+              <!-- "long-term reskill" header dropped: the only y-position that
+                   clears Phlebotomist's subtitles AND the diagonal HIT connector
+                   was outside the figure entirely. The RN+HIT cluster in the
+                   bottom-right reads as a long-term group from spatial layout
+                   alone, which is the Tufte-elide-redundant-labels move. -->
             </g>
 
             <!-- ==========================================================
@@ -1964,9 +1972,9 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
                  200 = 100% of pool.
                  ========================================================== -->
             <rect x="74" y="40" width="6" height="200" fill="#111"/>
-            <text x="68" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111" text-anchor="end">Medical</text>
-            <text x="68" y="65" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111" text-anchor="end">Assistant</text>
-            <text x="68" y="84" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" text-anchor="end" font-style="italic">100 candidates</text>
+            <text x="68" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#111" text-anchor="end">Medical</text>
+            <text x="68" y="65" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#111" text-anchor="end">Assistant</text>
+            <text x="68" y="84" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" text-anchor="end" font-style="italic">100 candidates</text>
 
             <!-- ==========================================================
                  TARGET BARS AND CONNECTING LINES.
@@ -1988,38 +1996,38 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
             <!-- READY NOW: EHR Specialist (5%, 10px tall bar) -->
             <line x1="80" y1="45" x2="360" y2="35" stroke="#6a6a6a" stroke-width="0.7"/>
             <rect x="360" y="32" width="6" height="10" fill="#111"/>
-            <text x="372" y="40" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#111">EHR Specialist</text>
-            <text x="372" y="54" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">5 candidates</text>
+            <text x="372" y="40" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">EHR Specialist</text>
+            <text x="372" y="54" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">5 candidates</text>
 
             <!-- TRAINABLE: LPN (35%, 70px tall bar) -->
             <line x1="80" y1="80" x2="360" y2="105" stroke="#6a6a6a" stroke-width="2"/>
             <rect x="360" y="100" width="6" height="70" fill="#111"/>
-            <text x="372" y="125" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#111">LPN</text>
-            <text x="372" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">35 candidates, with</text>
-            <text x="372" y="152" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">12-month certificate</text>
+            <text x="372" y="125" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">LPN</text>
+            <text x="372" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">35 candidates, with</text>
+            <text x="372" y="152" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">12-month certificate</text>
 
             <!-- TRAINABLE: Phlebotomist (25%, 50px tall bar) -->
             <line x1="80" y1="135" x2="360" y2="190" stroke="#6a6a6a" stroke-width="1.4"/>
             <rect x="360" y="180" width="6" height="50" fill="#111"/>
-            <text x="372" y="200" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#111">Phlebotomist</text>
-            <text x="372" y="214" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">25 candidates,</text>
-            <text x="372" y="227" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">short certification</text>
+            <text x="372" y="200" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">Phlebotomist</text>
+            <text x="372" y="214" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">25 candidates,</text>
+            <text x="372" y="227" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">short certification</text>
 
             <!-- LONG-TERM: RN (25%, 50px tall bar) -->
             <line x1="80" y1="180" x2="360" y2="248" stroke="#6a6a6a" stroke-width="1.4"/>
             <rect x="360" y="238" width="6" height="50" fill="#111"/>
-            <text x="372" y="258" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#111">Registered Nurse</text>
-            <text x="372" y="272" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">25 candidates, ADN</text>
-            <text x="372" y="284" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">or BSN program</text>
+            <text x="372" y="258" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">Registered Nurse</text>
+            <text x="372" y="272" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">25 candidates, ADN</text>
+            <text x="372" y="284" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">or BSN program</text>
 
             <!-- LONG-TERM: Health Information Tech (10%, 20px tall bar)
                  Stacked above the RN target as a smaller second
                  long-term option. -->
             <line x1="80" y1="220" x2="510" y2="248" stroke="#6a6a6a" stroke-width="0.9"/>
             <rect x="510" y="238" width="6" height="20" fill="#111"/>
-            <text x="522" y="248" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Health Info Tech</text>
-            <text x="522" y="261" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">10 candidates,</text>
-            <text x="522" y="273" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic">associate's degree</text>
+            <text x="522" y="248" font-family="et-book, Palatino, Georgia, serif" font-size="11" fill="#111">Health Info Tech</text>
+            <text x="522" y="261" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">10 candidates,</text>
+            <text x="522" y="273" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">associate's degree</text>
           </svg>
         </figure>
 
