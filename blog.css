@@ -1,33 +1,60 @@
 /*
-  blog.css — shared stylesheet for /blog/ pages.
+  blog.css, shared stylesheet for /blog/ pages.
   Derived from v18 tokens. Portfolio index.html keeps its CSS inline per CLAUDE.md.
 */
 
 :root {
-  /* Tufte palette — cream paper, charcoal ink, rust accent */
+  /* Tufte palette, cream paper, charcoal ink, rust accent */
   --bg:       #fffff8;
   --surface:  #f7f2e8;
-  --rule:     #d6d2c8;
-  --text:     #2a2a2a;
+  --rule:     #d0d0c8;
+  --text:     #111;
   --text-sec: #4a4238;
-  --muted:    #766f64;
-  --accent:   #8b2e19;
+  --muted:    #6a6a6a;
+  --accent:   #7a0000;
 
   --size-caption: 0.78rem;
   --size-body:    1rem;
   --gap:          1.75rem;
+
+  /* Solarized palette (Ethan Schoonover, MIT-licensed). Used by the
+     Prism syntax-highlighter. The base tones flip with prefers-color-
+     scheme; the eight selective-contrast hues stay constant across
+     modes by Solarized's design (that's the whole point of the
+     palette: it's mode-symmetric). */
+  --sol-bg:        #fdf6e3;  /* base3,  paper        */
+  --sol-bg-alt:    #eee8d5;  /* base2,  highlight    */
+  --sol-fg:        #657b83;  /* base00, body         */
+  --sol-fg-strong: #586e75;  /* base01, emphasis     */
+  --sol-fg-muted:  #93a1a1;  /* base1,  comment      */
+  --sol-yellow:    #b58900;
+  --sol-orange:    #cb4b16;
+  --sol-red:       #dc322f;
+  --sol-magenta:   #d33682;
+  --sol-violet:    #6c71c4;
+  --sol-blue:      #268bd2;
+  --sol-cyan:      #2aa198;
+  --sol-green:     #859900;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Tufte dark variant A — warm near-black, bright cream, saturated rust */
+    /* Tufte dark variant A, warm near-black, bright cream, saturated rust */
     --bg:       #201b14;
     --surface:  #2b2418;
     --rule:     #3a3024;
     --text:     #f5ecd7;
     --text-sec: #d4c7a9;
-    --muted:    #b0a48a;
-    --accent:   #e06940;
+    --muted:    #c2b8a0;
+    --accent:   #e05e3e;
+
+    /* Solarized base tones flipped to dark; the eight hues above
+       stay the same. */
+    --sol-bg:        #002b36;  /* base03 */
+    --sol-bg-alt:    #073642;  /* base02 */
+    --sol-fg:        #839496;  /* base0  */
+    --sol-fg-strong: #93a1a1;  /* base1  */
+    --sol-fg-muted:  #586e75;  /* base01 */
   }
 }
 
@@ -41,7 +68,7 @@ html {
 }
 
 body {
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   font-size: var(--size-body);
   line-height: 1.7;
   background: var(--bg);
@@ -238,23 +265,32 @@ nav {
   color: var(--text);
 }
 
-.blog-body pre {
+/* Code blocks use the Solarized base tones (see :root tokens below).
+   Dropped the rust left-border (the accent is reserved for one
+   callout per chart, not decorative chrome) and tightened padding
+   so the block reads as inline reference rather than a heavy aside. */
+.blog-body pre,
+.blog-body pre[class*="language-"] {
   font-family: 'Courier New', Courier, monospace;
   font-size: calc(var(--size-caption) * 0.95);
-  line-height: 1.6;
-  background: var(--surface);
-  border-left: 2px solid var(--accent);
-  padding: 0.85rem 1rem;
+  line-height: 1.5;
+  background: var(--sol-bg);
+  color: var(--sol-fg);
+  padding: 0.55rem 0.85rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 1.25rem 0;
+  margin: 1rem 0;
   max-width: 100%;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
 }
-.blog-body pre code {
+.blog-body pre code,
+.blog-body pre code[class*="language-"] {
   background: transparent;
   padding: 0;
   border-radius: 0;
   font-size: inherit;
+  color: inherit;
 }
 
 .blog-body pre.mermaid {
@@ -351,3 +387,48 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
 }
 .footer-links a:hover { color: var(--accent); }
 .footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }
+
+/* ============================================================
+   PRISM SYNTAX HIGHLIGHTING — SOLARIZED
+   Token classes emitted by Prism's autoloader. The Solarized
+   palette is mode-symmetric: same eight accent hues in light
+   and dark; only the base bg/fg flips. See :root for the
+   variable definitions. Replaces the upstream Prism theme
+   stylesheets, which can't reuse our tokens.
+   ============================================================ */
+.blog-body .token.comment,
+.blog-body .token.prolog,
+.blog-body .token.doctype,
+.blog-body .token.cdata        { color: var(--sol-fg-muted); font-style: italic; }
+.blog-body .token.punctuation  { color: var(--sol-fg); }
+.blog-body .token.namespace    { opacity: 0.7; }
+.blog-body .token.property,
+.blog-body .token.tag,
+.blog-body .token.boolean,
+.blog-body .token.number,
+.blog-body .token.constant,
+.blog-body .token.symbol,
+.blog-body .token.deleted      { color: var(--sol-cyan); }
+.blog-body .token.selector,
+.blog-body .token.attr-name,
+.blog-body .token.string,
+.blog-body .token.char,
+.blog-body .token.builtin,
+.blog-body .token.inserted     { color: var(--sol-cyan); }
+.blog-body .token.operator,
+.blog-body .token.entity,
+.blog-body .token.url,
+.blog-body .language-css .token.string,
+.blog-body .style .token.string { color: var(--sol-orange); }
+.blog-body .token.atrule,
+.blog-body .token.attr-value,
+.blog-body .token.keyword      { color: var(--sol-green); }
+.blog-body .token.function,
+.blog-body .token.class-name   { color: var(--sol-blue); }
+.blog-body .token.regex,
+.blog-body .token.important    { color: var(--sol-yellow); }
+.blog-body .token.variable     { color: var(--sol-yellow); }
+.blog-body .token.important,
+.blog-body .token.bold         { font-weight: normal; }      /* no bold body text */
+.blog-body .token.italic       { font-style: italic; }
+.blog-body .token.entity       { cursor: help; }

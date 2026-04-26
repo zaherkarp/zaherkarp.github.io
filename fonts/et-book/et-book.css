@@ -1,0 +1,21 @@
+/* ETBook self-hosted, two weights: roman + italic.
+   No bold; the site does not use bold body text anywhere.
+   Pages that need ETBook can link this file rather than
+   duplicating the @font-face declarations inline.
+   License: MIT, by Krasny / Scranton / Tufte; see ./LICENSE. */
+
+@font-face {
+  font-family: "et-book";
+  src: url("./et-book-roman-line-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "et-book";
+  src: url("./et-book-display-italic-old-style-figures.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}

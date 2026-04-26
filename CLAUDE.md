@@ -1,5 +1,5 @@
 # CLAUDE.md
-# github.io-redesign — persistent context for Claude Code
+# zaherkarp.github.io — persistent context for Claude Code
 
 This file is read at the start of every Claude Code session.
 Update it when decisions change. Do not let it drift from reality.
@@ -8,16 +8,19 @@ Update it when decisions change. Do not let it drift from reality.
 
 ## Project overview
 
-Personal portfolio site for Zaher Karp (zaherkarp.github.io).
-Redesign from Astro/TypeScript/Tailwind to pure HTML/CSS.
-No framework. No npm. No build step for the main site.
-Blog pipeline has a build step (Python) — see Blog section below.
+Personal portfolio site for Zaher Karp (zaherkarp.com / zaherkarp.github.io).
+Pure HTML/CSS, no framework. The blog and resume have Python build steps;
+the homepage and subpages are hand-authored static files.
 
-**Current status:** Implementation complete and pushed to github.com/zaherkarp/github.io-redesign. Swap to zaherkarp.github.io main repo pending; project URL is blocked by the custom-domain redirect on the user site, so preview is local-only until the swap.
-**Target repo:** github.io-redesign (new GitHub repo)
-**Deployment:** GitHub Pages, project site at zaherkarp.github.io/github.io-redesign/
-**Swap plan:** When ready, copy files into zaherkarp.github.io main repo and push.
-The live site at zaherkarp.github.io stays untouched until the swap.
+**Current status:** Tufte-inspired rebuild merged on 2026-04-25 (claude/tufte-rebuild
+branch). The site went through three eras: Astro/TypeScript/Tailwind, then
+a first pure-HTML Tufte-cream redesign (EB Garamond, 640px Yau pivot, italic
+hero claim, stats table), and now this rigorous Tufte-CSS rebuild (ETBook
+self-hosted, 1400px+60% column with sidenotes in the margin, h1 hero, six
+substantive figures, no stats table). The rationale doc for the current
+design lives at archive/redesign/zaherkarp-tufte-rationale.md.
+
+**Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
 
@@ -28,8 +31,6 @@ The live site at zaherkarp.github.io stays untouched until the swap.
   (b) The Stars Cliff Simulator at /star-rating-predictor/ — inline
       vanilla JS only, no CDN, no dependencies. Narrow exception
       because the interactivity is the whole point of that page.
-      (URL path is kept stable; the page is titled "Stars Cliff
-      Simulator" and focuses on the 4.0★ QBP cliff.)
   (c) The life-in-weeks grid at /life-in-weeks/ — inline vanilla JS
       only, no CDN. Renders the 4,680-week grid client-side so the
       "current week" stays accurate without a rebuild.
@@ -40,8 +41,9 @@ The live site at zaherkarp.github.io stays untouched until the swap.
       Vendored, not linked from a CDN, to keep the site self-hosted
       and to avoid a third-party dependency surface. Do not swap to
       a CDN without discussion.
-  (e) Blog posts load KaTeX / Mermaid / Prism from CDN, conditionally,
-      when the post contains the relevant syntax (see Blog section).
+  (e) Blog posts load KaTeX / Mermaid / Prism (tokenizer only) from CDN,
+      conditionally, when the post contains the relevant syntax. See
+      Blog section below for the conditional logic.
   (f) The stochastic epidemic simulator at /epidemic-simulation/ —
       Python (sim.py) runs in the browser via Pyodide; charts render
       via Plotly.js; both load from CDN. External files split into
@@ -50,23 +52,24 @@ The live site at zaherkarp.github.io stays untouched until the swap.
       Blog-experiment subpages exception below. This is the only
       subpage on the site that depends on third-party CDN runtimes
       outside blog-post conditional loads.
-  (g) Tiny one-purpose inline UX script on index.html. Currently: a
-      one-shot scroll-to-right on the career-arc container for viewports
-      <640px, so mobile readers see the current role first instead of
-      "Writing & Editing 2007." Narrow exception with the same posture
-      as (b)–(d); not a general JS license.
+  Sidenote toggling on the homepage uses the CSS checkbox-hack
+  pattern; no JavaScript involved. See §Sidenote system below.
   Do not add JS anywhere else without discussion.
-- One Google Fonts import: EB Garamond (prose) + Courier New (system, data specimens).
+- ETBook self-hosted under /fonts/et-book/. License: MIT. Two weights
+  (roman + italic, no bold). Subpages, blog, and resume share
+  /fonts/et-book/et-book.css; index.html declares @font-face inline
+  for first-paint speed.
 - No external CSS frameworks.
 - No preprocessors.
 - No bundlers.
+- No Google Fonts (removed in the rebuild; the prior site used
+  EB Garamond from Google Fonts).
 
 **Blog-experiment subpages — narrow exception:**
   One-off interactive subpages may break the inline-vanilla-JS-only
   rule when static HTML cannot reasonably express the idea — a
   stochastic simulator, a Pyodide-hosted model, a viz that genuinely
-  needs a charting library. Pure HTML/CSS remains the strong default
-  and the ambition for everything the rest of the site does.
+  needs a charting library. Pure HTML/CSS remains the strong default.
   Rules for the lane:
     - URL-scoped to its own subdirectory. No cross-contamination with
       index.html, blog chrome, or other subpages.
@@ -80,53 +83,54 @@ The live site at zaherkarp.github.io stays untouched until the swap.
   Currently served under this exception: /epidemic-simulation/.
   Other subpages (/star-rating-predictor/, /life-in-weeks/,
   /skillsprout/) predate this lane and stay within their original
-  inline-vanilla-JS pattern — do not re-platform them without
-  discussion. Do not widen the exception without discussion.
+  inline-vanilla-JS pattern. Do not widen the exception without
+  discussion.
 
 ---
 
-## Google Fonts and analytics
-
-**Google Fonts import URL:**
-```
-https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap
-```
-Do not change this URL or swap the font without discussion.
+## Analytics
 
 **GoatCounter site code:** `zaher-karp`
-Script format (one script tag before `</body>`, on every page):
+Script format (one tag before `</body>`, on every page including blog and
+subpages):
 ```html
 <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 ```
+
+The Tufte rebuild's reference doc argues for "no client-side analytics."
+We kept GoatCounter explicitly during the per-conflict resolution; it's
+privacy-respecting, self-hosted-style, and the user actively uses it.
 
 ---
 
 ## File structure
 
 ```
-github.io-redesign/
+zaherkarp.github.io/
 ├── CLAUDE.md                       # Project constitution
 ├── README.md                       # Local dev + deploy guide
-├── .gitignore, .nojekyll
+├── CNAME, .gitignore, .nojekyll
 │
 │   # SERVED CONTENT (URL-stable)
-├── index.html                      # Main portfolio (inline CSS)
+├── index.html                      # Main portfolio (inline CSS, ~2570 lines)
 ├── blog.css                        # Shared stylesheet for /blog/
 ├── favicon.svg
 ├── og-default.png
 ├── robots.txt
 ├── sitemap.xml                     # Generated by build_blog.py
 ├── resume.pdf                      # Generated by build_resume.py
+├── fonts/
+│   └── et-book/                    # MIT-licensed ETBook woffs + LICENSE + et-book.css
 ├── blog/                           # Generated tree (build_blog.py)
 │   ├── index.html                  # Current writing listing (2019+)
 │   ├── archive/index.html          # Archive listing (pre-2019 posts)
-│   └── <slug>/index.html           # Post pages (all posts, current + archive)
+│   └── <slug>/index.html           # Post pages (current + archive)
 │
 │   # INTERACTIVE SUBPAGES (served as-is, no build step)
 ├── star-rating-predictor/          # Stars Cliff Simulator (inline JS)
 ├── life-in-weeks/                  # 90-year weekly life grid (inline JS)
 ├── skillsprout/                    # Career trajectory explorer (vendored ES module)
-├── epidemic-simulation/            # Stochastic SEIRV sim (Pyodide + Plotly, external files)
+├── epidemic-simulation/            # Stochastic SEIRV sim (Pyodide + Plotly)
 │
 │   # SOURCE CONTENT
 ├── src/content/
@@ -137,303 +141,356 @@ github.io-redesign/
 ├── scripts/
 │   ├── build_blog.py
 │   ├── build_resume.py
-│   ├── build_portfolio.py          # Activity grid + citation counts
+│   ├── build_portfolio.py          # Activity sparkline + citation counts
+│   ├── lint_blog.py
 │   ├── requirements.txt
-│   ├── fonts/                      # EB Garamond variable TTFs (OFL)
+│   ├── fonts/
+│   │   └── et-book/                # ETBook TTFs for WeasyPrint (resume)
 │   └── templates/
 │       ├── blog/                   # Blog Jinja templates
 │       │   ├── base.html
-│       │   ├── index.html
+│       │   ├── list.html
 │       │   └── post.html
 │       └── resume/
 │           └── resume.html
 │
 ├── .github/workflows/
 │   ├── build_blog.yml
-│   └── build_resume.yml
+│   ├── build_resume.yml
+│   └── build_portfolio.yml
 │
-└── archive/                        # Historical reference
-    ├── tufte-concept-v18.html      # Canonical design mockup
-    └── source-resumes/             # Pre-consolidation resume drafts
-        ├── Zaher_Karp_Resume.md
-        └── Zaher_Karp_Resume_Long.md
+└── archive/
+    ├── redesign/                   # Tufte-rebuild reference materials
+    │   ├── zaherkarp-tufte-demo.html
+    │   ├── zaherkarp-tufte-rationale.md
+    │   └── zaherkarp-tufte-prompt.md
+    ├── tufte-concept-v18.html      # Prior design mockup (pre-rebuild)
+    └── source-resumes/              # Pre-consolidation resume drafts
 ```
 
 ---
 
 ## Design decisions/tokens — locked, do not change without discussion
 
-Palette: Tufte (cream paper and printed ink). Swapped from Scientific Paper
-after mockup review. Light mode evokes Tufte's book-design heritage. Dark
-mode is variant A (amped contrast) because the original dark was too gentle
-against the warm-black ground.
+The current design follows the Tufte rebuild rationale at
+archive/redesign/zaherkarp-tufte-rationale.md. The summary below codifies
+what's locked.
+
+### Palette
+
+Tufte cream paper, near-black ink, oxford red accent. Mode-symmetric
+warmth lineage. The accent retunes for dark-mode AA contrast.
 
 Light mode:
-  --bg:     #fffff8    /* Tufte cream. Warmer than #fafaf8. */
-  --text:   #2a2a2a    /* Charcoal body. Softer than pure black on cream. */
-  --muted:  #766f64    /* Warm gray: dates, metadata, stack lines. */
-  --accent: #8b2e19    /* Rust: rules, links, hero-claim border, labels. */
+  --paper:  #fffff8    /* Tufte cream */
+  --ink:    #111       /* Near-black body */
+  --muted:  #6a6a6a    /* Neutral gray: dates, metadata, stack lines, sidenote bodies */
+  --rule:   #d0d0c8    /* Hairline rule */
+  --accent: #7a0000    /* Deep oxford red. Used 1-2x per chart maximum, never decoratively */
 
-Dark mode (variant A, amped):
-  --bg:     #201b14    /* Warm near-black. Deeper than #1a1a17. */
-  --text:   #f5ecd7    /* Bright cream. Brighter than #e8e4d6 so body reads. */
-  --muted:  #c2b8a0    /* Warm mid-tone. AAA-contrast (8.7:1) for small text. */
-  --accent: #e05e3e    /* Red-rust. Hue ≈12°, aligned with light accent (≈11°). */
+Dark mode (`@media (prefers-color-scheme: dark)`):
+  --paper:  #201b14    /* Warm near-black, ported from prior pass */
+  --ink:    #f5ecd7    /* Bright cream so body reads at 21px */
+  --muted:  #c2b8a0    /* AAA contrast warm mid-tone */
+  --rule:   #3a3024    /* Faint warm hairline */
+  --accent: #e05e3e    /* Council-tuned dark accent (AA 4.75:1). Holds over from prior pass — do not swap to #7a0000, which fails contrast against #f5ecd7 */
 
-  Dark-palette history (2026-04):
-    The dark --accent was retuned twice in one session. Started at #e06940
-    (saturated orange-rust, AA 5.1:1) — which the council judged "dominated
-    the page" because --accent appears 32+ times across links, section
-    labels, project numbers, details summaries, psql keywords, and activity
-    dots. First retune to #d94a3a (redshift) failed AA at 4.05:1. Final
-    value #e05e3e keeps the redshift and restores AA at 4.75:1.
-    The dark --muted was raised from #b0a48a to #c2b8a0 (AA 6.9:1 → AAA
-    8.7:1) in the same pass to ease the ~15 small-text classes that use it
-    (dates, stack lines, writing descriptions, psql specimen metadata).
+**Accent discipline.** The Tufte rule is one or two accent uses per chart,
+never decoratively. On the homepage that's roughly: the 2020 acquisition
+callout in the career arc, the 4.0 cliff line + $50M label in the cliff
+curve, the 2014–2015 cluster annotation in the Gantt, the psql prompt
+indicator. About six total uses on the page. Subpages, blog post links,
+buttons, and other chrome use --ink or --muted, not --accent. The prior
+site used --accent 32+ times across links/section labels/project numbers/
+details summaries/psql keywords/activity dots — that's the pattern to NOT
+re-grow.
 
-Single accent throughout the UI. No secondary UI color. No blue, green,
-amber, cyan, or orange anywhere in the chrome. The psql status field uses
---accent (same token as all other accent use).
+**SVG palette adaptation.** Figure SVGs hardcode hex values
+(fill="#111", "#6a6a6a", "#7a0000", "#d0d0c8") as presentation
+attributes. CSS attribute selectors at the bottom of the inline `<style>`
+block override these to var(--ink), var(--muted), var(--accent),
+var(--rule) — so the same SVG markup adapts to light/dark without
+per-element edits. Do not rewrite SVGs to use CSS classes; the attribute-
+selector approach is the locked contract.
 
-Typography:
-  --font-body:    EB Garamond, Georgia, serif
-  --font-mono:    'Courier New', ui-monospace, monospace
-  Why: Garamond matches Tufte's book lineage. Courier is system-available,
-  so no second Google Font request and graceful fallback on older systems.
+### Typography
 
-  --size-caption: 0.78rem   /* metadata, stack lines, writing dates */
-  --size-body:    1rem      /* all prose */
-  --size-name:    clamp(...) /* hero name — keep the existing clamp() */
+  Body font: ETBook self-hosted at fonts/et-book/. Two weights only
+    (roman + italic, no bold). License: MIT, by Krasny/Scranton/Tufte.
+    Why: matches Tufte's book lineage; only widely-available digital
+    revival of the type Tufte used in print.
+  Fallback stack: `'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif`.
+  Mono: `'Courier New', Courier, monospace`. System-available, no font request.
 
-  Base: 21px. Why: Garamond reads small under 18px. 21px gives it room
-  and pairs with the 640px Yau-pivot column — large type in a narrow
-  column keeps line length inside the 55-75-character sweet spot.
+  Size scale (homepage inline CSS):
+    html: 17px                /* root unit */
+    body: 1.4rem (~24px)      /* Tufte body comfort target */
+    h1:   3.2rem              /* page title */
+    h2:   2.2rem italic       /* section headings, only running italic */
+    h3:   1.5rem              /* subsection / role title */
 
-Rules (horizontal dividers and section underlines):
-  --rule-light: 2px
-  --rule-dark:  3px
-  Why: equivalent weights read as weaker on dark. The 1px bump preserves
-  perceptual equivalence across modes. Print uses light weight (see below).
+  No bold body text anywhere. One weight (regular) plus italic for the
+  reservations listed in §Italic policy.
 
-Spacing (reconcile against actual CSS; these are the intended tokens):
-  --space-xs:      0.25rem   /* tight element gaps */
-  --space-sm:      0.5rem    /* inline gaps between related items */
-  --space-md:      1rem      /* paragraph rhythm */
-  --space-lg:      2rem      /* between experience entries */
-  --space-xl:      3rem      /* between major sub-sections */
-  --space-section: 4rem      /* between page regions */
-  Why: named tokens so changes are systematic, not ad hoc. If the current
-  style.css uses raw rem values, audit and replace on next pass; do not
-  rewrite in bulk without verification.
+  Code blocks (blog posts only) use Solarized — see §Solarized code blocks.
 
-Print overrides (inside @media print):
-  Force --bg: #ffffff and --text: #1a1a1a for maximum paper contrast.
-  Use --rule-light weight everywhere (print reads as a light medium).
-  Hide: nav, footer GoatCounter script, any animations, career arc SVG.
-  Page size: auto. Margins: 0.75in.
-  Why: the career arc's 800px viewBox exceeds printable column width.
-  Print-lock to light tokens because paper is always a light medium
-  regardless of the reader's screen mode.
+### Italic policy
 
-**Italic policy:**
-  Italic reserved for: pull quotes, testimonials, hero claim only.
-  No italic on secondary text, descriptions, labels, metadata.
-  In blog prose, `<em>` and `<i>` render as non-italic weighted emphasis
-  (`font-weight: 500`) so the italic reservation is absolute across the
-  whole site. Blockquotes in blog posts are treated as pull quotes and
-  retain italic. See `.blog-body em` in `blog.css`.
+Italic reserved for:
+  - H2 section headings (the only running italic style)
+  - Sidenote numerals
+  - The `.newthought` opener
+  - Chart annotations and axis labels
+  - Figure captions
+  - Publication titles and journal names
+  - Testimonial pullquote bodies
+  - Formula variables
 
-**Layout:**
-  Single column. Max-width 640px. Centered. No grid. No annotation margin.
-  This is the Yau pivot — narrow focused column, all content in reading flow.
+Italic is decoration on anything else and not used. In blog post prose,
+`<em>` and `<i>` render as non-italic weighted emphasis (`font-weight: 500`)
+so the italic reservation is absolute across the whole site.
 
-**Career arc SVG:**
-  ViewBox 0 0 800 320. Coordinates verified and explicit.
-  Direct labels above bars. Proportional time axis (42.1px/year, 19 years).
-  Acquisition connector: healthfinch → Health Catalyst (dashed, arrow).
-  Bar colors are mode-aware via CSS custom properties — past bars use
-  `var(--muted)` with alternating fill-opacity (0.55 / 0.85) to encode
-  acquisition continuity within the muted family; the BHA (current)
-  bar, axis tick at 2025, and "now" label use `var(--accent)`.
-  Acquisition connector (line, arrow, text) uses `var(--muted)` — the
-  dashed arrow carries the acquisition signal, not its color.
-  Previously (pre-2026-04) the bars used hardcoded hex fills in a warm
-  palette independent of the UI scheme; the council flagged this as
-  chartjunk per tufte-css precedent (which uses no color to encode data)
-  and the bars were collapsed to the current two-token pattern.
-  Do not change SVG coordinates without recalculating from scratch.
+### Small caps policy
 
-**Hero:**
-  No h1 nameplate. Name appears in nav (anchor) only at the top of the page.
-  Sequence: domain sentence → claim (italic, rust left border using --accent) → contact.
-  No h1. The psql specimen that used to close the hero now lives at the
-  end of the footer as a sign-off (see Footer + psql specimen sections).
+Reserved for: nav items, contact field labels, the `.newthought` opener.
+Not on stack tags, citation counts, dates, project numbers, or anything
+else.
 
-**Inline stack lines:**
-  Each experience entry ends with a .exp-stack Courier line.
-  Tools only. No methods (stay in prose). No facts (stay in prose).
-  Color: --text-dim. No accent color.
+### Layout
 
-**Footer:**
-  Plain Garamond. Small caps labels. Rust links (--accent). Courier is
-  used only inside the psql sign-off block at the very end of the footer
-  (see psql specimen); no Courier anywhere else in the footer chrome.
-  The psql block sits after the copyright line and is the last visible
-  element on the page — the blinking cursor reads as a sign-off.
+Article max-width 1400px, body column at 60% (~840px on a wide viewport),
+leaves 40% for floating sidenotes and margin notes. Below 760px the
+column collapses to 100% and sidenotes become inline toggles via the
+checkbox-hack pattern.
 
-**psql specimen:**
-  Class name .hero-specimen (kept for now — renaming would touch CSS in
-  three places for no functional gain). Located at the end of the footer,
-  after the copyright line.
-  Exact \x expanded display format. white-space: pre.
-  Field alignment: name/title/focus padded to 6 chars so pipes align.
-  psql prompt string: `resume_db=#` (not `zaher_resume_db=#`). The name
-  appears once inside the record as a field value; it must not also
-  appear in the prompt string.
+The prior site used a 640px Yau-pivot column with no margin. That was a
+reductive choice; the rebuild restored the Tufte three-zone layout
+because the sidenote system needs the margin to live in. Yau pivot is
+historical — see Vocabulary.
 
-**Name appearances policy:**
-  "Zaher Karp" appears in exactly three visible places — nav anchor,
-  footer copyright, and the psql `name` field value (now inside the
-  footer psql sign-off). Each is load-bearing. Do not add additional
-  visible instances. Invisible metadata instances (title tag, OG tags,
-  JSON-LD, sitemap) are correct and necessary.
+### Hero
 
-**Tool vs method:**
-  Tools are software, platforms, languages, and libraries. Methods are
-  analytical or statistical approaches. Methods stay in prose. Tools
-  go in the .exp-stack line. Example: interrupted time series is a
-  method — it stays in prose. Stata is a tool — it goes in the stack
-  line.
+Sequence: nav, h1 (name), single plain subtitle, career arc figure.
+No epigraph, no italic claim block, no rust border, no manifesto framing.
+The career arc carries the "what I do" visually and the About section
+carries the "who I am" narratively; two framing statements above the
+chart was self-absorbed (rationale doc §Hero).
 
-**Mobile nav:**
-  Nav wraps on medium screens. This is acceptable and intentional. Do
-  not add a hamburger menu. If the wrap looks accidental, reduce link
-  label length: Publications → Pubs, Speaking → Talks, Education →
-  Edu, Service stays.
+### Career arc SVG
 
-**Mobile career arc:**
-  The career arc requires horizontal scroll below 580px. This is
-  accepted and intentional. Do not build a simplified mobile SVG
-  unless explicitly requested. The scroll affordance mask
-  (fade-right gradient) is in the CSS.
-  On viewports <640px the container opens scrolled to the right
-  (to "now") via a small inline script — see Stack §(g). Without
-  this, mobile readers landed on "Writing & Editing 2007" as the
-  visible part of the chart, which inverts the chart's intent.
+Two SVGs swap at 760px:
+  - Horizontal `viewBox="0 0 1200 440"` for desktop. Three rows: editorial
+    & writing 2007-2014, research UW-Madison 2009-2018, data engineering
+    sequence 2017-now (healthfinch / HC / BHA on a single row, abutting).
+    One loud callout: red dashed line + filled circle + red text at 2020
+    marking the Health Catalyst acquisition. Two quiet annotations
+    (news-wire syndication 2008, MPH Biostatistics 2014).
+  - Vertical `viewBox="0 0 440 1120"` for mobile (native redesign, NOT a
+    rotated copy). Same data, same callout, but the era annotations are
+    dropped because they crowd the narrower layout.
 
-**Writing section update rule:**
-  The writing section in index.html is hardcoded. It is not generated
-  by build_blog.py. When new posts are published, update the writing
-  section manually. Show the 6 most recent posts. The "View all
-  writing" link points to /blog/.
+Bars use `--muted` (resolved via the SVG palette adaptation rule); the
+single accent callout is the 2020 dashed line. Do not change SVG
+coordinates without recalculating from scratch — they're tested.
 
-**Stats table:**
-  The stats table currently has five rows. Each row must have a
-  defensible number. "50+ clinical organizations served" spans
-  multiple roles and contexts — if this feels misleading, remove the
-  row rather than inflate or deflate the number. Do not add rows
-  without discussion.
+The prior site had a single 800×320 SVG that scrolled horizontally on
+mobile. The rebuild dropped that pattern (and its scroll-to-right inline
+JS exception) because horizontal scroll violates Tufte's same-frame rule.
 
-  The third column carries a micro-visual (inline SVG) per row. Two
-  framings are in play across the five shapes:
-    - Cumulative-smooth: years experience (simple ramp 2009→2026, accent
-      tick at 2020 for the research→data-eng transition).
-    - Cumulative-narrative: health systems (flat 2009–2017, ramp 2017–
-      2020 during healthfinch, plateau at 50+ through 2026).
-    - Step: EHR platforms (flat at 1 from 2009–2017, step up to 4 in
-      2017 when healthfinch joined — it already had Epic/Cerner/
-      Veradigm/athena integrations).
-    - Peak sparkline: publications (2012–2019, peak 2 in 2019),
-      presentations (2010–2017, peak 6 in 2015).
-  The `data-series` attribute on each `<tr>` encodes the series in
-  machine-readable form so the markup still reads if SVG fails. Micro-
-  visuals are `aria-hidden` / `role="presentation"` — the scalar and
-  label carry the semantic data. Do not swap a row from narrative back
-  to simple cumulative (or vice versa) without discussion; the chosen
-  framing per row reflects the actual shape of that measure.
+### Sidenote system (homepage only)
 
-**Testimonials:**
-  Two testimonials, both from Health Catalyst. This is intentional
-  and complete for now. Do not treat it as a gap to fill.
+CSS checkbox-hack, no JavaScript:
 
-**Domain sentence:**
-  The current domain sentence ("16+ years building production analytics
-  in regulated healthcare — where measurement errors have regulatory
-  and financial consequences") is approved but flagged for potential
-  revision. A proposed alternative is: "In Medicare Advantage, a
-  measurement error in a HEDIS pipeline is a contractual event, not a
-  data quality incident." Do not change it without explicit instruction.
-  (Historical note: the phrase was originally "Sixteen years" and was
-  changed to "16+ years" at some point before 2026-04; CLAUDE.md was
-  not updated in lockstep. The numeric-style convention is not locked
-  beyond this sentence.)
+```html
+<label for="sn-X" class="margin-toggle sidenote-number"></label>
+<input type="checkbox" id="sn-X" class="margin-toggle"/>
+<span class="sidenote">…body…</span>
+```
 
-**.exp-stack contrast:**
-  The .exp-stack lines use --text-dim (#787878 light / #666670 dark)
-  at 0.78rem. Contrast ratio is borderline at AA for this size. Do
-  not change the color. Flag it for manual accessibility testing
-  before the swap.
+Two flavors:
+  - **Sidenotes** (numbered): citations, methodological glosses, things a
+    reader would reference back to. Auto-numbered via CSS counter on
+    `.sidenote-number` labels.
+  - **Margin notes** (unnumbered, ⊕ toggle label): tangential facts,
+    asides. The choice between sidenote vs margin note is editorial.
 
-**Experience entry expand rule:**
-  The two longest experience entries (Health Catalyst and UW-Madison)
-  use a `<details>`/`<summary>` expand pattern for paragraphs two
-  onward. The lead paragraph of each entry stays visible always. The
-  expand trigger label is "More detail" and the collapse label is
-  "Less". The pattern matches the existing testimonial expand
-  implementation. Do not apply this pattern to other sections without
-  discussion.
+Naming convention: `sn-<topic>` for numbered, `mn-<topic>` for unnumbered.
+
+The hidden checkbox is sr-only positioned (1px wide, clip rect, off-screen)
+rather than `display: none` so it stays in the keyboard tab order.
+Focus from the (invisible) checkbox is projected onto the visible label
+via `label:has(+ input:focus-visible) { outline: ... }`. Without this,
+keyboard users couldn't reach or activate sidenote toggles.
+
+Mobile (≤760px): the sidenote/margin-note span hides; tapping the label
+reveals it as an indented inline block with a left rule.
+
+Margin block discipline: marginnote spans must contain inline-only
+content (no `<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<table>`, `<div>`,
+`<pre>`). At narrow viewports a block-level child either renders badly
+or breaks the toggle layout. `scripts/lint_blog.py` does NOT enforce
+this — it's a homepage-only rule; check via grep on content changes.
+
+Sidenotes are homepage-only. Blog posts use KaTeX/Mermaid/Prism for
+technical depth, not sidenotes.
+
+### Solarized code blocks (blog posts)
+
+Blog post code blocks use the Solarized palette via CSS variables in
+`blog.css`. The base bg/fg flips with `prefers-color-scheme`; the eight
+selective-contrast hues stay constant (Solarized is mode-symmetric by
+design).
+
+  --sol-bg:        #fdf6e3 light / #002b36 dark   /* base3 / base03 */
+  --sol-fg:        #657b83 light / #839496 dark   /* base00 / base0 */
+  --sol-fg-muted:  #93a1a1 light / #586e75 dark   /* base1 / base01 */
+  Eight hues (constant across modes):
+  --sol-yellow #b58900, --sol-orange #cb4b16, --sol-red #dc322f,
+  --sol-magenta #d33682, --sol-violet #6c71c4, --sol-blue #268bd2,
+  --sol-cyan #2aa198, --sol-green #859900
+
+Prism's tokenizer (core + autoloader) loads from CDN when the post has
+fenced code; the upstream Prism theme stylesheets are NOT loaded. All
+`.token.*` styling comes from blog.css so there's no cascade fight.
+
+Code blocks have a 1px `var(--rule)` border, 0.55rem 0.85rem padding,
+1.5 line-height, 1rem 0 margin, and font-size `calc(var(--size-caption) * 0.95)`
+(~16px at root 21px). No accent-color left-border (that's chart-callout
+territory).
+
+### Print overrides
+
+`@media print` block in `index.html`:
+  - Force --paper: #ffffff, --ink: #1a1a1a, --muted: #555, --rule: #c8c8c8
+  - Hide nav.top, .timeline, figure.timeline (career arc viewBox doesn't
+    fit a printable column)
+  - Force all `<details>` folds open so the printed page contains
+    everything
+  - Sidenotes/margin notes print inline (float: none, italic muted) next
+    to their reference
+  - Page size auto, margins 0.75in
+  - Hide checkbox toggles entirely
+
+The resume template has its own print CSS in scripts/templates/resume/
+resume.html.
+
+### psql closer
+
+Class `.hero-specimen` (kept across the rebuild because renaming would
+touch CSS in three places for no functional gain). Located at the very
+end of the footer.
+Exact `\x` expanded display format. white-space: pre.
+Field alignment: name/title/focus padded to 6 chars so pipes align.
+psql prompt string: `resume_db=#` (not `zaher_resume_db=#`). The name
+appears once inside the record as a field value; not in the prompt.
+Preserved verbatim from the prior site — it's the user's signature.
+
+### Name appearances policy
+
+"Zaher Karp" appears in exactly four visible places: the h1 nameplate,
+the nav anchor, the footer copyright, and the psql `name` field value.
+Each is load-bearing. Do not add additional visible instances. Invisible
+metadata (title tag, OG tags, JSON-LD, sitemap) is correct and necessary.
+
+### Tool vs method
+
+Tools are software, platforms, languages, and libraries. Methods are
+analytical or statistical approaches. Methods stay in prose. Tools go in
+`.exp-stack` lines. Example: interrupted time series is a method (stays
+in prose); Stata is a tool (goes in the stack line).
+
+### Mobile nav
+
+Nav wraps on medium screens. Acceptable and intentional. No hamburger
+menu without discussion.
+
+### Writing section update rule
+
+The 6 most recent posts in the homepage Writing section are hand-
+maintained. Activity sparkline above the entries is generated by
+`scripts/build_portfolio.py` between `<!-- activity-grid:start --> ...
+<!-- activity-grid:end -->` markers. The "View all writing" link points
+to `/blog/`.
+
+### Testimonials
+
+Two testimonials, both from Health Catalyst. Italic blockquote pullquote
+with thin left border (1px var(--rule)), attribution flush-right below
+the quote, full version behind a `<details class="fold">`.
+Attribution alignment: `text-align: right` per Tufte tradition. The
+prior left-aligned alignment was changed in the rebuild.
+This is intentional and complete. Do not treat as a gap to fill.
+
+### Domain sentence
+
+Current subtitle: "Healthcare data engineering and Medicare Advantage
+analytics." Ported from the demo verbatim. The prior site had a longer
+domain sentence with a parenthetical about "16+ years"; that was
+absorbed into the broader About section copy. Do not change without
+explicit instruction.
+
+### Experience entry expand rule
+
+Four of five experience entries (BHA, Health Catalyst, healthfinch, UW)
+use a `<details class="fold">`/`<summary>` expand pattern for the technical
+detail. The lead paragraph stays visible always. Sustainable Clarity is a
+single paragraph and doesn't fold. The summary text is "More detail" with
+custom `+`/`-` prefix (`details.fold > summary::before`); browser default
+disclosure markers are suppressed.
+
+The Huber psi-function formula sits inside the BHA fold as pure HTML/CSS
+math (no MathJax/KaTeX dependency for one short formula).
+
+### Project numbering
+
+Seven projects, numbered 01 through 07. The number `<span class="num">`
+floats left as a hanging old-style figure (font-size 2.2rem, color
+var(--muted)). The h3 title and body sit to the right.
+
+### .exp-stack contrast
+
+The `.exp-stack` lines use `var(--muted)` at ~0.95rem. Contrast is
+defensible at AA. Carry-over flag from the prior site: if you tighten
+sizes elsewhere on the page, recheck this against WCAG AA in both
+modes.
 
 ---
 
 ## Content — source of truth
 
-The v18 mockup (tufte-concept-v18.html) is the canonical content source.
-All prose, dates, links, and stack lines in v18 are correct and approved.
+The Tufte rebuild content was ported from `archive/redesign/
+zaherkarp-tufte-demo.html` with em-dashes stripped (replaced with
+commas, periods, or rephrased — see Em dash policy below). Real prose
+adaptations are documented in the rationale doc.
 
-**Live site:** zaherkarp.github.io (Astro) — use for gap analysis only.
-Do not copy structure or CSS from the live site.
+**Live site:** zaherkarp.com (= this repo).
+**Email:** me@zaherkarp.com.
 
-**Email:** me@zaherkarp.com (confirm before shipping)
+**Em dash policy:** Stripped throughout. Every em dash was either
+replaced with a comma (parenthetical asides), a period (sentence
+breaks), or rephrased entirely. En-dashes preserved in compound proper
+nouns (UW-Madison, AWS-to-Azure). This is a personal preference, not a
+Tufte requirement. Blog post markdown sources are NOT swept (preserves
+historical voice); only chrome and the homepage are em-dash-clean.
 
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
-  Client-Side Stars Rating Predictor (internal, BHA): no link — private source
-  SkillSprout: https://zaherkarp.com/skillsprout
+  Client-Side Stars Rating Predictor (internal, BHA): no link, private
+  SkillSprout: /skillsprout/
   Medicare Advantage Insight Engine: GitHub repo only
   ECDS Shock Index: GitHub repo only
   Epidemic simulator: /epidemic-simulation/ + /blog/two-states-one-pathogen/
 
 **Subpages in this repo:**
   /star-rating-predictor/ — "Stars Cliff Simulator." Public, teaching-
-    oriented demo focused on the 4.0★ QBP cliff. Inline vanilla JS,
-    no CDN. Ordinal logistic regression with CMS 2025 weights. Hero
-    readouts are P(clearing 4.0★) = P(Y≥4) and distance-to-cliff
-    (E[Y] − 4.0). See the Stack section for the JS exception rationale,
-    and Stars tools distinction below for how this differs from the
-    internal BHA predictor.
-  /life-in-weeks/ — 90-year weekly life grid (Tim Urban–style),
-    inline vanilla JS, no CDN. Data (birth year, events) lives inline
-    in the page. Events are hand-maintained — edit the EVENTS array
-    directly in /life-in-weeks/index.html to add one.
+    oriented demo focused on the 4.0★ QBP cliff. Inline vanilla JS.
+  /life-in-weeks/ — 90-year weekly life grid (Tim Urban-style),
+    inline vanilla JS. EVENTS array hand-maintained in the page.
   /skillsprout/ — career trajectory explorer. Vendors the
-    @zaherkarp/skillsprout-client ES module at
-    /skillsprout/lib/skillsprout-client.js (~900KB, includes O*NET 28.3
-    data inline). The page shell is vanilla JS in index.html. To update
-    the engine, rebuild the npm package and replace the vendored bundle
-    — there is no automated sync with the upstream package.
+    @zaherkarp/skillsprout-client ES module (~900KB, includes O*NET 28.3
+    data inline). Page shell is vanilla JS in index.html.
   /epidemic-simulation/ — stochastic SEIRV epidemic simulator, companion
-    to /blog/two-states-one-pathogen/. Python (sim.py) runs in the
-    browser via Pyodide; charts via Plotly.js; both load from CDN.
-    External files: app.js (UI + Pyodide glue), data.js (CDC coverage +
-    US state geometry), sim.py (model), styles.css. Only subpage
-    served under the Blog-experiment subpages exception — see Stack
-    section. Has a writing entry on the homepage but no project card.
-
-**Deprecated separate repos (as of 2026-04-19):**
-  life-in-weeks and skillsprout previously had their own GitHub Pages
-  repos at zaherkarp.github.io/life-in-weeks and zaherkarp.github.io/
-  skillsprout. Both are now served from this repo as subpages. The
-  standalone repos can be archived once the swap is complete.
+    to /blog/two-states-one-pathogen/. Pyodide + Plotly via CDN.
 
 **Stars tools distinction — two tools, do not conflate:**
   1. Stars Cliff Simulator — public, at /star-rating-predictor/.
@@ -444,12 +501,10 @@ Do not copy structure or CSS from the live site.
      Health Analytics. Cut-point dashboard running against live measure
      feeds for contract-level remediation planning. Source is private.
      Project card 01 on index.html (intentionally no live-demo link,
-     no GitHub link, no methodology post). Shares an ordinal-regression
-     skeleton with the simulator because that is the right structural
-     fit for Star Ratings — not because one is a rewrite of the other.
-  A future agent should not "consolidate" the two project cards, cross-
-  link the internal tool to the public methodology posts, or add a
-  GitHub/demo link to card 01. That would misrepresent the tools.
+     no GitHub link, no methodology post).
+  Do not "consolidate" the two project cards, cross-link the internal
+  tool to the public methodology posts, or add a GitHub/demo link to
+  card 01. That would misrepresent the tools.
 
 ---
 
@@ -473,31 +528,40 @@ Archive policy:
   education, sustainability, interviews) are split out to /blog/archive/
   so the main /blog/ listing reads as a coherent healthcare-data-
   engineering portfolio. Individual post URLs (/blog/<slug>/) still work
-  for every archive post — only the listing placement changes. Do not
-  delete the archive; it is kept online for provenance. If a new post
-  somehow belongs in the archive (e.g. personal essay that breaks the
-  portfolio voice), tag with an explicit `archive: true` frontmatter
-  field would need to be added — not currently implemented, only the
-  date cutoff exists.
+  for every archive post — only the listing placement changes.
 
 Experiments section:
   Rendered at the bottom of blog/index.html. Hard-coded list in
   build_blog.py (EXPERIMENTS constant) pointing to small interactive
   pages that don't fit the long-form format. Currently: /life-in-weeks/.
-  /star-rating-predictor/ (Stars Cliff Simulator), /skillsprout/, and
-  /epidemic-simulation/ are deliberately NOT listed here — they have
-  first-class project cards or writing-section entries on the homepage,
-  and adding them to an Experiments appendix would demote them.
+  /star-rating-predictor/, /skillsprout/, and /epidemic-simulation/ are
+  deliberately NOT listed here — they have first-class project cards or
+  writing-section entries on the homepage.
 
 Shared prose styles live in /blog.css (referenced by all generated pages).
 Portfolio index.html keeps its CSS inline — do not extract.
 
 Client-side CDN features on blog posts, loaded conditionally:
-  KaTeX 0.16.11     — only when post contains `$...$` or `$$...$$`
-  Mermaid 11        — only when post contains ```mermaid fenced blocks
-  Prism 1.29.0      — only when post contains other fenced code blocks
-No Python deps for any of these — they load at render time, not build time.
-The main site (index.html) has no such scripts; no-build rule is intact.
+  KaTeX 0.16.11   — when post contains `$...$` or `$$...$$`. Both core
+                    JS, auto-render JS, and KaTeX CSS load from
+                    cdn.jsdelivr.net with SRI integrity hashes. The
+                    auto-render onload calls `renderMathInElement` with
+                    `$$` and `$` delimiters.
+                    NOTE: when bumping KaTeX versions, always recompute
+                    the SRI hashes (`curl -fsSL <url> | openssl dgst
+                    -sha384 -binary | openssl base64 -A`); a stale hash
+                    silently blocks the script and math fails to render.
+                    This bit us once on auto-render.min.js — caught
+                    during the rebuild.
+  Mermaid 11      — when post contains ```mermaid fenced blocks
+  Prism 1.29.0    — when post contains other fenced code blocks. Only
+                    the tokenizer (core + autoloader) loads; the upstream
+                    theme stylesheets are explicitly NOT loaded. Token
+                    colors come from the Solarized rules in blog.css —
+                    see §Solarized code blocks.
+
+The main site (index.html) has no client-side CDN dependencies; the
+no-build rule for the homepage is intact.
 
 Local build:
   pip install -r scripts/requirements.txt
@@ -505,104 +569,84 @@ Local build:
   python scripts/build_blog.py
 
 GitHub Action: .github/workflows/build_blog.yml
-  Triggers on: push under src/content/blog/ or scripts/ or the workflow itself,
-  plus manual workflow_dispatch
+  Triggers on push under src/content/blog/ or scripts/ or the workflow
+  itself, plus manual workflow_dispatch.
   Runs lint_blog.py, then build_blog.py.
   Commits generated HTML + sitemap.xml back to the repo.
-  Requires: Settings → Actions → Workflow permissions → Read and write
+  Requires: Settings → Actions → Workflow permissions → Read and write.
 
 Lint step — scripts/lint_blog.py:
-  Enforces the three storage-side rules below against
-  src/content/blog/*.md (skipping drafts and `_`-prefixed files).
-  Runs before build_blog.py in CI; the build fails loud if the lint
-  fails. Run locally before pushing to catch issues pre-CI.
+  Enforces three storage-side rules against src/content/blog/*.md
+  (skipping drafts and `_`-prefixed files). Runs before build_blog.py
+  in CI; the build fails loud if the lint fails.
   Checks:
-    1. HTML comments (`<!-- -->`) in a non-draft post — leak as
-       visible `&lt;!-- --&gt;` text.
-    2. A fenced code block nested inside an HTML comment — breaks
-       the tail of the document into escaped text.
+    1. HTML comments (`<!-- -->`) in a non-draft post — leak as visible
+       `&lt;!-- --&gt;` text.
+    2. A fenced code block nested inside an HTML comment — breaks the
+       tail of the document into escaped text.
     3. A blockquote line starting with a Mermaid keyword
-       (`> flowchart LR`, `> graph TD`, etc.) — Mermaid never sees
-       it; arrows escape to `--&gt;`.
-  Comments or blockquotes that appear as literal examples inside a
-  fenced code block are ignored by design.
+       (`> flowchart LR`, `> graph TD`, etc.) — Mermaid never sees it;
+       arrows escape to `--&gt;`.
   If the linter false-positives on a legitimate construct, fix the
-  post to match the rule — do not weaken the linter.
+  post — do not weaken the linter.
 
 Underscore-prefix convention:
   Any src/content/blog/_*.md is skipped by the build.
-  Used for fixture markers, meta-docs, and not-yet-ready drafts kept on disk.
+  Used for fixture markers, meta-docs, and not-yet-ready drafts.
 
 Scaffolded drafts must stay drafts — storage-side rule:
-  A post outline with `<!-- author-note -->` HTML comments (and/or a fenced
-  ```mermaid / ```code block nested inside one of those comments) must ship
-  with `draft: true` or an `_`-prefixed filename. Otherwise the comments
-  leak onto the live page as literal `&lt;!-- ... --&gt;` text, and a nested
-  fenced block causes markdown-it-py's HTML-block parser to drop into
-  escaped-text mode for the rest of the document. Happened once on
-  `hedis-measure-etl-patterns.md` (scaffolded with `ZAHER:` author notes,
-  shipped with `draft: false`); `scripts/lint_blog.py` now fails the CI
-  build if the pattern recurs.
-  Fix the post, not the pipeline — `protect_math`, the HTML-comment
-  handling, and the mermaid rewrite are all intentional; the bug was
-  storage-side. Do not change `build_blog.py` or its markdown-it options
-  to work around an unfinished scaffold. Do not weaken the linter either —
-  the right response to a lint failure is always to fix the post.
-  When a post is genuinely ready, remove the author-notes before
-  flipping `draft: false`. Finished posts do not contain `<!-- -->`
-  blocks outside of fenced code, and do not nest fenced blocks inside
-  HTML comments under any circumstances.
+  A post outline with `<!-- author-note -->` HTML comments (or fenced
+  ```mermaid / ```code blocks nested inside one of those comments) must
+  ship with `draft: true` or an `_`-prefixed filename. Otherwise the
+  comments leak as literal `&lt;!-- ... --&gt;` text. Happened once on
+  hedis-measure-etl-patterns.md; the linter now fails CI on the pattern.
+  Fix the post, not the pipeline.
 
 Formula storage conventions:
-  Inline math: `$...$`. Display math: `$$...$$`. KaTeX auto-renders
-  both at page load (see Stack §(e), conditional CDN). `$` inside
-  fenced code blocks or inline backticks is shielded by `protect_math`
-  in build_blog.py — don't escape shell `$VAR`s or hand-write `\$`.
-  Do not nest display math inside a list item or blockquote where
-  blank lines would break the `$$...$$` pair across blocks; put
-  display math in its own paragraph.
+  Inline math: `$...$`. Display math: `$$...$$`. KaTeX auto-renders both
+  at page load. `$` inside fenced code blocks or inline backticks is
+  shielded by `protect_math` in build_blog.py — don't escape shell
+  `$VAR`s or hand-write `\$`. Do not nest display math inside list items
+  or blockquotes where blank lines would break the `$$...$$` pair across
+  blocks.
 
 Diagram storage conventions:
-  Diagrams must live in a fenced ```mermaid block. The build script
-  (`rewrite_mermaid` in `scripts/build_blog.py`) detects the
-  language-mermaid fence, rewrites the rendered `<pre><code>` to
-  `<pre class="mermaid">`, and Jinja conditionally loads the Mermaid
-  ESM runtime only on posts that have one (see Stack §(e)).
-  Do NOT write a diagram as a blockquote ("> flowchart LR / > A --> B")
-  to dodge the fenced-block ceremony — markdown-it renders that as
-  prose with literal `--&gt;` arrows escaped on the page, and Mermaid
-  never sees it. Happened once on `llm-inference-is-not-bigger-inference.md`
-  and `what-llm-systems-teach-healthcare-it.md` (five diagrams across
-  the two posts, all converted to fenced blocks); `scripts/lint_blog.py`
-  now fails CI on any `> flowchart`, `> graph`, `> sequenceDiagram`, etc.
-  ASCII or Unicode box-art is fine if a diagram is small and the post
-  doesn't otherwise need Mermaid — keep it inside a plain ```text fence
-  so monospace and arrows render as intended.
+  Diagrams live in fenced ```mermaid blocks. The build script
+  (`rewrite_mermaid` in build_blog.py) detects the language-mermaid fence,
+  rewrites the rendered `<pre><code>` to `<pre class="mermaid">`, and
+  Jinja conditionally loads the Mermaid ESM runtime. Do NOT write a
+  diagram as a blockquote ("> flowchart LR / > A --> B") — markdown-it
+  renders it as prose with literal `--&gt;` arrows escaped on the page,
+  and the linter rejects it.
 
-The portfolio writing section shows 6 recent posts with a "View all
-writing" link pointing to /blog/. The writing section in index.html is
-hand-maintained (see Design decisions §Writing section update rule).
+The portfolio writing section shows 6 recent posts, hand-maintained
+in index.html. The activity sparkline above the entries IS generated by
+`scripts/build_portfolio.py`; the entries themselves are not.
 
 ---
 
 ## Resume pipeline
 
-/resume.pdf is generated from /resume.md on every push.
+/resume.pdf is generated from /src/content/resume.md on every push.
 Source of truth is the markdown. The PDF is a build artifact.
 
 Build script: scripts/build_resume.py
   Uses markdown-it-py + Jinja2 + WeasyPrint
   Reads src/content/resume.md
-  Applies scripts/templates/resume/resume.html (print CSS, Tufte palette)
+  Applies scripts/templates/resume/resume.html (print CSS, Tufte palette
+  + ETBook bundle)
   Regex post-pass wraps role-header blocks (org | title / date / stack)
   in a structured <header class="role"> element for CSS targeting
   Renders directly to resume.pdf at repo root
   Target: 1–2 pages, US Letter, ATS-parseable (single column, no tables)
 
-Bundled fonts (OFL-licensed, committed):
-  scripts/fonts/EBGaramond-Variable.ttf
-  scripts/fonts/EBGaramond-Italic-Variable.ttf
-  scripts/fonts/OFL.txt
+Bundled fonts (committed):
+  scripts/fonts/et-book/et-book-roman-line-figures.ttf
+  scripts/fonts/et-book/et-book-display-italic-old-style-figures.ttf
+  scripts/fonts/et-book/LICENSE                                  /* MIT */
+
+The prior site used EB Garamond Variable TTFs in scripts/fonts/. Those
+were removed in the rebuild.
 
 Local dev setup (macOS, one-time):
   brew install pango            # WeasyPrint needs pango + cairo + glib
@@ -610,106 +654,91 @@ Local dev setup (macOS, one-time):
   DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib python scripts/build_resume.py
 
 GitHub Action: .github/workflows/build_resume.yml
-  Triggers on resume.md, templates, fonts, or the build script
+  Triggers on resume.md, templates, fonts, or the build script.
   Installs pango/cairo/glib on Ubuntu runner, runs build_resume.py,
-  commits regenerated resume.pdf back to the repo
-  Requires: Settings → Actions → Workflow permissions → Read and write
+  commits regenerated resume.pdf back to the repo.
 
-Do not rebuild resume.pdf by hand. Edit resume.md and push; CI regenerates
-the PDF. If you need a local render, use the command above.
+Do not rebuild resume.pdf by hand. Edit resume.md and push; CI
+regenerates the PDF.
 
 ---
 
-## Portfolio pipeline (activity grid + citation counts)
+## Portfolio pipeline (sparkline + citation counts)
 
 index.html is hand-maintained, with two build-time insertions:
 
-  1. Activity grid — a 52-week dot grid above the Writing section,
-     shaded by post count per week. Sourced from blog frontmatter.
-  2. Citation counts — Semantic Scholar lookups for publications
-     tagged with `data-sid="PMID:..."` or `data-sid="DOI:..."`.
+  1. Writing cadence sparkline — a 24-week dot strip above the Writing
+     entries. One dot per week, filled when there's a publication that
+     week, empty otherwise. Trailing total ("N posts") + a margin note
+     about the post-hiatus return. Sourced from blog frontmatter.
+  2. Citation counts — Semantic Scholar lookups for publications tagged
+     with `data-sid="PMID:..."` or `data-sid="DOI:..."`.
 
 Build script: scripts/build_portfolio.py
-  Reads blog frontmatter, builds the grid HTML, injects between
-    <!-- activity-grid:start --> ... <!-- activity-grid:end --> markers.
-  For each <div class="pub-entry" data-sid="..."> it fetches citation
-    count from Semantic Scholar's public API and appends
-    <span class="pub-citations">N citations</span>.
+  Reads blog frontmatter, builds the sparkline `<p>` block, injects
+    between `<!-- activity-grid:start --> ... <!-- activity-grid:end -->`
+    markers (the marker name is historical from the prior 52-week
+    heatmap; the script now emits a Tufte-style 24-dot sparkline).
+  For each `<div class="… pub-entry …" data-sid="...">` it fetches the
+    citation count from Semantic Scholar's public API and updates the
+    existing `<span class="pub-citations">N citations</span>` IN PLACE.
+    The static markup decides where the span lives (inside the
+    marginnote in the new design); the script just keeps the count
+    current. Entries without an existing pub-citations span are left
+    untouched.
   Graceful degradation: if the fetch fails (rate limit, network), the
     existing span is preserved. Running twice is idempotent.
 
 GitHub Action: .github/workflows/build_portfolio.yml
-  Triggers on:
-    - push to index.html, scripts/build_portfolio.py, or blog posts
-    - Sundays 06:00 UTC (scheduled refresh for citation counts)
-    - manual workflow_dispatch
-  Commits regenerated index.html back to the repo.
+  Triggers on push to index.html, scripts/build_portfolio.py, or blog
+  posts; Sundays 06:00 UTC for citation refresh; manual dispatch.
+  Commits regenerated index.html.
 
 Semantic Scholar's public tier is aggressively rate-limited (HTTP 429).
 The script retries with exponential backoff (1s between requests, 2s/4s
-on retry). If a lookup still fails, the weekly cron will pick it up
-on the next run. Do not add an API key without discussion.
+on retry). If a lookup still fails, the weekly cron will pick it up.
+Do not add an API key without discussion.
 
 Adding a new publication with a citation count: add
-`data-sid="PMID:..."` (or `DOI:...`) to the <div class="pub-entry">,
-push, and the workflow populates it.
+`data-sid="PMID:..."` (or `DOI:...`) to the `<div class="entry pub-entry">`
+AND a `<span class="pub-citations">…</span>` placeholder inside its
+marginnote, push, and the workflow populates the count.
 
 ---
 
 ## Pre-push testing checklist
 
 Walk this list in a browser against the local preview before any
-substantial push. (Originally written as a pre-swap checklist; the
-swap is done, but the list remains useful as a standing ritual.)
+substantial push.
 
 - [ ] `python scripts/lint_blog.py` is clean (if blog sources changed)
+- [ ] `python scripts/build_blog.py` runs without warnings
 - [ ] All internal anchor links resolve
 - [ ] All external links open correctly
-- [ ] Dark mode renders correctly in both Chrome and Safari
+- [ ] Light + dark mode render correctly in Chrome and Safari
 - [ ] GoatCounter fires on page load (check network tab)
-- [ ] Resume PDF downloads
-- [ ] Career arc SVG renders at 320px viewport width
-- [ ] Scroll behavior works on nav links
-- [ ] No horizontal overflow on any section except career arc
-- [ ] Print: nav and footer collapse, content renders on two pages maximum
-- [ ] Lighthouse accessibility score above 90
-- [ ] Expand/collapse works on Health Catalyst and UW-Madison entries
-- [ ] Expand/collapse works on both testimonials
-
----
-
-## TO-DOs (in priority order)
-
-1. ~~Create github.io-redesign repo and enable GitHub Pages~~ — done
-2. ~~Copy v18 mockup as index.html~~ — done
-3. ~~Set up blog pipeline (build_blog.py + GitHub Action)~~ — done
-4. ~~Migrate blog posts from live site to src/content/blog/~~ — done
-   (44 posts in src/content/blog/ on 2026-04-19; fixture marker removed)
-5. ~~Add GoatCounter script tag~~ — done (site code `zaher-karp`)
-6. Confirm email address (`me@zaherkarp.com`) is the right public-facing one
-7. ~~Add scroll behavior to nav links (smooth scroll, active state)~~ — done
-   (CSS `scroll-behavior: smooth` + `:has(:target)` active state)
-8. ~~Mobile nav: test wrapping behavior, consider hamburger if needed~~ —
-   decided: wrap is intentional, no hamburger (see Design decisions §Mobile nav)
-9. ~~Commit `/resume.pdf`~~ — done (generated by scripts/build_resume.py from resume.md)
-10. Run the testing checklist below before any major push
-    (see §Pre-push testing checklist — renamed from pre-swap, now a standing ritual)
-11. ~~Swap into the zaherkarp.github.io main repo~~ — done
-    (this repo is zaherkarp.github.io; CNAME present; live at zaherkarp.com)
-12. Implement `@media print` rules in `index.html` per Design decisions §Print
-    overrides. The tokens + behavior are documented (force light, hide nav/
-    footer-GoatCounter/career-arc, --rule-light weight, 0.75in margins) but no
-    `@media print` block exists in `index.html` yet. The resume template has
-    its own print CSS; this item is about the portfolio page only.
-13. Audit `.exp-stack` contrast at 0.78rem against WCAG AA. The --text-dim
-    token sits at the borderline — measure in both light and dark modes
-    before the next substantive accessibility pass. See Design decisions
-    §.exp-stack contrast for the flagged concern.
-14. Delete merged orphan branches on GitHub:
-    `claude/landing-page-redesign-hfREs` and `claude/fix-stars-demo-fdwtU`.
-    Both are fully contained in `main` after PRs #1 and the CNAME commit.
-    A previous attempt via git push failed with HTTP 403; delete from the
-    GitHub Branches page when convenient.
+- [ ] Resume PDF downloads (ATS-parseable, 1-2 pages)
+- [ ] Career arc swaps from horizontal SVG to vertical SVG below 760px
+      (no horizontal scroll affordance)
+- [ ] All 8 `<details>` folds open/close (4 experience + speaking +
+      2 testimonials + any new ones)
+- [ ] All sidenote/margin-note toggles fire on narrow viewport
+      (DevTools resize to 600px, click superscripts and ⊕ labels)
+- [ ] Stars cliff figure renders inside Project 02 body
+- [ ] SkillSprout slope graph renders inside Project 03 body
+- [ ] Academic dot plot renders above publication entries; mobile
+      compressed version fires below 760px
+- [ ] Education+Service Gantt renders between Testimonials and
+      Education sections
+- [ ] Print preview: nav and career arc hidden, GoatCounter absent,
+      content fits on two pages, light tokens forced
+- [ ] Lighthouse accessibility ≥ 90 in both modes
+- [ ] Keyboard Tab: focus outline visible on each sidenote label and
+      each fold summary as you traverse
+- [ ] Em-dash count: `grep -c '—' index.html` returns 0
+      (chrome should be em-dash-clean; blog post markdown is not swept)
+- [ ] `--accent` token usage in index.html: target ≤ 8 occurrences
+      (the rationale's accent-discipline rule)
 
 ---
 
@@ -718,16 +747,28 @@ swap is done, but the list remains useful as a standing ritual.)
 - Do not install npm, node, or any JS build tooling
 - Do not add CSS frameworks (Tailwind, Bootstrap, etc.)
 - Do not add React, Vue, or any frontend framework
-- Do not change the 640px max-width or reintroduce a multi-column grid
-- Do not change the color scheme without discussion
-- Do not change the career arc SVG coordinates without recalculating
-- Do not copy CSS or structure from the live Astro site
-- Do not add animations beyond the existing section reveal and cursor blink
-- Do not conflate github.io-redesign (new) with zaherkarp.github.io (live, untouched)
-- Do not commit the src/content/blog/*.md test fixtures as the migration — see
-  src/content/blog/_FIXTURES_REMOVE_BEFORE_MIGRATION.md for the proper wipe-and-copy flow
-- Do not add server-side syntax highlighting (Pygments, etc.) to the blog build;
-  Prism runs client-side via CDN to keep the Python pipeline dependency-light
+- Do not change the 1400px article max-width or the 60% body column
+  without discussion (the sidenote system depends on the margin)
+- Do not change the Tufte palette (--paper / --ink / --muted / --rule /
+  --accent) or the ETBook font without discussion
+- Do not re-add a 640px max-width or remove the sidenote system
+- Do not change career arc SVG coordinates without recalculating
+- Do not re-introduce a "By the Numbers" stats table (the chart inventory
+  replaces it)
+- Do not add an italic claim/epigraph above the career arc (the rebuild
+  explicitly removed it)
+- Do not load Prism upstream theme stylesheets (the cascade fights with
+  the Solarized rules in blog.css); only the tokenizer JS loads
+- Do not promote `--accent` to decoration (links, buttons, project
+  numbers, section labels). Reserve for chart callouts and the psql
+  prompt — see Accent discipline.
+- Do not add server-side syntax highlighting (Pygments, etc.) to the
+  blog build; Prism runs client-side via CDN to keep the Python
+  pipeline dependency-light
+- Do not strip em dashes from blog post markdown sources (the policy
+  applies to chrome only)
+- Do not nest block-level elements (`<p>`, `<ul>`, `<blockquote>`, etc.)
+  inside marginnote spans
 
 ---
 
@@ -737,7 +778,8 @@ Z = Zaher Karp. Lead Data Engineer at Baltimore Health Analytics.
 BHA = Baltimore Health Analytics (current employer).
 The portfolio targets: hiring managers for Director-level roles,
   peers in healthcare data engineering, recruiters in regulated healthcare.
-Motivated reader register: long-form prose explaining decisions, not bullet scopes.
+Motivated reader register: long-form prose explaining decisions, not
+  bullet scopes.
 
 ---
 
@@ -750,12 +792,18 @@ MA = Medicare Advantage
 BHA = Baltimore Health Analytics
 healthfinch = prior employer, acquired by Health Catalyst in 2020
 Health Catalyst = prior employer (2020-2025)
-Yau pivot = the design decision to use a single narrow column (640px)
-  rather than the Tufte three-column grid. Named after Nathan Yau (FlowingData).
+Yau pivot = historical. The prior site used a single 640px column
+  (no margin), named after Nathan Yau. The Tufte rebuild restored the
+  three-zone margin layout (60% column + 40% margin) because the
+  sidenote system needs the margin.
+ETBook = the digital revival of the Bembo-derived type Tufte used in
+  print. MIT-licensed by Krasny/Scranton/Tufte. Bundled at fonts/et-book/.
+Tufte rebuild = the redesign merged 2026-04-25 on claude/tufte-rebuild;
+  reference materials at archive/redesign/.
 
 ---
 
 ## Working agreement
 
-If you think something looks wrong or should be improved, flag it and ask
-before changing it. Do not make unrequested changes.
+If you think something looks wrong or should be improved, flag it and
+ask before changing it. Do not make unrequested changes.

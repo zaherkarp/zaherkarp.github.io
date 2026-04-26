@@ -3,32 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillSprout — Career Trajectory Explorer — Zaher Karp</title>
+<title>SkillSprout, Career Trajectory Explorer, Zaher Karp</title>
 <meta name="description" content="Interactive O*NET-powered career trajectory engine. Pick a starting occupation, see which adjacent roles you could move into now, with training, or as a long-term reskill. Runs entirely in your browser.">
 <link rel="canonical" href="https://zaherkarp.com/skillsprout/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-<meta property="og:title" content="SkillSprout — Career Trajectory Explorer">
+<meta property="og:title" content="SkillSprout, Career Trajectory Explorer">
 <meta property="og:description" content="Pick a starting occupation, see which adjacent roles you could move into. Runs entirely in your browser.">
 <meta property="og:url" content="https://zaherkarp.com/skillsprout/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
 
 <style>
 :root {
-  --bg: #fffff8; --surface: #f7f2e8; --rule: #d6d2c8;
-  --text: #2a2a2a; --text-sec: #4a4238; --muted: #766f64; --accent: #8b2e19;
-  --font-body: 'EB Garamond', Georgia, serif;
+  --bg: #fffff8; --surface: #f7f2e8; --rule: #d0d0c8;
+  --text: #111; --text-sec: #4a4238; --muted: #6a6a6a; --accent: #7a0000;
+  --font-body: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --font-mono: 'Courier New', ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #201b14; --surface: #2b2418; --rule: #3a3024;
-    --text: #f5ecd7; --text-sec: #d4c7a9; --muted: #b0a48a; --accent: #e06940;
+    --text: #f5ecd7; --text-sec: #d4c7a9; --muted: #c2b8a0; --accent: #e05e3e;
   }
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -107,8 +105,8 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule
 
 <nav><a href="/">← Zaher Karp</a></nav>
 
-<h1>SkillSprout — Career Trajectory Explorer</h1>
-<p class="lede">Pick a starting occupation. SkillSprout compares its skill fingerprint against 1,016 O*NET occupations using IDF-weighted Jaccard matching and returns three buckets: <em>Ready Now</em> (strong overlap, same or lower training zone), <em>Trainable</em> (mostly overlapping skills with specific gaps), and <em>Long-Term Reskill</em> (adjacent fields worth a longer runway). Runs entirely in your browser — no backend, no data leaves this page.</p>
+<h1>SkillSprout, Career Trajectory Explorer</h1>
+<p class="lede">Pick a starting occupation. SkillSprout compares its skill fingerprint against 1,016 O*NET occupations using IDF-weighted Jaccard matching and returns three buckets: <em>Ready Now</em> (strong overlap, same or lower training zone), <em>Trainable</em> (mostly overlapping skills with specific gaps), and <em>Long-Term Reskill</em> (adjacent fields worth a longer runway). Runs entirely in your browser, no backend, no data leaves this page.</p>
 
 <div class="panel">
   <div class="panel-label">inputs</div>
@@ -131,7 +129,7 @@ footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--rule
 
 <div id="results"></div>
 
-<p class="caveat">Methodology: IDF-weighted Jaccard skill overlap across O*NET 28.3 occupations, with a zone-delta adjustment to separate lateral moves from long-term reskills. Source: O*NET Database 28.3 (CC BY 4.0). The underlying engine is <a href="https://github.com/zaherkarp/skillsprout">@zaherkarp/skillsprout-client</a> — this page is a vanilla-JS shell on top of it.</p>
+<p class="caveat">Methodology: IDF-weighted Jaccard skill overlap across O*NET 28.3 occupations, with a zone-delta adjustment to separate lateral moves from long-term reskills. Source: O*NET Database 28.3 (CC BY 4.0). The underlying engine is <a href="https://github.com/zaherkarp/skillsprout">@zaherkarp/skillsprout-client</a>, this page is a vanilla-JS shell on top of it.</p>
 
 <footer>© 2026 Zaher Karp · <a href="/">home</a> · <a href="/blog/">writing</a></footer>
 

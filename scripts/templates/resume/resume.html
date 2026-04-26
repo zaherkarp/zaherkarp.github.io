@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>{{ name }} — Resume</title>
+<title>{{ name }}, Resume</title>
 <style>
+/* ETBook self-hosted (TTF for WeasyPrint). License: MIT,
+   bundled at scripts/fonts/et-book/. Two weights only:
+   roman + italic, no bold. */
 @font-face {
-  font-family: 'EB Garamond';
-  src: url('file://{{ font_dir }}/EBGaramond-Variable.ttf') format('truetype-variations');
-  font-weight: 400 700;
+  font-family: 'et-book';
+  src: url('file://{{ font_dir }}/et-book/et-book-roman-line-figures.ttf') format('truetype');
+  font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'EB Garamond';
-  src: url('file://{{ font_dir }}/EBGaramond-Italic-Variable.ttf') format('truetype-variations');
-  font-weight: 400 700;
+  font-family: 'et-book';
+  src: url('file://{{ font_dir }}/et-book/et-book-display-italic-old-style-figures.ttf') format('truetype');
+  font-weight: normal;
   font-style: italic;
 }
 
@@ -27,9 +30,9 @@
 :root {
   --text: #1a1a1a;
   --text-sec: #4a4a4a;
-  --text-dim: #766f64;  /* --muted from CLAUDE.md */
-  --rule: #d6d2c8;
-  --accent: #8b2e19;    /* Tufte rust */
+  --text-dim: #6a6a6a;  /* --muted from new Tufte palette */
+  --rule: #d0d0c8;
+  --accent: #7a0000;    /* Oxford red */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +42,7 @@ html {
 }
 
 body {
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   color: var(--text);
   line-height: 1.38;
   background: white;

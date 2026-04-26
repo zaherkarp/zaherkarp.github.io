@@ -36,12 +36,14 @@ import frontmatter
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
-# Activity grid window: from the first published post's week through the
-# current week. Bounded by MAX_WEEKS so it doesn't blow out horizontally
-# once the archive spans years. The pre-2025 journalism pieces live in
-# the blog but aren't part of this cadence story — PRE_BLOG_CUTOFF
-# excludes them from the window calculation.
-MAX_WEEKS = 52
+# Activity sparkline window: 24 weeks ending at the most recent Sunday.
+# Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
+# grid. The pre-2025 journalism pieces live in the blog but aren't part
+# of this cadence story; PRE_BLOG_CUTOFF excludes them from the cadence
+# total when computing the trailing post count.
+SPARKLINE_WEEKS = 24
+SPARKLINE_X0 = 10        # left x-coordinate of the first dot in the SVG
+SPARKLINE_DX = 11        # spacing between dots; matches the demo's geometry
 PRE_BLOG_CUTOFF = date(2025, 1, 1)
 S2_TIMEOUT = 10  # seconds
 S2_URL = "https://api.semanticscholar.org/graph/v1/paper/{sid}?fields=citationCount"
@@ -74,41 +76,51 @@ def last_sunday(today: date) -> date:
 
 
 def build_activity_grid(posts: list[tuple[date, str, str]]) -> str:
+    """Emit the 24-week inline cadence sparkline.
+
+    Tufte's last-point-label pattern: a small numeric annotation at the
+    end of the sparkline gives the trailing total so the chart is self-
+    legending. The marginnote text is fixed copy describing the post-
+    hiatus return; treating it as content keeps the script's only job
+    the visual update.
+    """
     anchor = last_sunday(date.today())
-    # Window starts at the first post's week within the cadence era, capped
-    # by MAX_WEEKS. Leading zero-post weeks at the left edge are chartjunk
-    # (Tufte panel, focus group round 1).
     cadence_posts = [p for p in posts if p[0] >= PRE_BLOG_CUTOFF]
     if not cadence_posts:
         return ""
-    first_post_date = min(p[0] for p in cadence_posts)
-    first_week_end = last_sunday(first_post_date)
-    weeks_span = ((anchor - first_week_end).days // 7) + 1
-    weeks_to_render = min(max(weeks_span, 1), MAX_WEEKS)
 
     dots: list[str] = []
-    for i in range(weeks_to_render - 1, -1, -1):
+    cadence_total_in_window = 0
+    for i in range(SPARKLINE_WEEKS - 1, -1, -1):
         week_end = anchor - timedelta(weeks=i)
         week_start = week_end - timedelta(days=6)
-        matches = [p for p in posts if week_start <= p[0] <= week_end]
-        count = len(matches)
-        span = f"{week_start:%b %-d}–{week_end:%b %-d}"
-        if count == 0:
-            cls = "act-dot act-empty"
-            tip = f"{span}: no posts"
-        else:
-            cls = f"act-dot act-n{min(count, 3)}"
-            titles = ", ".join(m[1] for m in matches)
-            titles = titles.replace('"', "&quot;")
-            tip = f"{span}: {titles}"
-        dots.append(f'<span class="{cls}" title="{tip}"></span>')
+        n = sum(1 for p in posts if week_start <= p[0] <= week_end and p[0] >= PRE_BLOG_CUTOFF)
+        cadence_total_in_window += n
+        cx = SPARKLINE_X0 + (SPARKLINE_WEEKS - 1 - i) * SPARKLINE_DX
+        # Filled = publication week, empty = silent week. The hardcoded
+        # hex values are intentional: index.html's <style> block has CSS
+        # attribute selectors that map them to var(--ink) and var(--rule)
+        # so the same SVG renders correctly in both light and dark mode.
+        fill = "#111" if n > 0 else "#d0d0c8"
+        dots.append(f'        <circle cx="{cx}" cy="10" r="2" fill="{fill}"/>')
 
-    caption = f"{weeks_to_render} weeks of writing activity"
+    label = "post" if cadence_total_in_window == 1 else "posts"
     return (
-        f'<div class="activity-grid" aria-label="{caption}">'
-        f'<div class="activity-row">{"".join(dots)}</div>'
-        f'<p class="activity-caption">{caption}</p>'
-        "</div>"
+        '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
+        '      24 weeks of activity\n'
+        '      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" '
+        'aria-label="writing cadence sparkline, 24 weeks">\n'
+        '        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>\n'
+        + "\n".join(dots) + "\n"
+        '      </svg>\n'
+        f'      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); '
+        f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>'
+        '<label for="mn-cadence" class="margin-toggle">&#8853;</label>'
+        '<input type="checkbox" id="mn-cadence" class="margin-toggle"/>'
+        '<span class="marginnote">Writing resumed in late 2025 after a multi-year pause. '
+        'The early weeks of the window are sparse by design, not by neglect; recent weeks '
+        'show a steady run.</span>\n'
+        '    </p>'
     )
 
 
@@ -138,39 +150,44 @@ def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
 
 
 PUB_ENTRY_RE = re.compile(
-    r'(<div class="pub-entry"[^>]*data-sid="([^"]+)"[^>]*>)(.*?)(</div>)',
+    # Match any class attribute that contains the token "pub-entry";
+    # the new index.html uses class="entry pub-entry" so the leading
+    # word may be different.
+    r'(<div class="[^"]*pub-entry[^"]*"[^>]*data-sid="([^"]+)"[^>]*>)(.*?)(</div>)',
     re.DOTALL,
 )
-EXISTING_CITATION_RE = re.compile(
-    r'\s*<span class="pub-citations">[^<]*</span>',
-    re.DOTALL,
-)
+INNER_CITATION_RE = re.compile(r'(<span class="pub-citations">)([^<]*)(</span>)')
 
 
 def inject_citations(html: str) -> tuple[str, int, int]:
-    """Return (new_html, successes, failures)."""
+    """Return (new_html, successes, failures).
+
+    In-place updates only. The static markup decides where the
+    citation span lives (inside the marginnote in the new design);
+    the script just keeps the count current. Entries without an
+    existing pub-citations span are left untouched.
+    """
     successes = 0
     failures = 0
 
     def replace(m: re.Match) -> str:
         nonlocal successes, failures
         open_tag, sid, inner, close_tag = m.group(1), m.group(2), m.group(3), m.group(4)
-        # Small inter-request delay to respect Semantic Scholar's public-tier limits.
+        if not INNER_CITATION_RE.search(inner):
+            return open_tag + inner + close_tag
         if successes + failures > 0:
             time.sleep(1.0)
         count = fetch_citation_count(sid)
-
-        # Strip any existing citation span so we're idempotent.
-        inner_clean = EXISTING_CITATION_RE.sub("", inner).rstrip()
-
         if count is None:
             failures += 1
-            # Keep any pre-existing span (rollback) so we don't clobber on fetch fail.
             return open_tag + inner + close_tag
         successes += 1
         label = "citation" if count == 1 else "citations"
-        new_span = f'\n    <span class="pub-citations">{count} {label}</span>\n  '
-        return open_tag + inner_clean + new_span + close_tag
+        new_inner = INNER_CITATION_RE.sub(
+            lambda im: f'{im.group(1)}{count} {label}{im.group(3)}',
+            inner,
+        )
+        return open_tag + new_inner + close_tag
 
     new_html = PUB_ENTRY_RE.sub(replace, html)
     return new_html, successes, failures

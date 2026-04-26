@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stars Cliff Simulator — Zaher Karp</title>
+<title>Stars Cliff Simulator, Zaher Karp</title>
 <meta name="description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings. Move four quality levers, watch the probability of clearing the cliff update, and see the cut-point mechanism that makes a tenth of a star worth $50M+.">
 <link rel="canonical" href="https://zaherkarp.com/star-rating-predictor/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-<meta property="og:title" content="Stars Cliff Simulator — the 4.0★ QBP cliff, explored">
+<meta property="og:title" content="Stars Cliff Simulator, the 4.0★ QBP cliff, explored">
 <meta property="og:description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings. Move four quality levers, watch the probability of clearing the cliff update, and see the cut-point mechanism that makes a tenth of a star worth $50M+.">
 <meta property="og:url" content="https://zaherkarp.com/star-rating-predictor/">
 <meta property="og:type" content="website">
@@ -16,13 +16,11 @@
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stars Cliff Simulator — the 4.0★ QBP cliff, explored">
+<meta name="twitter:title" content="Stars Cliff Simulator, the 4.0★ QBP cliff, explored">
 <meta name="twitter:description" content="An interactive demo focused on the 4.0★ QBP cliff in Medicare Advantage Star Ratings.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
 
 <script type="application/ld+json">
 {
@@ -41,11 +39,11 @@
 :root {
   --bg:       #fffff8;
   --surface:  #f7f2e8;
-  --rule:     #d6d2c8;
-  --text:     #2a2a2a;
+  --rule:     #d0d0c8;
+  --text:     #111;
   --text-sec: #4a4238;
-  --muted:    #766f64;
-  --accent:   #8b2e19;
+  --muted:    #6a6a6a;
+  --accent:   #7a0000;
   --size-caption: 0.78rem;
   --size-body:    1rem;
 }
@@ -57,15 +55,15 @@
     --rule:     #3a3024;
     --text:     #f5ecd7;
     --text-sec: #d4c7a9;
-    --muted:    #b0a48a;
-    --accent:   #e06940;
+    --muted:    #c2b8a0;
+    --accent:   #e05e3e;
   }
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 21px; background: var(--bg); color: var(--text); }
-body { font-family: 'EB Garamond', Georgia, serif; font-size: var(--size-body); line-height: 1.7; background: var(--bg); }
+body { font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: var(--size-body); line-height: 1.7; background: var(--bg); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
@@ -416,7 +414,7 @@ footer a:hover { color: var(--accent); }
     <p class="sub">Interactive demo · the 4.0★ cliff, explored</p>
     <h1>The Stars Cliff Simulator</h1>
     <p>
-      CMS assigns each Medicare Advantage contract a Star Rating from 1 to 5, derived from 42 measures across 9 domains. One threshold in that whole system matters more than any other. At <strong>4.0★</strong>, a plan qualifies for <strong>Quality Bonus Payments</strong> — a 5% increase to its CMS benchmark. Below 4.0★, nothing. For a 200,000-member plan, that single tenth-of-a-star cliff is worth $50–80 million a year.
+      CMS assigns each Medicare Advantage contract a Star Rating from 1 to 5, derived from 42 measures across 9 domains. One threshold in that whole system matters more than any other. At <strong>4.0★</strong>, a plan qualifies for <strong>Quality Bonus Payments</strong>, a 5% increase to its CMS benchmark. Below 4.0★, nothing. For a 200,000-member plan, that single tenth-of-a-star cliff is worth $50–80 million a year.
     </p>
     <p>
       This simulator is built around that one number. An ordinal logistic regression, calibrated to CMS 2025 weights and the MA-PD distribution, collapses 42 measures into four high-leverage inputs. As you move the sliders, the readouts focus on the question an analyst actually asks: <em>what is the probability my plan clears the 4.0★ QBP cliff, and how far are we from it right now?</em> For the full derivation, see <a href="/blog/star-rating-predictor-methodology/">the methodology post</a>.
@@ -496,7 +494,7 @@ footer a:hover { color: var(--accent); }
         <label class="input-label" for="readmission">
           Readmission rate
           <span class="weight-badge triple">wt 3× ▼</span>
-          <span class="help-tip" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure — lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years." aria-label="Readmission help"></span>
+          <span class="help-tip" title="Plan All-Cause Readmissions (PCR): % of hospital stays followed by unplanned readmission within 30 days. Inverse measure, lower is better. Weight increased from 1× to 3× for 2025, contributing to the largest industry-wide star drop in years." aria-label="Readmission help"></span>
         </label>
         <span class="value-out" id="readmission-val">15%</span>
       </div>
@@ -666,13 +664,13 @@ footer a:hover { color: var(--accent); }
     el.classList.remove("eligible", "near", "below");
     if (expected >= 4.0) {
       el.classList.add("eligible");
-      text.textContent = "Above the 4.0★ cliff — plan qualifies for Quality Bonus Payments (≈5% premium increase, ~$50M+ for large plans).";
+      text.textContent = "Above the 4.0★ cliff, plan qualifies for Quality Bonus Payments (≈5% premium increase, ~$50M+ for large plans).";
     } else if (expected >= 3.5) {
       el.classList.add("near");
-      text.textContent = "In the dead zone (3.5–3.99★). Rounds to 3.5★, no QBP. This is the band where investment returns are most nonlinear — a fraction of a star decides tens of millions of dollars.";
+      text.textContent = "In the dead zone (3.5–3.99★). Rounds to 3.5★, no QBP. This is the band where investment returns are most nonlinear, a fraction of a star decides tens of millions of dollars.";
     } else {
       el.classList.add("below");
-      text.textContent = "Below 3.5★ — no QBP eligibility. At ≤2.5★ for 3 consecutive years, CMS may terminate the contract.";
+      text.textContent = "Below 3.5★, no QBP eligibility. At ≤2.5★ for 3 consecutive years, CMS may terminate the contract.";
     }
   }
 
