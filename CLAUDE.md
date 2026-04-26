@@ -198,12 +198,11 @@ Dark mode (`@media (prefers-color-scheme: dark)`):
 **Accent discipline.** The Tufte rule is one or two accent uses per chart,
 never decoratively. On the homepage that's roughly: the 2020 acquisition
 callout in the career arc, the 4.0 cliff line + $50M label in the cliff
-curve, the 2014–2015 cluster annotation in the Gantt, the psql prompt
-indicator. About six total uses on the page. Subpages, blog post links,
-buttons, and other chrome use --ink or --muted, not --accent. The prior
-site used --accent 32+ times across links/section labels/project numbers/
-details summaries/psql keywords/activity dots — that's the pattern to NOT
-re-grow.
+curve, the 2014–2015 cluster annotation in the Gantt. A handful of total
+uses on the page. Subpages, blog post links, buttons, and other chrome use
+--ink or --muted, not --accent. The prior site used --accent 32+ times
+across links/section labels/project numbers/details summaries/activity
+dots — that's the pattern to NOT re-grow.
 
 **SVG palette adaptation.** Figure SVGs hardcode hex values
 (fill="#111", "#6a6a6a", "#7a0000", "#d0d0c8") as presentation
@@ -374,23 +373,21 @@ territory).
 The resume template has its own print CSS in scripts/templates/resume/
 resume.html.
 
-### psql closer
-
-Class `.hero-specimen` (kept across the rebuild because renaming would
-touch CSS in three places for no functional gain). Located at the very
-end of the footer.
-Exact `\x` expanded display format. white-space: pre.
-Field alignment: name/title/focus padded to 6 chars so pipes align.
-psql prompt string: `resume_db=#` (not `zaher_resume_db=#`). The name
-appears once inside the record as a field value; not in the prompt.
-Preserved verbatim from the prior site — it's the user's signature.
-
 ### Name appearances policy
 
-"Zaher Karp" appears in exactly four visible places: the h1 nameplate,
-the nav anchor, the footer copyright, and the psql `name` field value.
-Each is load-bearing. Do not add additional visible instances. Invisible
-metadata (title tag, OG tags, JSON-LD, sitemap) is correct and necessary.
+"Zaher Karp" appears once visibly on the homepage: the h1 nameplate.
+Invisible metadata (title tag, OG tags, JSON-LD, sitemap) carries the
+name elsewhere and is correct and necessary. Do not add additional
+visible instances without discussion.
+
+The page previously closed with a psql-style record (`resume_db=# SELECT
+* FROM zaher;`) that carried a second visible "Zaher Karp" plus build-
+time "currently" rows fed by `src/content/now.yaml`. That closer was
+removed; its CSS (`pre.postgres`, `.prompt`), the now-block markers, the
+yaml source, and the `build_now_block()` injection in
+`scripts/build_portfolio.py` are all gone with it. There is no
+"currently / now / reading / building" surface on the page now. If a
+replacement is wanted, it's a fresh design decision, not a restoration.
 
 ### Tool vs method
 
@@ -760,8 +757,8 @@ substantial push.
 - Do not load Prism upstream theme stylesheets (the cascade fights with
   the Solarized rules in blog.css); only the tokenizer JS loads
 - Do not promote `--accent` to decoration (links, buttons, project
-  numbers, section labels). Reserve for chart callouts and the psql
-  prompt — see Accent discipline.
+  numbers, section labels). Reserve for chart callouts — see Accent
+  discipline.
 - Do not add server-side syntax highlighting (Pygments, etc.) to the
   blog build; Prism runs client-side via CDN to keep the Python
   pipeline dependency-light

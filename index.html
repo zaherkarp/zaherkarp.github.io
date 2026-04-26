@@ -473,8 +473,7 @@ figure.timeline figcaption {
 }
 
 /* Legacy horizontal-scroll fallback. Kept available for other
-   figures that might need it (the postgres closer uses a
-   different overflow rule). The dot plot used to use this; it
+   figures that might need it. The dot plot used to use this; it
    doesn't anymore. */
 .timeline-scroll {
   overflow-x: auto;
@@ -884,27 +883,7 @@ details.speaking-list ol li .place {
 }
 
 /* ============================================================
-   16. POSTGRES CLOSER
-   Preserved verbatim. It is a signature. It does not fit
-   Tufte's book aesthetic, which is the point: it is yours.
-   Monospace stack matches Tufte CSS's GitHub-style choice.
-   ============================================================ */
-pre.postgres {
-  background: transparent;
-  border-top: 1px solid var(--rule);
-  padding: 2rem 0 0 0;
-  margin: 5rem 0 0 0;
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--muted);
-  white-space: pre;
-  overflow-x: auto;
-}
-pre.postgres .prompt { color: var(--accent); }
-
-/* ============================================================
-   17. HORIZONTAL RULES
+   16. HORIZONTAL RULES
    Tufte uses hairline rules sparingly between sections. Half-
    opacity helps them recede.
    ============================================================ */
@@ -917,7 +896,7 @@ hr {
 }
 
 /* ============================================================
-   18. CONTACT ROW
+   17. CONTACT ROW
    ============================================================ */
 .contact {
   margin-top: 2rem;
@@ -933,7 +912,7 @@ hr {
 }
 
 /* ============================================================
-   19. SVG PALETTE ADAPTATION
+   18. SVG PALETTE ADAPTATION
    The figure SVGs hard-code hex colors as presentation
    attributes (fill/stroke). Presentation attributes have CSS
    specificity 0, so attribute selectors here override them at
@@ -951,7 +930,7 @@ svg [fill="#d0d0c8"]   { fill: var(--rule); }
 svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* ============================================================
-   20. PRINT OVERRIDES
+   19. PRINT OVERRIDES
    Paper is always a light medium regardless of the reader's
    screen mode, so we force light tokens. Hide nav and the
    career arc SVG (its 1200-unit viewBox exceeds printable
@@ -2578,27 +2557,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div><span class="label">resume</span><a href="/resume.pdf">PDF download</a></div>
     </div>
   </section>
-
-  <!-- ==========================================================
-       POSTGRES CLOSER
-       Preserved verbatim from the current site. This is your
-       signature and the page is better with it than without.
-       ========================================================== -->
-  <pre class="postgres"><span class="prompt">resume_db=#</span> \x
-Expanded display is on.
-<span class="prompt">resume_db=#</span> SELECT * FROM zaher;
--[ RECORD 1 ]-----------------------------
-name   | Zaher Karp
-title  | Lead Data Engineer
-focus  | Analytics Engineering &middot; Data Platform
-domain | Medicare Advantage &middot; HEDIS &middot; CMS Stars
-stack  | SQL &middot; Python &middot; dbt &middot; AWS &middot; Azure &middot; Databricks
-status | building connections &middot; open to collaboration
-<!-- now-block:start -->
-reads  | designing data-intensive applications
-learn  | obsidian
-<!-- now-block:end -->
-<span class="prompt">resume_db=#</span></pre>
 
 </article>
 

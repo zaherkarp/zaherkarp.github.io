@@ -15,7 +15,6 @@ on:
       - 'scripts/build_portfolio.py'
       - 'scripts/requirements.txt'
       - 'src/content/blog/**.md'
-      - 'src/content/now.yaml'
       - '.github/workflows/build_portfolio.yml'
   schedule:
     - cron: '0 6 * * 0'  # Sundays 06:00 UTC

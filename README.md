@@ -28,14 +28,12 @@ skillsprout/                Career trajectory explorer
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
   resume.md                 Resume source
-  now.yaml                  "Currently" rows for the psql closer
-                            (reads, music, watch, learn, build, based)
 
 scripts/
   build_blog.py             Blog build pipeline
   lint_blog.py              Source-side lint (runs before build in CI)
   build_resume.py           Resume build pipeline (WeasyPrint)
-  build_portfolio.py        Activity grid + citation counts + now-block injection
+  build_portfolio.py        Activity grid + citation counts
   requirements.txt
   fonts/                    EB Garamond variable TTFs (OFL)
   templates/
@@ -147,11 +145,6 @@ kill %1
   `resume.pdf`.
 - Add a life-in-weeks event: edit the `EVENTS` array in
   `life-in-weeks/index.html`.
-- Update the "currently" rows in the psql closer: edit
-  `src/content/now.yaml` (six keys: `reads`, `music`, `watch`, `learn`,
-  `build`, `based`). Empty values hide the row. The portfolio workflow
-  rewrites the block between `<!-- now-block:start --> ... <!-- now-block:end -->`
-  in `index.html`. Style is lowercase prose to match the `status` row.
 
 ## License
 
