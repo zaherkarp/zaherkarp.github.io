@@ -22,7 +22,6 @@ trigger.
 
 from __future__ import annotations
 
-import html
 import json
 import re
 import sys
@@ -33,14 +32,10 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import frontmatter
-import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
-NOW_YAML = ROOT / "src" / "content" / "now.yaml"
-NOW_KEYS = ("reads", "music", "watch", "learn", "build", "based")
-NOW_LABEL_WIDTH = 6  # matches the existing identity rows above the now-block
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
 # Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
 # grid. The pre-2025 journalism pieces live in the blog but aren't part
@@ -198,22 +193,6 @@ def inject_citations(html: str) -> tuple[str, int, int]:
     return new_html, successes, failures
 
 
-# ─── now-block ────────────────────────────────────────────────────────────
-
-def build_now_block() -> str | None:
-    if not NOW_YAML.exists():
-        print(f"  WARN: {NOW_YAML} not found; skipping now-block injection", file=sys.stderr)
-        return None
-    data = yaml.safe_load(NOW_YAML.read_text()) or {}
-    rows = []
-    for key in NOW_KEYS:
-        value = data.get(key)
-        if value is None or str(value).strip() == "":
-            continue
-        rows.append(f"{key:<{NOW_LABEL_WIDTH}} | {html.escape(str(value), quote=False)}")
-    return "\n".join(rows)
-
-
 # ─── marker replacement ───────────────────────────────────────────────────
 
 def replace_between(text: str, marker: str, payload: str, end_indent: str = "    ") -> str:
@@ -243,11 +222,6 @@ def main() -> int:
     grid_html = build_activity_grid(posts)
     text = replace_between(text, "activity-grid", grid_html)
     print("activity grid injected")
-
-    now_payload = build_now_block()
-    if now_payload is not None:
-        text = replace_between(text, "now-block", now_payload, end_indent="")
-        print("now-block injected")
 
     text, ok, fail = inject_citations(text)
     print(f"citation counts: {ok} updated, {fail} skipped (fetch failed)")
