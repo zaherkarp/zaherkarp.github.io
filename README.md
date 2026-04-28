@@ -93,7 +93,8 @@ the weekly cron will retry.
 
 Blog posts use client-side CDN loads, conditional on content:
 
-- `$...$` / `$$...$$` math → KaTeX
+- `\(...\)` / `\[...\]` math → KaTeX (dollar signs are deliberately
+  not treated as math delimiters — currency amounts in prose collide)
 - ` ```mermaid ` fenced blocks → Mermaid
 - Language-tagged fenced code → Prism syntax highlighting
 

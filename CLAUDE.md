@@ -539,11 +539,11 @@ Shared prose styles live in /blog.css (referenced by all generated pages).
 Portfolio index.html keeps its CSS inline — do not extract.
 
 Client-side CDN features on blog posts, loaded conditionally:
-  KaTeX 0.16.11   — when post contains `$...$` or `$$...$$`. Both core
+  KaTeX 0.16.11   — when post contains `\(...\)` or `\[...\]`. Both core
                     JS, auto-render JS, and KaTeX CSS load from
                     cdn.jsdelivr.net with SRI integrity hashes. The
                     auto-render onload calls `renderMathInElement` with
-                    `$$` and `$` delimiters.
+                    `\[...\]` and `\(...\)` delimiters.
                     NOTE: when bumping KaTeX versions, always recompute
                     the SRI hashes (`curl -fsSL <url> | openssl dgst
                     -sha384 -binary | openssl base64 -A`); a stale hash
@@ -559,6 +559,19 @@ Client-side CDN features on blog posts, loaded conditionally:
 
 The main site (index.html) has no client-side CDN dependencies; the
 no-build rule for the homepage is intact.
+
+Math delimiters — do not switch back to `$...$`:
+  LaTeX-style `\(...\)` (inline) and `\[...\]` (display) are used instead
+  of TeX-style `$...$` / `$$...$$`. Dollar signs are reserved for currency
+  in prose. The original pipeline tried to auto-detect math by pairing any
+  two `$` in a paragraph, which wrongly matched currency ("**$4.6 billion**
+  ($1.9 billion cut)") and corrupted both the markdown (literal `**`
+  surviving) and the KaTeX output (garbage rendered as math). Switching
+  delimiters makes the distinction unambiguous at the source level, so
+  no heuristic is needed. Posts currently using the new delimiters:
+  star-rating-demo-methodology.md, star-rating-predictor-methodology.md,
+  two-states-one-pathogen.md. Migration history is in the git log under
+  "Migrate math delimiters to \\(...\\) / \\[...\\]".
 
 Local build:
   pip install -r scripts/requirements.txt
@@ -600,12 +613,11 @@ Scaffolded drafts must stay drafts — storage-side rule:
   Fix the post, not the pipeline.
 
 Formula storage conventions:
-  Inline math: `$...$`. Display math: `$$...$$`. KaTeX auto-renders both
-  at page load. `$` inside fenced code blocks or inline backticks is
-  shielded by `protect_math` in build_blog.py — don't escape shell
-  `$VAR`s or hand-write `\$`. Do not nest display math inside list items
-  or blockquotes where blank lines would break the `$$...$$` pair across
-  blocks.
+  Inline math: `\(...\)`. Display math: `\[...\]`. KaTeX auto-renders both
+  at page load. Dollar signs in prose are treated as currency and are not
+  parsed as math, so don't escape shell `$VAR`s or hand-write `\$`. Do not
+  nest display math inside list items or blockquotes where blank lines
+  would break the `\[...\]` pair across blocks.
 
 Diagram storage conventions:
   Diagrams live in fenced ```mermaid blocks. The build script
