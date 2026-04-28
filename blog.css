@@ -345,6 +345,19 @@ nav {
   text-align: center;
 }
 
+/* Inline SVG figures use hardcoded Tufte palette hexes as presentation
+   attributes; these selectors flip them to the live tokens so the same
+   markup adapts to dark mode. Mirrors the locked contract on the
+   homepage (see CLAUDE.md, "SVG palette adaptation"). */
+.blog-body svg [fill="#111"]      { fill: var(--text); }
+.blog-body svg [stroke="#111"]    { stroke: var(--text); }
+.blog-body svg [fill="#6a6a6a"]   { fill: var(--muted); }
+.blog-body svg [stroke="#6a6a6a"] { stroke: var(--muted); }
+.blog-body svg [fill="#7a0000"]   { fill: var(--accent); }
+.blog-body svg [stroke="#7a0000"] { stroke: var(--accent); }
+.blog-body svg [fill="#d0d0c8"]   { fill: var(--rule); }
+.blog-body svg [stroke="#d0d0c8"] { stroke: var(--rule); }
+
 .blog-body table {
   border-collapse: collapse;
   font-size: var(--size-caption);
