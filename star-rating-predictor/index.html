@@ -70,6 +70,16 @@ body { font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Ge
 
 a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
 a:hover { border-bottom-color: var(--accent); }
+/* Distinguish in-prose links from chrome via an always-visible underline,
+   per WCAG 1.4.1 (non-color affordance). Nav and footer keep the hover-only style. */
+p a, li a, .body p a { border-bottom-color: var(--accent); }
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--bg); color: var(--text);
+  padding: 0.5rem 0.75rem; border: 1px solid var(--text);
+  z-index: 100; font-size: 0.85rem;
+}
+.skip-link:focus { left: 1rem; top: 1rem; }
 
 nav {
   padding: 1.6rem 0 1.4rem;
@@ -403,6 +413,7 @@ footer a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to main content</a>
 <div class="page">
 
   <nav>
@@ -410,6 +421,7 @@ footer a:hover { color: var(--accent); }
     <a class="nav-back" href="/#projects">← Back to projects</a>
   </nav>
 
+  <main id="main">
   <div class="intro">
     <p class="sub">Interactive demo · the 4.0★ cliff, explored</p>
     <h1>The Stars Cliff Simulator</h1>
@@ -510,13 +522,13 @@ footer a:hover { color: var(--accent); }
     </div>
 
     <div class="reward-row">
-      <label class="input-label" for="reward-toggle">
+      <span class="input-label">
         CMS reward factor
         <span class="help-tip" title="Plans at ≥4 stars for 3+ consecutive years receive up to +0.4 stars added to their summary rating before final rounding. This is the mechanism behind sustained quality bonus payments." aria-label="Reward factor help"></span>
-      </label>
+      </span>
       <div>
         <span class="reward-val" id="reward-val">Off</span>
-        <label class="toggle">
+        <label class="toggle" aria-label="CMS reward factor">
           <input type="checkbox" id="reward-toggle">
           <span class="toggle-slider"></span>
         </label>
@@ -584,6 +596,8 @@ footer a:hover { color: var(--accent); }
       Synthetic coefficients calibrated to CMS 2025 measure weights and MA-PD star distribution. Not trained on contract-level data. Does not include case-mix (CAI) adjustment. <a href="/blog/star-rating-predictor-methodology/">Full methodology →</a>
     </p>
   </div>
+
+  </main>
 
   <footer>
     <span>© 2026 Zaher Karp</span>

@@ -152,11 +152,26 @@ body {
    into the remaining margin. Without the narrow column there
    is nowhere for sidenotes to go.
    ============================================================ */
-article {
+main {
+  display: block;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 clamp(2rem, 4vw, 5rem);
   position: relative;
+}
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ink);
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
 }
 section {
   width: 60%;              /* body column, leaves ~40% for side/margin notes */
@@ -982,7 +997,8 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 </head>
 
 <body>
-<article>
+<a class="skip-link" href="#main">Skip to main content</a>
+<main id="main">
 
   <!-- ==========================================================
        NAV: restrained, two-tier, small caps
@@ -1242,11 +1258,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
     </p>
 
     <p>
-      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
+      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
     </p>
   </section>
 
@@ -1531,7 +1547,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <circle cx="252" cy="10" r="2" fill="#111"/>
         <circle cx="263" cy="10" r="2" fill="#111"/>
       </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-cadence" class="margin-toggle"/><span class="marginnote">Writing resumed in late 2025 after a multi-year pause. The early weeks of the window are sparse by design, not by neglect; recent weeks show a steady run.</span>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-cadence" class="margin-toggle"/><span class="marginnote">Writing resumed in late 2025 after a multi-year pause. The early weeks of the window are sparse by design, not by neglect; recent weeks show a steady run.</span>
     </p>
     <!-- activity-grid:end -->
 
@@ -1540,7 +1556,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2026-04-22</span>
         <span class="title"><a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</a></span>
         <label for="mn-seirv" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-seirv" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-seirv" class="margin-toggle"/>
         <span class="marginnote">Tau-leaping is a stochastic simulation method for chemical / compartmental systems where each reaction is assumed to fire approximately Poisson-many times over a short interval. Faster than Gillespie at the cost of a small accuracy error for stiff systems.</span>
       </div>
       <p class="summary">Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.</p>
@@ -1567,7 +1583,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2026-04-05</span>
         <span class="title"><a href="/blog/star-rating-predictor-methodology/">The Stars Cliff Simulator: Methodology and Evidence</a></span>
         <label for="mn-stars-meth" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-stars-meth" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-stars-meth" class="margin-toggle"/>
         <span class="marginnote">The 4.0 star Quality Bonus Payment threshold creates a sharp non-linearity in Medicare Advantage plan economics. Crossing it is worth roughly $50M to a mid-size contract.</span>
       </div>
       <p class="summary">The statistical methodology and published literature behind the Stars Cliff Simulator, a public teaching-oriented tool focused on the 4.0 star Quality Bonus Payment threshold.</p>
@@ -1623,7 +1639,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
+        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
       </p>
 
       <!-- ==========================================================
@@ -1668,13 +1684,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
     </p>
 
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -1713,7 +1729,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
+        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
       </p>
       <p>
         A sustained research thread on primary care redesign used grounded theory for qualitative analysis of field notes and focus group transcripts, and interrupted time series analysis to measure the effect of care delivery change initiatives on clinic panel data.
@@ -1754,7 +1770,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>Client-Side Stars Rating Predictor</h3>
         <p>
-          A cut-point dashboard built at Baltimore Health Analytics for internal Stars forecasting across our client contracts. The design constraint, no member-level data leaves the analyst's machine, was a compliance requirement, not an aesthetic one.<label for="sn-client-side" class="margin-toggle sidenote-number"></label><input type="checkbox" id="sn-client-side" class="margin-toggle"/><span class="sidenote">Running the model client-side in the browser keeps PHI on the analyst's machine and sidesteps an entire class of data-transit and data-residency concerns that would otherwise need a server-side review.</span> It runs ordinal logistic regression on live measure feeds entirely in the browser, projects cut-point crossings at the contract level, and surfaces which measures are closest to their next tier for remediation planning. Source is private.
+          A cut-point dashboard built at Baltimore Health Analytics for internal Stars forecasting across our client contracts. The design constraint, no member-level data leaves the analyst's machine, was a compliance requirement, not an aesthetic one.<label for="sn-client-side" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-client-side" class="margin-toggle"/><span class="sidenote">Running the model client-side in the browser keeps PHI on the analyst's machine and sidesteps an entire class of data-transit and data-residency concerns that would otherwise need a server-side review.</span> It runs ordinal logistic regression on live measure feeds entirely in the browser, projects cut-point crossings at the contract level, and surfaces which measures are closest to their next tier for remediation planning. Source is private.
         </p>
         <p class="stack">Ordinal logistic regression &middot; cut-point projection &middot; client-side &middot; internal tool</p>
       </div>
@@ -1765,7 +1781,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
-          A public, teaching-oriented companion to the internal predictor. Single-page interactive demo built around one number, the 4.0 star QBP cliff that separates Medicare Advantage plans that qualify for Quality Bonus Payments from the 3.5 to 3.99 star "dead zone" that does not.<label for="mn-qbp" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-qbp" class="margin-toggle"/><span class="marginnote">For a mid-size MA contract, clearing 4.0 is worth roughly $50M relative to a 3.5 star rating. A tenth of a star literally changes the plan's financial structure.</span> An ordinal logistic regression calibrated to CMS 2025 weights runs in the browser; four sliders collapse the 42-measure surface down to its highest-leverage inputs, and a cut-point visualization exposes the mechanism that makes a tenth of a star worth $50 million. No data leaves the user's machine.
+          A public, teaching-oriented companion to the internal predictor. Single-page interactive demo built around one number, the 4.0 star QBP cliff that separates Medicare Advantage plans that qualify for Quality Bonus Payments from the 3.5 to 3.99 star "dead zone" that does not.<label for="mn-qbp" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-qbp" class="margin-toggle"/><span class="marginnote">For a mid-size MA contract, clearing 4.0 is worth roughly $50M relative to a 3.5 star rating. A tenth of a star literally changes the plan's financial structure.</span> An ordinal logistic regression calibrated to CMS 2025 weights runs in the browser; four sliders collapse the 42-measure surface down to its highest-leverage inputs, and a cut-point visualization exposes the mechanism that makes a tenth of a star worth $50 million. No data leaves the user's machine.
         </p>
 
         <!-- ==========================================================
@@ -1886,7 +1902,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
         <p class="links">
           <a href="/star-rating-predictor/" data-goatcounter-click="project-stars-demo" data-goatcounter-title="Stars Cliff Simulator">Live demo</a>
-          <a href="/blog/star-rating-predictor-methodology/" data-goatcounter-click="project-stars-methodology" data-goatcounter-title="Stars methodology post">Methodology post</a>
+          <a href="/blog/star-rating-predictor-methodology/" data-goatcounter-click="project-stars-methodology" data-goatcounter-title="Stars methodology post" aria-label="The Stars Cliff Simulator: Methodology and Evidence">Methodology post</a>
         </p>
         <p class="stack">Ordinal logistic regression &middot; vanilla JS &middot; no dependencies &middot; client-side</p>
       </div>
@@ -2044,7 +2060,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>ECDS Shock Index</h3>
         <p>
-          ECDS adoption introduces a distributional shift into the Stars ecosystem that most health plans are not yet modeling.<label for="mn-ecds" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-ecds" class="margin-toggle"/><span class="marginnote">ECDS, Electronic Clinical Data Systems, is the HEDIS reporting method that allows structured clinical data to supplement or replace claims-based measure reporting.</span> This repository implements the shock index methodology, quantifying the expected change in measure rate distributions when ECDS replaces legacy ED visit coding, and estimating the downstream effect on Stars cutpoint crossings at the plan level.
+          ECDS adoption introduces a distributional shift into the Stars ecosystem that most health plans are not yet modeling.<label for="mn-ecds" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-ecds" class="margin-toggle"/><span class="marginnote">ECDS, Electronic Clinical Data Systems, is the HEDIS reporting method that allows structured clinical data to supplement or replace claims-based measure reporting.</span> This repository implements the shock index methodology, quantifying the expected change in measure rate distributions when ECDS replaces legacy ED visit coding, and estimating the downstream effect on Stars cutpoint crossings at the plan level.
         </p>
         <p class="links">
           <a href="https://github.com/zaherkarp/ecds-shock-index" data-goatcounter-click="project-ecds-shock-github" data-goatcounter-title="ECDS Shock Index GitHub">GitHub</a>
@@ -2095,7 +2111,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2019</span>
         <em>Influence of environmental design on team interactions across 3 family medicine clinics</em>
         <label for="mn-herd" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-herd" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-herd" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/30913920/">PubMed</a> &middot;
           <a href="https://www.researchgate.net/publication/332030639">ResearchGate</a>
@@ -2114,7 +2130,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2019</span>
         <em>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial</em>
         <label for="mn-acadmed" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-acadmed" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-acadmed" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/31348072/">PubMed</a>
           <br>
@@ -2132,7 +2148,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2018</span>
         <em>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings</em>
         <label for="mn-acos" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-acos" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-acos" class="margin-toggle"/>
         <span class="marginnote">
           Published in the <em>International Journal of Healthcare Management</em>, 2018. First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts.
         </span>
@@ -2148,7 +2164,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2016</span>
         <em>An efficient process of gathering diverse community opinions to inform an intervention</em>
         <label for="mn-implsci" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-implsci" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-implsci" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6">Full text</a>
         </span>
@@ -2164,7 +2180,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2014</span>
         <em>Approaches and challenges to optimizing primary care teams' electronic health record usage</em>
         <label for="mn-jihi" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-jihi" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-jihi" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/25584902/">PubMed</a>
           <br>
@@ -2182,7 +2198,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2012</span>
         <em>Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings)</em>
         <label for="mn-wcel" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" id="mn-wcel" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Toggle margin note" id="mn-wcel" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://www.learntechlib.org/p/41869/">Full text</a>
         </span>
@@ -2207,7 +2223,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="speaking">
     <h2>Speaking</h2>
     <p>
-      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
+      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
     </p>
 
     <details class="speaking-list">
@@ -2565,7 +2581,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </div>
   </section>
 
-</article>
+</main>
 
 <!-- GoatCounter, privacy-respecting page-view counter, kept across
      the redesign per the per-conflict resolution. Site code: zaher-karp. -->

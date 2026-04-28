@@ -76,6 +76,19 @@ body {
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--text);
+  z-index: 100;
+  font-size: var(--size-caption);
+}
+.skip-link:focus { left: 1rem; top: 1rem; }
+
 .page {
   max-width: 640px;
   margin: 0 auto;

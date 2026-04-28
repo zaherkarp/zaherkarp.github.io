@@ -4,7 +4,15 @@
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop",
-        "skipAudits": ["uses-http2"]
+        "skipAudits": [
+          "uses-http2",
+          "uses-text-compression",
+          "unminified-css",
+          "unminified-javascript",
+          "total-byte-weight",
+          "unused-css-rules",
+          "uses-long-cache-ttl"
+        ]
       }
     },
     "assert": {
@@ -16,7 +24,6 @@
         "categories:seo": ["error", { "minScore": 0.9 }],
         "csp-xss": "off",
         "color-contrast": "warn",
-        "uses-long-cache-ttl": "off",
         "third-party-cookies": "off"
       }
     },

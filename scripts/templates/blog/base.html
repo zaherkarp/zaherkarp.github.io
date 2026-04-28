@@ -34,6 +34,7 @@
 {% block head_extra %}{% endblock %}
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to main content</a>
 <div class="page">
 
   <nav>
@@ -51,7 +52,9 @@
     </ul>
   </nav>
 
+  <main id="main">
   {% block content %}{% endblock %}
+  </main>
 
   <footer id="contact">
     <div class="footer-contact">
