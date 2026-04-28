@@ -6,8 +6,22 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 28 Apr 2026 06:13:43 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Apr 2026 17:36:01 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>The Inversion: When Developer Infrastructure Breaks Under Its Own Momentum</title>
+      <link>https://zaherkarp.com/blog/the-inversion-developer-infrastructure/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/the-inversion-developer-infrastructure/</guid>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
+      <description>Stack Overflow visits collapsed while GitHub commits surged, and the platform underneath both is degrading in real time. The productivity gains from AI coding agents are real. So is the load they put on infrastructure that wasn&#39;t designed for them.</description>
+      <category>infrastructure</category>
+      <category>ai-agents</category>
+      <category>github</category>
+      <category>developer-tools</category>
+      <category>reliability</category>
+      
+    </item>
     
     <item>
       <title>Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</title>
