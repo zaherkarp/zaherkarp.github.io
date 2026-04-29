@@ -33,7 +33,7 @@ scripts/
   build_blog.py             Blog build pipeline
   lint_blog.py              Source-side lint (runs before build in CI)
   build_resume.py           Resume build pipeline (WeasyPrint)
-  build_portfolio.py        Activity grid + citation counts
+  build_portfolio.py        Activity grid + writing list + citation counts
   requirements.txt
   fonts/                    EB Garamond variable TTFs (OFL)
   templates/
@@ -43,8 +43,10 @@ scripts/
 .github/workflows/
   build_blog.yml            Builds blog + commits output on push
   build_resume.yml          Builds resume PDF + commits on push
-  build_portfolio.yml       Refreshes activity grid + citation counts
-                            (also runs weekly on a schedule)
+  build_portfolio.yml       Refreshes activity grid, homepage writing list,
+                            and citation counts (also runs weekly on a
+                            schedule). Triggers on any blog post change so
+                            new posts auto-populate on the homepage.
 
 archive/                    Historical reference (not served)
   tufte-concept-v18.html    Design mockup
@@ -137,9 +139,13 @@ kill %1
 ## Maintenance rhythm
 
 - Write a blog post: drop `src/content/blog/<slug>.md` with frontmatter, push.
-  CI builds `/blog/<slug>/` and updates the sitemap. Manually update the 6
-  entries in `index.html`'s writing section (CLAUDE.md §Writing section
-  update rule).
+  Two CI workflows run automatically: `build_blog.yml` generates `/blog/<slug>/`
+  and updates the sitemap; `build_portfolio.yml` regenerates the activity-grid
+  sparkline and the six most recent entries in the homepage writing section
+  between the `<!-- writing-list:start --> ... <!-- writing-list:end -->`
+  markers in `index.html`. To attach an editorial margin note to the homepage
+  entry, add an optional `homepageMarginnote: "..."` field to the post's
+  frontmatter — the build wraps it in a ⊕ toggle next to the title.
 - Add a publication: add `<div class="pub-entry" data-sid="PMID:...">` to
   `index.html` and push. The portfolio workflow populates the citation count.
 - Edit the resume: change `src/content/resume.md`, push. CI regenerates

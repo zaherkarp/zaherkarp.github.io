@@ -1547,17 +1547,24 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <circle cx="252" cy="10" r="2" fill="#111"/>
         <circle cx="263" cy="10" r="2" fill="#111"/>
       </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-cadence" class="margin-toggle"/><span class="marginnote">Writing resumed in late 2025 after a multi-year pause. The early weeks of the window are sparse by design, not by neglect; recent weeks show a steady run.</span>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (7) · medicare (5) · architecture (4) · healthcare (4) · star-ratings (4) · analytics (3) · apis (2) · cms (2) · data-analysis (2) · healthcare-data (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · methodology (2) · ordinal-regression (2) · policy (2) · public-health (2) · reliability (2)</span>
     </p>
     <!-- activity-grid:end -->
+
+    <!-- writing-list:start -->
+    <div class="entry">
+      <div>
+        <span class="date">2026-04-28</span>
+        <span class="title"><a href="/blog/the-inversion-developer-infrastructure/">The Inversion: When Developer Infrastructure Breaks Under Its Own Momentum</a></span>
+      </div>
+      <p class="summary">Stack Overflow visits collapsed while GitHub commits surged, and the platform underneath both is degrading in real time. The productivity gains from AI coding agents are real. So is the load they put on infrastructure that wasn't designed for them.</p>
+    </div>
 
     <div class="entry">
       <div>
         <span class="date">2026-04-22</span>
         <span class="title"><a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</a></span>
-        <label for="mn-seirv" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-seirv" class="margin-toggle"/>
-        <span class="marginnote">Tau-leaping is a stochastic simulation method for chemical / compartmental systems where each reaction is assumed to fire approximately Poisson-many times over a short interval. Faster than Gillespie at the cost of a small accuracy error for stiff systems.</span>
+        <label for="mn-w-two-states-one-pathogen" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-w-two-states-one-pathogen" class="margin-toggle"/><span class="marginnote">Tau-leaping is a stochastic simulation method for chemical / compartmental systems where each reaction is assumed to fire approximately Poisson-many times over a short interval. Faster than Gillespie at the cost of a small accuracy error for stiff systems.</span>
       </div>
       <p class="summary">Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.</p>
     </div>
@@ -1567,7 +1574,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2026-04-19</span>
         <span class="title"><a href="/blog/building-my-site/">The Slowest Way to Learn Web Design Is the Only Way That Worked for Me</a></span>
       </div>
-      <p class="summary">A personal history of building and rebuilding a website across three eras, and what the increasing friction of each step actually taught me.</p>
+      <p class="summary">A personal history of building and rebuilding a website across three eras, from Squarespace drag-and-drop to a pure HTML and CSS rebuild, and what the increasing friction of each step actually taught me.</p>
     </div>
 
     <div class="entry">
@@ -1575,35 +1582,26 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="date">2026-04-12</span>
         <span class="title"><a href="/blog/star-rating-demo-methodology/">How the Stars Cliff Simulator Works</a></span>
       </div>
-      <p class="summary">A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1 to 5 star outcome, and how P(clearing 4.0 stars) falls out of the model for free.</p>
+      <p class="summary">A short explainer for the Stars Cliff Simulator: why ordinal logistic regression is the right tool for a 1–5 star outcome, how P(clearing 4.0★) falls out of the model for free, and what the distance-to-cliff readout actually measures.</p>
     </div>
 
     <div class="entry">
       <div>
         <span class="date">2026-04-05</span>
-        <span class="title"><a href="/blog/star-rating-predictor-methodology/">The Stars Cliff Simulator: Methodology and Evidence</a></span>
-        <label for="mn-stars-meth" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-stars-meth" class="margin-toggle"/>
-        <span class="marginnote">The 4.0 star Quality Bonus Payment threshold creates a sharp non-linearity in Medicare Advantage plan economics. Crossing it is worth roughly $50M to a mid-size contract.</span>
+        <span class="title"><a href="/blog/star-rating-predictor-methodology/">The Stars Cliff Simulator: Methodology &amp; Evidence</a></span>
+        <label for="mn-w-star-rating-predictor-methodology" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-w-star-rating-predictor-methodology" class="margin-toggle"/><span class="marginnote">The 4.0 star Quality Bonus Payment threshold creates a sharp non-linearity in Medicare Advantage plan economics. Crossing it is worth roughly $50M to a mid-size contract.</span>
       </div>
-      <p class="summary">The statistical methodology and published literature behind the Stars Cliff Simulator, a public teaching-oriented tool focused on the 4.0 star Quality Bonus Payment threshold.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-03-29</span>
-        <span class="title"><a href="/blog/hedis-measure-etl-patterns/">HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates</a></span>
-      </div>
-      <p class="summary">A practitioner's walkthrough of how HEDIS measure pipelines actually work: eligible population, numerator matching, exclusions, supplemental data, and rate calculation.</p>
+      <p class="summary">The statistical methodology and published literature behind the Stars Cliff Simulator, a public, teaching-oriented ordinal logistic regression tool focused on the 4.0★ Quality Bonus Payment threshold.</p>
     </div>
 
     <div class="entry">
       <div>
         <span class="date">2026-03-22</span>
-        <span class="title"><a href="/blog/app-design-types/">Two Ways to Build a Web App (and What You're Actually Choosing)</a></span>
+        <span class="title"><a href="/blog/app-design-types/">Two Ways to Build a Web App (and What You’re Actually Choosing)</a></span>
       </div>
-      <p class="summary">Most applications boil down to server-rendered or API-driven designs. The difference isn't just technical. It shapes how your system evolves.</p>
+      <p class="summary">Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves.</p>
     </div>
+    <!-- writing-list:end -->
 
     <p><a href="/blog/">View all writing</a></p>
   </section>
@@ -2184,7 +2182,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/25584902/">PubMed</a>
           <br>
-          <span class="pub-citations">23 citations</span>
+          <span class="pub-citations">24 citations</span>
         </span>
       </p>
       <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">

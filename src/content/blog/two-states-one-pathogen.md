@@ -3,6 +3,7 @@ title: "Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator"
 description: "Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run."
 publishDate: 2026-04-22
 tags: ["epidemiology", "stochastic-modeling", "seirv", "tau-leaping", "measles", "interactive"]
+homepageMarginnote: "Tau-leaping is a stochastic simulation method for chemical / compartmental systems where each reaction is assumed to fire approximately Poisson-many times over a short interval. Faster than Gillespie at the cost of a small accuracy error for stiff systems."
 ---
 
 ## TL;DR

@@ -1,10 +1,16 @@
 name: Build portfolio
 
-# Regenerates activity grid + citation counts in index.html.
+# Regenerates three pieces of build-time content in index.html:
+#   - the 24-week activity-grid sparkline
+#   - the homepage Writing section's six most recent post entries
+#     (between <!-- writing-list:start --> ... <!-- writing-list:end -->)
+#   - Semantic Scholar citation counts on each pub-entry
 #
 # Triggers:
 #   - any push that touches index.html, the build script, or a blog post
-#     (the activity grid depends on post publishDates)
+#     (the activity grid + writing list depend on post frontmatter, so a
+#     new post under src/content/blog/ auto-populates the homepage on the
+#     same CI run that publishes it via build_blog.yml)
 #   - weekly on Sundays to refresh citation counts even without code changes
 #   - manual dispatch for ad-hoc rebuilds
 
@@ -40,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Regenerate activity grid + citation counts
+      - name: Regenerate activity grid, writing list, and citation counts
         run: python scripts/build_portfolio.py
 
       - name: Commit changes (if any)
@@ -49,7 +55,7 @@ jobs:
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add index.html
-            git commit -m "build: regenerate activity grid + citation counts"
+            git commit -m "build: regenerate activity grid, writing list, citations"
             git push
           else
             echo "No changes to index.html."

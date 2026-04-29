@@ -2,12 +2,18 @@
 """
 build_portfolio.py
 
-Injects two pieces of build-time content into index.html, between marker
+Injects three pieces of build-time content into index.html, between marker
 comments:
 
   <!-- activity-grid:start --> ... <!-- activity-grid:end -->
-    52-week dot grid showing recent posting cadence. Sourced from the blog
-    frontmatter (publishDate, draft). No external requests.
+    24-week dot sparkline showing recent posting cadence. Sourced from the
+    blog frontmatter (publishDate, draft). No external requests.
+
+  <!-- writing-list:start --> ... <!-- writing-list:end -->
+    The six most recent non-draft posts, rendered as the homepage Writing
+    section's entries. Sourced from the same blog frontmatter; the
+    optional `homepageMarginnote` field renders an inline margin note
+    next to the entry title.
 
   <div class="pub-entry" data-sid="..."> ... </div>
     Semantic Scholar citation counts. Fetched per `data-sid` attribute;
@@ -22,12 +28,14 @@ trigger.
 
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 import sys
 import time
 import urllib.request
 import urllib.error
+from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -36,6 +44,7 @@ import frontmatter
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
+WRITING_LIST_LIMIT = 6
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
 # Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
 # grid. The pre-2025 journalism pieces live in the blog but aren't part
@@ -45,14 +54,25 @@ SPARKLINE_WEEKS = 24
 SPARKLINE_X0 = 10        # left x-coordinate of the first dot in the SVG
 SPARKLINE_DX = 11        # spacing between dots; matches the demo's geometry
 PRE_BLOG_CUTOFF = date(2025, 1, 1)
+# Cadence-marginnote tag list: tags appearing in at least this many cadence-
+# window posts qualify for the frequency rollup. Single-occurrence tags are
+# filtered out so the long tail of one-offs doesn't drown the multi-post
+# signal. Fallback: if fewer than CADENCE_TAGS_MIN_FLOOR tags qualify, the
+# top CADENCE_TAGS_MIN_FLOOR by frequency are shown regardless.
+CADENCE_TAG_MIN_COUNT = 2
+CADENCE_TAGS_MIN_FLOOR = 8
 S2_TIMEOUT = 10  # seconds
 S2_URL = "https://api.semanticscholar.org/graph/v1/paper/{sid}?fields=citationCount"
 
 
 # ─── activity grid ────────────────────────────────────────────────────────
 
-def load_posts() -> list[tuple[date, str, str]]:
-    posts: list[tuple[date, str, str]] = []
+def _esc(s: str) -> str:
+    return html_lib.escape(s, quote=False)
+
+
+def load_posts() -> list[dict]:
+    posts: list[dict] = []
     for p in POSTS_DIR.glob("*.md"):
         if p.stem.startswith("_"):
             continue
@@ -66,7 +86,16 @@ def load_posts() -> list[tuple[date, str, str]]:
             d = d.date()
         if not isinstance(d, date):
             continue
-        posts.append((d, fm.metadata.get("title", ""), p.stem))
+        raw_tags = fm.metadata.get("tags") or []
+        tags = [str(t).strip().lower() for t in raw_tags if str(t).strip()]
+        posts.append({
+            "date": d,
+            "title": fm.metadata.get("title", ""),
+            "description": fm.metadata.get("description", ""),
+            "slug": p.stem,
+            "marginnote": fm.metadata.get("homepageMarginnote", ""),
+            "tags": tags,
+        })
     return posts
 
 
@@ -75,17 +104,41 @@ def last_sunday(today: date) -> date:
     return today if today.weekday() == 6 else today - timedelta(days=today.weekday() + 1)
 
 
-def build_activity_grid(posts: list[tuple[date, str, str]]) -> str:
+def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
+    """Render the cadence ⊕ margin note as a tag frequency rollup.
+
+    Aggregates tags across the cadence window (post-2025), keeps tags
+    appearing in ≥ CADENCE_TAG_MIN_COUNT posts, and falls back to the
+    top CADENCE_TAGS_MIN_FLOOR by count if too few qualify. Sorted by
+    count desc, then alphabetic. Rendered as compact `tag (n)` pairs
+    separated by middle dots.
+    """
+    counter: Counter[str] = Counter()
+    for p in cadence_posts:
+        for t in p["tags"]:
+            counter[t] += 1
+    if not counter:
+        return ""
+
+    qualifying = [(t, n) for t, n in counter.items() if n >= CADENCE_TAG_MIN_COUNT]
+    if len(qualifying) < CADENCE_TAGS_MIN_FLOOR:
+        qualifying = counter.most_common(CADENCE_TAGS_MIN_FLOOR)
+    qualifying.sort(key=lambda kv: (-kv[1], kv[0]))
+
+    pairs = " · ".join(f"{_esc(tag)} ({n})" for tag, n in qualifying)
+    return pairs
+
+
+def build_activity_grid(posts: list[dict]) -> str:
     """Emit the 24-week inline cadence sparkline.
 
     Tufte's last-point-label pattern: a small numeric annotation at the
     end of the sparkline gives the trailing total so the chart is self-
-    legending. The marginnote text is fixed copy describing the post-
-    hiatus return; treating it as content keeps the script's only job
-    the visual update.
+    legending. The ⊕ margin note expands into a tag frequency rollup
+    (multi-post tags within the cadence window).
     """
     anchor = last_sunday(date.today())
-    cadence_posts = [p for p in posts if p[0] >= PRE_BLOG_CUTOFF]
+    cadence_posts = [p for p in posts if p["date"] >= PRE_BLOG_CUTOFF]
     if not cadence_posts:
         return ""
 
@@ -94,7 +147,7 @@ def build_activity_grid(posts: list[tuple[date, str, str]]) -> str:
     for i in range(SPARKLINE_WEEKS - 1, -1, -1):
         week_end = anchor - timedelta(weeks=i)
         week_start = week_end - timedelta(days=6)
-        n = sum(1 for p in posts if week_start <= p[0] <= week_end and p[0] >= PRE_BLOG_CUTOFF)
+        n = sum(1 for p in posts if week_start <= p["date"] <= week_end and p["date"] >= PRE_BLOG_CUTOFF)
         cadence_total_in_window += n
         cx = SPARKLINE_X0 + (SPARKLINE_WEEKS - 1 - i) * SPARKLINE_DX
         # Filled = publication week, empty = silent week. The hardcoded
@@ -105,6 +158,10 @@ def build_activity_grid(posts: list[tuple[date, str, str]]) -> str:
         dots.append(f'        <circle cx="{cx}" cy="10" r="2" fill="{fill}"/>')
 
     label = "post" if cadence_total_in_window == 1 else "posts"
+    tag_rollup = build_cadence_marginnote(cadence_posts)
+    marginnote_html = (
+        f'<span class="marginnote">{tag_rollup}</span>' if tag_rollup else ""
+    )
     return (
         '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
         '      24 weeks of activity\n'
@@ -117,11 +174,62 @@ def build_activity_grid(posts: list[tuple[date, str, str]]) -> str:
         f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>'
         '<label for="mn-cadence" class="margin-toggle">&#8853;</label>'
         '<input type="checkbox" id="mn-cadence" class="margin-toggle"/>'
-        '<span class="marginnote">Writing resumed in late 2025 after a multi-year pause. '
-        'The early weeks of the window are sparse by design, not by neglect; recent weeks '
-        'show a steady run.</span>\n'
+        f'{marginnote_html}\n'
         '    </p>'
     )
+
+
+# ─── homepage writing list ────────────────────────────────────────────────
+
+# Em-dash policy (CLAUDE.md): the homepage must be em-dash-clean, but
+# blog post markdown sources are deliberately not swept (preserves
+# historical voice). When the writing list pulls a frontmatter
+# description into the homepage, strip em-dashes back to commas so the
+# generated chrome stays compliant. Source posts keep their em-dashes
+# in /blog/<slug>/.
+EM_DASH_RE = re.compile(r"\s*—\s*")
+
+
+def _strip_em_dashes(s: str) -> str:
+    return EM_DASH_RE.sub(", ", s)
+
+
+def build_writing_list(posts: list[dict]) -> str:
+    """Emit the homepage Writing section's six most recent post entries.
+
+    Sorted by publishDate desc. Drafts and `_`-prefixed sources are
+    already filtered out in load_posts(). Optional `homepageMarginnote`
+    frontmatter renders an inline ⊕ margin note next to the title; the
+    toggle id is `mn-w-<slug>` so it stays unique across entries.
+    """
+    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_LIST_LIMIT]
+    blocks: list[str] = []
+    for p in recent:
+        date_str = p["date"].isoformat()
+        title = _esc(_strip_em_dashes(p["title"]))
+        desc = _esc(_strip_em_dashes(p["description"]))
+        slug = p["slug"]
+        marginnote = _strip_em_dashes((p["marginnote"] or "").strip())
+        if marginnote:
+            mn_id = f"mn-w-{slug}"
+            margin_html = (
+                f'\n        <label for="{mn_id}" class="margin-toggle">&#8853;</label>'
+                f'<input type="checkbox" aria-label="Toggle margin note" id="{mn_id}" class="margin-toggle"/>'
+                f'<span class="marginnote">{_esc(marginnote)}</span>'
+            )
+        else:
+            margin_html = ""
+        blocks.append(
+            '    <div class="entry">\n'
+            '      <div>\n'
+            f'        <span class="date">{date_str}</span>\n'
+            f'        <span class="title"><a href="/blog/{slug}/">{title}</a></span>'
+            f'{margin_html}\n'
+            '      </div>\n'
+            f'      <p class="summary">{desc}</p>\n'
+            '    </div>'
+        )
+    return "\n\n".join(blocks)
 
 
 # ─── Semantic Scholar citation counts ─────────────────────────────────────
@@ -222,6 +330,10 @@ def main() -> int:
     grid_html = build_activity_grid(posts)
     text = replace_between(text, "activity-grid", grid_html)
     print("activity grid injected")
+
+    writing_html = build_writing_list(posts)
+    text = replace_between(text, "writing-list", writing_html)
+    print(f"writing list injected ({min(len(posts), WRITING_LIST_LIMIT)} entries)")
 
     text, ok, fail = inject_citations(text)
     print(f"citation counts: {ok} updated, {fail} skipped (fetch failed)")

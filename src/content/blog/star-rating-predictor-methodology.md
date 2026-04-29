@@ -3,6 +3,7 @@ title: "The Stars Cliff Simulator: Methodology & Evidence"
 description: "The statistical methodology and published literature behind the Stars Cliff Simulator — a public, teaching-oriented ordinal logistic regression tool focused on the 4.0★ Quality Bonus Payment threshold."
 publishDate: 2026-04-05
 tags: ["medicare", "star-ratings", "ordinal-regression", "methodology", "interactive"]
+homepageMarginnote: "The 4.0 star Quality Bonus Payment threshold creates a sharp non-linearity in Medicare Advantage plan economics. Crossing it is worth roughly $50M to a mid-size contract."
 ---
 
 ## TL;DR for Executives
