@@ -1547,11 +1547,19 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <circle cx="252" cy="10" r="2" fill="#111"/>
         <circle cx="263" cy="10" r="2" fill="#111"/>
       </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (7) · medicare (5) · architecture (4) · healthcare (4) · star-ratings (4) · analytics (3) · apis (2) · cms (2) · data-analysis (2) · healthcare-data (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · methodology (2) · ordinal-regression (2) · policy (2) · public-health (2) · reliability (2)</span>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">23 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (7) · medicare (5) · architecture (4) · healthcare (4) · star-ratings (4) · analytics (3) · apis (2) · cms (2) · data-analysis (2) · healthcare-data (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · methodology (2) · ordinal-regression (2) · policy (2) · public-health (2) · reliability (2) · systems (2)</span>
     </p>
     <!-- activity-grid:end -->
 
     <!-- writing-list:start -->
+    <div class="entry">
+      <div>
+        <span class="date">2026-04-30</span>
+        <span class="title"><a href="/blog/jemalloc-healthcare/">jemalloc and the Healthcare Allocation Pattern</a></span>
+      </div>
+      <p class="summary">Healthcare data systems have allocation patterns that punish general-purpose allocators. jemalloc's arena isolation, thread-local caches, and size-class slabs map directly to HEDIS pipelines, claims adjudication, and variable-width ETL.</p>
+    </div>
+
     <div class="entry">
       <div>
         <span class="date">2026-04-28</span>
@@ -1592,14 +1600,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <label for="mn-w-star-rating-predictor-methodology" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-w-star-rating-predictor-methodology" class="margin-toggle"/><span class="marginnote">The 4.0 star Quality Bonus Payment threshold creates a sharp non-linearity in Medicare Advantage plan economics. Crossing it is worth roughly $50M to a mid-size contract.</span>
       </div>
       <p class="summary">The statistical methodology and published literature behind the Stars Cliff Simulator, a public, teaching-oriented ordinal logistic regression tool focused on the 4.0★ Quality Bonus Payment threshold.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-03-22</span>
-        <span class="title"><a href="/blog/app-design-types/">Two Ways to Build a Web App (and What You’re Actually Choosing)</a></span>
-      </div>
-      <p class="summary">Most applications boil down to server-rendered or API-driven designs. The difference isn’t just technical, it shapes how your system evolves.</p>
     </div>
     <!-- writing-list:end -->
 
