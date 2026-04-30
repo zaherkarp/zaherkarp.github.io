@@ -8,7 +8,7 @@ Data platform leader building production analytics systems in regulated healthca
 
 ## Experience
 
-**Baltimore Health Analytics** | Manager of Data Science & Engineering
+**Baltimore Health Analytics** | Manager of Data Science & Engineering (promoted from Lead Data Engineer)
 Nov 2025 – Present
 *MariaDB, Python, JavaScript, Ruby on Rails, Docker*
 
