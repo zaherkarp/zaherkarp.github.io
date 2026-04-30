@@ -17,7 +17,6 @@ Under glibc malloc, the long-lived denominator and the short-lived transient gar
 <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two-panel diagram. Top panel shows a single heap bar with long-lived black blocks and short-lived gray blocks interleaved, with white gaps after the gray blocks are freed, labeled fragmentation. Bottom panel shows two separate arena bars: Arena A packed with black blocks labeled stable no fragmentation, and Arena B with gray blocks labeled churn zone cleanly reclaimable." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
   <text x="20" y="20" font-size="11" letter-spacing="1.4" fill="#6a6a6a">WITHOUT ARENA ISOLATION (GLIBC DEFAULT)</text>
   <text x="20" y="38" font-size="13" font-style="italic" fill="#6a6a6a">Single heap. Long-lived and short-lived data interleave.</text>
-
   <rect x="20" y="56" width="680" height="36" fill="none" stroke="#d0d0c8" stroke-width="1"/>
   <rect x="22" y="58" width="60"  height="32" fill="#111"/>
   <rect x="86" y="58" width="42"  height="32" fill="#6a6a6a"/>
@@ -30,7 +29,6 @@ Under glibc malloc, the long-lived denominator and the short-lived transient gar
   <rect x="490" y="58" width="76" height="32" fill="#111"/>
   <rect x="570" y="58" width="50" height="32" fill="#6a6a6a"/>
   <rect x="624" y="58" width="74" height="32" fill="#111"/>
-
   <rect x="20" y="108" width="680" height="36" fill="none" stroke="#d0d0c8" stroke-width="1"/>
   <rect x="22" y="110" width="60" height="32" fill="#111"/>
   <rect x="132" y="110" width="80" height="32" fill="#111"/>
@@ -39,16 +37,12 @@ Under glibc malloc, the long-lived denominator and the short-lived transient gar
   <rect x="490" y="110" width="76" height="32" fill="#111"/>
   <rect x="624" y="110" width="74" height="32" fill="#111"/>
   <text x="20" y="160" font-size="11" font-style="italic" fill="#7a0000">After free: fragmentation. Resident set cannot shrink.</text>
-
   <line x1="20" y1="180" x2="700" y2="180" stroke="#d0d0c8" stroke-width="1"/>
-
   <text x="20" y="208" font-size="11" letter-spacing="1.4" fill="#6a6a6a">WITH ARENA ISOLATION (JEMALLOC)</text>
   <text x="20" y="226" font-size="13" font-style="italic" fill="#6a6a6a">Two arenas. Lifetimes do not interleave.</text>
-
   <text x="20" y="252" font-size="10" letter-spacing="1.2" fill="#6a6a6a">ARENA A · DENOMINATOR (STABLE, NO FRAGMENTATION)</text>
   <rect x="20" y="260" width="680" height="28" fill="none" stroke="#d0d0c8" stroke-width="1"/>
   <rect x="22" y="262" width="676" height="24" fill="#111"/>
-
   <text x="20" y="312" font-size="10" letter-spacing="1.2" fill="#6a6a6a">ARENA B · MEASURE CHURN (CLEANLY RECLAIMABLE)</text>
   <rect x="20" y="320" width="680" height="28" fill="none" stroke="#d0d0c8" stroke-width="1"/>
   <rect x="22" y="322" width="676" height="24" fill="#6a6a6a"/>
@@ -65,21 +59,16 @@ jemalloc's tcache[^tcache] sidesteps this. Each thread holds its own cache of re
 <figure>
 <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three threads each with their own tcache box on the left, each containing several cached allocation squares. A fast-path arrow with no lock label points from each thread to its tcache. Slow rare arrows from each tcache point to a single shared arena box on the right labeled mutex protected, with the annotation only on fill or flush." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
   <text x="20" y="20" font-size="11" letter-spacing="1.4" fill="#6a6a6a">TCACHE FAST PATH UNDER CONCURRENCY</text>
-
   <text x="20" y="76" font-size="13" fill="#111">Thread 1</text>
   <text x="20" y="178" font-size="13" fill="#111">Thread 2</text>
   <text x="20" y="280" font-size="13" fill="#111">Thread 3</text>
-
   <text x="100" y="60" font-size="10" font-style="italic" fill="#7a0000">fast path: no lock</text>
   <line x1="80" y1="68" x2="180" y2="68" stroke="#7a0000" stroke-width="1.2"/>
   <polygon points="180,68 174,65 174,71" fill="#7a0000"/>
-
   <line x1="80" y1="170" x2="180" y2="170" stroke="#111" stroke-width="1"/>
   <polygon points="180,170 174,167 174,173" fill="#111"/>
-
   <line x1="80" y1="272" x2="180" y2="272" stroke="#111" stroke-width="1"/>
   <polygon points="180,272 174,269 174,275" fill="#111"/>
-
   <rect x="180" y="50" width="180" height="44" fill="none" stroke="#111" stroke-width="1"/>
   <text x="190" y="44" font-size="11" letter-spacing="1.2" fill="#6a6a6a">TCACHE</text>
   <rect x="190" y="60" width="20" height="24" fill="#111"/>
@@ -88,7 +77,6 @@ jemalloc's tcache[^tcache] sidesteps this. Each thread holds its own cache of re
   <rect x="268" y="60" width="20" height="24" fill="#6a6a6a"/>
   <rect x="294" y="60" width="20" height="24" fill="#111"/>
   <rect x="320" y="60" width="20" height="24" fill="#6a6a6a"/>
-
   <rect x="180" y="152" width="180" height="44" fill="none" stroke="#111" stroke-width="1"/>
   <text x="190" y="146" font-size="11" letter-spacing="1.2" fill="#6a6a6a">TCACHE</text>
   <rect x="190" y="162" width="20" height="24" fill="#6a6a6a"/>
@@ -96,7 +84,6 @@ jemalloc's tcache[^tcache] sidesteps this. Each thread holds its own cache of re
   <rect x="242" y="162" width="20" height="24" fill="#6a6a6a"/>
   <rect x="268" y="162" width="20" height="24" fill="#111"/>
   <rect x="294" y="162" width="20" height="24" fill="#6a6a6a"/>
-
   <rect x="180" y="254" width="180" height="44" fill="none" stroke="#111" stroke-width="1"/>
   <text x="190" y="248" font-size="11" letter-spacing="1.2" fill="#6a6a6a">TCACHE</text>
   <rect x="190" y="264" width="20" height="24" fill="#111"/>
@@ -104,13 +91,11 @@ jemalloc's tcache[^tcache] sidesteps this. Each thread holds its own cache of re
   <rect x="242" y="264" width="20" height="24" fill="#111"/>
   <rect x="268" y="264" width="20" height="24" fill="#6a6a6a"/>
   <rect x="294" y="264" width="20" height="24" fill="#111"/>
-
   <line x1="360" y1="72" x2="540" y2="170" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,3"/>
   <line x1="360" y1="174" x2="540" y2="174" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,3"/>
   <line x1="360" y1="276" x2="540" y2="178" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,3"/>
   <text x="395" y="124" font-size="10" font-style="italic" fill="#6a6a6a">rare: only on fill / flush</text>
   <text x="395" y="232" font-size="10" font-style="italic" fill="#6a6a6a">rare: only on fill / flush</text>
-
   <rect x="540" y="120" width="160" height="100" fill="none" stroke="#111" stroke-width="1"/>
   <text x="550" y="142" font-size="11" letter-spacing="1.2" fill="#6a6a6a">SHARED ARENA</text>
   <text x="550" y="162" font-size="11" fill="#111">mutex protected</text>

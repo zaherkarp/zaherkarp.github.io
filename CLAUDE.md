@@ -610,7 +610,7 @@ GitHub Action: .github/workflows/build_blog.yml
   Requires: Settings → Actions → Workflow permissions → Read and write.
 
 Lint step — scripts/lint_blog.py:
-  Enforces three storage-side rules against src/content/blog/*.md
+  Enforces four storage-side rules against src/content/blog/*.md
   (skipping drafts and `_`-prefixed files). Runs before build_blog.py
   in CI; the build fails loud if the lint fails.
   Checks:
@@ -621,6 +621,9 @@ Lint step — scripts/lint_blog.py:
     3. A blockquote line starting with a Mermaid keyword
        (`> flowchart LR`, `> graph TD`, etc.) — Mermaid never sees it;
        arrows escape to `--&gt;`.
+    4. A blank line inside an `<svg>` element — markdown-it ends the
+       HTML block at the blank line and wraps the rest of the SVG
+       children in `<p>` tags; the chart breaks.
   If the linter false-positives on a legitimate construct, fix the
   post — do not weaken the linter.
 
@@ -746,6 +749,9 @@ substantial push.
 
 - [ ] `python scripts/lint_blog.py` is clean (if blog sources changed)
 - [ ] `python scripts/build_blog.py` runs without warnings
+- [ ] No SVG mangling in built blog output:
+      `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/`
+      returns nothing (catches a blank-line-inside-`<svg>` slip-through)
 - [ ] All internal anchor links resolve
 - [ ] All external links open correctly
 - [ ] Light + dark mode render correctly in Chrome and Safari

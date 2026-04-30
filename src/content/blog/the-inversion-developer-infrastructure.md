@@ -19,7 +19,6 @@ The chart below is the centerpiece. Four small panels, one figure, same x-axis o
 
 <figure>
 <svg viewBox="0 0 720 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four-panel chart from 2019 to 2026: Stack Overflow visits collapsing from 110 million to 25 million per month; GitHub commits rising from 800 million to roughly a billion per month; GitHub pull-request year-over-year growth climbing from 12 percent to 23 percent; GitHub uptime degrading from 99.8 percent to 90.2 percent." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
-
   <text x="20" y="18" font-size="9" letter-spacing="1.4" fill="#6a6a6a">STACK OVERFLOW VISITS — MILLIONS / MONTH</text>
   <line x1="70" y1="60" x2="70" y2="200" stroke="#d0d0c8" stroke-width="0.6"/>
   <line x1="70" y1="200" x2="320" y2="200" stroke="#d0d0c8" stroke-width="0.6"/>
@@ -32,7 +31,6 @@ The chart below is the centerpiece. Four small panels, one figure, same x-axis o
   <text x="326" y="174" font-size="9" fill="#7a0000">25M</text>
   <text x="70" y="215" font-size="8" fill="#6a6a6a">2019</text>
   <text x="320" y="215" text-anchor="end" font-size="8" fill="#6a6a6a">2026</text>
-
   <text x="380" y="18" font-size="9" letter-spacing="1.4" fill="#6a6a6a">GITHUB COMMITS — MILLIONS / MONTH</text>
   <line x1="430" y1="60" x2="430" y2="200" stroke="#d0d0c8" stroke-width="0.6"/>
   <line x1="430" y1="200" x2="680" y2="200" stroke="#d0d0c8" stroke-width="0.6"/>
@@ -45,7 +43,6 @@ The chart below is the centerpiece. Four small panels, one figure, same x-axis o
   <text x="686" y="86" font-size="9" fill="#6a6a6a">~1B</text>
   <text x="430" y="215" font-size="8" fill="#6a6a6a">2019</text>
   <text x="680" y="215" text-anchor="end" font-size="8" fill="#6a6a6a">2026</text>
-
   <text x="20" y="238" font-size="9" letter-spacing="1.4" fill="#6a6a6a">GITHUB PULL REQUESTS — YoY GROWTH, %</text>
   <line x1="70" y1="280" x2="70" y2="420" stroke="#d0d0c8" stroke-width="0.6"/>
   <line x1="70" y1="420" x2="320" y2="420" stroke="#d0d0c8" stroke-width="0.6"/>
@@ -58,7 +55,6 @@ The chart below is the centerpiece. Four small panels, one figure, same x-axis o
   <text x="326" y="294" font-size="9" fill="#6a6a6a">23%</text>
   <text x="70" y="435" font-size="8" fill="#6a6a6a">2019</text>
   <text x="320" y="435" text-anchor="end" font-size="8" fill="#6a6a6a">2026</text>
-
   <text x="380" y="238" font-size="9" letter-spacing="1.4" fill="#6a6a6a">GITHUB UPTIME — %, 90-DAY ROLLING</text>
   <line x1="430" y1="280" x2="430" y2="420" stroke="#d0d0c8" stroke-width="0.6"/>
   <line x1="430" y1="420" x2="680" y2="420" stroke="#d0d0c8" stroke-width="0.6"/>

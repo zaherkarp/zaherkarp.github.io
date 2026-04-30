@@ -2,8 +2,8 @@
 """
 lint_blog.py
 
-Source-side checks for src/content/blog/*.md that catch the three
-storage-level mistakes documented in CLAUDE.md §Blog pipeline:
+Source-side checks for src/content/blog/*.md that catch storage-level
+mistakes documented in CLAUDE.md §Blog pipeline:
 
   1. HTML comments (`<!-- ... -->`) in a post that will ship
      (`draft: false`, no `_` prefix). Comments render as visible
@@ -15,6 +15,10 @@ storage-level mistakes documented in CLAUDE.md §Blog pipeline:
      (`> flowchart LR`, `> graph TD`, etc.). Markdown renders this
      as prose with literal `--&gt;` arrows; Mermaid never sees it.
      Use a fenced ```mermaid block instead.
+  4. A blank line inside an `<svg>` element. markdown-it terminates
+     the HTML block at the blank line and re-parses the rest of the
+     SVG as markdown, wrapping `<text>`/`<line>`/`<polyline>`/etc. in
+     `<p>` tags. The browser drops or mangles the chart.
 
 Runs in CI (.github/workflows/build_blog.yml) before the build step,
 and locally via `python scripts/lint_blog.py`.
@@ -65,6 +69,8 @@ BLOCKQUOTE_MERMAID_RE = re.compile(
 
 FENCE_RE = re.compile(r"^```", re.MULTILINE)
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+SVG_OPEN_RE = re.compile(r"<svg[\s>]", re.IGNORECASE)
+SVG_CLOSE_RE = re.compile(r"</svg>", re.IGNORECASE)
 
 
 def split_fenced(text: str) -> list[tuple[str, str, int]]:
@@ -175,6 +181,31 @@ def check_post(path: Path) -> list[str]:
                 f"literal `--&gt;` arrows; Mermaid never sees it. "
                 f"Use a fenced ```mermaid block."
             )
+
+    # 3. Blank line inside an <svg>. markdown-it terminates the HTML
+    #    block at the blank line and wraps subsequent SVG children
+    #    (<text>, <line>, <polyline>, ...) in <p> tags, which the
+    #    browser drops. Prose-only so a fenced ```html example with
+    #    a multi-line <svg> stays untouched.
+    for kind, chunk, start in split_fenced(text):
+        if kind != "prose":
+            continue
+        depth = 0
+        offset = start
+        for line_text in chunk.split("\n"):
+            if depth > 0 and line_text.strip() == "":
+                violations.append(
+                    f"{path.name}:{line_of(text, offset)}: blank line "
+                    f"inside <svg>. markdown-it ends the HTML block at "
+                    f"the blank line and wraps the rest of the SVG "
+                    f"children in <p> tags; the chart breaks. Remove "
+                    f"the blank line."
+                )
+            depth += len(SVG_OPEN_RE.findall(line_text))
+            depth -= len(SVG_CLOSE_RE.findall(line_text))
+            if depth < 0:
+                depth = 0
+            offset += len(line_text) + 1
 
     return violations
 
