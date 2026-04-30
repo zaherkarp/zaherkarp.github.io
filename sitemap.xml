@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://zaherkarp.com/</loc><lastmod>2026-04-30T14:00:32-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/</loc><lastmod>2026-04-28T00:00:00Z</lastmod></url>
+  <url><loc>https://zaherkarp.com/</loc><lastmod>2026-04-30T14:01:47-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/</loc><lastmod>2026-04-30T00:00:00Z</lastmod></url>
   <url><loc>https://zaherkarp.com/star-rating-predictor/</loc><lastmod>2026-04-28T00:32:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/life-in-weeks/</loc><lastmod>2026-04-25T18:53:46-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/skillsprout/</loc><lastmod>2026-04-25T18:53:46-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/epidemic-simulation/</loc><lastmod>2026-04-25T18:53:46-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/jemalloc-healthcare/</loc><lastmod>2026-04-30T14:01:47-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/the-inversion-developer-infrastructure/</loc><lastmod>2026-04-28T16:45:08-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/two-states-one-pathogen/</loc><lastmod>2026-04-29T18:57:55-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/building-my-site/</loc><lastmod>2026-04-20T21:58:36-05:00</lastmod></url>
