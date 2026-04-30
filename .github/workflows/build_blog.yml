@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0  # full history so build_blog.py can read each post's actual last-modified commit date
 
       - name: Set up Python
         uses: actions/setup-python@v5

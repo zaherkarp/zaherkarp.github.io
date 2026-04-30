@@ -4,15 +4,7 @@
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop",
-        "skipAudits": [
-          "uses-http2",
-          "uses-text-compression",
-          "unminified-css",
-          "unminified-javascript",
-          "total-byte-weight",
-          "unused-css-rules",
-          "uses-long-cache-ttl"
-        ]
+        "skipAudits": ["uses-http2"]
       }
     },
     "assert": {
@@ -24,7 +16,14 @@
         "categories:seo": ["error", { "minScore": 0.9 }],
         "csp-xss": "off",
         "color-contrast": "warn",
-        "third-party-cookies": "off"
+        "third-party-cookies": "off",
+        "uses-text-compression": "off",
+        "unminified-css": "off",
+        "unminified-javascript": "off",
+        "total-byte-weight": "off",
+        "unused-css-rules": "off",
+        "uses-long-cache-ttl": "off",
+        "font-display": "warn"
       }
     },
     "upload": {
