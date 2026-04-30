@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Cherry and Cherry-Pick for Data Engineers — Zaher Karp</title>
+<meta name="description" content="Treating git cherry and git cherry-pick as a pair: one tells you what&#39;s missing, the other moves it. With three healthcare-data-pipeline scenarios and the flags you actually need.">
+<link rel="canonical" href="https://zaherkarp.com/blog/git-cherry-for-data-engineers/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="Git Cherry and Cherry-Pick for Data Engineers — Zaher Karp">
+<meta property="og:description" content="Treating git cherry and git cherry-pick as a pair: one tells you what&#39;s missing, the other moves it. With three healthcare-data-pipeline scenarios and the flags you actually need.">
+<meta property="og:url" content="https://zaherkarp.com/blog/git-cherry-for-data-engineers/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Git Cherry and Cherry-Pick for Data Engineers — Zaher Karp">
+<meta name="twitter:description" content="Treating git cherry and git cherry-pick as a pair: one tells you what&#39;s missing, the other moves it. With three healthcare-data-pipeline scenarios and the flags you actually need.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Git Cherry and Cherry-Pick for Data Engineers", "description": "Treating git cherry and git cherry-pick as a pair: one tells you what's missing, the other moves it. With three healthcare-data-pipeline scenarios and the flags you actually need.", "url": "https://zaherkarp.com/blog/git-cherry-for-data-engineers/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/git-cherry-for-data-engineers/"}, "datePublished": "2026-04-29T00:00:00Z", "dateModified": "2026-04-29T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 1018, "timeRequired": "PT4M", "inLanguage": "en-US", "keywords": "git, version-control, data-engineering, dbt, HEDIS"}
+</script>
+
+
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"
+        data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/"></script>
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Git Cherry and Cherry-Pick for Data Engineers</h1>
+    <div class="blog-meta">
+      <time datetime="2026-04-29" class="blog-date">April 29, 2026</time>
+      
+      <span class="blog-readtime">4 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>git</li><li>version-control</li><li>data-engineering</li><li>dbt</li><li>HEDIS</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>Most git tutorials reach for <code>cherry-pick</code> when something goes wrong in a release branch. But the more useful mental model is to treat <code>git cherry</code> and <code>git cherry-pick</code> as a pair: one tells you what's missing, the other moves it. Together they give you surgical control over which work lands where.</p>
+<h2>What <code>git cherry</code> does</h2>
+<p><code>git cherry</code> compares two branches and tells you which commits from one haven't been applied to the other. The output is a list of commits prefixed with <code>+</code> (not yet applied) or <code>-</code> (already applied, matched by patch identity).</p>
+<pre><code class="language-bash">git cherry [-v] &lt;upstream&gt; [&lt;head&gt;]
+</code></pre>
+<p>If you omit <code>&lt;head&gt;</code>, it defaults to <code>HEAD</code>. If you omit both, <code>&lt;upstream&gt;</code> defaults to the upstream of your current branch — so day-to-day, <code>git cherry main</code> is usually all you need.</p>
+<p>The <code>-v</code> flag adds the commit subject to the output, which is the form you actually want to read:</p>
+<pre><code class="language-bash">git cherry -v main feature/hedis-cbp-refactor
+</code></pre>
+<p>A <code>+</code> means that commit is in <code>feature/hedis-cbp-refactor</code> but not in <code>main</code>. A <code>-</code> means an equivalent change exists in both, even if the SHA differs — git matches by <em>patch identity</em> (a hash of the diff with whitespace and line numbers normalized, computed by <code>git patch-id</code>). So a rebased, squashed, or previously cherry-picked equivalent still shows up as <code>-</code>.</p>
+<p>This is useful before you ever touch <code>cherry-pick</code>. You use <code>git cherry</code> to answer: &quot;what commits exist on the source branch that haven't landed on the target yet, and is any of it something I need to move?&quot;</p>
+<h2>What <code>git cherry-pick</code> does</h2>
+<p><code>git cherry-pick</code> applies one or more commits from anywhere in your git history onto your current branch. It replays the change introduced by that commit, creating a new commit with a new SHA.</p>
+<pre><code class="language-bash">git cherry-pick &lt;commit-sha&gt;
+</code></pre>
+<p>You can also pick a range:</p>
+<pre><code class="language-bash">git cherry-pick A..B
+</code></pre>
+<p>This applies all commits <em>after</em> A up to and including B. Note the asymmetry: A itself is excluded. To include A, use <code>A^..B</code> (which is &quot;everything from A's parent onward, ending at B&quot;).</p>
+<h2>Using them together</h2>
+<p>The clean workflow is:</p>
+<ol>
+<li>Run <code>git cherry -v</code> to identify what commits are missing from the target branch.</li>
+<li>Copy the SHAs you want.</li>
+<li>Run <code>git cherry-pick</code> to apply them.</li>
+</ol>
+<pre><code class="language-bash"># Step 1: see what's in the feature branch that main doesn't have
+git cherry -v main feature/hedis-cbp-refactor
+
+# + a3f91c2 fix: correct runout window for TRC measure
+# + d84cc1e fix: handle new-year enrollment gap in CBP denominator
+# - 77b3a10 chore: update inline comments
+#
+# + means: in feature/hedis-cbp-refactor, NOT in main
+# - means: an equivalent patch is already in main (matched by patch-id,
+#          not SHA — so a rebased or cherry-picked version still matches)
+
+# Step 2: pick only the two fixes, skip the chore commit
+git switch main
+git cherry-pick a3f91c2 d84cc1e
+</code></pre>
+<h2>Data engineering scenarios</h2>
+<h3>Scenario 1: hotfix needs to go to prod without the rest of the feature branch</h3>
+<p>You're midway through refactoring a HEDIS pipeline. The feature branch has ten commits. One of them fixes a denominator calculation that's wrong in production right now. You don't want to merge the whole branch.</p>
+<pre><code class="language-bash"># Find the commit
+git cherry -v main feature/hedis-pipeline-refactor
+
+# + f12a3b1 fix: exclude disenrolled members from CBP denominator
+# + 9c01d22 refactor: restructure measure module layout
+# + 3a8bc44 wip: new aggregation layer, not ready
+
+# Only the fix is safe to ship. The wip commit likely won't apply
+# cleanly anyway — it depends on the refactor above it.
+git switch main
+git cherry-pick f12a3b1
+</code></pre>
+<h3>Scenario 2: a dbt model fix exists on a colleague's branch</h3>
+<p>A coworker fixed a date spine issue in a staging model on their branch. Their branch isn't ready to merge. You need that fix now for a downstream model you're building.</p>
+<pre><code class="language-bash"># Check their branch against yours
+git cherry -v your-branch coworker/date-spine-fix
+
+# + 88de451 fix: anchor date spine to enrollment start, not calendar year
+
+# Apply just that commit
+git cherry-pick 88de451
+</code></pre>
+<h3>Scenario 3: propagating a fix across multiple environment branches</h3>
+<p>Your repo has <code>main</code>, <code>staging</code>, and <code>prod</code> branches representing environment promotions. A validation fix needs to land in all three without a full merge.</p>
+<p>This is the case for cherry-pick. (It's worth noting that long-lived environment branches are an older pattern; many modern dbt and orchestration shops use a single trunk plus tag- or config-based promotion. If you're maintaining environment branches, cherry-pick across them is a working tool. If you're greenfielding, consider whether you need the branches at all.)</p>
+<pre><code class="language-bash"># Find the commit on main
+git log --grep=&quot;readmissions filter&quot; main --oneline
+# c4f7712 fix: correct PCR scope cell row filter
+
+# Forward-port to staging, recording the origin SHA in the message
+git switch staging
+git cherry-pick -x c4f7712
+
+# And to prod
+git switch prod
+git cherry-pick -x c4f7712
+</code></pre>
+<p>The <code>-x</code> is doing real work here. On a long-lived environment branch you'll want the origin SHA in the message six months from now when you're trying to figure out why prod has a commit that doesn't appear in staging's git log.</p>
+<h2>When it conflicts</h2>
+<p>Cherry-pick can fail when the file you're patching has drifted between branches — a column was renamed, a model was restructured, a yaml schema changed. You're dropped into a half-applied state with conflict markers in the file.</p>
+<pre><code class="language-bash">git cherry-pick c4f7712
+# Auto-merging models/marts/measure_pcr.sql
+# CONFLICT (content): Merge conflict in models/marts/measure_pcr.sql
+# error: could not apply c4f7712... fix: correct PCR scope cell row filter
+</code></pre>
+<p>Three exits:</p>
+<pre><code class="language-bash"># 1. Resolve the markers in the file, stage, continue:
+git add models/marts/measure_pcr.sql
+git cherry-pick --continue
+
+# 2. Bail out entirely and return to the pre-pick state:
+git cherry-pick --abort
+
+# 3. Skip this commit and continue a multi-commit pick:
+git cherry-pick --skip
+</code></pre>
+<p>If you're cherry-picking multiple commits at once (<code>git cherry-pick A B C</code>), each is applied as a separate commit in order. A conflict on B pauses the rest — <code>--continue</code> resumes from B, <code>--skip</code> jumps to C, <code>--abort</code> discards everything including A. This is what people sometimes call &quot;octopus&quot; cherry-picking; the trap is assuming the operation is atomic.</p>
+<p>For content-level conflicts in generated dbt artifacts (<code>manifest.json</code>, compiled SQL), strategy options often save you a manual merge:</p>
+<pre><code class="language-bash">git cherry-pick -X theirs c4f7712   # prefer the picked commit's version
+git cherry-pick -X ours c4f7712     # prefer the current branch's version
+</code></pre>
+<p><code>-X</code> is a strategy <em>option</em> (passed through to the merge strategy), not the same as <code>--strategy</code>. For most cherry-picks, <code>-X theirs</code>/<code>-X ours</code> is the only one you'll reach for.</p>
+<h2>Flags worth knowing</h2>
+<p><strong><code>--no-commit</code> (<code>-n</code>)</strong>: applies the change to your working tree and stages it in the index without committing. Useful when you want to combine multiple cherry-picks into one commit, or inspect the change before committing.</p>
+<pre><code class="language-bash">git cherry-pick --no-commit a3f91c2 d84cc1e
+git diff --cached   # review the combined staged diff
+git commit -m &quot;fix: apply CBP and TRC runout corrections&quot;
+</code></pre>
+<p><strong><code>-x</code></strong>: appends a <code>(cherry picked from commit &lt;sha&gt;)</code> line to the commit message. Useful for traceability on long-lived multi-environment repos.</p>
+<pre><code class="language-bash">git cherry-pick -x c4f7712
+</code></pre>
+<p><strong><code>-m &lt;parent-number&gt;</code></strong>: required when cherry-picking a <em>merge</em> commit. Without it, you get an error and a commit you can't apply.</p>
+<pre><code class="language-bash">git cherry-pick a1b2c3d
+# error: commit a1b2c3d is a merge but no -m option was given.
+
+# -m &lt;n&gt; tells git which parent's diff to use as the base.
+# -m 1 = diff against the first parent, i.e. mainline.
+git cherry-pick -m 1 a1b2c3d
+</code></pre>
+<p>This is the single most common footgun in environment-branch propagation, because the things you most want to forward-port (a feature merge, a hotfix merge) are merge commits.</p>
+<p><strong><code>--allow-empty</code></strong>: lets you record a cherry-pick that becomes empty because the change is already in the target. Common in env-branch propagation when you've forwarded a fix to prod, then later cherry-pick it to staging — but staging already pulled it from a separate merge.</p>
+<pre><code class="language-bash">git cherry-pick c4f7712
+# The previous cherry-pick is now empty, possibly due to conflict resolution.
+
+# If you confirm the change is already there:
+git cherry-pick --skip
+
+# Or, to record the no-op explicitly for audit purposes:
+git cherry-pick --allow-empty c4f7712
+</code></pre>
+<p><code>--keep-redundant-commits</code> is a related variant that keeps the empty commit during multi-commit picks without prompting.</p>
+<p><strong><code>--signoff</code></strong>: appends a <code>Signed-off-by</code> trailer to the commit message. Relevant if your team enforces DCO.</p>
+<h2>When to avoid cherry-pick</h2>
+<p>Cherry-pick duplicates commits. If <code>feature/</code> eventually merges into <code>main</code>, you'll have the same logical change twice in history, which can cause messy merge conflicts and confusing diffs. (<code>git cherry</code>'s patch-identity matching softens this somewhat — equivalent commits show up as <code>-</code> and don't get re-applied — but the duplicated SHAs still clutter the log.)</p>
+<p>The cases where it earns its keep:</p>
+<ul>
+<li>Emergency hotfixes that can't wait for the full branch to stabilize.</li>
+<li>Propagating fixes across long-lived environment branches.</li>
+<li>Pulling a specific fix from a teammate's branch without taking their whole branch.</li>
+</ul>
+<p>If you're routinely cherry-picking between two branches that should eventually merge, that's usually a signal the branching strategy needs review, not a reason to cherry-pick more.</p>
+<p>One last note for confidence: a botched cherry-pick is recoverable. <code>git reset --hard HEAD@{1}</code> returns you to the state immediately before the pick, and the reflog keeps that state around for ~90 days by default. The perceived risk of cherry-pick is higher than the actual risk.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-04-30 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/2dc1915">2dc1915</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</div>
+</body>
+</html>
