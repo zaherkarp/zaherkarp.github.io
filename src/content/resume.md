@@ -38,15 +38,11 @@ Sep 2009 – Jun 2018
 
 ## Skills
 
-**Data platform:** SQL (Postgres, SQL Server, MySQL, MariaDB), Python (pandas, PySpark, Jinja), JavaScript, dbt, Airflow, Docker, AWS (S3, Redshift), Databricks, Azure, Ruby on Rails, Perl, R, git
+**Data platform:** SQL (Postgres, SQL Server, MySQL, MariaDB), Python (pandas, PySpark), dbt, Airflow, Docker, AWS, Azure, Databricks, Tableau, Sisense, DataDog, R, git
 
-**Healthcare domain:** HEDIS, CMS Medicare Stars, HIPAA, HITRUST, Electronic Health Record (EHR) systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, CMS technical specifications, value-based care, ACO / MSSP
+**Healthcare domain:** HEDIS, CMS Medicare Stars, HIPAA, HITRUST, EHR systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, CMS technical specifications, value-based care, ACO / MSSP
 
-**Governance and delivery:** ETL/ELT architecture, data modeling, semantic layers, metric governance, release readiness, data quality frameworks, cross-functional stakeholder communication
-
-**BI and observability:** Tableau, Sisense, Power BI, QuickSight, Grafana, DataDog, SumoLogic
-
-**Research methods:** Biostatistics, mixed-methods research, survey methodology, IRB compliance, qualitative coding (NVivo)
+**Governance and delivery:** ETL/ELT architecture, data modeling, semantic layers, metric governance, release readiness, data quality frameworks, biostatistics, cross-functional stakeholder communication
 
 ## Education
 
@@ -55,7 +51,3 @@ Master of Public Health, Biostatistics | University of Wisconsin-Madison | Dec 2
 Graduate Certificate, Patient Safety (Industrial & Systems Engineering) | University of Wisconsin-Madison | Dec 2015
 
 Bachelor of Arts, English Literature | University of Wisconsin-Madison | May 2007
-
-## Awards and Recognition
-
-Wisconsin Entrepreneurial Bootcamp Fellow  |  Patient Choice Award (NAPCRG 2015, co-authored with Pandhi)  |  Digital Fellow  |  International IPM Excellence Award

@@ -24,7 +24,7 @@
    near-black text, rust accent, 0.75in margins, light rule weight. */
 @page {
   size: auto;
-  margin: 0.75in;
+  margin: 0.45in 0.6in 0.45in 0.6in;
 }
 
 :root {
@@ -44,7 +44,7 @@ html {
 body {
   font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   color: var(--text);
-  line-height: 1.38;
+  line-height: 1.30;
   background: white;
 }
 
@@ -71,20 +71,20 @@ h2 {
   color: var(--text-sec);
   font-weight: 500;
   border-bottom: 1px solid var(--accent);
-  padding-bottom: 2pt;
-  margin: 11pt 0 5pt 0;
+  padding-bottom: 1pt;
+  margin: 7pt 0 3pt 0;
   page-break-after: avoid;
 }
 
 /* Summary paragraph (directly after Summary h2) */
 h2 + p {
-  font-size: 10.5pt;
-  margin-bottom: 2pt;
+  font-size: 10pt;
+  margin-bottom: 1pt;
 }
 
 /* Role header block (post-processed <header class="role">) */
 .role {
-  margin: 7pt 0 1pt 0;
+  margin: 5pt 0 0 0;
   page-break-inside: avoid;
 }
 .role-line {
@@ -117,13 +117,13 @@ h2 + p {
 /* Experience bullets */
 ul {
   list-style-type: disc;
-  margin: 3pt 0 4pt 14pt;
+  margin: 2pt 0 3pt 14pt;
   padding: 0;
 }
 li {
-  margin-bottom: 2pt;
-  line-height: 1.36;
-  font-size: 10.5pt;
+  margin-bottom: 0;
+  line-height: 1.26;
+  font-size: 10pt;
   page-break-inside: avoid;
 }
 
@@ -137,8 +137,9 @@ li {
 
 /* Skills: bold category + inline list */
 .skills p {
-  margin: 2pt 0;
-  font-size: 10pt;
+  margin: 1pt 0;
+  font-size: 9.5pt;
+  line-height: 1.32;
 }
 .skills p strong {
   font-weight: 600;
@@ -146,8 +147,9 @@ li {
 
 /* Education: one line per entry */
 .education p {
-  margin: 1pt 0;
-  font-size: 10pt;
+  margin: 0;
+  font-size: 9.5pt;
+  line-height: 1.32;
 }
 
 /* Awards: single line, centered */
