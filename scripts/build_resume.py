@@ -35,6 +35,10 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown_it import MarkdownIt
 from weasyprint import HTML
 
+from _common import install_git_hooks
+
+install_git_hooks()
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "content" / "resume.md"
 OUT = ROOT / "resume.pdf"

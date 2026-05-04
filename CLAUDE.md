@@ -672,13 +672,23 @@ marginnote, push, and the workflow populates the count.
 
 ## Pre-push checks (agent-runnable)
 
-Before suggesting `git push`:
-- `python scripts/lint_blog.py` clean (if blog sources changed)
-- `python scripts/build_blog.py` runs without warnings
-- `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns
-  nothing (catches blank-line-inside-`<svg>` slips)
+These run automatically via `scripts/hooks/pre-push`, installed by
+`scripts/_common.install_git_hooks()` on first run of any project script
+(no manual setup; multiple machines self-bootstrap on first script run).
+
+Checks:
+- `python scripts/lint_blog.py` clean (blog source-side mistakes)
+- `python scripts/lint_facts.py` clean (cross-surface fact drift between
+  resume.md, index.html h3+meta, and JSON-LD; playbook for failures
+  at scripts/lint_facts.md)
 - `grep -c '—' index.html` returns 0 (em-dash-clean chrome)
 - `grep -cE -- '--accent' index.html` ≤ 8 (accent discipline)
+- `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns
+  nothing (catches blank-line-inside-`<svg>` slips)
+
+Not in the hook (run manually for bigger pushes):
+- `python scripts/build_blog.py` runs without warnings
+- `python scripts/build_resume.py` regenerates resume.pdf
 
 Human-eyeball smoke tests (light/dark render, sidenote toggles, fold
 behavior, Lighthouse, print preview, figure rendering, mobile SVG swap)

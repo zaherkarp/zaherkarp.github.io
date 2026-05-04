@@ -41,6 +41,10 @@ from pathlib import Path
 
 import frontmatter
 
+from _common import install_git_hooks
+
+install_git_hooks()
+
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"

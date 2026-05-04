@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Pre-push checks for zaherkarp.github.io.
+# Mirrors CLAUDE.md §Pre-push checks. Activated automatically by
+# scripts/_common.py:install_git_hooks() on first run of any project
+# script (core.hooksPath -> scripts/hooks).
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+failures=0
+
+fail() { echo "  FAIL: $1" >&2; failures=$((failures + 1)); }
+ok()   { echo "  ok:   $1"; }
+
+echo "Running pre-push checks..." >&2
+
+# 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
+#    blank line inside <svg>, etc).
+if compgen -G "src/content/blog/*.md" >/dev/null; then
+  if output=$(python scripts/lint_blog.py 2>&1); then
+    ok "lint_blog clean"
+  else
+    echo "$output" >&2
+    fail "lint_blog"
+  fi
+fi
+
+# 2. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
+#    Playbook for failures: scripts/lint_facts.md.
+if [ -f src/content/resume.md ] && [ -f index.html ]; then
+  if output=$(python scripts/lint_facts.py 2>&1); then
+    ok "lint_facts clean"
+  else
+    echo "$output" >&2
+    fail "lint_facts"
+  fi
+fi
+
+# 3. Em-dash chrome cleanliness — homepage must be em-dash-clean.
+if [ -f index.html ]; then
+  em_count=$(grep -c '—' index.html || true)
+  if [ "$em_count" = "0" ]; then
+    ok "em-dash chrome clean"
+  else
+    fail "em-dash found in index.html ($em_count occurrence(s))"
+  fi
+
+  # 4. Accent discipline — Tufte 1-2x per chart rule, soft cap at 8.
+  accent_count=$(grep -cE -- '--accent' index.html || true)
+  if [ "$accent_count" -le 8 ]; then
+    ok "accent discipline ($accent_count uses, cap 8)"
+  else
+    fail "--accent appears $accent_count times in index.html (cap is 8)"
+  fi
+fi
+
+# 5. SVG blank-line trap in built blog HTML — markdown-it wraps SVG
+#    children in <p> when a blank line breaks the HTML block.
+if [ -d blog ]; then
+  if grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/ >/dev/null 2>&1; then
+    fail "<p>-wrapped SVG children in blog/ (blank line inside <svg>)"
+  else
+    ok "no <p>-wrapped SVG children in blog/"
+  fi
+fi
+
+if [ "$failures" -gt 0 ]; then
+  echo "" >&2
+  echo "$failures pre-push check(s) failed. See CLAUDE.md §Pre-push checks." >&2
+  echo "(bypass: git push --no-verify — only if you know why)" >&2
+  exit 1
+fi
+
+echo "all pre-push checks passed" >&2

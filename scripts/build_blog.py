@@ -35,6 +35,10 @@ from markdown_it import MarkdownIt
 from mdit_py_plugins.footnote import footnote_plugin
 from mdit_py_plugins.deflist import deflist_plugin
 
+from _common import install_git_hooks
+
+install_git_hooks()
+
 ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = ROOT / "src" / "content" / "blog"
 OUT_DIR = ROOT / "blog"
