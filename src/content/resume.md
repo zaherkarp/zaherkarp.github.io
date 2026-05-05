@@ -8,7 +8,7 @@ Data platform leader building production analytics systems in regulated healthca
 
 ## Experience
 
-**Baltimore Health Analytics** | Manager of Data Science & Engineering (promoted from Lead Data Engineer)
+**Baltimore Health Analytics** | Manager of Data Science & Engineering
 Nov 2025 – Present
 *MariaDB, Python, JavaScript, Ruby on Rails, Docker*
 
@@ -22,19 +22,19 @@ Nov 2025 – Present
 Dec 2017 – Aug 2025
 *AWS (S3, Redshift), Azure, Databricks, dbt, SQL, Python (pandas, PySpark, Jinja), Airflow, Tableau, Sisense, DataDog*
 
-- First analytics hire; built HIPAA and HITRUST certified data infrastructure on AWS and promoted to Manager after one year
-- Built and scaled the data platform supporting value-based care and billing analytics across 50+ health systems on Epic, Cerner, Veradigm, and athenahealth
+- First analytics hire; built HIPAA-certified data infrastructure on AWS, promoted to Manager within a year
+- Built and scaled the data platform supporting value-based care and billing analytics across 50+ health systems
 - Led analytics integration through Health Catalyst acquisition, migrating infrastructure from AWS to Azure and Databricks and rebuilding the analytics layer using medallion architecture (bronze/silver/gold) while maintaining continuity of service across the combined portfolio
-- Reduced AWS S3 storage costs ~50% and ETL load time 24+ hours through infrastructure redesign, storage-tier rationalization, and partitioning strategy
-- Standardized legacy analytics into governed ELT pipelines and shared stored procedures (~70% codebase reduction); established semantic layers and data governance practices enabling 7x Sisense user growth and eliminating 400+ manual hours per quarter
+- Reduced AWS S3 storage costs ~50% and ETL load time 24+ hours via storage-tier redesign and partitioning
+- Standardized legacy analytics into governed ELT pipelines (~70% codebase reduction); established semantic layers and data governance practices enabling 7x Sisense user growth and eliminating 400+ manual hours per quarter
 - Designed HIPAA and HITRUST compliant security architecture and observability for analytics platforms; built ROI models supporting $1MM+ in recurring revenue decisions
 
 **University of Wisconsin-Madison** | Researcher and Research Specialist
 Sep 2009 – Jun 2018
 *SAS, Stata, R, NVivo, Qualtrics, Epic*
 
-- Co-authored 6+ peer-reviewed publications on ACO shared savings, cancer screening performance, and Electronic Health Record (EHR) optimization; contributed across Family Medicine, Internal Medicine, Pediatrics, and Population Health Sciences
-- Supported $250,000+ in federal grants (AHRQ, NIH, PCORI) through quantitative and qualitative analysis, manuscript writing, and IRB compliance
+- Co-authored 6+ peer-reviewed publications on ACO shared savings, cancer screening performance, and EHR optimization across Family Medicine, Internal Medicine, Pediatrics, and Population Health Sciences
+- Supported $250,000+ in federal grants (AHRQ, NIH, PCORI) through quantitative and qualitative analysis
 
 ## Skills
 
