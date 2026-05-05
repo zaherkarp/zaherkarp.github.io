@@ -20,9 +20,10 @@ Design notes:
   three header lines. A regex post-pass here replaces that with a
   structured <header class="role"> block so the template can style
   each line distinctly.
-- Print CSS targets US Letter at 10.5pt EB Garamond body, Courier New
-  for data specimens (dates, stack lines), #1a5fa8 rule color.
-- EB Garamond font files are bundled under scripts/fonts/ (OFL license).
+- Print CSS targets US Letter at 10.5pt ETBook body, hairline #d0d0c8
+  rule color. No bold weight is loaded; any <strong> in the source
+  renders as small-caps via the template's global strong rule.
+- ETBook font files are bundled under scripts/fonts/et-book/ (MIT license).
 """
 
 from __future__ import annotations
