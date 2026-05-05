@@ -6,7 +6,8 @@
 <style>
 /* ETBook self-hosted (TTF for WeasyPrint). License: MIT,
    bundled at scripts/fonts/et-book/. Two weights only:
-   roman + italic, no bold. */
+   roman + italic, no bold. Anything that requests a heavier
+   weight is forbidden — WeasyPrint would synthesize it. */
 @font-face {
   font-family: 'et-book';
   src: url('file://{{ font_dir }}/et-book/et-book-roman-line-figures.ttf') format('truetype');
@@ -20,19 +21,21 @@
   font-style: italic;
 }
 
-/* Print uses the CLAUDE.md print-override tokens: white paper,
-   near-black text, rust accent, 0.75in margins, light rule weight. */
+/* Print: near-black ink on white, hairline gray rules. The
+   oxford-red --accent token is kept in the palette for
+   parity with the homepage but is deliberately unused on
+   the resume — accent discipline (CLAUDE.md §Palette). */
 @page {
   size: auto;
-  margin: 0.45in 0.6in 0.45in 0.6in;
+  margin: 0.45in 0.65in 0.45in 0.65in;
 }
 
 :root {
   --text: #1a1a1a;
   --text-sec: #4a4a4a;
-  --text-dim: #6a6a6a;  /* --muted from new Tufte palette */
+  --text-dim: #6a6a6a;
   --rule: #d0d0c8;
-  --accent: #7a0000;    /* Oxford red */
+  --accent: #7a0000;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,33 +47,34 @@ html {
 body {
   font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   color: var(--text);
-  line-height: 1.30;
+  line-height: 1.34;
   background: white;
 }
 
-/* Header block: name + contact */
+/* Name + contact */
 .hdr-name {
-  font-size: 20pt;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  margin-bottom: 2pt;
+  font-family: 'et-book', Palatino, serif;
+  font-size: 22pt;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 3pt;
 }
 .hdr-contact {
-  font-family: 'Courier New', 'Courier', monospace;
-  font-size: 8.5pt;
-  color: var(--text-sec);
-  letter-spacing: 0.01em;
-  margin-bottom: 10pt;
+  font-family: 'et-book', Palatino, serif;
+  font-size: 10pt;
+  color: var(--text-dim);
+  margin-bottom: 9pt;
 }
 
-/* Section headers (## in markdown → <h2>) */
+/* Section headings (## → <h2>). Italic, the only running
+   italic heading style on the site (rationale doc §Heading
+   discipline). Hairline gray rule, no accent. */
 h2 {
-  font-size: 9pt;
-  font-variant: small-caps;
-  letter-spacing: 0.14em;
-  color: var(--text-sec);
-  font-weight: 500;
-  border-bottom: 1px solid var(--accent);
+  font-family: 'et-book', Palatino, serif;
+  font-style: italic;
+  font-size: 11pt;
+  color: var(--text);
+  border-bottom: 1px solid var(--rule);
   padding-bottom: 1pt;
   margin: 7pt 0 3pt 0;
   page-break-after: avoid;
@@ -97,21 +101,29 @@ h2 + p {
   font-size: 11pt;
   color: var(--text);
 }
-.role-where .role-org { font-weight: 600; }
-.role-where .role-sep { color: var(--text-dim); margin: 0 0.25em; }
-.role-where .role-title { font-weight: 400; }
+.role-where .role-org {
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+.role-where .role-sep {
+  color: var(--text-dim);
+  margin: 0 0.35em;
+}
+.role-where .role-title {
+  /* plain regular — hierarchy comes from small-caps on the org */
+}
 .role-date {
-  font-family: 'Courier New', 'Courier', monospace;
-  font-size: 9pt;
-  color: var(--text-sec);
+  font-family: 'et-book', Palatino, serif;
+  font-size: 10pt;
+  color: var(--text-dim);
   white-space: nowrap;
+  /* ETBook's default Roman renders old-style figures, the bookish choice for inline numerics */
 }
 .role-stack {
-  font-family: 'Courier New', 'Courier', monospace;
-  font-size: 8.5pt;
-  font-style: italic;
+  font-family: 'et-book', Palatino, serif;
+  font-size: 9.5pt;
   color: var(--text-dim);
-  margin-top: 1pt;
+  margin-top: 2pt;
 }
 
 /* Experience bullets */
@@ -121,51 +133,48 @@ ul {
   padding: 0;
 }
 li {
-  margin-bottom: 0;
-  line-height: 1.26;
+  margin-bottom: 1pt;
+  line-height: 1.34;
   font-size: 10pt;
   page-break-inside: avoid;
 }
+li::marker { color: var(--text-dim); }
 
-/* Sub-headings inside UW entry (bold inline, no H3) */
-.exp p strong:only-child,
-.exp > p > strong { /* preserve bold-inline subheaders without making them H3 */
-  display: block;
-  margin-top: 4pt;
-  font-weight: 600;
-}
-
-/* Skills: bold category + inline list */
+/* Skills: small-caps category labels (handled by the global
+   strong rule below) followed by an inline comma-separated list. */
 .skills p {
   margin: 1pt 0;
-  font-size: 9.5pt;
-  line-height: 1.32;
-}
-.skills p strong {
-  font-weight: 600;
+  font-size: 10pt;
+  line-height: 1.34;
 }
 
 /* Education: one line per entry */
 .education p {
   margin: 0;
-  font-size: 9.5pt;
-  line-height: 1.32;
+  font-size: 10pt;
+  line-height: 1.34;
 }
 
-/* Awards: single line, centered */
+/* Awards: single line, centered (kept for parity with build_resume.py
+   wrap_sections; resume.md currently has no Awards section). */
 .awards p {
   margin-top: 3pt;
-  font-size: 9.5pt;
+  font-size: 10pt;
   color: var(--text-sec);
   text-align: center;
 }
 
-/* Inline emphasis */
+/* Inline emphasis. ETBook has no bold weight loaded, so any
+   <strong> from the markdown source renders as small-caps —
+   the structural-marker treatment Bringhurst sanctions for
+   category prefixes ("Data platform:", "Healthcare domain:"). */
 em {
   font-style: italic;
 }
 strong {
-  font-weight: 600;
+  font-weight: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
 }
 
 /* Tighten widows/orphans near page breaks */
