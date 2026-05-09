@@ -1,7 +1,7 @@
 ---
 title: "HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates"
 description: "A practitioner's walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation."
-publishDate: 2026-11-29
+publishDate: 2025-11-29
 tags: ["HEDIS", "ETL", "Healthcare Data Engineering", "Medicare Stars", "dbt", "Data Pipelines"]
 ---
 
