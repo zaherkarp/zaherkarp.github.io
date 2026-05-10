@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 build_blog.py
 
 Reads markdown + YAML frontmatter from src/content/blog/*.md,
