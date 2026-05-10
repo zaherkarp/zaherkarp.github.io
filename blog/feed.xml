@@ -6,7 +6,7 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2026 03:44:28 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2026 21:29:13 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
     
     <item>
@@ -413,14 +413,15 @@
     </item>
     
     <item>
-      <title>Weighting Provider Panels Across Primary Care</title>
-      <link>https://zaherkarp.com/blog/weighting-provider-panels/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/weighting-provider-panels/</guid>
-      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
-      <description>UW Health&#39;s innovative approach to patient empanelment using data-driven weighting methodologies that account for age, gender, and insurance factors.</description>
-      <category>healthcare analytics</category>
-      <category>panel management</category>
-      <category>primary care</category>
+      <title>When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits</title>
+      <link>https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/</guid>
+      <pubDate>Fri, 09 May 2025 00:00:00 +0000</pubDate>
+      <description>Private Medicare coverage is contracting. The exits aren&#39;t random, they follow a regulatory clock most people never see. Two charts explain what&#39;s happening and when.
+</description>
+      <category>medicare advantage</category>
+      <category>health policy</category>
+      <category>data visualization</category>
       
     </item>
     
