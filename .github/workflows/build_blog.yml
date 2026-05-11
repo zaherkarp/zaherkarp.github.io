@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      - name: Lint vocabulary (canonical CMS program names)
+        run: python scripts/lint_vocab.py
+
       - name: Lint blog sources
         run: python scripts/lint_blog.py
 

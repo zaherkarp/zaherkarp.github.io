@@ -25,7 +25,16 @@ if compgen -G "src/content/blog/*.md" >/dev/null; then
   fi
 fi
 
-# 2. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
+# 2. Vocabulary lint (canonical CMS program-name capitalization across
+#    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
+if output=$(python scripts/lint_vocab.py 2>&1); then
+  ok "lint_vocab clean"
+else
+  echo "$output" >&2
+  fail "lint_vocab"
+fi
+
+# 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
 #    Playbook for failures: scripts/lint_facts.md.
 if [ -f src/content/resume.md ] && [ -f index.html ]; then
   if output=$(python scripts/lint_facts.py 2>&1); then
@@ -36,7 +45,7 @@ if [ -f src/content/resume.md ] && [ -f index.html ]; then
   fi
 fi
 
-# 3. Em-dash chrome cleanliness — homepage must be em-dash-clean.
+# 4. Em-dash chrome cleanliness — homepage must be em-dash-clean.
 if [ -f index.html ]; then
   em_count=$(grep -c '—' index.html || true)
   if [ "$em_count" = "0" ]; then
@@ -45,7 +54,7 @@ if [ -f index.html ]; then
     fail "em-dash found in index.html ($em_count occurrence(s))"
   fi
 
-  # 4. Accent discipline — Tufte 1-2x per chart rule, soft cap at 8.
+  # 5. Accent discipline — Tufte 1-2x per chart rule, soft cap at 8.
   accent_count=$(grep -cE -- '--accent' index.html || true)
   if [ "$accent_count" -le 8 ]; then
     ok "accent discipline ($accent_count uses, cap 8)"
@@ -54,7 +63,7 @@ if [ -f index.html ]; then
   fi
 fi
 
-# 5. SVG blank-line trap in built blog HTML — markdown-it wraps SVG
+# 6. SVG blank-line trap in built blog HTML — markdown-it wraps SVG
 #    children in <p> when a blank line breaks the HTML block.
 if [ -d blog ]; then
   if grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/ >/dev/null 2>&1; then
