@@ -24,13 +24,13 @@ Put them together and you get a clean story: prove you are using modern tools, t
 
 That logic makes sense in a whiteboard session. It breaks down the moment you try to operationalize it.
 
-## A counterfactual: Meaningful Use with STAR gates
+## A counterfactual: Meaningful Use with Star gates
 
-To imagine how this might have worked, CMS would have had to add some form of STAR-linked requirement to Meaningful Use attestation. There are only a few plausible ways they could have done that.
+To imagine how this might have worked, CMS would have had to add some form of Star-linked requirement to Meaningful Use attestation. There are only a few plausible ways they could have done that.
 
-One option would have been plan-level attribution: a clinician or hospital's Meaningful Use performance would depend, in part, on the STAR performance of the Medicare Advantage plans they served.
+One option would have been plan-level attribution: a clinician or hospital's Meaningful Use performance would depend, in part, on the Star performance of the Medicare Advantage plans they served.
 
-Another option would have been provider-level STAR proxies: recreating STAR-like measures at the clinician or hospital level using claims, EHR data, and partial CAHPS analogs.
+Another option would have been provider-level Star proxies: recreating Star-like measures at the clinician or hospital level using claims, EHR data, and partial CAHPS analogs.
 
 A third option would have been network-level scoring, where Meaningful Use credit depended on the performance of an ACO, IPA, or delegated entity.
 
@@ -38,13 +38,13 @@ All three approaches fail for the same core reasons.
 
 ## Where the design collapses
 
-First, attribution. Meaningful Use was designed around entities with direct operational control: a clinician, a practice, or a hospital. Star Ratings are assigned to MA contracts. Providers influence STAR outcomes, but they do not control benefit design, pharmacy networks, outreach operations, enrollment churn, or call center performance. Holding a provider accountable for those outcomes under a compliance program would have guaranteed disputes and appeals.
+First, attribution. Meaningful Use was designed around entities with direct operational control: a clinician, a practice, or a hospital. Star Ratings are assigned to MA contracts. Providers influence Star outcomes, but they do not control benefit design, pharmacy networks, outreach operations, enrollment churn, or call center performance. Holding a provider accountable for those outcomes under a compliance program would have guaranteed disputes and appeals.
 
-Second, timing. Meaningful Use operated on short, auditable reporting windows. STAR performance is lagged, multi-year, and subject to annual methodological changes. A compliance program where organizations discover failure after incentives are already locked in is not enforceable at scale.
+Second, timing. Meaningful Use operated on short, auditable reporting windows. Star performance is lagged, multi-year, and subject to annual methodological changes. A compliance program where organizations discover failure after incentives are already locked in is not enforceable at scale.
 
-Third, data provenance. Meaningful Use relied on EHR-auditable actions. STAR relies on claims, enrollment, survey vendors, and plan operations. There is no single system of record. CMS would have had to adjudicate endless disagreements about whose data was correct and which entity was responsible for gaps.
+Third, data provenance. Meaningful Use relied on EHR-auditable actions. Star relies on claims, enrollment, survey vendors, and plan operations. There is no single system of record. CMS would have had to adjudicate endless disagreements about whose data was correct and which entity was responsible for gaps.
 
-Fourth, equity and access. STAR measures are sensitive to social risk, access barriers, and patient behavior. Without sophisticated adjustment, tying them to Meaningful Use penalties would have disproportionately harmed providers serving higher-need populations. With adjustment, the program becomes too complex to audit cleanly.
+Fourth, equity and access. Star measures are sensitive to social risk, access barriers, and patient behavior. Without sophisticated adjustment, tying them to Meaningful Use penalties would have disproportionately harmed providers serving higher-need populations. With adjustment, the program becomes too complex to audit cleanly.
 
 Finally, perverse incentives. If Meaningful Use depended on outcome performance, organizations would rationally optimize for the narrowest interpretation of those outcomes. Avoid hard-to-reach patients, reshape denominators, and prioritize documentation over care. The original goal of accelerating adoption would have stalled.
 

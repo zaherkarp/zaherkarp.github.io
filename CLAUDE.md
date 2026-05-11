@@ -744,9 +744,33 @@ Enforced by `scripts/lint_vocab.py` against `src/content/blog/*.md`,
 `src/content/resume.md`, and `index.html`. The CMS 2025 MA & Part D Star
 Ratings fact sheet
 (https://www.cms.gov/newsroom/fact-sheets/2025-medicare-advantage-part-d-star-ratings)
-is the external source of truth for "Star Ratings" capitalization and
-"Medicare Advantage". Add a rule to `RULES` in `lint_vocab.py` when a
-new canonical surfaces with an unambiguous wrong form.
+is the external source of truth for "Star Ratings" and "Medicare
+Advantage" rendering.
+
+The linter is canonical-driven, not wrong-form-driven. Each rule lists
+the accepted spelling(s) plus a matcher; any literal the matcher catches
+that isn't an accepted form is flagged. One declaration thus catches
+every wrong-case variant the matcher reaches without a new regex per
+wrong form. Patterns are deliberately narrow: `STAR` / `STARs` / `STAR
+Ratings` / `MEDICARE ADVANTAGE` / `Centers for Medicare and Medicaid
+Services` get flagged; lowercase generic English ("4.0 star QBP cliff",
+"5 stars", "star rating displayed in the simulator") passes because the
+linter can't tell proper-noun from common-noun usage in those positions.
+
+Skip-ranges keep the linter focused on prose: code fences, inline code
+spans, markdown link URLs, HTML attribute values, HTML comments, and
+`<script>`/`<style>` block contents are excluded from matching.
+
+Two escape hatches for legitimate non-canonical literals that fall
+outside the skip ranges:
+  - Per-post `vocab_exempt: ["STAR Ratings", ...]` frontmatter list,
+    for citations, quotes, or proper-noun product names that genuinely
+    use a non-canonical form. Exact-string opt-out, scoped to that post.
+  - Module-level `EXEMPTIONS` dict in `lint_vocab.py` for non-markdown
+    surfaces (`index.html`, `resume.md`). Empty by default.
+
+Add a canonical to `CANONICALS` in `lint_vocab.py` when a new program
+name surfaces with a high-confidence wrong rendering in the corpus.
 
 ---
 
