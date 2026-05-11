@@ -1,6 +1,6 @@
 ---
 title: "When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits"
-publishDate: 2025-05-09
+publishDate: 2026-05-09
 description: >
   Private Medicare coverage is contracting. The exits aren't random,
   they follow a regulatory clock most people never see. Two charts explain
