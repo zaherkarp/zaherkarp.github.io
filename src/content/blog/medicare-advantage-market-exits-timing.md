@@ -25,7 +25,9 @@ The shape of the contraction is visible in two pictures.
 .post-chart canvas { max-width:100%; height:220px !important; }
 .post-chart .pc-note { font-size:0.78rem; font-style:italic; color:var(--pc-muted); margin:0.6rem 0 0; line-height:1.4; }
 .post-chart figcaption { font-size:0.82rem; color:var(--pc-muted); margin-top:0.8rem; font-style:italic; line-height:1.45; text-align:left; }
-.post-chart .chart2-svg { display:block; width:100%; max-width:860px; height:auto; margin:0 auto; }
+.post-chart .chart2-svg { display:block; width:100%; height:auto; margin:0 auto; }
+.post-chart-wide { position:relative; left:50%; transform:translateX(-50%); width:min(96vw, 1100px); max-width:min(96vw, 1100px); }
+.post-chart-wide .chart2-svg { max-width:1100px; }
 @media (prefers-color-scheme: dark) { .post-chart { --pc-ink:#f5ecd7; --pc-muted:#c2b8a0; --pc-rule:#3a3024; --pc-accent:#e05e3e; --pc-paper:#201b14; } }
 </style>
 <div class="pc-summary"><div class="metric"><span class="n">43</span><span class="lab">peak plans per beneficiary (2023–24)</span></div><div class="metric"><span class="n">18</span><span class="lab">brand exits, 2025 plan year</span></div><div class="metric"><span class="n">1.8M</span><span class="lab">members affected, 2025</span></div></div>
@@ -100,7 +102,7 @@ None of this happens on its own. The Centers for Medicare & Medicaid Services, o
 
 Plot the exit announcements against the calendar and the choreography is hard to miss.
 
-<figure class="post-chart">
+<figure class="post-chart post-chart-wide">
 <svg id="chart2-svg" class="chart2-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Vertical two-column timeline of Medicare Advantage exit announcements for plan years 2025 and 2026, plotted against the fixed CMS regulatory calendar (Advance Notice in January, Final Rate in April, Bid Deadline in June, Landscape Release in October). Each column runs January at the top to December at the bottom."><text id="chart2-py25-title" x="60" y="32" font-size="13" font-style="italic" fill="#111">Plan year 2025 cycle</text>
 <text id="chart2-py25-sub" x="60" y="48" font-size="10" fill="#6a6a6a">bid year 2024</text>
 <line id="chart2-py25-axis" x1="200" y1="80" x2="200" y2="920" stroke="#d0d0c8" stroke-width="0.5"/>
