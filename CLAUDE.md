@@ -678,6 +678,9 @@ These run automatically via `scripts/hooks/pre-push`, installed by
 
 Checks:
 - `python scripts/lint_blog.py` clean (blog source-side mistakes)
+- `python scripts/lint_vocab.py` clean (canonical CMS program-name
+  capitalization across blog sources, resume.md, and index.html;
+  see §Vocabulary)
 - `python scripts/lint_facts.py` clean (cross-surface fact drift between
   resume.md, index.html h3+meta, and JSON-LD; playbook for failures
   at scripts/lint_facts.md)
@@ -736,6 +739,14 @@ BHA = Baltimore Health Analytics
 healthfinch = prior employer, acquired by Health Catalyst in 2020
 Health Catalyst = prior employer (2020-2025)
 ETBook = MIT-licensed Bembo revival by Krasny/Scranton/Tufte; bundled at fonts/et-book/.
+
+Enforced by `scripts/lint_vocab.py` against `src/content/blog/*.md`,
+`src/content/resume.md`, and `index.html`. The CMS 2025 MA & Part D Star
+Ratings fact sheet
+(https://www.cms.gov/newsroom/fact-sheets/2025-medicare-advantage-part-d-star-ratings)
+is the external source of truth for "Star Ratings" capitalization and
+"Medicare Advantage". Add a rule to `RULES` in `lint_vocab.py` when a
+new canonical surfaces with an unambiguous wrong form.
 
 ---
 

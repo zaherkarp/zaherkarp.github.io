@@ -1,18 +1,18 @@
 ---
-title: "The Gravity of STAR Ratings"
-description: "How outcomes shape programs they never appear in - STAR Ratings operate less like a measurement program and more like a financial force that influences clinical workflows, data governance, and analytics investments across healthcare."
+title: "The Gravity of Star Ratings"
+description: "How outcomes shape programs they never appear in - Star Ratings operate less like a measurement program and more like a financial force that influences clinical workflows, data governance, and analytics investments across healthcare."
 publishDate: 2026-01-11
 tags: ["healthcare", "policy", "star-ratings", "medicare", "analytics", "data-engineering"]
 ---
 
-# The Gravity of STAR Ratings
+# The Gravity of Star Ratings
 *How outcomes shape programs they never appear in*
 
-STAR Ratings do not appear in Promoting Interoperability scoring. They are not explicitly part of MIPS quality requirements. They are not embedded in EHR certification criteria.
+Star Ratings do not appear in Promoting Interoperability scoring. They are not explicitly part of MIPS quality requirements. They are not embedded in EHR certification criteria.
 
 And yet, they shape clinical workflows, data governance priorities, and analytics investments across the healthcare system.
 
-STAR Ratings operate less like a measurement program and more like a financial force. You don't see them in every specification, but you feel their pull everywhere.
+Star Ratings operate less like a measurement program and more like a financial force. You don't see them in every specification, but you feel their pull everywhere.
 
 ## STAR as capital allocation
 
@@ -60,7 +60,7 @@ STAR's influence is real whether or not it is named. Ignoring that gravity does 
 
 Promoting Interoperability measures whether the cockpit exists.
 MIPS evaluates how parts of the flight were handled.
-STAR Ratings judge the landing.
+Star Ratings judge the landing.
 
 They are not merged because accountability lives at different levels. But pretending they are independent misses how incentives actually move through the system.
 

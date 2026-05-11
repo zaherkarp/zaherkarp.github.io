@@ -1,24 +1,24 @@
 ---
-title: "Why CMS Never Let STAR Ratings Touch Meaningful Use"
+title: "Why CMS Never Let Star Ratings Touch Meaningful Use"
 description: "On the surface, it looks like an omission - but CMS understood that capability and outcomes cannot be governed the same way, even when one enables the other. The deliberate separation was probably the right call."
 publishDate: 2026-01-18
 tags: ["healthcare", "policy", "cms", "meaningful-use", "star-ratings", "ehr"]
 ---
 
-# Why CMS Never Let STAR Ratings Touch Meaningful Use
+# Why CMS Never Let Star Ratings Touch Meaningful Use
 *(and why that was probably the right call)*
 
 On the surface, it looks like an omission.
 
-CMS spent years pushing clinicians and hospitals to adopt electronic health records through the Meaningful Use program, while at the same time rewarding Medicare Advantage plans based on outcomes through STAR Ratings. One program focused on technology adoption and workflow compliance. The other focused on whether patients actually received high-quality care.
+CMS spent years pushing clinicians and hospitals to adopt electronic health records through the Meaningful Use program, while at the same time rewarding Medicare Advantage plans based on outcomes through Star Ratings. One program focused on technology adoption and workflow compliance. The other focused on whether patients actually received high-quality care.
 
 If the goal was better care, better outcomes, and better accountability, why were these two programs never connected?
 
-The short answer is that CMS understood something that still frustrates analysts today: capability and outcomes cannot be governed the same way, even when one enables the other. Trying to fuse STAR Ratings into Meaningful Use would have created a program that was theoretically elegant and operationally unworkable.
+The short answer is that CMS understood something that still frustrates analysts today: capability and outcomes cannot be governed the same way, even when one enables the other. Trying to fuse Star Ratings into Meaningful Use would have created a program that was theoretically elegant and operationally unworkable.
 
 ## The temptation to merge capability and outcomes
 
-From a data and engineering perspective, the idea is seductive. Meaningful Use measured whether organizations could capture data, exchange it, and use it in structured ways. STAR Ratings measured whether that care translated into better outcomes, adherence, access, and patient experience.
+From a data and engineering perspective, the idea is seductive. Meaningful Use measured whether organizations could capture data, exchange it, and use it in structured ways. Star Ratings measured whether that care translated into better outcomes, adherence, access, and patient experience.
 
 Put them together and you get a clean story: prove you are using modern tools, then prove those tools are producing results.
 
@@ -38,7 +38,7 @@ All three approaches fail for the same core reasons.
 
 ## Where the design collapses
 
-First, attribution. Meaningful Use was designed around entities with direct operational control: a clinician, a practice, or a hospital. STAR Ratings are assigned to MA contracts. Providers influence STAR outcomes, but they do not control benefit design, pharmacy networks, outreach operations, enrollment churn, or call center performance. Holding a provider accountable for those outcomes under a compliance program would have guaranteed disputes and appeals.
+First, attribution. Meaningful Use was designed around entities with direct operational control: a clinician, a practice, or a hospital. Star Ratings are assigned to MA contracts. Providers influence STAR outcomes, but they do not control benefit design, pharmacy networks, outreach operations, enrollment churn, or call center performance. Holding a provider accountable for those outcomes under a compliance program would have guaranteed disputes and appeals.
 
 Second, timing. Meaningful Use operated on short, auditable reporting windows. STAR performance is lagged, multi-year, and subject to annual methodological changes. A compliance program where organizations discover failure after incentives are already locked in is not enforceable at scale.
 
@@ -59,7 +59,7 @@ Then, apply outcome accountability through separate programs.
 
 That sequencing gave CMS faster adoption, clearer compliance rules, and fewer legal and operational failures. It also created fragmentation and analytic debt, but it kept the system moving.
 
-The absence of STAR Ratings from Meaningful Use wasn't an oversight. It was a tradeoff.
+The absence of Star Ratings from Meaningful Use wasn't an oversight. It was a tradeoff.
 
 ## What we gained and what we lost
 
