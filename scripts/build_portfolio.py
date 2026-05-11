@@ -177,7 +177,7 @@ def build_activity_grid(posts: list[dict]) -> str:
         f'      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); '
         f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>'
         '<label for="mn-cadence" class="margin-toggle">&#8853;</label>'
-        '<input type="checkbox" id="mn-cadence" class="margin-toggle"/>'
+        '<input type="checkbox" aria-label="Toggle tag breakdown" id="mn-cadence" class="margin-toggle"/>'
         f'{marginnote_html}\n'
         '    </p>'
     )
