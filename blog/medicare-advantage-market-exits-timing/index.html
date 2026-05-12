@@ -36,7 +36,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits", "description": "Private Medicare coverage is contracting. The exits aren't random, they follow a regulatory clock most people never see. Two charts explain what's happening and when.\n", "url": "https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/"}, "datePublished": "2026-05-09T00:00:00Z", "dateModified": "2026-05-11T14:16:26-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2782, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "medicare advantage, health policy, data visualization"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits", "description": "Private Medicare coverage is contracting. The exits aren't random, they follow a regulatory clock most people never see. Two charts explain what's happening and when.\n", "url": "https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/"}, "datePublished": "2026-05-09T00:00:00Z", "dateModified": "2026-05-11T20:29:18-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2809, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "medicare advantage, health policy, data visualization"}
 </script>
 
 
@@ -95,7 +95,9 @@
 .post-chart canvas { max-width:100%; height:220px !important; }
 .post-chart .pc-note { font-size:0.78rem; font-style:italic; color:var(--pc-muted); margin:0.6rem 0 0; line-height:1.4; }
 .post-chart figcaption { font-size:0.82rem; color:var(--pc-muted); margin-top:0.8rem; font-style:italic; line-height:1.45; text-align:left; }
-.post-chart .chart2-svg { display:block; width:100%; max-width:860px; height:auto; margin:0 auto; }
+.post-chart .chart2-svg { display:block; width:100%; height:auto; margin:0 auto; }
+.post-chart-wide { position:relative; left:50%; transform:translateX(-50%); width:min(96vw, 1100px); max-width:min(96vw, 1100px); }
+.post-chart-wide .chart2-svg { max-width:1100px; }
 @media (prefers-color-scheme: dark) { .post-chart { --pc-ink:#f5ecd7; --pc-muted:#c2b8a0; --pc-rule:#3a3024; --pc-accent:#e05e3e; --pc-paper:#201b14; } }
 </style>
 <div class="pc-summary"><div class="metric"><span class="n">43</span><span class="lab">peak plans per beneficiary (2023–24)</span></div><div class="metric"><span class="n">18</span><span class="lab">brand exits, 2025 plan year</span></div><div class="metric"><span class="n">1.8M</span><span class="lab">members affected, 2025</span></div></div>
@@ -166,7 +168,7 @@
 <p>The top panel tracks the average number of plans available to a typical beneficiary. The count rose for years, peaked at 43 in 2023 and 2024, then reversed. The bottom panel counts the full brand exits behind that reversal. Eighteen named insurer brands left for the 2025 plan year, dropping coverage for roughly 1.8 million people. The hatched bars before 2025 are a data gap. The first systematic public counts of full brand exits appeared in October 2024; earlier years were never tallied the same way.</p>
 <p>None of this happens on its own. The Centers for Medicare &amp; Medicaid Services, or CMS, runs Medicare Advantage on a fixed annual schedule. In mid-January, CMS publishes the Advance Notice, a draft of next year's payment rates. The final rates land in early April. By federal statute, the announcement is always anchored to the first Monday of the month. Insurers then have until early June to submit their bids, which include the plans they intend to sell, the counties they will sell them in, and the premiums they will charge. Bids are where the internal exit decisions get locked in. CMS reviews the bids over the summer, releases the public plan landscape on October 1, and opens enrollment from October 15 through December 7. New coverage begins January 1. Insurers know in April whether the rates work. They decide by June. The public hears in October.</p>
 <p>Plot the exit announcements against the calendar and the choreography is hard to miss.</p>
-<figure class="post-chart">
+<figure class="post-chart post-chart-wide">
 <svg id="chart2-svg" class="chart2-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Vertical two-column timeline of Medicare Advantage exit announcements for plan years 2025 and 2026, plotted against the fixed CMS regulatory calendar (Advance Notice in January, Final Rate in April, Bid Deadline in June, Landscape Release in October). Each column runs January at the top to December at the bottom."><text id="chart2-py25-title" x="60" y="32" font-size="13" font-style="italic" fill="#111">Plan year 2025 cycle</text>
 <text id="chart2-py25-sub" x="60" y="48" font-size="10" fill="#6a6a6a">bid year 2024</text>
 <line id="chart2-py25-axis" x1="200" y1="80" x2="200" y2="920" stroke="#d0d0c8" stroke-width="0.5"/>
@@ -265,7 +267,7 @@
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-11 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1c5cab5">1c5cab5</a>.</p>
+    <p class="footer-build">Built 2026-05-12 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/02c4ffe">02c4ffe</a>.</p>
     
   </footer>
 
