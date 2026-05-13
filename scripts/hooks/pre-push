@@ -15,15 +15,41 @@ ok()   { echo "  ok:   $1"; }
 echo "Running pre-push checks..." >&2
 
 # Redundancy short-circuit: if scripts/blog.config.yaml has
-# redundancy.prepush_lint = skip-if-cli-linted AND HEAD has the
-# Blog-CLI-Linted: trailer (written by `blog publish`), the three lint
-# blocks below are skipped. Toggle defaults to `always` (legacy stays
-# active); manage via `blog config set prepush_lint skip|always`.
-if python scripts/redundancy.py prepush_lint 2>/dev/null; then
-  CLI_LINTED=true
-  ok "lint_blog/lint_vocab/lint_facts skipped (CLI pre-flighted, toggle on)"
+# redundancy.prepush_lint = skip-if-cli-linted AND every commit in the
+# push range carries the Blog-CLI-Linted: trailer (written by `blog
+# publish`), the three lint blocks below are skipped. Toggle defaults
+# to `always` (legacy stays active); manage via
+# `blog config set prepush_lint skip|always`.
+#
+# git's pre-push contract: one line per ref on stdin, formatted
+# "<local_ref> <local_sha> <remote_ref> <remote_sha>". For each ref we
+# pass (remote_sha, local_sha) to redundancy.py so it can walk
+# `git rev-list remote..local` and require trailers on EVERY commit, not
+# just HEAD. New-branch pushes (remote_sha = zeros) and force-pushes
+# with unresolvable ranges fall back to "run lints" inside redundancy.py.
+RANGE_ARGS=()
+if [ ! -t 0 ]; then
+  while read -r _local_ref local_sha _remote_ref remote_sha; do
+    [ -z "$local_sha" ] && continue
+    RANGE_ARGS+=("--range" "$remote_sha" "$local_sha")
+  done
+fi
+# If multiple refs were pushed, every --range pair stacks; redundancy.py
+# only short-circuits when ALL ranges check out.
+
+CLI_LINTED=false
+if [ ${#RANGE_ARGS[@]} -gt 0 ]; then
+  if python scripts/redundancy.py prepush_lint "${RANGE_ARGS[@]}" 2>/dev/null; then
+    CLI_LINTED=true
+    ok "lint_blog/lint_vocab/lint_facts skipped (every commit in push range CLI-linted, toggle on)"
+  fi
 else
-  CLI_LINTED=false
+  # Manual invocation outside the hook context (stdin is a tty or empty).
+  # Fall back to HEAD-only check.
+  if python scripts/redundancy.py prepush_lint 2>/dev/null; then
+    CLI_LINTED=true
+    ok "lint_blog/lint_vocab/lint_facts skipped (HEAD CLI-linted, toggle on; no push range)"
+  fi
 fi
 
 if [ "$CLI_LINTED" = "false" ]; then

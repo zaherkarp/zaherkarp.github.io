@@ -39,19 +39,40 @@ jobs:
         run: pip install -r scripts/requirements.txt
 
       # If scripts/blog.config.yaml has redundancy.ci_blog_lint =
-      # skip-if-cli-linted AND the triggering commit has the
-      # Blog-CLI-Linted: trailer (written by `blog publish`), the two
-      # lint steps below are skipped. Toggle defaults to `always`;
-      # manage via `blog config set ci_blog_lint skip|always`.
+      # skip-if-cli-linted AND every commit in github.event.before
+      # ..after carries the Blog-CLI-Linted: trailer (written by
+      # `blog publish`), the two lint steps below are skipped. Toggle
+      # defaults to `always`; manage via
+      # `blog config set ci_blog_lint skip|always`.
+      #
+      # Falls back to a HEAD-only check for workflow_dispatch / schedule
+      # triggers (no before/after). All-zeros `before` (new branch),
+      # missing commits in a shallow clone, or any untrailered commit
+      # in the range falls back to "run lints" inside redundancy.py.
       - name: Redundancy check (CLI pre-flight)
         id: redundancy
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER:  ${{ github.event.after }}
         run: |
-          if python scripts/redundancy.py ci_blog_lint; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "ci_blog_lint: skip (CLI pre-flighted, toggle on)"
+          set -u
+          if [ -n "${BEFORE:-}" ] && [ -n "${AFTER:-}" ]; then
+            if python scripts/redundancy.py ci_blog_lint --range "$BEFORE" "$AFTER"; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "ci_blog_lint: skip (every commit in $BEFORE..$AFTER CLI-linted, toggle on)"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              echo "ci_blog_lint: run (toggle off, range unresolvable, or untrailered commit in range)"
+            fi
           else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "ci_blog_lint: run (toggle off, or no trailer on HEAD)"
+            # workflow_dispatch / schedule -- no push range; HEAD-only check.
+            if python scripts/redundancy.py ci_blog_lint; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "ci_blog_lint: skip (HEAD CLI-linted, toggle on; no push range)"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              echo "ci_blog_lint: run (no range; toggle off or HEAD untrailered)"
+            fi
           fi
 
       - name: Lint vocabulary (canonical CMS program names)
