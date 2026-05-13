@@ -15,6 +15,57 @@ The part that gets left out of the retelling: the castle wasn't the finished for
 
 That distinction is the useful one.
 
+<figure>
+<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four-stage horizontal sequence: prefabricate components upstream, float them downstream by night, assemble on site in one session, position holds. Each stage is a labeled box with a small abstract glyph; the final box is marked with a red flag to indicate the held forward position." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="22" font-size="11" letter-spacing="1.4" fill="#6a6a6a">THE SUNOMATA SEQUENCE</text>
+  <text x="20" y="40" font-size="13" font-style="italic" fill="#6a6a6a">Four stages. The spec for each is the next stage, not the final objective.</text>
+  <text x="40" y="76" font-size="10" letter-spacing="1.2" fill="#6a6a6a">STAGE 1</text>
+  <text x="40" y="92" font-size="13" fill="#111">Prefabricate</text>
+  <rect x="40" y="104" width="120" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <rect x="52" y="118" width="22" height="14" fill="#111"/>
+  <rect x="80" y="118" width="22" height="14" fill="#6a6a6a"/>
+  <rect x="108" y="118" width="22" height="14" fill="#111"/>
+  <rect x="52" y="138" width="22" height="14" fill="#6a6a6a"/>
+  <rect x="80" y="138" width="22" height="14" fill="#111"/>
+  <rect x="108" y="138" width="22" height="14" fill="#6a6a6a"/>
+  <rect x="52" y="158" width="22" height="14" fill="#111"/>
+  <rect x="80" y="158" width="22" height="14" fill="#6a6a6a"/>
+  <rect x="108" y="158" width="22" height="14" fill="#111"/>
+  <text x="40" y="206" font-size="11" font-style="italic" fill="#6a6a6a">upstream, slow, reusable</text>
+  <line x1="166" y1="144" x2="194" y2="144" stroke="#6a6a6a" stroke-width="1"/>
+  <polygon points="194,144 188,141 188,147" fill="#6a6a6a"/>
+  <text x="200" y="76" font-size="10" letter-spacing="1.2" fill="#6a6a6a">STAGE 2</text>
+  <text x="200" y="92" font-size="13" fill="#111">Float by night</text>
+  <rect x="200" y="104" width="120" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="212" y1="124" x2="308" y2="124" stroke="#d0d0c8" stroke-width="1"/>
+  <path d="M 212 144 Q 236 134 260 144 T 308 144" fill="none" stroke="#6a6a6a" stroke-width="1.2"/>
+  <path d="M 212 158 Q 236 148 260 158 T 308 158" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <rect x="232" y="140" width="14" height="8" fill="#111"/>
+  <rect x="268" y="140" width="14" height="8" fill="#111"/>
+  <line x1="212" y1="172" x2="308" y2="172" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="200" y="206" font-size="11" font-style="italic" fill="#6a6a6a">low visibility, fast transit</text>
+  <line x1="326" y1="144" x2="354" y2="144" stroke="#6a6a6a" stroke-width="1"/>
+  <polygon points="354,144 348,141 348,147" fill="#6a6a6a"/>
+  <text x="360" y="76" font-size="10" letter-spacing="1.2" fill="#6a6a6a">STAGE 3</text>
+  <text x="360" y="92" font-size="13" fill="#111">Assemble</text>
+  <rect x="360" y="104" width="120" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <polygon points="378,170 378,140 396,124 414,124 432,140 450,140 450,170" fill="#111"/>
+  <rect x="396" y="148" width="8" height="22" fill="#6a6a6a"/>
+  <rect x="420" y="148" width="8" height="22" fill="#6a6a6a"/>
+  <text x="360" y="206" font-size="11" font-style="italic" fill="#6a6a6a">one session, on site</text>
+  <line x1="486" y1="144" x2="514" y2="144" stroke="#6a6a6a" stroke-width="1"/>
+  <polygon points="514,144 508,141 508,147" fill="#6a6a6a"/>
+  <text x="520" y="76" font-size="10" letter-spacing="1.2" fill="#6a6a6a">STAGE 4</text>
+  <text x="520" y="92" font-size="13" fill="#111">Position holds</text>
+  <rect x="520" y="104" width="160" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="540" y1="170" x2="660" y2="170" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="588" y1="170" x2="588" y2="124" stroke="#111" stroke-width="1.2"/>
+  <polygon points="588,124 588,138 612,131" fill="#7a0000"/>
+  <text x="520" y="206" font-size="11" font-style="italic" fill="#7a0000">forward base established</text>
+</svg>
+<figcaption>The Sunomata sequence read as a model for client deliverables: prefabricate upstream where the work is slow and reusable, move fast and quiet to the site of the meeting, assemble in one session, and let the held position dictate what gets built next.</figcaption>
+</figure>
+
 ## The failure mode in client work
 
 The recurring mistake in early-stage stakeholder engagement is treating the first deliverable like it needs to be the finished product. It doesn't. It needs to hold a position long enough for you to learn what framing actually lands.
@@ -34,6 +85,89 @@ The pattern is to find which of these groupings intersects with the problem the 
 This is low-footprint for several reasons. The components are reusable across engagements. The vocabulary is not yours, so you are not asking the client to adopt your terminology, you are meeting them inside terminology they have some prior relationship with. And the assembly is fast, because you are not building from raw material.
 
 What you learn quickly: which grouping resonates, which level of granularity the client actually thinks in, and where their internal disagreements are. A client who lights up at a HEDIS-framed analysis and goes quiet at a raw SNOMED hierarchy is telling you something about how they are organized internally and what their existing reporting infrastructure looks like. You could not have learned that from a requirements document.
+
+<figure>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Top row: five labeled rectangles representing prefabricated clinical groupings — ICD code sets, SNOMED hierarchies, LOINC panels, HEDIS measure specifications, and CMS quality measure frameworks — each filled with small abstract markers suggesting internal structure. Light gray arrows descend from each block into a wider lower rectangle labeled short-term value demonstration. The lower rectangle carries a red hairline at its base reading held position." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="22" font-size="11" letter-spacing="1.4" fill="#6a6a6a">OPEN-SOURCE GROUPINGS AS PREFAB COMPONENTS</text>
+  <text x="20" y="40" font-size="13" font-style="italic" fill="#6a6a6a">Pull the slice the moment needs. Assemble. See what lands.</text>
+  <rect x="20" y="60" width="124" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="30" y="78" font-size="11" letter-spacing="1.1" fill="#6a6a6a">ICD</text>
+  <text x="30" y="92" font-size="10" font-style="italic" fill="#6a6a6a">code sets</text>
+  <rect x="30" y="102" width="14" height="6" fill="#111"/>
+  <rect x="48" y="102" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="66" y="102" width="14" height="6" fill="#111"/>
+  <rect x="84" y="102" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="102" y="102" width="14" height="6" fill="#111"/>
+  <rect x="30" y="114" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="48" y="114" width="14" height="6" fill="#111"/>
+  <rect x="66" y="114" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="84" y="114" width="14" height="6" fill="#111"/>
+  <rect x="102" y="114" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="30" y="126" width="14" height="6" fill="#111"/>
+  <rect x="48" y="126" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="66" y="126" width="14" height="6" fill="#111"/>
+  <rect x="84" y="126" width="14" height="6" fill="#6a6a6a"/>
+  <rect x="102" y="126" width="14" height="6" fill="#111"/>
+  <rect x="156" y="60" width="124" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="166" y="78" font-size="11" letter-spacing="1.1" fill="#6a6a6a">SNOMED</text>
+  <text x="166" y="92" font-size="10" font-style="italic" fill="#6a6a6a">hierarchies</text>
+  <line x1="218" y1="100" x2="218" y2="134" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="218" y1="108" x2="186" y2="120" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="218" y1="108" x2="218" y2="120" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="218" y1="108" x2="250" y2="120" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="186" y1="120" x2="174" y2="132" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="186" y1="120" x2="198" y2="132" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="250" y1="120" x2="238" y2="132" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="250" y1="120" x2="262" y2="132" stroke="#6a6a6a" stroke-width="1"/>
+  <circle cx="218" cy="100" r="2" fill="#111"/>
+  <circle cx="186" cy="120" r="2" fill="#111"/>
+  <circle cx="218" cy="120" r="2" fill="#111"/>
+  <circle cx="250" cy="120" r="2" fill="#111"/>
+  <circle cx="174" cy="132" r="2" fill="#6a6a6a"/>
+  <circle cx="198" cy="132" r="2" fill="#6a6a6a"/>
+  <circle cx="238" cy="132" r="2" fill="#6a6a6a"/>
+  <circle cx="262" cy="132" r="2" fill="#6a6a6a"/>
+  <rect x="292" y="60" width="124" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="302" y="78" font-size="11" letter-spacing="1.1" fill="#6a6a6a">LOINC</text>
+  <text x="302" y="92" font-size="10" font-style="italic" fill="#6a6a6a">panels</text>
+  <line x1="302" y1="106" x2="406" y2="106" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="302" y1="118" x2="406" y2="118" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="302" y1="130" x2="406" y2="130" stroke="#d0d0c8" stroke-width="1"/>
+  <rect x="306" y="100" width="40" height="6" fill="#111"/>
+  <rect x="306" y="112" width="60" height="6" fill="#6a6a6a"/>
+  <rect x="306" y="124" width="32" height="6" fill="#111"/>
+  <rect x="354" y="100" width="48" height="6" fill="#6a6a6a"/>
+  <rect x="378" y="112" width="22" height="6" fill="#111"/>
+  <rect x="346" y="124" width="56" height="6" fill="#6a6a6a"/>
+  <rect x="428" y="60" width="124" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="438" y="78" font-size="11" letter-spacing="1.1" fill="#6a6a6a">HEDIS</text>
+  <text x="438" y="92" font-size="10" font-style="italic" fill="#6a6a6a">measure specs</text>
+  <rect x="438" y="102" width="104" height="10" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <rect x="438" y="102" width="40" height="10" fill="#111"/>
+  <rect x="438" y="116" width="104" height="10" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <rect x="438" y="116" width="68" height="10" fill="#111"/>
+  <rect x="438" y="130" width="104" height="10" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <rect x="438" y="130" width="24" height="10" fill="#111"/>
+  <rect x="564" y="60" width="136" height="80" fill="none" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="574" y="78" font-size="11" letter-spacing="1.1" fill="#6a6a6a">CMS QUALITY</text>
+  <text x="574" y="92" font-size="10" font-style="italic" fill="#6a6a6a">measure frameworks</text>
+  <rect x="574" y="104" width="22" height="22" fill="#111"/>
+  <rect x="602" y="104" width="22" height="22" fill="#6a6a6a"/>
+  <rect x="630" y="104" width="22" height="22" fill="#111"/>
+  <rect x="658" y="104" width="22" height="22" fill="#6a6a6a"/>
+  <line x1="82" y1="142" x2="240" y2="206" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="218" y1="142" x2="290" y2="206" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="354" y1="142" x2="350" y2="206" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="490" y1="142" x2="410" y2="206" stroke="#d0d0c8" stroke-width="1"/>
+  <line x1="632" y1="142" x2="460" y2="206" stroke="#d0d0c8" stroke-width="1"/>
+  <rect x="120" y="206" width="480" height="60" fill="none" stroke="#111" stroke-width="1"/>
+  <text x="134" y="226" font-size="11" letter-spacing="1.2" fill="#6a6a6a">SHORT-TERM VALUE DEMONSTRATION</text>
+  <text x="134" y="244" font-size="13" font-style="italic" fill="#111">Assembled from the slice the moment needs</text>
+  <line x1="120" y1="266" x2="600" y2="266" stroke="#7a0000" stroke-width="1.2"/>
+  <text x="134" y="284" font-size="11" font-style="italic" fill="#7a0000">held position</text>
+</svg>
+<figcaption>Each prefabricated grouping carries its own internal structure and institutional legitimacy. The deliverable is the slice that maps to the problem the client is trying to articulate, assembled fast enough to learn what framing actually lands.</figcaption>
+</figure>
 
 ## What holds the position
 
