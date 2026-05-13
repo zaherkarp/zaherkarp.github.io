@@ -1,0 +1,24 @@
+# Toggles for redundant legacy checks that the `blog` CLI now subsumes.
+#
+# Each `redundancy.<toggle>` key controls one legacy enforcement path.
+# Two values:
+#   always              - run the legacy check unconditionally (default;
+#                         existing behavior, safest)
+#   skip-if-cli-linted  - skip the legacy check when the triggering commit
+#                         has a `Blog-CLI-Linted:` trailer. `blog publish`
+#                         always writes that trailer, so this is effectively
+#                         "trust the CLI's pre-flight."
+#
+# Detection: the trailer is the literal line `Blog-CLI-Linted: <timestamp>`
+# in the commit message body. Visible in `git log` forever, so audit chain
+# is intact.
+#
+# Manage via the CLI:
+#   blog config show
+#   blog config set prepush_lint skip
+#   blog config set prepush_lint always
+
+redundancy:
+  prepush_lint: always
+  ci_blog_lint: always
+  ci_portfolio_lint: always

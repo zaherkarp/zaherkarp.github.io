@@ -14,34 +14,48 @@ ok()   { echo "  ok:   $1"; }
 
 echo "Running pre-push checks..." >&2
 
-# 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
-#    blank line inside <svg>, etc).
-if compgen -G "src/content/blog/*.md" >/dev/null; then
-  if output=$(python scripts/lint_blog.py 2>&1); then
-    ok "lint_blog clean"
-  else
-    echo "$output" >&2
-    fail "lint_blog"
-  fi
-fi
-
-# 2. Vocabulary lint (canonical CMS program-name capitalization across
-#    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
-if output=$(python scripts/lint_vocab.py 2>&1); then
-  ok "lint_vocab clean"
+# Redundancy short-circuit: if scripts/blog.config.yaml has
+# redundancy.prepush_lint = skip-if-cli-linted AND HEAD has the
+# Blog-CLI-Linted: trailer (written by `blog publish`), the three lint
+# blocks below are skipped. Toggle defaults to `always` (legacy stays
+# active); manage via `blog config set prepush_lint skip|always`.
+if python scripts/redundancy.py prepush_lint 2>/dev/null; then
+  CLI_LINTED=true
+  ok "lint_blog/lint_vocab/lint_facts skipped (CLI pre-flighted, toggle on)"
 else
-  echo "$output" >&2
-  fail "lint_vocab"
+  CLI_LINTED=false
 fi
 
-# 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
-#    Playbook for failures: scripts/lint_facts.md.
-if [ -f src/content/resume.md ] && [ -f index.html ]; then
-  if output=$(python scripts/lint_facts.py 2>&1); then
-    ok "lint_facts clean"
+if [ "$CLI_LINTED" = "false" ]; then
+  # 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
+  #    blank line inside <svg>, etc).
+  if compgen -G "src/content/blog/*.md" >/dev/null; then
+    if output=$(python scripts/lint_blog.py 2>&1); then
+      ok "lint_blog clean"
+    else
+      echo "$output" >&2
+      fail "lint_blog"
+    fi
+  fi
+
+  # 2. Vocabulary lint (canonical CMS program-name capitalization across
+  #    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
+  if output=$(python scripts/lint_vocab.py 2>&1); then
+    ok "lint_vocab clean"
   else
     echo "$output" >&2
-    fail "lint_facts"
+    fail "lint_vocab"
+  fi
+
+  # 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
+  #    Playbook for failures: scripts/lint_facts.md.
+  if [ -f src/content/resume.md ] && [ -f index.html ]; then
+    if output=$(python scripts/lint_facts.py 2>&1); then
+      ok "lint_facts clean"
+    else
+      echo "$output" >&2
+      fail "lint_facts"
+    fi
   fi
 fi
 

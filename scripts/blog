@@ -60,6 +60,13 @@ from build_blog import (  # noqa: E402
     render_post,
     git_short_sha,
 )
+from redundancy import (  # noqa: E402
+    CONFIG_PATH as REDUNDANCY_CONFIG_PATH,
+    KNOWN_TOGGLES,
+    VALID_VALUES,
+    load_config as load_redundancy_config,
+    toggle_value as redundancy_toggle_value,
+)
 
 install_git_hooks()
 
@@ -638,11 +645,14 @@ def publish(
         die(f"git add failed: {err.strip()}")
     console.print(f"[green]✓[/green] git add {rel}")
 
-    commit_msg = message or f"Publish: {title}"
+    base_msg = message or f"Publish: {title}"
+    trailer = f"Blog-CLI-Linted: {datetime.now(timezone.utc).isoformat(timespec='seconds')}"
+    commit_msg = f"{base_msg}\n\n{trailer}"
     code, _, err = run_subprocess(["git", "commit", "-m", commit_msg])
     if code != 0:
         die(f"git commit failed: {err.strip()}")
-    console.print(f"[green]✓[/green] git commit  [dim]\"{commit_msg}\"[/dim]")
+    console.print(f"[green]✓[/green] git commit  [dim]\"{base_msg}\"[/dim]")
+    console.print(f"  [dim]+ trailer: {trailer}[/dim]")
 
     push_args = ["git", "push", "-u", "origin"]
     if branch == "main":
@@ -681,6 +691,87 @@ def rename(
     old_path.rename(new_path)
     console.print(
         f"[green]✓[/green] renamed {old_path.stem} → [bold]{new_slug}[/bold]"
+    )
+
+
+# --------------------------------------------------------------------------
+# config (redundancy toggles)
+# --------------------------------------------------------------------------
+
+config_app = typer.Typer(
+    no_args_is_help=True,
+    help="manage the legacy-redundancy toggles in scripts/blog.config.yaml",
+)
+app.add_typer(config_app, name="config")
+
+
+TOGGLE_DESCRIPTIONS = {
+    "prepush_lint": "pre-push hook: lint_blog + lint_vocab + lint_facts",
+    "ci_blog_lint": "build_blog.yml: lint_vocab + lint_blog steps",
+    "ci_portfolio_lint": "build_portfolio.yml: reserved (no lints in workflow today)",
+}
+
+
+def _write_redundancy_config(toggles: dict[str, str]) -> None:
+    """Rewrite scripts/blog.config.yaml preserving the header comment."""
+    import yaml as _yaml
+
+    existing = REDUNDANCY_CONFIG_PATH.read_text(encoding="utf-8")
+    header_lines = []
+    for line in existing.splitlines():
+        if line.startswith("redundancy:"):
+            break
+        header_lines.append(line)
+    header = "\n".join(header_lines).rstrip() + "\n\n"
+    body = _yaml.safe_dump(
+        {"redundancy": toggles}, sort_keys=False, default_flow_style=False
+    )
+    REDUNDANCY_CONFIG_PATH.write_text(header + body, encoding="utf-8")
+
+
+@config_app.command("show")
+def config_show() -> None:
+    """Show current redundancy toggle values."""
+    console.print(f"\n[bold]redundancy toggles[/bold] [dim]({REDUNDANCY_CONFIG_PATH.relative_to(ROOT)})[/dim]\n")
+    width = max(len(t) for t in KNOWN_TOGGLES)
+    for toggle in KNOWN_TOGGLES:
+        value = redundancy_toggle_value(toggle)
+        color = "green" if value == "skip-if-cli-linted" else "dim"
+        marker = "skip" if value == "skip-if-cli-linted" else "always"
+        console.print(
+            f"  [{color}]{marker:>6}[/{color}]  "
+            f"[bold]{toggle.ljust(width)}[/bold]  "
+            f"[dim]{TOGGLE_DESCRIPTIONS[toggle]}[/dim]"
+        )
+    console.print(
+        "\n[dim]values: 'always' (run legacy check) | "
+        "'skip-if-cli-linted' (trust the CLI's pre-flight)[/dim]\n"
+    )
+
+
+@config_app.command("set")
+def config_set(
+    toggle: str = typer.Argument(..., help=f"one of: {', '.join(KNOWN_TOGGLES)}"),
+    value: str = typer.Argument(..., help="'skip' (alias of skip-if-cli-linted) or 'always'"),
+) -> None:
+    """Set a redundancy toggle and save scripts/blog.config.yaml."""
+    if toggle not in KNOWN_TOGGLES:
+        die(f"unknown toggle: {toggle}\nknown: {', '.join(KNOWN_TOGGLES)}")
+    if value == "skip":
+        value = "skip-if-cli-linted"
+    if value not in VALID_VALUES:
+        die(f"invalid value: {value}\nvalid: skip | always")
+
+    cfg = load_redundancy_config()
+    toggles = dict(cfg.get("redundancy", {}) or {})
+    for known in KNOWN_TOGGLES:
+        toggles.setdefault(known, "always")
+    toggles[toggle] = value
+    _write_redundancy_config(toggles)
+
+    color = "green" if value == "skip-if-cli-linted" else "dim"
+    console.print(
+        f"[green]✓[/green] [bold]{toggle}[/bold] = [{color}]{value}[/{color}]"
     )
 
 

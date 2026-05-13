@@ -38,10 +38,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      # If scripts/blog.config.yaml has redundancy.ci_blog_lint =
+      # skip-if-cli-linted AND the triggering commit has the
+      # Blog-CLI-Linted: trailer (written by `blog publish`), the two
+      # lint steps below are skipped. Toggle defaults to `always`;
+      # manage via `blog config set ci_blog_lint skip|always`.
+      - name: Redundancy check (CLI pre-flight)
+        id: redundancy
+        run: |
+          if python scripts/redundancy.py ci_blog_lint; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "ci_blog_lint: skip (CLI pre-flighted, toggle on)"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "ci_blog_lint: run (toggle off, or no trailer on HEAD)"
+          fi
+
       - name: Lint vocabulary (canonical CMS program names)
+        if: steps.redundancy.outputs.skip != 'true'
         run: python scripts/lint_vocab.py
 
       - name: Lint blog sources
+        if: steps.redundancy.outputs.skip != 'true'
         run: python scripts/lint_blog.py
 
       - name: Build blog
