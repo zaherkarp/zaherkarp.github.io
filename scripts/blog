@@ -1,0 +1,788 @@
+#!/usr/bin/env python3
+"""blog — terminal companion for src/content/blog/.
+
+Subcommands:
+  new        scaffold a draft and open it in $EDITOR
+  list       list posts with draft / publish state
+  edit       open an existing post in $EDITOR
+  lint       run lint_blog + lint_vocab + lint_facts
+  preview    rebuild the site and open the rendered post in a browser
+  status     dashboard: drafts, recent publications, branch state
+  publish    lint, flip draft to false, commit, push to main
+  rename     rename a post file (and update its slug references)
+
+Lives in scripts/ alongside the rest of the project tooling.
+Install path on the user's system: `ln -s "$(pwd)/scripts/blog" ~/.local/bin/blog`.
+"""
+
+from __future__ import annotations
+
+import email.utils
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import textwrap
+import webbrowser
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+import frontmatter
+import typer
+from rich.console import Console
+from rich.prompt import Confirm, Prompt
+from rich.table import Table
+
+ROOT = Path(__file__).resolve().parent.parent
+POSTS_DIR = ROOT / "src" / "content" / "blog"
+BLOG_OUT = ROOT / "blog"
+
+sys.path.insert(0, str(ROOT / "scripts"))
+from _common import install_git_hooks  # noqa: E402
+
+# Lint + render helpers reused from the existing scripts. The two linters
+# expose per-post entry points (check_post, check_text) that let `blog lint`
+# scope to a single file; build_blog gives us parse_post / render_post so
+# `blog preview` can render drafts without flipping their `draft:` bit on
+# disk or churning the /blog/ build output.
+from lint_blog import check_post as lint_blog_check_post  # noqa: E402
+from lint_vocab import (  # noqa: E402
+    check_text as lint_vocab_check_text,
+    post_exemptions as lint_vocab_post_exemptions,
+)
+from build_blog import (  # noqa: E402
+    TEMPLATES_DIR,
+    make_markdown,
+    parse_post,
+    render_post,
+    git_short_sha,
+)
+from redundancy import (  # noqa: E402
+    CONFIG_PATH as REDUNDANCY_CONFIG_PATH,
+    KNOWN_TOGGLES,
+    VALID_VALUES,
+    load_config as load_redundancy_config,
+    toggle_value as redundancy_toggle_value,
+)
+
+install_git_hooks()
+
+app = typer.Typer(
+    add_completion=False,
+    no_args_is_help=True,
+    help="terminal companion for the zaherkarp.com blog",
+    rich_markup_mode="rich",
+)
+console = Console()
+err_console = Console(stderr=True)
+
+
+# --------------------------------------------------------------------------
+# helpers
+# --------------------------------------------------------------------------
+
+SLUG_RE = re.compile(r"[^a-z0-9]+")
+DRAFT_LINE_RE = re.compile(r"^draft:\s*(true|false)\s*$", re.MULTILINE)
+
+
+def slugify(title: str) -> str:
+    s = SLUG_RE.sub("-", title.lower()).strip("-")
+    return s or "untitled"
+
+
+def find_post(slug_or_path: str) -> Path:
+    """Resolve a slug or partial filename to a post path. Aborts on miss."""
+    candidate = POSTS_DIR / f"{slug_or_path}.md"
+    if candidate.exists():
+        return candidate
+    candidate = POSTS_DIR / slug_or_path
+    if candidate.exists():
+        return candidate
+    matches = sorted(POSTS_DIR.glob(f"*{slug_or_path}*.md"))
+    matches = [m for m in matches if not m.stem.startswith("_")]
+    if len(matches) == 1:
+        return matches[0]
+    if not matches:
+        die(f"no post matches [bold]{slug_or_path}[/bold]")
+    die(
+        "ambiguous slug:\n  "
+        + "\n  ".join(m.stem for m in matches)
+        + "\nuse a more specific fragment"
+    )
+
+
+def load_post(path: Path) -> frontmatter.Post:
+    return frontmatter.load(path)
+
+
+def all_posts() -> list[Path]:
+    return sorted(p for p in POSTS_DIR.glob("*.md") if not p.stem.startswith("_"))
+
+
+def is_draft(post: frontmatter.Post) -> bool:
+    value = post.get("draft", False)
+    return bool(value) if not isinstance(value, str) else value.lower() == "true"
+
+
+def fmt_date(value) -> str:
+    if isinstance(value, (date, datetime)):
+        return value.strftime("%Y-%m-%d")
+    return str(value) if value else "—"
+
+
+def relative_age(d) -> str:
+    if not isinstance(d, (date, datetime)):
+        return ""
+    today = date.today()
+    if isinstance(d, datetime):
+        d = d.date()
+    delta = (today - d).days
+    if delta == 0:
+        return "today"
+    if delta == 1:
+        return "yesterday"
+    if delta < 0:
+        return f"in {-delta}d"
+    if delta < 30:
+        return f"{delta}d ago"
+    if delta < 365:
+        return f"{delta // 30}mo ago"
+    return f"{delta // 365}y ago"
+
+
+def current_branch() -> str:
+    r = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return r.stdout.strip()
+
+
+def commits_ahead(branch: str = "origin/main") -> int:
+    r = subprocess.run(
+        ["git", "rev-list", "--count", f"{branch}..HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    try:
+        return int(r.stdout.strip())
+    except ValueError:
+        return 0
+
+
+def die(msg: str, code: int = 1) -> None:
+    err_console.print(f"[red]error[/red] {msg}")
+    raise typer.Exit(code)
+
+
+def run_subprocess(cmd: list[str]) -> tuple[int, str, str]:
+    r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, check=False)
+    return r.returncode, r.stdout, r.stderr
+
+
+def open_in_editor(path: Path) -> None:
+    editor = os.environ.get("EDITOR") or ("notepad" if os.name == "nt" else "vi")
+    cmd = editor.split() + [str(path)]
+    subprocess.run(cmd, cwd=ROOT, check=False)
+
+
+# --------------------------------------------------------------------------
+# linters
+# --------------------------------------------------------------------------
+
+LINTERS = [
+    ("lint_blog", "blog source-side rules"),
+    ("lint_vocab", "canonical CMS / HEDIS spellings"),
+    ("lint_facts", "resume / homepage / JSON-LD drift"),
+]
+
+
+def run_linter(name: str) -> tuple[bool, str]:
+    code, out, err = run_subprocess(
+        [sys.executable, str(ROOT / "scripts" / f"{name}.py")]
+    )
+    output = (out + err).strip()
+    return code == 0, output
+
+
+def run_all_linters() -> bool:
+    overall = True
+    width = max(len(n) for n, _ in LINTERS)
+    for name, descr in LINTERS:
+        ok, output = run_linter(name)
+        mark = "[green]✓[/green]" if ok else "[red]✗[/red]"
+        console.print(f"  {mark}  {name.ljust(width)}  [dim]{descr}[/dim]")
+        if not ok:
+            overall = False
+            for line in output.splitlines():
+                err_console.print(f"      [dim]{line}[/dim]")
+    return overall
+
+
+# --------------------------------------------------------------------------
+# new
+# --------------------------------------------------------------------------
+
+FRONTMATTER_TEMPLATE = textwrap.dedent(
+    """\
+    ---
+    title: "{title}"
+    description: "{description}"
+    publishDate: {publish_date}
+    draft: true
+    tags:
+    {tags_block}
+    # homepageMarginnote: "{margin_note}"
+    # vocab_exempt: []
+    ---
+
+    ## TL;DR
+
+    -
+
+    ---
+
+    """
+)
+
+
+@app.command()
+def new(
+    title: Optional[str] = typer.Argument(None, help="post title (prompt if omitted)"),
+    no_editor: bool = typer.Option(
+        False, "--no-editor", help="skip opening $EDITOR after scaffold"
+    ),
+) -> None:
+    """Scaffold a new draft post and open it in $EDITOR."""
+    if title is None:
+        title = Prompt.ask("[bold]Title[/bold]").strip()
+    if not title:
+        die("title is required")
+
+    description = Prompt.ask(
+        "[bold]Description[/bold] [dim](one-line summary, shows on homepage)[/dim]",
+        default="",
+    ).strip()
+    tags_raw = Prompt.ask(
+        "[bold]Tags[/bold] [dim](comma-separated)[/dim]", default=""
+    ).strip()
+    margin_note = Prompt.ask(
+        "[bold]Margin note[/bold] [dim](optional ⊕ on homepage; enter to skip)[/dim]",
+        default="",
+    ).strip()
+    publish_date = Prompt.ask(
+        "[bold]Publish date[/bold]", default=date.today().isoformat()
+    ).strip()
+
+    slug = slugify(title)
+    path = POSTS_DIR / f"{slug}.md"
+    if path.exists():
+        die(f"a post already exists at {path.relative_to(ROOT)}")
+
+    tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+    tags_block = "\n".join(f"  - {t}" for t in tags) if tags else "  - "
+
+    body = FRONTMATTER_TEMPLATE.format(
+        title=title.replace('"', "'"),
+        description=description.replace('"', "'"),
+        publish_date=publish_date,
+        tags_block=tags_block,
+        margin_note=margin_note.replace('"', "'"),
+    )
+    path.write_text(body, encoding="utf-8")
+
+    console.print()
+    console.print(f"[green]✓[/green] wrote [bold]{path.relative_to(ROOT)}[/bold]")
+    console.print(f"  slug:   [bold]{slug}[/bold]")
+    console.print("  status: [yellow]draft[/yellow]")
+
+    if not no_editor:
+        console.print()
+        open_in_editor(path)
+
+
+# --------------------------------------------------------------------------
+# list
+# --------------------------------------------------------------------------
+
+
+@app.command("list")
+def list_cmd(
+    drafts_only: bool = typer.Option(False, "--drafts", help="only show drafts"),
+    show_all: bool = typer.Option(False, "--all", help="include `_`-prefixed files"),
+) -> None:
+    """List posts with publish state."""
+    paths = sorted(POSTS_DIR.glob("*.md"))
+    if not show_all:
+        paths = [p for p in paths if not p.stem.startswith("_")]
+
+    rows = []
+    for path in paths:
+        try:
+            post = load_post(path)
+        except Exception as e:  # noqa: BLE001
+            rows.append((path.stem, "[red]error[/red]", "", str(e)[:60]))
+            continue
+        draft = is_draft(post)
+        if drafts_only and not draft:
+            continue
+        status = "[yellow]draft[/yellow]" if draft else "[green]live[/green]"
+        rows.append(
+            (
+                path.stem,
+                status,
+                fmt_date(post.get("publishDate", "")),
+                str(post.get("title", "")),
+            )
+        )
+
+    if not rows:
+        console.print("[dim]no posts match[/dim]")
+        return
+
+    table = Table.grid(padding=(0, 2))
+    table.add_column(style="bold")
+    table.add_column()
+    table.add_column(style="dim")
+    table.add_column()
+    for r in rows:
+        table.add_row(*r)
+    console.print(table)
+    console.print(f"\n[dim]{len(rows)} post(s)[/dim]")
+
+
+# --------------------------------------------------------------------------
+# edit
+# --------------------------------------------------------------------------
+
+
+@app.command()
+def edit(slug: str = typer.Argument(..., help="post slug or fragment")) -> None:
+    """Open an existing post in $EDITOR."""
+    path = find_post(slug)
+    open_in_editor(path)
+
+
+# --------------------------------------------------------------------------
+# lint
+# --------------------------------------------------------------------------
+
+
+def run_scoped_linters(path: Path) -> bool:
+    """Run lint_blog + lint_vocab against a single post. lint_facts is
+    cross-surface (resume / homepage / JSON-LD) and has nothing to say
+    about an individual post, so it's skipped in scoped mode."""
+    blog_violations = lint_blog_check_post(path)
+    text = path.read_text(encoding="utf-8")
+    exemptions = lint_vocab_post_exemptions(path)
+    vocab_violations = lint_vocab_check_text(
+        path, text, fenced=True, exemptions=exemptions
+    )
+
+    overall = True
+    for label, descr, violations in (
+        ("lint_blog ", "blog source-side rules", blog_violations),
+        ("lint_vocab", "canonical CMS / HEDIS spellings", vocab_violations),
+    ):
+        mark = "[green]✓[/green]" if not violations else "[red]✗[/red]"
+        console.print(f"  {mark}  {label}  [dim]{descr}[/dim]")
+        if violations:
+            overall = False
+            for v in violations:
+                err_console.print(f"      [dim]{v}[/dim]")
+    console.print("  [dim]·  lint_facts skipped (cross-surface, not post-scoped)[/dim]")
+    return overall
+
+
+@app.command()
+def lint(
+    slug: Optional[str] = typer.Argument(
+        None, help="post slug; omit to run all three linters repo-wide"
+    ),
+) -> None:
+    """Run lint_blog + lint_vocab + lint_facts. With a slug, scope to that
+    post (and skip lint_facts, which is cross-surface)."""
+    if slug is not None:
+        path = find_post(slug)
+        console.print(f"[bold]linting[/bold] [dim]{path.relative_to(ROOT)}[/dim]")
+        ok = run_scoped_linters(path)
+    else:
+        console.print("[bold]running linters[/bold] [dim](repo-wide)[/dim]")
+        ok = run_all_linters()
+
+    console.print()
+    if ok:
+        console.print("[green]all clear[/green]")
+    else:
+        die("one or more linters reported issues; fix and re-run")
+
+
+# --------------------------------------------------------------------------
+# preview
+# --------------------------------------------------------------------------
+
+
+ASSET_ATTR_RE = re.compile(r'(href|src)="/(?!/)([^"]*)"')
+
+
+def render_post_to_tempfile(path: Path) -> Path:
+    """Render a single post (draft or not) to a tempfile, with absolute
+    asset paths rewritten to file:// URIs of the actual repo files so the
+    preview can load /blog.css and /fonts/et-book/* without a server.
+
+    Side-effect-free: never touches /blog/ build output and never mutates
+    the post file (the in-memory draft flag is overridden for rendering
+    only)."""
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape(["html"]),
+        trim_blocks=False,
+        lstrip_blocks=False,
+    )
+    md = make_markdown()
+    post = parse_post(path, md)
+    # In-memory only; the .md file on disk is never touched.
+    post["draft"] = False
+
+    now = datetime.now(timezone.utc)
+    build_info = {
+        "build_iso": now.isoformat(timespec="seconds"),
+        "build_date_human": now.strftime("%Y-%m-%d"),
+        "build_date_rfc822": email.utils.format_datetime(now),
+        "build_sha": git_short_sha(),
+    }
+    html = render_post(env, post, now.year, build_info)
+
+    def to_file_uri(m: re.Match) -> str:
+        attr, rest = m.group(1), m.group(2)
+        target = (ROOT / rest).resolve()
+        if not target.exists():
+            return m.group(0)
+        return f'{attr}="{target.as_uri()}"'
+
+    html = ASSET_ATTR_RE.sub(to_file_uri, html)
+
+    tmp_dir = Path(tempfile.gettempdir()) / "zaherkarp-blog-preview" / post["slug"]
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    out = tmp_dir / "index.html"
+    out.write_text(html, encoding="utf-8")
+    return out
+
+
+@app.command()
+def preview(
+    slug: str = typer.Argument(..., help="post slug to render"),
+) -> None:
+    """Render a post (draft or live) to a tempfile and open it in your browser.
+
+    Side-effect-free: no /blog/ rebuild, no draft-flag mutation. Asset
+    references to /blog.css and /fonts/* are rewritten to file:// URIs
+    of the actual repo files. CDN scripts (KaTeX, Mermaid, Prism) and
+    nav links to other site pages won't work in the preview, by design."""
+    path = find_post(slug)
+    try:
+        out = render_post_to_tempfile(path)
+    except Exception as e:  # noqa: BLE001
+        die(f"render failed: {e}")
+    url = out.as_uri()
+    console.print(f"[green]✓[/green] [bold]{path.stem}[/bold] rendered to {out}")
+    console.print(f"  opening {url}")
+    webbrowser.open(url)
+
+
+# --------------------------------------------------------------------------
+# status
+# --------------------------------------------------------------------------
+
+
+@app.command()
+def status() -> None:
+    """Show drafts, recent publications, branch state."""
+    drafts = []
+    published = []
+    for path in all_posts():
+        try:
+            post = load_post(path)
+        except Exception:  # noqa: BLE001
+            continue
+        entry = (path.stem, post.get("publishDate"), str(post.get("title", "")))
+        (drafts if is_draft(post) else published).append(entry)
+
+    published.sort(key=lambda e: str(e[1]), reverse=True)
+
+    console.print(f"\n[bold]drafts[/bold] [dim]({len(drafts)})[/dim]")
+    if not drafts:
+        console.print("  [dim]none[/dim]")
+    for slug, d, title in drafts:
+        console.print(
+            f"  [yellow]~[/yellow] [bold]{slug}[/bold]  [dim]{relative_age(d) or fmt_date(d)}[/dim]  {title}"
+        )
+
+    console.print(f"\n[bold]recently published[/bold] [dim](last 5)[/dim]")
+    for slug, d, title in published[:5]:
+        console.print(
+            f"  [green]✓[/green] [bold]{slug}[/bold]  [dim]{fmt_date(d)}[/dim]  {title}"
+        )
+
+    console.print("\n[bold]git[/bold]")
+    branch = current_branch() or "[red]not a git repo[/red]"
+    ahead = commits_ahead("origin/main")
+    console.print(f"  branch:  [bold]{branch}[/bold]")
+    console.print(f"  ahead of origin/main:  {ahead} commit(s)")
+
+    console.print()
+
+
+# --------------------------------------------------------------------------
+# publish
+# --------------------------------------------------------------------------
+
+
+def flip_draft_false(path: Path) -> bool:
+    """Rewrite `draft: true` to `draft: false` in the YAML block. Returns
+    True if a change was written."""
+    text = path.read_text(encoding="utf-8")
+    new_text, n = DRAFT_LINE_RE.subn("draft: false", text, count=1)
+    if n == 0 or new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+def flip_draft_true(path: Path) -> bool:
+    """Mirror of flip_draft_false."""
+    text = path.read_text(encoding="utf-8")
+    new_text, n = DRAFT_LINE_RE.subn("draft: true", text, count=1)
+    if n == 0 or new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+@app.command()
+def draft(slug: str = typer.Argument(..., help="post slug to mark as draft")) -> None:
+    """Flip a post back to draft: true (un-publishes it from the next build)."""
+    path = find_post(slug)
+    post = load_post(path)
+    if is_draft(post):
+        console.print(f"[dim]{path.stem} is already a draft[/dim]")
+        raise typer.Exit(0)
+    if not flip_draft_true(path):
+        die(f"could not flip draft flag in {path.relative_to(ROOT)}")
+    console.print(
+        f"[green]✓[/green] [bold]{path.stem}[/bold] is now [yellow]draft[/yellow] "
+        f"[dim](next CI build will skip it)[/dim]"
+    )
+
+
+@app.command()
+def publish(
+    slug: str = typer.Argument(..., help="post slug to publish"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="show the plan, change nothing"),
+    message: Optional[str] = typer.Option(
+        None, "-m", "--message", help="override commit message"
+    ),
+    force_branch: bool = typer.Option(
+        False,
+        "--force-branch",
+        help="allow publishing from a non-main branch (default: refuse)",
+    ),
+) -> None:
+    """Lint, flip draft to false, commit the post, push to origin/main."""
+    path = find_post(slug)
+    post = load_post(path)
+    real_slug = path.stem
+    title = str(post.get("title", real_slug))
+
+    branch = current_branch()
+    if not branch:
+        die("not in a git work tree")
+    if branch != "main" and not force_branch:
+        die(
+            f"current branch is [bold]{branch}[/bold], not main.\n"
+            "publish always pushes to main. either switch branches "
+            "([bold]git checkout main[/bold]) or pass [bold]--force-branch[/bold]."
+        )
+
+    console.print(f"\n[bold]pre-flight[/bold]")
+    if not run_all_linters():
+        die("publish aborted: fix lint failures above")
+
+    console.print(f"\n[bold]post[/bold]")
+    console.print(f"  title:        {title}")
+    console.print(f"  slug:         [bold]{real_slug}[/bold]")
+    console.print(f"  publishDate:  {fmt_date(post.get('publishDate'))}")
+    console.print(
+        f"  draft:        "
+        + ("[yellow]true[/yellow] → [green]false[/green]" if is_draft(post) else "[green]false[/green] (already)")
+    )
+
+    if dry_run:
+        console.print("\n[dim]--dry-run: stopping before any changes[/dim]")
+        return
+
+    if not Confirm.ask("\nproceed?", default=False):
+        console.print("[dim]aborted[/dim]")
+        raise typer.Exit(0)
+
+    changed = flip_draft_false(path) if is_draft(post) else False
+    if changed:
+        console.print("[green]✓[/green] flipped draft: false")
+
+    rel = str(path.relative_to(ROOT))
+    code, _, err = run_subprocess(["git", "add", rel])
+    if code != 0:
+        die(f"git add failed: {err.strip()}")
+    console.print(f"[green]✓[/green] git add {rel}")
+
+    base_msg = message or f"Publish: {title}"
+    trailer = f"Blog-CLI-Linted: {datetime.now(timezone.utc).isoformat(timespec='seconds')}"
+    commit_msg = f"{base_msg}\n\n{trailer}"
+    code, _, err = run_subprocess(["git", "commit", "-m", commit_msg])
+    if code != 0:
+        die(f"git commit failed: {err.strip()}")
+    console.print(f"[green]✓[/green] git commit  [dim]\"{base_msg}\"[/dim]")
+    console.print(f"  [dim]+ trailer: {trailer}[/dim]")
+
+    push_args = ["git", "push", "-u", "origin"]
+    if branch == "main":
+        push_args.append("main")
+    else:
+        push_args.append(f"HEAD:main")
+    code, _, err = run_subprocess(push_args)
+    if code != 0:
+        die(f"git push failed: {err.strip()}")
+    console.print(f"[green]✓[/green] git push origin main")
+
+    console.print(
+        "\nCI will run build_blog + build_portfolio and commit the rendered HTML."
+    )
+    console.print(
+        "[dim]watch:  https://github.com/zaherkarp/zaherkarp.github.io/actions[/dim]\n"
+    )
+
+
+# --------------------------------------------------------------------------
+# rename
+# --------------------------------------------------------------------------
+
+
+@app.command()
+def rename(
+    old: str = typer.Argument(..., help="existing slug"),
+    new: str = typer.Argument(..., help="new slug"),
+) -> None:
+    """Rename a post file. Aborts if the target exists."""
+    old_path = find_post(old)
+    new_slug = slugify(new)
+    new_path = POSTS_DIR / f"{new_slug}.md"
+    if new_path.exists():
+        die(f"target already exists: {new_path.relative_to(ROOT)}")
+    old_path.rename(new_path)
+    console.print(
+        f"[green]✓[/green] renamed {old_path.stem} → [bold]{new_slug}[/bold]"
+    )
+
+
+# --------------------------------------------------------------------------
+# config (redundancy toggles)
+# --------------------------------------------------------------------------
+
+config_app = typer.Typer(
+    no_args_is_help=True,
+    help="manage the legacy-redundancy toggles in scripts/blog.config.yaml",
+)
+app.add_typer(config_app, name="config")
+
+
+TOGGLE_DESCRIPTIONS = {
+    "prepush_lint": "pre-push hook: lint_blog + lint_vocab + lint_facts",
+    "ci_blog_lint": "build_blog.yml: lint_vocab + lint_blog steps",
+    "ci_portfolio_lint": "build_portfolio.yml: reserved (no lints in workflow today)",
+}
+
+
+def _write_redundancy_config(toggles: dict[str, str]) -> None:
+    """Rewrite scripts/blog.config.yaml preserving the header comment."""
+    import yaml as _yaml
+
+    existing = REDUNDANCY_CONFIG_PATH.read_text(encoding="utf-8")
+    header_lines = []
+    for line in existing.splitlines():
+        if line.startswith("redundancy:"):
+            break
+        header_lines.append(line)
+    header = "\n".join(header_lines).rstrip() + "\n\n"
+    body = _yaml.safe_dump(
+        {"redundancy": toggles}, sort_keys=False, default_flow_style=False
+    )
+    REDUNDANCY_CONFIG_PATH.write_text(header + body, encoding="utf-8")
+
+
+@config_app.command("show")
+def config_show() -> None:
+    """Show current redundancy toggle values."""
+    console.print(f"\n[bold]redundancy toggles[/bold] [dim]({REDUNDANCY_CONFIG_PATH.relative_to(ROOT)})[/dim]\n")
+    width = max(len(t) for t in KNOWN_TOGGLES)
+    for toggle in KNOWN_TOGGLES:
+        value = redundancy_toggle_value(toggle)
+        color = "green" if value == "skip-if-cli-linted" else "dim"
+        marker = "skip" if value == "skip-if-cli-linted" else "always"
+        console.print(
+            f"  [{color}]{marker:>6}[/{color}]  "
+            f"[bold]{toggle.ljust(width)}[/bold]  "
+            f"[dim]{TOGGLE_DESCRIPTIONS[toggle]}[/dim]"
+        )
+    console.print(
+        "\n[dim]values: 'always' (run legacy check) | "
+        "'skip-if-cli-linted' (trust the CLI's pre-flight)[/dim]\n"
+    )
+
+
+@config_app.command("set")
+def config_set(
+    toggle: str = typer.Argument(..., help=f"one of: {', '.join(KNOWN_TOGGLES)}"),
+    value: str = typer.Argument(..., help="'skip' (alias of skip-if-cli-linted) or 'always'"),
+) -> None:
+    """Set a redundancy toggle and save scripts/blog.config.yaml."""
+    if toggle not in KNOWN_TOGGLES:
+        die(f"unknown toggle: {toggle}\nknown: {', '.join(KNOWN_TOGGLES)}")
+    if value == "skip":
+        value = "skip-if-cli-linted"
+    if value not in VALID_VALUES:
+        die(f"invalid value: {value}\nvalid: skip | always")
+
+    cfg = load_redundancy_config()
+    toggles = dict(cfg.get("redundancy", {}) or {})
+    for known in KNOWN_TOGGLES:
+        toggles.setdefault(known, "always")
+    toggles[toggle] = value
+    _write_redundancy_config(toggles)
+
+    color = "green" if value == "skip-if-cli-linted" else "dim"
+    console.print(
+        f"[green]✓[/green] [bold]{toggle}[/bold] = [{color}]{value}[/{color}]"
+    )
+
+
+# --------------------------------------------------------------------------
+
+
+def main() -> None:
+    if not POSTS_DIR.exists():
+        die(f"posts directory not found at {POSTS_DIR}")
+    app()
+
+
+if __name__ == "__main__":
+    main()

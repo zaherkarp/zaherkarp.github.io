@@ -14,34 +14,74 @@ ok()   { echo "  ok:   $1"; }
 
 echo "Running pre-push checks..." >&2
 
-# 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
-#    blank line inside <svg>, etc).
-if compgen -G "src/content/blog/*.md" >/dev/null; then
-  if output=$(python scripts/lint_blog.py 2>&1); then
-    ok "lint_blog clean"
-  else
-    echo "$output" >&2
-    fail "lint_blog"
+# Redundancy short-circuit: if scripts/blog.config.yaml has
+# redundancy.prepush_lint = skip-if-cli-linted AND every commit in the
+# push range carries the Blog-CLI-Linted: trailer (written by `blog
+# publish`), the three lint blocks below are skipped. Toggle defaults
+# to `always` (legacy stays active); manage via
+# `blog config set prepush_lint skip|always`.
+#
+# git's pre-push contract: one line per ref on stdin, formatted
+# "<local_ref> <local_sha> <remote_ref> <remote_sha>". For each ref we
+# pass (remote_sha, local_sha) to redundancy.py so it can walk
+# `git rev-list remote..local` and require trailers on EVERY commit, not
+# just HEAD. New-branch pushes (remote_sha = zeros) and force-pushes
+# with unresolvable ranges fall back to "run lints" inside redundancy.py.
+RANGE_ARGS=()
+if [ ! -t 0 ]; then
+  while read -r _local_ref local_sha _remote_ref remote_sha; do
+    [ -z "$local_sha" ] && continue
+    RANGE_ARGS+=("--range" "$remote_sha" "$local_sha")
+  done
+fi
+# If multiple refs were pushed, every --range pair stacks; redundancy.py
+# only short-circuits when ALL ranges check out.
+
+CLI_LINTED=false
+if [ ${#RANGE_ARGS[@]} -gt 0 ]; then
+  if python scripts/redundancy.py prepush_lint "${RANGE_ARGS[@]}" 2>/dev/null; then
+    CLI_LINTED=true
+    ok "lint_blog/lint_vocab/lint_facts skipped (every commit in push range CLI-linted, toggle on)"
+  fi
+else
+  # Manual invocation outside the hook context (stdin is a tty or empty).
+  # Fall back to HEAD-only check.
+  if python scripts/redundancy.py prepush_lint 2>/dev/null; then
+    CLI_LINTED=true
+    ok "lint_blog/lint_vocab/lint_facts skipped (HEAD CLI-linted, toggle on; no push range)"
   fi
 fi
 
-# 2. Vocabulary lint (canonical CMS program-name capitalization across
-#    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
-if output=$(python scripts/lint_vocab.py 2>&1); then
-  ok "lint_vocab clean"
-else
-  echo "$output" >&2
-  fail "lint_vocab"
-fi
+if [ "$CLI_LINTED" = "false" ]; then
+  # 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
+  #    blank line inside <svg>, etc).
+  if compgen -G "src/content/blog/*.md" >/dev/null; then
+    if output=$(python scripts/lint_blog.py 2>&1); then
+      ok "lint_blog clean"
+    else
+      echo "$output" >&2
+      fail "lint_blog"
+    fi
+  fi
 
-# 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
-#    Playbook for failures: scripts/lint_facts.md.
-if [ -f src/content/resume.md ] && [ -f index.html ]; then
-  if output=$(python scripts/lint_facts.py 2>&1); then
-    ok "lint_facts clean"
+  # 2. Vocabulary lint (canonical CMS program-name capitalization across
+  #    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
+  if output=$(python scripts/lint_vocab.py 2>&1); then
+    ok "lint_vocab clean"
   else
     echo "$output" >&2
-    fail "lint_facts"
+    fail "lint_vocab"
+  fi
+
+  # 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
+  #    Playbook for failures: scripts/lint_facts.md.
+  if [ -f src/content/resume.md ] && [ -f index.html ]; then
+    if output=$(python scripts/lint_facts.py 2>&1); then
+      ok "lint_facts clean"
+    else
+      echo "$output" >&2
+      fail "lint_facts"
+    fi
   fi
 fi
 
