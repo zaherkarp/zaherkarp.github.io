@@ -654,14 +654,54 @@ def publish(
     console.print(f"[green]✓[/green] git commit  [dim]\"{base_msg}\"[/dim]")
     console.print(f"  [dim]+ trailer: {trailer}[/dim]")
 
-    push_args = ["git", "push", "-u", "origin"]
+    # `git push HEAD:main` from a non-main branch pushes HEAD AND every
+    # ancestor not yet on origin/main, not just the publish commit. A
+    # feature branch N commits ahead would dump all N+1 onto production.
+    # Refuse unless the publish commit is the only thing ahead. Fetch
+    # origin/main first so the count is accurate even on a stale clone.
+    if branch != "main":
+        fetch_code, _, fetch_err = run_subprocess(
+            ["git", "fetch", "origin", "main"]
+        )
+        if fetch_code != 0:
+            die(
+                f"git fetch origin main failed: {fetch_err.strip()}\n"
+                "publish needs an up-to-date origin/main to verify the "
+                "push won't sweep unrelated commits onto production."
+            )
+        count_code, count_out, _ = run_subprocess(
+            ["git", "rev-list", "--count", "origin/main..HEAD"]
+        )
+        try:
+            ahead = int(count_out.strip()) if count_code == 0 else -1
+        except ValueError:
+            ahead = -1
+        if ahead != 1:
+            die(
+                f"branch [bold]{branch}[/bold] is {ahead if ahead >= 0 else 'an unknown number of'} "
+                "commit(s) ahead of origin/main; [bold]git push HEAD:main[/bold] "
+                "would deliver ALL of them to production, not just the "
+                "publish commit. rebase the branch so only the publish "
+                "commit is ahead (e.g. [bold]git fetch origin main && "
+                "git rebase origin/main[/bold], dropping or squashing "
+                "unrelated commits), then re-run."
+            )
+
     if branch == "main":
-        push_args.append("main")
+        push_args = ["git", "push", "-u", "origin", "main"]
     else:
-        push_args.append(f"HEAD:main")
+        push_args = ["git", "push", "origin", "HEAD:main"]
     code, _, err = run_subprocess(push_args)
     if code != 0:
-        die(f"git push failed: {err.strip()}")
+        recovery_target = "main" if branch == "main" else "HEAD:main"
+        die(
+            f"git push failed: {err.strip()}\n\n"
+            "the publish commit is in your local history (HEAD), and the\n"
+            f"post file is [bold]draft: false[/bold] on disk. to recover:\n"
+            f"  git pull --rebase origin main && git push origin {recovery_target}\n"
+            "do NOT re-run [bold]blog publish[/bold] -- the draft flag is\n"
+            "already flipped, so it will exit with [dim]nothing to commit[/dim]."
+        )
     console.print(f"[green]✓[/green] git push origin main")
 
     console.print(
