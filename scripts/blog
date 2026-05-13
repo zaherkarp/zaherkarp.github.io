@@ -17,11 +17,13 @@ Install path on the user's system: `ln -s "$(pwd)/scripts/blog" ~/.local/bin/blo
 
 from __future__ import annotations
 
+import email.utils
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import textwrap
 import webbrowser
 from datetime import date, datetime, timezone
@@ -40,6 +42,24 @@ BLOG_OUT = ROOT / "blog"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from _common import install_git_hooks  # noqa: E402
+
+# Lint + render helpers reused from the existing scripts. The two linters
+# expose per-post entry points (check_post, check_text) that let `blog lint`
+# scope to a single file; build_blog gives us parse_post / render_post so
+# `blog preview` can render drafts without flipping their `draft:` bit on
+# disk or churning the /blog/ build output.
+from lint_blog import check_post as lint_blog_check_post  # noqa: E402
+from lint_vocab import (  # noqa: E402
+    check_text as lint_vocab_check_text,
+    post_exemptions as lint_vocab_post_exemptions,
+)
+from build_blog import (  # noqa: E402
+    TEMPLATES_DIR,
+    make_markdown,
+    parse_post,
+    render_post,
+    git_short_sha,
+)
 
 install_git_hooks()
 
@@ -349,21 +369,48 @@ def edit(slug: str = typer.Argument(..., help="post slug or fragment")) -> None:
 # --------------------------------------------------------------------------
 
 
+def run_scoped_linters(path: Path) -> bool:
+    """Run lint_blog + lint_vocab against a single post. lint_facts is
+    cross-surface (resume / homepage / JSON-LD) and has nothing to say
+    about an individual post, so it's skipped in scoped mode."""
+    blog_violations = lint_blog_check_post(path)
+    text = path.read_text(encoding="utf-8")
+    exemptions = lint_vocab_post_exemptions(path)
+    vocab_violations = lint_vocab_check_text(
+        path, text, fenced=True, exemptions=exemptions
+    )
+
+    overall = True
+    for label, descr, violations in (
+        ("lint_blog ", "blog source-side rules", blog_violations),
+        ("lint_vocab", "canonical CMS / HEDIS spellings", vocab_violations),
+    ):
+        mark = "[green]✓[/green]" if not violations else "[red]✗[/red]"
+        console.print(f"  {mark}  {label}  [dim]{descr}[/dim]")
+        if violations:
+            overall = False
+            for v in violations:
+                err_console.print(f"      [dim]{v}[/dim]")
+    console.print("  [dim]·  lint_facts skipped (cross-surface, not post-scoped)[/dim]")
+    return overall
+
+
 @app.command()
 def lint(
     slug: Optional[str] = typer.Argument(
-        None, help="(unused, all linters are whole-repo)"
+        None, help="post slug; omit to run all three linters repo-wide"
     ),
 ) -> None:
-    """Run lint_blog + lint_vocab + lint_facts."""
+    """Run lint_blog + lint_vocab + lint_facts. With a slug, scope to that
+    post (and skip lint_facts, which is cross-surface)."""
     if slug is not None:
-        find_post(slug)  # validate that it exists, but linters still run repo-wide
-        console.print(
-            f"[dim]note: linters run repo-wide, scoping to "
-            f"[bold]{slug}[/bold] is not implemented[/dim]\n"
-        )
-    console.print("[bold]running linters[/bold]")
-    ok = run_all_linters()
+        path = find_post(slug)
+        console.print(f"[bold]linting[/bold] [dim]{path.relative_to(ROOT)}[/dim]")
+        ok = run_scoped_linters(path)
+    else:
+        console.print("[bold]running linters[/bold] [dim](repo-wide)[/dim]")
+        ok = run_all_linters()
+
     console.print()
     if ok:
         console.print("[green]all clear[/green]")
@@ -376,36 +423,73 @@ def lint(
 # --------------------------------------------------------------------------
 
 
+ASSET_ATTR_RE = re.compile(r'(href|src)="/(?!/)([^"]*)"')
+
+
+def render_post_to_tempfile(path: Path) -> Path:
+    """Render a single post (draft or not) to a tempfile, with absolute
+    asset paths rewritten to file:// URIs of the actual repo files so the
+    preview can load /blog.css and /fonts/et-book/* without a server.
+
+    Side-effect-free: never touches /blog/ build output and never mutates
+    the post file (the in-memory draft flag is overridden for rendering
+    only)."""
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape(["html"]),
+        trim_blocks=False,
+        lstrip_blocks=False,
+    )
+    md = make_markdown()
+    post = parse_post(path, md)
+    # In-memory only; the .md file on disk is never touched.
+    post["draft"] = False
+
+    now = datetime.now(timezone.utc)
+    build_info = {
+        "build_iso": now.isoformat(timespec="seconds"),
+        "build_date_human": now.strftime("%Y-%m-%d"),
+        "build_date_rfc822": email.utils.format_datetime(now),
+        "build_sha": git_short_sha(),
+    }
+    html = render_post(env, post, now.year, build_info)
+
+    def to_file_uri(m: re.Match) -> str:
+        attr, rest = m.group(1), m.group(2)
+        target = (ROOT / rest).resolve()
+        if not target.exists():
+            return m.group(0)
+        return f'{attr}="{target.as_uri()}"'
+
+    html = ASSET_ATTR_RE.sub(to_file_uri, html)
+
+    tmp_dir = Path(tempfile.gettempdir()) / "zaherkarp-blog-preview" / post["slug"]
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    out = tmp_dir / "index.html"
+    out.write_text(html, encoding="utf-8")
+    return out
+
+
 @app.command()
 def preview(
-    slug: str = typer.Argument(..., help="post slug to open after build"),
-    rebuild: bool = typer.Option(
-        True, "--rebuild/--no-rebuild", help="run build_blog before opening"
-    ),
+    slug: str = typer.Argument(..., help="post slug to render"),
 ) -> None:
-    """Build the site and open the rendered post in your browser."""
+    """Render a post (draft or live) to a tempfile and open it in your browser.
+
+    Side-effect-free: no /blog/ rebuild, no draft-flag mutation. Asset
+    references to /blog.css and /fonts/* are rewritten to file:// URIs
+    of the actual repo files. CDN scripts (KaTeX, Mermaid, Prism) and
+    nav links to other site pages won't work in the preview, by design."""
     path = find_post(slug)
-    real_slug = path.stem
-
-    if rebuild:
-        console.print("[bold]building site[/bold] [dim](python scripts/build_blog.py)[/dim]")
-        code, out, err = run_subprocess(
-            [sys.executable, str(ROOT / "scripts" / "build_blog.py")]
-        )
-        if code != 0:
-            err_console.print(err or out)
-            die("build_blog failed")
-
-    out_file = BLOG_OUT / real_slug / "index.html"
-    if not out_file.exists():
-        die(
-            f"no rendered file at {out_file.relative_to(ROOT)}.\n"
-            "if this is a draft, run [bold]blog preview --no-rebuild[/bold] is "
-            "not the issue; drafts are skipped by build_blog. flip draft to false "
-            "temporarily, or preview from your editor's markdown view."
-        )
-    url = out_file.resolve().as_uri()
-    console.print(f"[green]✓[/green] opening [bold]{url}[/bold]")
+    try:
+        out = render_post_to_tempfile(path)
+    except Exception as e:  # noqa: BLE001
+        die(f"render failed: {e}")
+    url = out.as_uri()
+    console.print(f"[green]✓[/green] [bold]{path.stem}[/bold] rendered to {out}")
+    console.print(f"  opening {url}")
     webbrowser.open(url)
 
 
@@ -466,6 +550,32 @@ def flip_draft_false(path: Path) -> bool:
         return False
     path.write_text(new_text, encoding="utf-8")
     return True
+
+
+def flip_draft_true(path: Path) -> bool:
+    """Mirror of flip_draft_false."""
+    text = path.read_text(encoding="utf-8")
+    new_text, n = DRAFT_LINE_RE.subn("draft: true", text, count=1)
+    if n == 0 or new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+@app.command()
+def draft(slug: str = typer.Argument(..., help="post slug to mark as draft")) -> None:
+    """Flip a post back to draft: true (un-publishes it from the next build)."""
+    path = find_post(slug)
+    post = load_post(path)
+    if is_draft(post):
+        console.print(f"[dim]{path.stem} is already a draft[/dim]")
+        raise typer.Exit(0)
+    if not flip_draft_true(path):
+        die(f"could not flip draft flag in {path.relative_to(ROOT)}")
+    console.print(
+        f"[green]✓[/green] [bold]{path.stem}[/bold] is now [yellow]draft[/yellow] "
+        f"[dim](next CI build will skip it)[/dim]"
+    )
 
 
 @app.command()
