@@ -93,17 +93,15 @@ from the title; conflicts abort.
 
 **Title gotchas — read before naming a post:**
 
-- **Backslashes break YAML.** Titles containing `\` (`C:\Users`, `\n`,
-  `\section`) produce a frontmatter file that fails to load. The CLI
-  writes the title into a double-quoted YAML scalar and YAML interprets
-  `\` as an escape. Use forward slashes or rephrase.
 - **Non-ASCII titles may slugify lossily.** Emoji-only titles slugify
   to `untitled`. `"café"` becomes `caf`. CJK titles produce
   `untitled` or a short Latin tail. Use an ASCII title or run
   `blog rename` after scaffolding.
-- **Colons and `---` survive.** The template quotes them. If you're
+- **Quotes, colons, `---`, backslashes, and Unicode all round-trip.**
+  Frontmatter is built as a Python dict and emitted via
+  `yaml.safe_dump`, so YAML escapes are handled correctly. If you're
   unsure, run `blog lint <slug>` immediately after `blog new` — it
-  parses the file and will surface YAML errors.
+  parses the file and will surface any error.
 
 ### 2b. List, find, edit
 
@@ -118,10 +116,11 @@ blog status                               # drafts + last 5 published + git stat
 `blog edit`, `blog lint`, `blog preview`, `blog publish`, `blog draft`,
 and `blog rename` all accept a **slug fragment** — but only when the
 fragment matches exactly one post file. Ambiguous fragments abort with
-a list of candidates. **A fragment that matches exactly one post by
-accident is NOT confirmed.** For state-changing commands (`publish`,
-`draft`, `rename`), pass the full slug to avoid mutating the wrong
-post.
+a list of candidates. For state-changing commands (`publish`, `draft`,
+`rename`), a fragment match prompts `fragment 'X' resolved to 'Y';
+proceed with that post?` before mutating, so a one-match-by-accident
+won't silently rewrite the wrong file. `edit`, `lint`, and `preview`
+remain unprompted because they're non-destructive.
 
 ### 2c. Lint
 
@@ -167,11 +166,10 @@ xdg-open "http://127.0.0.1:8765/blog/$(blog list | grep my-post | awk '{print $1
 kill %1
 ```
 
-**Security note.** `blog preview` rewrites any `/foo`-prefixed asset
-path in the rendered HTML to `file:///abs/path/foo` and only checks
-that the target exists. A draft containing `<img src="/../../etc/hostname">`
-will resolve to `/etc/hostname` and load it in your browser. Only
-preview drafts you trust.
+**Containment note.** `blog preview` rewrites any `/foo`-prefixed
+asset path to a `file://` URI only if the resolved path is inside the
+repo. Paths that escape the repo root (e.g. `/../../etc/hostname`) are
+left as the literal string, so the browser won't fetch them.
 
 ### 2e. Publish
 
@@ -370,32 +368,30 @@ git log -1 --format=%B HEAD                  # see the trailer on the last commi
 ## 5. Known risks and footguns
 
 A combined security + red-team review of this CLI flagged the items
-below. Most are documented warnings rather than code defects; the one
-P0 (the `--force-branch` multi-commit push) is patched.
+below. The P0 and most P1/P2 items are now patched; the remaining
+unpatched entries are accepted behavior with a documented mitigation.
 
-| # | Severity | Issue | Where it bites |
+| # | Severity | Issue | Status |
 |---|---|---|---|
-| 1 | P0 (patched) | `--force-branch` pushing all ahead commits | `scripts/blog` publish flow — guard added 2026-05-13 |
-| 2 | P1 | `find_post` accepts `..` segments in direct-path matches; `rename ../resume foo` would move `src/content/resume.md` into the blog dir | `scripts/blog:96-114`. Mitigation: always pass full slugs, never `../`-prefixed paths |
-| 3 | P1 | Preview asset-rewrite resolves arbitrary `file://` paths | `scripts/blog:466-473`. Mitigation: only preview drafts you trust |
-| 4 | P1 | Backslash in `blog new` title produces unparseable YAML | Mitigation: avoid `\` in titles; verify with `blog lint <slug>` immediately after scaffold |
-| 5 | P1 | `blog draft` does not commit/push | Mitigation: documented in §2h; remember to commit + push manually |
-| 6 | P2 | Slug-fragment one-match-by-accident not confirmed | Mitigation: pass full slugs to state-changing commands |
-| 7 | P2 | `blog rename` does not update inbound references despite the module-docstring claim | Mitigation: documented sweep in §2i |
-| 8 | P2 | Hooks auto-install on `--help` | Mitigation: `git config --unset core.hooksPath`, documented in §1d |
-| 9 | P2 | `blog status` shows stale `commits_ahead` if `origin/main` is not fetched | Mitigation: `git fetch origin main` before trusting the number |
-| 10 | P2 | Hand-edited `blog.config.yaml` with a non-dict `redundancy:` value crashes `blog config show` with `AttributeError` | Mitigation: don't hand-edit; use `blog config set` |
+| 1 | P0 | `--force-branch` pushing all ahead commits to main | **Patched.** `publish` fetches `origin/main` and refuses unless exactly one commit is ahead |
+| 2 | P1 | `find_post` accepted `..` segments in direct-path matches; `rename ../resume foo` could move `src/content/resume.md` into the blog dir | **Patched.** `find_post` now rejects any candidate resolving outside `POSTS_DIR` |
+| 3 | P1 | `blog preview` resolved arbitrary `file://` asset paths (a draft with `<img src="/../../etc/hostname">` could read local files in the browser) | **Patched.** Asset-rewrite verifies `is_relative_to(ROOT)` before emitting the `file://` URI |
+| 4 | P1 | Backslash in `blog new` title produced unparseable YAML (`C:\Users` → ScannerError on load) | **Patched.** Frontmatter is now built as a dict and emitted via `yaml.safe_dump`; backslashes, quotes, colons, and Unicode round-trip correctly |
+| 5 | P1 | `blog draft` does not commit/push | **By design** (un-publish wants human review of surrounding context). See §2h for the manual commit + push sequence |
+| 6 | P2 | Slug-fragment one-match-by-accident not confirmed | **Patched.** `publish`, `draft`, and `rename` now prompt before mutating when the slug resolved via fragment match; `edit`, `lint`, `preview` remain unprompted (non-destructive) |
+| 7 | P2 | `blog rename` does not update inbound references despite the module-docstring claim | **Partially patched.** Docstring now says "does not update inbound /blog/&lt;old-slug&gt;/ references"; the manual sweep in §2i is still required |
+| 8 | P2 | Hooks auto-install on `--help` | **Accepted.** The auto-install is intentional and idempotent; opt-out documented in §1d |
+| 9 | P2 | `blog status` showed stale `commits_ahead` if `origin/main` was not fetched | **Patched.** `commits_ahead` accepts a `fetch=True` flag and `status` passes it; "fetched origin/main" notice prints when the refresh runs |
+| 10 | P2 | Hand-edited `blog.config.yaml` with a non-dict `redundancy:` value crashed `blog config show` with `AttributeError` | **Patched.** `redundancy.toggle_value` now `isinstance`-guards the section and falls back to "always" |
 
-Drift between docstrings and behavior worth noting:
+Also fixed in the same pass:
 
-- The module docstring at the top of `scripts/blog` lists eight
-  subcommands; `--help` shows ten (`draft` and `config` were added
-  after the docstring).
-- The module docstring claims `rename` "updates slug references."
-  It does not. See §2i.
-- `scripts/requirements.txt` does not pin `rich`. It's a transitive
-  of `typer`; if a future typer release drops it, the CLI breaks
-  with an import error.
+- Module docstring at the top of `scripts/blog` now lists all ten
+  subcommands and is honest about `rename` and `preview` semantics.
+- `scripts/requirements.txt` now pins `rich>=13.0` explicitly so the
+  CLI keeps working if a future `typer` release drops it.
+- Empty `tags:` input to `blog new` now produces `tags: []` (an empty
+  list) rather than `[None]`.
 
 ---
 

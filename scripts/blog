@@ -5,11 +5,13 @@ Subcommands:
   new        scaffold a draft and open it in $EDITOR
   list       list posts with draft / publish state
   edit       open an existing post in $EDITOR
-  lint       run lint_blog + lint_vocab + lint_facts
-  preview    rebuild the site and open the rendered post in a browser
+  lint       run lint_blog + lint_vocab + lint_facts (scoped or repo-wide)
+  preview    render a post to a tempfile and open it in your browser
   status     dashboard: drafts, recent publications, branch state
+  draft      flip a published post back to draft (does not commit)
   publish    lint, flip draft to false, commit, push to main
-  rename     rename a post file (and update its slug references)
+  rename     rename a post file (does not update inbound /blog/<old-slug>/ references)
+  config     manage redundancy toggles for legacy lint paths
 
 Lives in scripts/ alongside the rest of the project tooling.
 Install path on the user's system: `ln -s "$(pwd)/scripts/blog" ~/.local/bin/blog`.
@@ -32,6 +34,7 @@ from typing import Optional
 
 import frontmatter
 import typer
+import yaml
 from rich.console import Console
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
@@ -93,18 +96,29 @@ def slugify(title: str) -> str:
     return s or "untitled"
 
 
-def find_post(slug_or_path: str) -> Path:
-    """Resolve a slug or partial filename to a post path. Aborts on miss."""
+def find_post_with_provenance(slug_or_path: str) -> tuple[Path, bool]:
+    """Resolve a slug or partial filename to a post path. Aborts on miss.
+
+    Returns (path, was_fragment). was_fragment is True only when the
+    resolution went through the glob branch (an inexact match). Direct
+    `<slug>.md` and direct-path matches return False.
+
+    Path containment: the direct-match branches reject any candidate
+    that resolves outside POSTS_DIR (e.g. `../resume` would otherwise
+    return src/content/resume.md). The glob branch is inherently
+    constrained to POSTS_DIR so it doesn't need an extra check.
+    """
+    posts_root = POSTS_DIR.resolve()
     candidate = POSTS_DIR / f"{slug_or_path}.md"
-    if candidate.exists():
-        return candidate
+    if candidate.exists() and candidate.resolve().is_relative_to(posts_root):
+        return candidate, False
     candidate = POSTS_DIR / slug_or_path
-    if candidate.exists():
-        return candidate
+    if candidate.exists() and candidate.resolve().is_relative_to(posts_root):
+        return candidate, False
     matches = sorted(POSTS_DIR.glob(f"*{slug_or_path}*.md"))
     matches = [m for m in matches if not m.stem.startswith("_")]
     if len(matches) == 1:
-        return matches[0]
+        return matches[0], True
     if not matches:
         die(f"no post matches [bold]{slug_or_path}[/bold]")
     die(
@@ -112,6 +126,24 @@ def find_post(slug_or_path: str) -> Path:
         + "\n  ".join(m.stem for m in matches)
         + "\nuse a more specific fragment"
     )
+
+
+def find_post(slug_or_path: str) -> Path:
+    """Resolve a slug or partial filename to a post path. Aborts on miss."""
+    path, _ = find_post_with_provenance(slug_or_path)
+    return path
+
+
+def confirm_fragment_or_abort(slug_or_path: str, path: Path) -> None:
+    """Prompt the user to confirm a glob-resolved fragment before a
+    state-changing command mutates the wrong post."""
+    console.print(
+        f"  fragment [bold]'{slug_or_path}'[/bold] resolved to "
+        f"[bold]{path.stem}[/bold]"
+    )
+    if not Confirm.ask("proceed with that post?", default=False):
+        console.print("[dim]aborted[/dim]")
+        raise typer.Exit(0)
 
 
 def load_post(path: Path) -> frontmatter.Post:
@@ -164,7 +196,22 @@ def current_branch() -> str:
     return r.stdout.strip()
 
 
-def commits_ahead(branch: str = "origin/main") -> int:
+def commits_ahead(branch: str = "origin/main", fetch: bool = False) -> int:
+    if fetch:
+        # Best-effort refresh; a stale clone otherwise undercounts. Failure
+        # (offline, no permission, missing remote) falls through to the
+        # count against whatever ref we already have locally.
+        try:
+            subprocess.run(
+                ["git", "fetch", "origin", "main", "--quiet"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=10,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pass
     r = subprocess.run(
         ["git", "rev-list", "--count", f"{branch}..HEAD"],
         cwd=ROOT,
@@ -231,18 +278,8 @@ def run_all_linters() -> bool:
 # new
 # --------------------------------------------------------------------------
 
-FRONTMATTER_TEMPLATE = textwrap.dedent(
+BODY_SKELETON = textwrap.dedent(
     """\
-    ---
-    title: "{title}"
-    description: "{description}"
-    publishDate: {publish_date}
-    draft: true
-    tags:
-    {tags_block}
-    # homepageMarginnote: "{margin_note}"
-    # vocab_exempt: []
-    ---
 
     ## TL;DR
 
@@ -252,6 +289,41 @@ FRONTMATTER_TEMPLATE = textwrap.dedent(
 
     """
 )
+
+
+def build_frontmatter_block(
+    title: str,
+    description: str,
+    publish_date: str,
+    tags: list[str],
+    margin_note: str,
+) -> str:
+    """Serialize the post frontmatter via yaml.safe_dump, then append the
+    commented-out author hints (homepageMarginnote, vocab_exempt) inside
+    the same `---`/`---` delimiter pair.
+
+    safe_dump correctly quotes/escapes backslashes, double-quotes, colons,
+    leading dashes, and Unicode that would have broken str.format-style
+    injection into a double-quoted YAML scalar.
+    """
+    fm: dict[str, object] = {
+        "title": title,
+        "description": description,
+        "publishDate": publish_date,
+        "draft": True,
+        "tags": tags,
+    }
+    dumped = yaml.safe_dump(
+        fm, sort_keys=False, default_flow_style=False, allow_unicode=True
+    )
+    # The hints are author-facing comments, not data; safe_dump drops
+    # them. Emit them verbatim so the author still sees the fields
+    # exist. Quote `margin_note` defensively in case it contains a `"`;
+    # safe_dump would handle it for a real field, but we're hand-writing
+    # this comment string.
+    margin_safe = margin_note.replace('"', '\\"')
+    hints = f'# homepageMarginnote: "{margin_safe}"\n# vocab_exempt: []\n'
+    return f"---\n{dumped}{hints}---\n"
 
 
 @app.command()
@@ -288,15 +360,14 @@ def new(
         die(f"a post already exists at {path.relative_to(ROOT)}")
 
     tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
-    tags_block = "\n".join(f"  - {t}" for t in tags) if tags else "  - "
 
-    body = FRONTMATTER_TEMPLATE.format(
-        title=title.replace('"', "'"),
-        description=description.replace('"', "'"),
+    body = build_frontmatter_block(
+        title=title,
+        description=description,
         publish_date=publish_date,
-        tags_block=tags_block,
-        margin_note=margin_note.replace('"', "'"),
-    )
+        tags=tags,
+        margin_note=margin_note,
+    ) + BODY_SKELETON
     path.write_text(body, encoding="utf-8")
 
     console.print()
@@ -463,9 +534,17 @@ def render_post_to_tempfile(path: Path) -> Path:
     }
     html = render_post(env, post, now.year, build_info)
 
+    repo_root = ROOT.resolve()
+
     def to_file_uri(m: re.Match) -> str:
         attr, rest = m.group(1), m.group(2)
         target = (ROOT / rest).resolve()
+        # Containment: refuse to rewrite anything that resolves outside
+        # the repo. Without this guard, a draft containing
+        # <img src="/../../etc/hostname"> would resolve to /etc/hostname
+        # and be loaded in the user's browser at preview time.
+        if not target.is_relative_to(repo_root):
+            return m.group(0)
         if not target.exists():
             return m.group(0)
         return f'{attr}="{target.as_uri()}"'
@@ -536,7 +615,8 @@ def status() -> None:
 
     console.print("\n[bold]git[/bold]")
     branch = current_branch() or "[red]not a git repo[/red]"
-    ahead = commits_ahead("origin/main")
+    ahead = commits_ahead("origin/main", fetch=True)
+    console.print("  [dim]fetched origin/main[/dim]")
     console.print(f"  branch:  [bold]{branch}[/bold]")
     console.print(f"  ahead of origin/main:  {ahead} commit(s)")
 
@@ -572,7 +652,9 @@ def flip_draft_true(path: Path) -> bool:
 @app.command()
 def draft(slug: str = typer.Argument(..., help="post slug to mark as draft")) -> None:
     """Flip a post back to draft: true (un-publishes it from the next build)."""
-    path = find_post(slug)
+    path, was_fragment = find_post_with_provenance(slug)
+    if was_fragment:
+        confirm_fragment_or_abort(slug, path)
     post = load_post(path)
     if is_draft(post):
         console.print(f"[dim]{path.stem} is already a draft[/dim]")
@@ -599,7 +681,9 @@ def publish(
     ),
 ) -> None:
     """Lint, flip draft to false, commit the post, push to origin/main."""
-    path = find_post(slug)
+    path, was_fragment = find_post_with_provenance(slug)
+    if was_fragment:
+        confirm_fragment_or_abort(slug, path)
     post = load_post(path)
     real_slug = path.stem
     title = str(post.get("title", real_slug))
@@ -723,7 +807,9 @@ def rename(
     new: str = typer.Argument(..., help="new slug"),
 ) -> None:
     """Rename a post file. Aborts if the target exists."""
-    old_path = find_post(old)
+    old_path, was_fragment = find_post_with_provenance(old)
+    if was_fragment:
+        confirm_fragment_or_abort(old, old_path)
     new_slug = slugify(new)
     new_path = POSTS_DIR / f"{new_slug}.md"
     if new_path.exists():
