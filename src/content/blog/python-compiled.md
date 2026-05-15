@@ -5,7 +5,7 @@ publishDate: 2026-05-15
 tags: ["python", "programming", "misconceptions"]
 ---
 
-I was at dinner the other week, eating lamb at a Somali spot with some coworkers, and I said something with the easy confidence of a person who has not been challenged in a while: "Python isn't compiled." Someone across the table looked at me and said, "Wait, are you sure?" And I, immediately, was not.
+I was at dinner last night, eating lamb at a Somali spot with some coworkers, and I said something with the easy confidence of a person who has not been challenged in a while: "Python isn't compiled." Someone next to me looked at me and said, "Wait, are you sure?" And I, immediately, was not.
 
 It's worth walking through, because "compiled vs. interpreted" is one of those distinctions that everybody learns once and then carries around as a settled fact. It's mushier than it looks the moment you poke at it.
 
