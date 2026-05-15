@@ -25,7 +25,7 @@ In other words, ECDS does not simply raise rates. It can alter the geometry of c
 
 ## Introducing the ECDS Shock Index
 
-To quantify this risk, I developed a simple composite metric: the ECDS Shock Index (ESI).
+To quantify this risk, I developed a simple composite metric: the [ECDS Shock Index](https://github.com/zaherkarp/ecds-shock-index) (ESI).
 
 The goal is not to predict rates. It is to estimate how vulnerable a measure is to distribution instability resulting from ECDS-driven capture differences.
 
