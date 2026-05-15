@@ -66,6 +66,8 @@ def toggle_value(toggle: str) -> str:
         return "always"
     cfg = load_config()
     section = cfg.get("redundancy", {}) or {}
+    if not isinstance(section, dict):
+        return "always"
     value = section.get(toggle, "always")
     return value if value in VALID_VALUES else "always"
 
