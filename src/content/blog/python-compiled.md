@@ -13,7 +13,7 @@ It's worth walking through, because "compiled vs. interpreted" is one of those d
 
 The folk definition of a compiled language is: you write code, you run a compiler over it, you get a binary, you ship the binary. The folk definition of an interpreted language is: you write code, you run the file. Python, by that measure, is obviously not compiled. There is no build step. There is no `a.out` sitting on disk. You type `python thing.py` and the thing happens. If it walks like an interpreter and quacks like an interpreter, it's an interpreter. Right?
 
-This is a fair trap to fall into. The developer experience really is "no build step, just run the file," and that experience is what we mean when we casually say a language is interpreted. The problem is that the experience is hiding a step rather than skipping one, and those two look identical from outside.
+This is the trap a lot of people fall into, and it's a fair trap to fall into. The developer experience really is "no build step, just run the file," and that experience is what we mean when we casually say a language is interpreted. The problem is that the experience is hiding a step rather than skipping one, and from the outside those two things look identical.
 
 ## What CPython is actually doing
 
@@ -23,10 +23,10 @@ If you want proof, look in any Python project. You will find a `__pycache__/` di
 
 ## Compile to what, exactly?
 
-The distinction worth drawing isn't compiled versus not compiled. It's what the compiler targets. C, Rust, and Go compile to machine code, instructions a CPU runs directly. Python, Java, and C# compile to bytecode for a virtual machine: CPython's eval loop, the JVM, the CLR. Both halves of that are compilation. The artifact and the runtime differ, but the compile step is real in all of them. Calling one group "compiled" and the other "interpreted" is a category error dressed up as a definition.
+The distinction worth drawing isn't compiled versus not compiled. It's what the compiler targets. Languages like C, Rust, and Go compile to machine code, instructions a CPU runs directly. Languages like Python, Java, and C# compile to bytecode for a virtual machine: CPython's eval loop, the JVM, the CLR. Both halves of that are compilation. The artifact is different and the runtime is different, but the compile step is real in all of them. Calling one of those groups "compiled" and the other "interpreted" is a category error dressed up as a definition.
 
 Even the REPL compiles. Every statement you type at a `>>>` prompt gets compiled to bytecode in memory before the VM executes it. The only thing missing is the on-disk cache. The lack of a `.pyc` isn't proof that nothing was compiled. It's proof that nothing was saved.
 
 ## So what
 
-"Compiled versus interpreted" is a useful shorthand. Most of the time the distinction it gestures at is the one you care about. But it's mushy at the edges and it falls apart the moment anyone asks what the words actually mean, which is why so many developers carry around a wrong version of it for years without noticing. The honest version is less satisfying: almost every language you'll touch is compiled in some sense, and the interesting question is what the compiler targets and what runs the result. Anyway, the lamb was good.
+"Compiled versus interpreted" is a useful shorthand. It tells you something real about how a language feels to use, and most of the time the distinction it gestures at is the one you care about. But it's mushy at the edges, and it falls apart the moment anyone asks what the words actually mean. That's why so many developers carry around a wrong version of it for years without noticing. The honest version is longer and less satisfying: almost every language you'll touch is compiled in some sense, and the interesting question is what the compiler targets and what runs the result. Anyway, the lamb was good.
