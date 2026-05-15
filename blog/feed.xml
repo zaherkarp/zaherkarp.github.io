@@ -6,8 +6,20 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 13 May 2026 08:03:14 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 03:36:47 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>What I Got Wrong About Python Over Dinner</title>
+      <link>https://zaherkarp.com/blog/python-compiled/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/python-compiled/</guid>
+      <pubDate>Fri, 15 May 2026 00:00:00 +0000</pubDate>
+      <description>A confident dinner-table claim that Python isn&#39;t compiled, walked back. Bytecode, .pyc files, and what compiled vs. interpreted actually means.</description>
+      <category>python</category>
+      <category>programming</category>
+      <category>misconceptions</category>
+      
+    </item>
     
     <item>
       <title>When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits</title>
@@ -408,20 +420,6 @@
       <category>executive-decision-making</category>
       <category>cms</category>
       <category>public-data</category>
-      
-    </item>
-    
-    <item>
-      <title>Sunomata Castle and the One-Night Deliverable</title>
-      <link>https://zaherkarp.com/blog/sunomata-castle-one-night-deliverable/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/sunomata-castle-one-night-deliverable/</guid>
-      <pubDate>Thu, 30 Oct 2025 00:00:00 +0000</pubDate>
-      <description>Hideyoshi prefabricated Sunomata upstream and assembled it overnight to establish a forward position, not the finished fortress. The same logic applies to early client deliverables: assemble from open-source clinical groupings (ICD, SNOMED, LOINC, HEDIS) to hold a position long enough to learn what framing actually lands.</description>
-      <category>consulting</category>
-      <category>stakeholder-engagement</category>
-      <category>clinical-terminology</category>
-      <category>healthcare-data</category>
-      <category>client-work</category>
       
     </item>
     
