@@ -397,7 +397,70 @@ Also fixed in the same pass:
 
 ---
 
-## 6. Reference: file map
+## 6. Architecture
+
+```mermaid
+flowchart TB
+    Dev([Developer])
+
+    subgraph Local["Local machine"]
+        CLI["<b>scripts/blog</b><br/>Typer CLI"]
+        Hook["scripts/hooks/pre-push"]
+
+        subgraph Shared["Shared Python modules"]
+            LB[lint_blog]
+            LV[lint_vocab]
+            LF[lint_facts]
+            BB["build_blog<br/>(parse + render)"]
+            Red[redundancy.py]
+        end
+
+        Posts[("src/content/blog/*.md")]
+        Cfg[("scripts/blog.config.yaml")]
+    end
+
+    subgraph Remote["GitHub"]
+        Main[(origin/main)]
+        CI1[".github/workflows/<br/>build_blog.yml"]
+        CI2[".github/workflows/<br/>build_portfolio.yml"]
+        Pages["GitHub Pages<br/>zaherkarp.com"]
+    end
+
+    Dev -->|"new / edit / lint /<br/>preview / publish / ..."| CLI
+    CLI <-->|read + write| Posts
+    CLI <-->|read + write| Cfg
+    CLI -->|"pre-flight lint,<br/>scoped lint, render preview"| Shared
+    CLI -->|"first run installs<br/>via core.hooksPath"| Hook
+    CLI -->|"publish: git push"| Main
+
+    Hook -->|"on push,<br/>gated by redundancy + config"| Shared
+
+    Main -->|push event| CI1
+    Main -->|push event| CI2
+    CI1 -->|"lint + build,<br/>gated by redundancy + config"| Shared
+    CI1 -->|commits rendered HTML| Main
+    CI2 -->|commits index.html| Main
+
+    Main --> Pages
+```
+
+The architectural point: **the same five Python modules are reused at
+three layers** — the CLI's pre-flight, the pre-push hook, and the CI
+workflow. The "Shared Python modules" subgraph is the contract; the
+three callers (CLI, hook, CI) all reach into it. `redundancy.py` plus
+`blog.config.yaml` is the toggle plane that lets the hook and CI
+short-circuit when the CLI already linted (see §3).
+
+`build_blog.parse_post` / `render_post` are imported in-process by
+`blog preview` so the preview path doesn't shell out to a second
+Python; the same functions are also called by `build_blog.py` from
+inside the `build_blog.yml` workflow. `build_portfolio.yml` runs
+`build_portfolio.py` directly (no shared-module call out of `blog`
+into it today, hence no arrow from CI2 into the Shared box).
+
+---
+
+## 7. Reference: file map
 
 | Path | Purpose |
 |---|---|
