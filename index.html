@@ -349,11 +349,18 @@ details.speaking-list > summary:focus-visible {
 label.sidenote-number { display: inline; cursor: default; }
 label.margin-toggle:not(.sidenote-number) { display: none; }
 
-/* Narrow viewport: collapse notes, reveal via toggle */
+/* Narrow viewport: collapse notes, reveal via toggle.
+   Toggle label uses --muted with an underline for affordance.
+   The accent color is reserved for chart callouts; using it on
+   chrome (which the toggle becomes at narrow widths) re-grows
+   the accent into decoration that CLAUDE.md §Palette warns against. */
 @media (max-width: 760px) {
   label.margin-toggle:not(.sidenote-number) {
     display: inline;
-    color: var(--accent);
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 0.18em;
     cursor: pointer;
   }
   .sidenote, .marginnote {
@@ -935,6 +942,29 @@ hr {
 }
 
 /* ============================================================
+   17b. PAGE FOOTER (closer)
+   A single hairline rule and a date stamp close the page.
+   Section uses the same 60% column as everything else, oldstyle
+   numerals to match other dates on the page, muted color so it
+   recedes. The date itself is regenerated on every CI run by
+   scripts/build_portfolio.py between updated:start/end markers,
+   so it tracks the actual last-touched month of the file rather
+   than a hardcoded value that would drift.
+   ============================================================ */
+.page-footer {
+  width: 60%;
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-variant-numeric: oldstyle-nums;
+}
+@media (max-width: 760px) {
+  .page-footer { width: 100%; }
+}
+
+/* ============================================================
    18. SVG PALETTE ADAPTATION
    The figure SVGs hard-code hex colors as presentation
    attributes (fill/stroke). Presentation attributes have CSS
@@ -1285,7 +1315,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
        ========================================================== -->
   <figure class="fullwidth timeline">
     <figcaption>
-      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count.
+      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count as of 2025.
     </figcaption>
 
     <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019">
@@ -1378,11 +1408,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <circle cx="935" cy="185" r="3.2" fill="#6a6a6a"/>
       <circle cx="935" cy="199" r="3.2" fill="#6a6a6a"/>
 
-      <!-- ANNOTATION: the 23-citation 2014 paper.
-           Small italic grey text above the largest publication
-           dot, same treatment as the career-arc annotations. No
-           arrow, no box; just text positioned above. -->
-      <text x="620" y="60" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">23 citations</text>
+      <!-- ANNOTATION: the most-cited 2014 paper.
+           Relative label (not an absolute count) so the chart
+           does not drift against the live citation count that
+           build_portfolio.py updates inside the Publications
+           section. The dot size already carries the magnitude;
+           the annotation just identifies which dot it is. -->
+      <text x="620" y="60" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">most-cited</text>
 
       <!-- ANNOTATION: Patient Choice Award 2015, tied to the peak -->
       <text x="725" y="300" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">Patient Choice Award</text>
@@ -1520,7 +1552,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
          CI run. -->
     <!-- activity-grid:start -->
 <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
-      24 weeks of activity
+      24 weeks
       <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" aria-label="writing cadence sparkline, 24 weeks">
         <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
         <circle cx="10" cy="10" r="2" fill="#111"/>
@@ -1628,49 +1660,50 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="experience" class="experience">
     <h2>Experience</h2>
 
-    <h3>Manager of Data Science &amp; Engineering<label for="mn-promotion" class="margin-toggle">&#8853;</label></h3>
-    <input type="checkbox" aria-label="Toggle margin note" id="mn-promotion" class="margin-toggle"/><span class="marginnote">Promoted from Lead Data Engineer in April 2026.</span>
-    <p class="meta">Baltimore Health Analytics &middot; Nov 2025 to Present</p>
+    <h3>Manager of Data Science &amp; Engineering</h3>
+    <p class="meta">Baltimore Health Analytics &middot; Nov 2025 to Present (promoted from Lead Data Engineer, April 2026)</p>
 
     <p>
       I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform. The role spans direct management, code review across the engineering team, and coordination of data science and QA across two geographies, plus the product roadmap and translation between CMS requirements and organizational priorities.
     </p>
 
+    <p>
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
+    </p>
+
+    <!-- ==========================================================
+         HUBER PSI FORMULA
+         Inline math block illustrating the "robust" in robust
+         exponential smoothing. Huber's psi-function is the
+         derivative of his loss function: linear for small
+         residuals, clipped at threshold k for large ones.
+         Effect: outliers stop dominating the gradient updates
+         that calibrate the smoothing parameters, so COVID shocks
+         don't permanently bias the trend forecast.
+
+         Promoted out of the BHA "More detail" fold so it's
+         visible by default. The page has one formula and it's
+         the most credentialed depth signal in the Experience
+         section; hiding it behind a click was rewarding only
+         the readers who already knew to look.
+
+         Pure HTML/CSS math styling, no MathJax dependency.
+         ========================================================== -->
+    <div class="formula-block">
+      <div class="formula">
+        &psi;<sub><i>k</i></sub>(<i>r</i>) =
+        <span class="cases">
+          <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
+          <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
+        </span>
+      </div>
+      <div class="formula-caption">
+        Huber's &psi;-function. Residuals smaller than the threshold <i>k</i> contribute linearly to the gradient; residuals larger than <i>k</i> are clipped, so a single COVID-era shock cannot dominate the smoothing parameter estimates.
+      </div>
+    </div>
+
     <details class="fold">
       <summary>More detail</summary>
-      <p>
-        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
-      </p>
-
-      <!-- ==========================================================
-           HUBER PSI FORMULA
-           Inline math block illustrating the "robust" in robust
-           exponential smoothing. Huber's psi-function is the
-           derivative of his loss function: quadratic for small
-           residuals, linear (constant slope) for large ones.
-           Effect: outliers stop dominating the gradient updates
-           that calibrate the smoothing parameters, so e.g. COVID
-           shocks don't permanently bias the trend forecast.
-
-           Pure HTML/CSS math styling, no MathJax dependency. The
-           .formula container uses a serif math style (italic for
-           variables, regular for operators), centered on its own
-           line, with a small caption below explaining what's
-           shown.
-           ========================================================== -->
-      <div class="formula-block">
-        <div class="formula">
-          &psi;<sub><i>k</i></sub>(<i>r</i>) =
-          <span class="cases">
-            <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
-            <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
-          </span>
-        </div>
-        <div class="formula-caption">
-          Huber's &psi;-function. Residuals smaller than the threshold <i>k</i> contribute linearly to the gradient; residuals larger than <i>k</i> are clipped, so a single COVID-era shock cannot dominate the smoothing parameter estimates.
-        </div>
-      </div>
-
       <p>
         HEDIS hybrid measures add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
       </p>
@@ -1879,7 +1912,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
             <line x1="348" y1="40" x2="348" y2="200" stroke="#7a0000" stroke-width="1.4" stroke-dasharray="5,3"/>
 
             <!-- 4.0 RED LABEL on the axis -->
-            <text x="348" y="220" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#7a0000" text-anchor="middle" font-weight="bold">4.0</text>
+            <text x="348" y="220" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#7a0000" text-anchor="middle">4.0</text>
 
             <!-- $50M ANNOTATION at top of cliff line.
                  Text label "+$50M" pinned to the right of the
@@ -1946,7 +1979,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              ========================================================== -->
         <figure class="sankey-figure">
           <figcaption>
-            Example transition pathway for a Medical Assistant. Bar widths reflect the share of candidates routed to each target occupation; stroke widths echo the same magnitude.
+            Example transition pathway for a Medical Assistant. Illustrative shares: bar widths and stroke widths reflect the share routed to each target occupation.
           </figcaption>
 
           <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
@@ -2091,8 +2124,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </div>
     </div>
   </section>
-
-  <hr>
 
   <hr>
 
@@ -2580,6 +2611,18 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div><span class="label">resume</span><a href="/resume.pdf" data-goatcounter-click="resume-pdf-download" data-goatcounter-title="Resume PDF">PDF download</a></div>
     </div>
   </section>
+
+  <!-- ==========================================================
+       PAGE CLOSER
+       Single hairline rule, date stamp in oldstyle numerals.
+       Date is regenerated on every CI run by build_portfolio.py;
+       do not hand-edit between the markers.
+       ========================================================== -->
+  <footer class="page-footer">
+    <!-- updated:start -->
+    Updated 2026-05.
+  <!-- updated:end -->
+  </footer>
 
 </main>
 

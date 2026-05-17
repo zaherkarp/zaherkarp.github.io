@@ -685,7 +685,11 @@ Checks:
   resume.md, index.html h3+meta, and JSON-LD; playbook for failures
   at scripts/lint_facts.md)
 - `grep -c '—' index.html` returns 0 (em-dash-clean chrome)
-- `grep -cE -- '--accent' index.html` ≤ 8 (accent discipline)
+- `grep -cE -- '--accent|#7a0000' index.html` ≤ 20 (accent discipline:
+  counts both CSS variable refs and SVG literal callouts, since the
+  SVG palette adapter expects #7a0000 as a presentation attribute.
+  Bump the cap only after discussion; ratchet it down when removing
+  uses.)
 - `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns
   nothing (catches blank-line-inside-`<svg>` slips)
 
@@ -771,6 +775,54 @@ outside the skip ranges:
 
 Add a canonical to `CANONICALS` in `lint_vocab.py` when a new program
 name surfaces with a high-confidence wrong rendering in the corpus.
+
+---
+
+## Agent panels (Focus Group, Design Council)
+
+Two verbal-invocation simulation patterns. Both propose changes
+keyed to line ranges; neither edits without approval.
+
+**Focus Group** — reader-reception evaluation. 3 rounds of ~4
+panelists (hiring managers, peers, recruiters, UX reviewers, named
+archetypes like "Director of Quality Analytics at a regional MA
+plan"). One round must include antagonists: senior healthcare-data-
+engineering practitioners who pressure-test claims, denominators,
+and positioning. Output a synthesis table with consensus strength
+(unanimous / majority / single voice).
+
+**Design Council** — design-decision taste calls. Personas as
+caricatures of schools of thought:
+  - Edward — Tufte rigor (data-ink, restraint, prose+visual integration)
+  - Nathan — narrative viz (annotation, direct labels, story-first)
+  - Steve — cognitive usability (Krug, scanning, plain language)
+  - Haben — accessibility (WCAG 2.2, screen reader, contrast). Holds
+    soft veto on AA regressions; no other persona has veto power.
+  - Massimo — typographic detail (baseline grid, optical spacing,
+    numerals, dash discipline)
+  - Bret — interactive documents (reactive representations; defends
+    the existing blog-experiment lane, proposes new work for it)
+  - Jess — editorial (concision, voice, brand coherence)
+  - Alan — web performance (Lighthouse, LCP, bundle size, font economy)
+
+Single-persona for in-lane calls; 2-3 for cross-lane decisions;
+full council rare. Convene for: design-token changes, new subpage
+proposals, hero or projects-section changes, removing/reordering
+content, anything that looks like feature creep. Do NOT convene for:
+copy edits inside an experience entry, blog post voice (Focus Group,
+or Jess alone), build-script or Python-pipeline changes, routine
+content updates (adding a talk, publication, post).
+
+When convening: 2-4 sentences per persona in their voice on the
+specific artifact (file path, line range, live URL). Then points of
+agreement, points of contention with the pairing. Recommendation
+ONLY if asked; otherwise present the disagreement and stop. Do not
+collapse disagreement into consensus unless explicitly asked.
+
+Constraints for both panels: do not propose changes that violate
+§What NOT to do or the locked design tokens above. The current
+section set is intentional; do not propose adding sections without
+discussion.
 
 ---
 

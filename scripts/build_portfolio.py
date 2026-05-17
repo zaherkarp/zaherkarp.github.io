@@ -166,9 +166,16 @@ def build_activity_grid(posts: list[dict]) -> str:
     marginnote_html = (
         f'<span class="marginnote">{tag_rollup}</span>' if tag_rollup else ""
     )
+    # Header framing: "24 weeks" + sparkline + "{N} posts".
+    # Earlier framing said "24 weeks of activity" + "{N} posts", which
+    # implied a one-dot-per-event encoding that the chart doesn't use
+    # (each dot is one week, filled if any post landed; weeks with two
+    # posts still get one dot). Dropping "of activity" lets "24 weeks"
+    # label the time range cleanly and "{N} posts" label the total,
+    # so the reader is not asked to mentally match dots to posts.
     return (
         '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
-        '      24 weeks of activity\n'
+        '      24 weeks\n'
         '      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" '
         'aria-label="writing cadence sparkline, 24 weeks">\n'
         '        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>\n'
@@ -307,6 +314,20 @@ def inject_citations(html: str) -> tuple[str, int, int]:
 
 # ─── marker replacement ───────────────────────────────────────────────────
 
+# ─── page closer (Updated YYYY-MM) ────────────────────────────────────────
+
+def build_updated_footer() -> str:
+    """Render the page closer date stamp.
+
+    Month-precision (not day) because the page doesn't typically change
+    day-to-day in ways a reader cares about; the activity grid already
+    carries day-precision for posting cadence. The hairline rule and
+    .page-footer styling live in index.html's <style> block.
+    """
+    today = date.today()
+    return f"    Updated {today.year:04d}-{today.month:02d}."
+
+
 def replace_between(text: str, marker: str, payload: str, end_indent: str = "    ") -> str:
     pat = re.compile(
         rf'(<!--\s*{re.escape(marker)}:start\s*-->)(.*?)(<!--\s*{re.escape(marker)}:end\s*-->)',
@@ -341,6 +362,10 @@ def main() -> int:
 
     text, ok, fail = inject_citations(text)
     print(f"citation counts: {ok} updated, {fail} skipped (fetch failed)")
+
+    footer_html = build_updated_footer()
+    text = replace_between(text, "updated", footer_html, end_indent="  ")
+    print("page footer date injected")
 
     if text != original:
         INDEX.write_text(text)

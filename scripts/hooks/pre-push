@@ -94,12 +94,25 @@ if [ -f index.html ]; then
     fail "em-dash found in index.html ($em_count occurrence(s))"
   fi
 
-  # 5. Accent discipline — Tufte 1-2x per chart rule, soft cap at 8.
-  accent_count=$(grep -cE -- '--accent' index.html || true)
-  if [ "$accent_count" -le 8 ]; then
-    ok "accent discipline ($accent_count uses, cap 8)"
+  # 5. Accent discipline — Tufte 1-2x per chart rule.
+  #    Counts BOTH `--accent` (CSS variable references) AND `#7a0000`
+  #    (literal hex in SVG callouts and CSS palette plumbing). The
+  #    earlier version of this check only grepped `--accent`, which
+  #    missed new SVG callouts that hardcode the hex instead of using
+  #    the variable (a real path; the SVG palette adapter in index.html
+  #    expects #7a0000 as a presentation attribute and translates it
+  #    back to var(--accent) at render time, so the literal hex IS the
+  #    designed pattern for SVG element attributes).
+  #
+  #    Cap = current accepted total + 1, set when the combined-grep
+  #    landed at 19. Ratchet down when removing uses; bump only after
+  #    discussion since each accent use should earn its place per
+  #    CLAUDE.md §Palette.
+  accent_count=$(grep -cE -- '--accent|#7a0000' index.html || true)
+  if [ "$accent_count" -le 20 ]; then
+    ok "accent discipline ($accent_count uses, cap 20)"
   else
-    fail "--accent appears $accent_count times in index.html (cap is 8)"
+    fail "--accent + #7a0000 appears $accent_count times in index.html (cap is 20)"
   fi
 fi
 
