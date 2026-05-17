@@ -8,6 +8,7 @@
 <link rel="canonical" href="https://zaherkarp.com/blog/deletes-are-data-too/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
 <!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
@@ -33,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Deletes Are Data Too", "description": "Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you\u2019re actually signing up for.", "url": "https://zaherkarp.com/blog/deletes-are-data-too/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/deletes-are-data-too/"}, "datePublished": "2025-11-16T00:00:00Z", "dateModified": "2026-04-20T21:58:36-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 517, "timeRequired": "PT2M", "inLanguage": "en-US", "keywords": "data-engineering, cdc, data-pipelines, data-quality, architecture"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Deletes Are Data Too", "description": "Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you\u2019re actually signing up for.", "url": "https://zaherkarp.com/blog/deletes-are-data-too/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/deletes-are-data-too/"}, "datePublished": "2025-11-16T00:00:00Z", "dateModified": "2026-04-29T18:57:55-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 517, "timeRequired": "PT2M", "inLanguage": "en-US", "keywords": "data-engineering, cdc, data-pipelines, data-quality, architecture"}
 </script>
 
 
@@ -119,11 +120,31 @@
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-17 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/4400523">4400523</a>.</p>
+    <p class="footer-build">Built 2026-05-17 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/5e0f5c9">5e0f5c9</a>.</p>
     
   </footer>
 
-  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
 
 </div>
 </body>
