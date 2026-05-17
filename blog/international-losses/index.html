@@ -8,6 +8,7 @@
 <link rel="canonical" href="https://zaherkarp.com/blog/international-losses/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
 <!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
@@ -33,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "America First, Global Health Last", "description": "A quantitative analysis of documented international health program disruptions, funding cuts, and their human toll during 2025", "url": "https://zaherkarp.com/blog/international-losses/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/international-losses/"}, "datePublished": "2026-01-04T00:00:00Z", "dateModified": "2026-04-20T21:58:36-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3101, "timeRequired": "PT12M", "inLanguage": "en-US", "keywords": "public-health, global-health, healthcare-policy, data-analysis"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "America First, Global Health Last", "description": "A quantitative analysis of documented international health program disruptions, funding cuts, and their human toll during 2025", "url": "https://zaherkarp.com/blog/international-losses/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/international-losses/"}, "datePublished": "2026-01-04T00:00:00Z", "dateModified": "2026-04-29T18:57:55-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3101, "timeRequired": "PT12M", "inLanguage": "en-US", "keywords": "public-health, global-health, healthcare-policy, data-analysis"}
 </script>
 
 
@@ -576,11 +577,31 @@ Current administration's FY2026 proposal: <strong>$4.6 billion</strong> ($1.9 bi
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-15 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/7bcb9ac">7bcb9ac</a>.</p>
+    <p class="footer-build">Built 2026-05-17 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1b49f97">1b49f97</a>.</p>
     
   </footer>
 
-  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
 
 </div>
 </body>
