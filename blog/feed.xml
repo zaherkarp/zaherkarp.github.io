@@ -6,8 +6,23 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 17 May 2026 04:02:25 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 17 May 2026 05:23:55 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>A Back-of-the-Envelope Cost Model for XGBoost on AWS</title>
+      <link>https://zaherkarp.com/blog/xgboost-aws-cost-estimator/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/xgboost-aws-cost-estimator/</guid>
+      <pubDate>Sun, 17 May 2026 00:00:00 +0000</pubDate>
+      <description>How much will it cost to train and serve this XGBoost model on AWS without SageMaker. A small estimator that takes row count, feature count, and a few hyperparameters and returns dollars, with the calibration anchors and the honest places it can be wrong.</description>
+      <category>xgboost</category>
+      <category>aws</category>
+      <category>cost-estimation</category>
+      <category>machine-learning</category>
+      <category>healthcare-data-engineering</category>
+      <category>infrastructure</category>
+      
+    </item>
     
     <item>
       <title>What I Got Wrong About Python Over Dinner</title>
@@ -406,20 +421,6 @@
       <category>data-pipelines</category>
       <category>data-quality</category>
       <category>architecture</category>
-      
-    </item>
-    
-    <item>
-      <title>Publicly Available but Practically Unavailable</title>
-      <link>https://zaherkarp.com/blog/unavailable-data-sources/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/unavailable-data-sources/</guid>
-      <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
-      <description>Why healthcare executives repeatedly ask for data that technically exists, yet remains inaccessible in usable form—and how misunderstanding &#39;public data&#39; quietly undermines quality, cost, and governance decisions.</description>
-      <category>healthcare-data</category>
-      <category>quality-measurement</category>
-      <category>executive-decision-making</category>
-      <category>cms</category>
-      <category>public-data</category>
       
     </item>
     
