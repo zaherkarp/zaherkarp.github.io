@@ -142,10 +142,12 @@ If `lint_facts` fails on what looks like an unrelated post, see
 blog preview my-post-slug
 ```
 
-Renders to `/tmp/zaherkarp-blog-preview/<slug>/index.html` and opens
-the browser. Side-effect-free: no `/blog/` rebuild, no draft-flag
-mutation, no commit. Asset references (`/blog.css`, `/fonts/...`) are
-rewritten to `file://` URIs of the actual repo files.
+Renders to `<tempdir>/zaherkarp-blog-preview/<slug>/index.html` and
+opens the browser. `<tempdir>` is whatever `tempfile.gettempdir()`
+returns: `/tmp` on Linux, `/var/folders/...` on macOS, `%TEMP%` on
+Windows. Side-effect-free: no `/blog/` rebuild, no draft-flag mutation,
+no commit. Asset references (`/blog.css`, `/fonts/...`) are rewritten
+to `file://` URIs of the actual repo files.
 
 **Preview omissions, by design:**
 
@@ -381,7 +383,7 @@ unpatched entries are accepted behavior with a documented mitigation.
 | 6 | P2 | Slug-fragment one-match-by-accident not confirmed | **Patched.** `publish`, `draft`, and `rename` now prompt before mutating when the slug resolved via fragment match; `edit`, `lint`, `preview` remain unprompted (non-destructive) |
 | 7 | P2 | `blog rename` does not update inbound references despite the module-docstring claim | **Partially patched.** Docstring now says "does not update inbound /blog/&lt;old-slug&gt;/ references"; the manual sweep in §2i is still required |
 | 8 | P2 | Hooks auto-install on `--help` | **Accepted.** The auto-install is intentional and idempotent; opt-out documented in §1d |
-| 9 | P2 | `blog status` showed stale `commits_ahead` if `origin/main` was not fetched | **Patched.** `commits_ahead` accepts a `fetch=True` flag and `status` passes it; "fetched origin/main" notice prints when the refresh runs |
+| 9 | P2 | `blog status` showed stale `commits_ahead` if `origin/main` was not fetched | **Patched.** `commits_ahead` accepts a `fetch=True` flag and `status` passes it. The "fetched origin/main" notice prints unconditionally — the underlying fetch swallows offline / missing-remote errors, so the count falls back to whatever ref is local without surfacing the failure |
 | 10 | P2 | Hand-edited `blog.config.yaml` with a non-dict `redundancy:` value crashed `blog config show` with `AttributeError` | **Patched.** `redundancy.toggle_value` now `isinstance`-guards the section and falls back to "always" |
 
 Also fixed in the same pass:
@@ -399,7 +401,7 @@ Also fixed in the same pass:
 
 | Path | Purpose |
 |---|---|
-| `scripts/blog` | The CLI (Typer-based, ~790 lines) |
+| `scripts/blog` | The CLI (Typer-based, ~910 lines) |
 | `scripts/blog.config.yaml` | Redundancy-toggle storage |
 | `scripts/redundancy.py` | Shared toggle checker; called by hook + CI |
 | `scripts/hooks/pre-push` | Bash hook installed via `core.hooksPath` |
