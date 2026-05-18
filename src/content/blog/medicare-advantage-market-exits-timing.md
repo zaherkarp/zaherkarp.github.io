@@ -25,9 +25,21 @@ The shape of the contraction is visible in two pictures.
 .post-chart canvas { max-width:100%; height:220px !important; }
 .post-chart .pc-note { font-size:0.78rem; font-style:italic; color:var(--pc-muted); margin:0.6rem 0 0; line-height:1.4; }
 .post-chart figcaption { font-size:0.82rem; color:var(--pc-muted); margin-top:0.8rem; font-style:italic; line-height:1.45; text-align:left; }
-.post-chart .chart2-svg { display:block; width:100%; height:auto; margin:0 auto; }
-.post-chart-wide { position:relative; left:50%; transform:translateX(-50%); width:min(96vw, 1100px); max-width:min(96vw, 1100px); }
-.post-chart-wide .chart2-svg { max-width:1100px; }
+.post-chart-wide { position:relative; left:50%; transform:translateX(-50%); width:min(96vw, 1000px); max-width:min(96vw, 1000px); }
+.ma-timeline { display:grid; grid-template-columns:1fr 1fr; column-gap:1.6rem; row-gap:0.35rem; margin:1.4rem 0 1rem; line-height:1.35; color:var(--pc-ink); }
+.ma-timeline .col-header { font-style:italic; padding:0 0 0.35rem 1rem; border-bottom:1px solid var(--pc-rule); margin-bottom:0.5rem; font-size:0.95rem; }
+.ma-timeline .col-header span { display:block; font-style:normal; font-size:0.78rem; color:var(--pc-muted); margin-top:0.1rem; }
+.ma-timeline .ev { position:relative; padding:0.12rem 0 0.12rem 1rem; font-size:0.95rem; }
+.ma-timeline .ev::before { content:""; position:absolute; left:0.05rem; top:0.55rem; width:0.45rem; height:0.45rem; border-radius:50%; background:var(--pc-ink); }
+.ma-timeline .ev.milestone::before { background:transparent; border:1px solid var(--pc-muted); width:0.38rem; height:0.38rem; top:0.6rem; }
+.ma-timeline .ev.accent::before { background:var(--pc-accent); }
+.ma-timeline .ev.confirmation::before { background:var(--pc-muted); }
+.ma-timeline .ev.empty { padding:0; min-height:1px; }
+.ma-timeline .ev.empty::before { display:none; }
+.ma-timeline .ev .d { display:inline-block; font-variant:small-caps; letter-spacing:0.04em; color:var(--pc-muted); min-width:3.4em; font-size:0.78rem; margin-right:0.25rem; }
+.ma-timeline .ev .note { display:block; font-style:italic; color:var(--pc-accent); font-size:0.8rem; margin-top:0.05rem; padding-left:0.05rem; }
+.ma-timeline .cluster-band { grid-column:1 / -1; margin:0.55rem 0 0.45rem; padding:0.3rem 0; border-top:1px dashed var(--pc-rule); border-bottom:1px dashed var(--pc-rule); text-align:right; font-style:italic; font-size:0.82rem; color:var(--pc-muted); }
+@media (max-width:600px) { .ma-timeline { font-size:0.85rem; column-gap:0.8rem; row-gap:0.3rem; } .ma-timeline .ev { font-size:0.85rem; padding-left:0.9rem; } .ma-timeline .ev .d { display:block; min-width:0; font-size:0.7rem; margin:0 0 0.05rem; } .ma-timeline .ev::before { top:0.3rem; } .ma-timeline .cluster-band { text-align:left; padding:0.25rem 0; font-size:0.78rem; } }
 @media (prefers-color-scheme: dark) { .post-chart { --pc-ink:#f5ecd7; --pc-muted:#c2b8a0; --pc-rule:#3a3024; --pc-accent:#e05e3e; --pc-paper:#201b14; } }
 </style>
 <div class="pc-summary"><div class="metric"><span class="n">43</span><span class="lab">peak plans per beneficiary (2023–24)</span></div><div class="metric"><span class="n">18</span><span class="lab">brand exits, 2025 plan year</span></div><div class="metric"><span class="n">1.8M</span><span class="lab">members affected, 2025</span></div></div>
@@ -103,76 +115,35 @@ None of this happens on its own. The Centers for Medicare & Medicaid Services, o
 Plot the exit announcements against the calendar and the choreography is hard to miss.
 
 <figure class="post-chart post-chart-wide">
-<svg id="chart2-svg" class="chart2-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Vertical two-column timeline of Medicare Advantage exit announcements for plan years 2025 and 2026, plotted against the fixed CMS regulatory calendar (Advance Notice in January, Final Rate in April, Bid Deadline in June, Landscape Release in October). Each column runs January at the top to December at the bottom."><text id="chart2-py25-title" x="60" y="32" font-size="13" font-style="italic" fill="#111">Plan year 2025 cycle</text>
-<text id="chart2-py25-sub" x="60" y="48" font-size="10" fill="#6a6a6a">bid year 2024</text>
-<line id="chart2-py25-axis" x1="200" y1="80" x2="200" y2="920" stroke="#d0d0c8" stroke-width="0.5"/>
-<g id="chart2-py25-months" font-size="9" fill="#6a6a6a" text-anchor="end">
-<text x="186" y="93">Jan</text><text x="186" y="163">Feb</text><text x="186" y="233">Mar</text><text x="186" y="303">Apr</text><text x="186" y="373">May</text><text x="186" y="443">Jun</text><text x="186" y="513">Jul</text><text x="186" y="583">Aug</text><text x="186" y="653">Sep</text><text x="186" y="723">Oct</text><text x="186" y="793">Nov</text><text x="186" y="863">Dec</text>
-</g>
-<g id="chart2-py25-milestones" stroke="#6a6a6a" stroke-width="0.7" stroke-dasharray="3 3">
-<line x1="188" y1="114" x2="212" y2="114"/>
-<line x1="188" y1="292" x2="212" y2="292"/>
-<line x1="188" y1="437" x2="212" y2="437"/>
-<line x1="188" y1="712" x2="212" y2="712"/>
-</g>
-<g id="chart2-py25-mlabels" font-size="9" font-style="italic" fill="#6a6a6a" text-anchor="start">
-<text x="216" y="117">Adv. Notice · Jan 15</text>
-<text x="216" y="295">Final Rate · Apr 1</text>
-<text x="216" y="440">Bid Deadline · Jun 3</text>
-<text x="216" y="704">Landscape · Oct 1</text>
-</g>
-<circle id="chart2-py25-cigna" cx="200" cy="150" r="6" fill="#7a0000"/>
-<circle id="chart2-py25-humana" cx="200" cy="570" r="6" fill="#111"/>
-<circle id="chart2-py25-centene" cx="200" cy="586" r="6" fill="#111"/>
-<circle id="chart2-py25-cvs" cx="200" cy="588" r="6" fill="#111"/>
-<circle id="chart2-py25-ow" cx="200" cy="712" r="6" fill="#6a6a6a"/>
-<g id="chart2-py25-clabels" font-size="9" fill="#6a6a6a" font-style="italic" text-anchor="start">
-<text x="216" y="148">Cigna 8-K · HCSC sale · Jan 31</text>
-<text x="216" y="160" fill="#7a0000">M&amp;A, not rate</text>
-<text x="216" y="568">Humana Q2 · Jul 31 · 500K decline</text>
-<text x="216" y="584">Centene 6-state · Aug 7</text>
-<text x="216" y="600">CVS/Aetna · Aug 8</text>
-<text x="216" y="724">Oliver Wyman count: 18 brands</text>
-</g>
-<line id="chart2-divider" x1="455" y1="80" x2="455" y2="920" stroke="#d0d0c8" stroke-width="0.5"/>
-<text id="chart2-py26-title" x="500" y="32" font-size="13" font-style="italic" fill="#111">Plan year 2026 cycle</text>
-<text id="chart2-py26-sub" x="500" y="48" font-size="10" fill="#6a6a6a">bid year 2025</text>
-<line id="chart2-py26-axis" x1="540" y1="80" x2="540" y2="920" stroke="#d0d0c8" stroke-width="0.5"/>
-<g id="chart2-py26-months" font-size="9" fill="#6a6a6a" text-anchor="end">
-<text x="526" y="93">Jan</text><text x="526" y="163">Feb</text><text x="526" y="233">Mar</text><text x="526" y="303">Apr</text><text x="526" y="373">May</text><text x="526" y="443">Jun</text><text x="526" y="513">Jul</text><text x="526" y="583">Aug</text><text x="526" y="653">Sep</text><text x="526" y="723">Oct</text><text x="526" y="793">Nov</text><text x="526" y="863">Dec</text>
-</g>
-<g id="chart2-py26-milestones" stroke="#6a6a6a" stroke-width="0.7" stroke-dasharray="3 3">
-<line x1="528" y1="114" x2="552" y2="114"/>
-<line x1="528" y1="306" x2="552" y2="306"/>
-<line x1="528" y1="435" x2="552" y2="435"/>
-<line x1="528" y1="712" x2="552" y2="712"/>
-</g>
-<g id="chart2-py26-mlabels" font-size="9" font-style="italic" fill="#6a6a6a" text-anchor="start">
-<text x="556" y="117">Adv. Notice · Jan 15</text>
-<text x="556" y="309">Final Rate · Apr 7</text>
-<text x="556" y="438">Bid Deadline · Jun 2</text>
-<text x="556" y="704">Landscape · Oct 1</text>
-</g>
-<circle id="chart2-py26-hum-q1" cx="540" cy="358" r="6" fill="#111"/>
-<circle id="chart2-py26-uhc-q2" cx="540" cy="565" r="6" fill="#111"/>
-<circle id="chart2-py26-hum-q2" cx="540" cy="568" r="6" fill="#111"/>
-<circle id="chart2-py26-uhc-ls" cx="540" cy="712" r="6" fill="#6a6a6a"/>
-<circle id="chart2-py26-beckers" cx="540" cy="716" r="6" fill="#6a6a6a"/>
-<g id="chart2-py26-clabels" font-size="9" fill="#6a6a6a" font-style="italic" text-anchor="start">
-<text x="556" y="356">Humana Q1 · Apr 29</text>
-<text x="556" y="368">550K affirmed</text>
-<text x="556" y="563">UHC Q2 · Jul 29 (600K PPO)</text>
-<text x="556" y="575">Humana Q2 · Jul 30</text>
-<text x="556" y="724">UHC plans · Oct 1 (180K no alt.)</text>
-<text x="556" y="736">Becker's 8+ · Oct 2</text>
-</g>
-<line id="chart2-q2-band-top" x1="60" y1="558" x2="820" y2="558" stroke="#d0d0c8" stroke-width="0.4" stroke-dasharray="1 4"/>
-<line id="chart2-q2-band-bot" x1="60" y1="608" x2="820" y2="608" stroke="#d0d0c8" stroke-width="0.4" stroke-dasharray="1 4"/>
-<text id="chart2-cluster-q2" x="820" y="585" font-size="10" font-style="italic" fill="#6a6a6a" text-anchor="end">Q2 earnings cluster</text>
-<line id="chart2-oct-band-top" x1="60" y1="706" x2="820" y2="706" stroke="#d0d0c8" stroke-width="0.4" stroke-dasharray="1 4"/>
-<line id="chart2-oct-band-bot" x1="60" y1="744" x2="820" y2="744" stroke="#d0d0c8" stroke-width="0.4" stroke-dasharray="1 4"/>
-<text id="chart2-cluster-oct" x="820" y="728" font-size="10" font-style="italic" fill="#6a6a6a" text-anchor="end">public confirmation</text></svg>
-<figcaption>Two plan-year cycles, January at the top to December at the bottom. Short dashes crossing each axis = fixed CMS regulatory milestones. Circles = exit announcements, plotted by the date of first public disclosure. Color indicates announcement type: <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#7a0000"/></svg> 8-K / definitive agreement</span>; <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#111"/></svg> earnings-call disclosure</span>; <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#6a6a6a"/></svg> landscape file / press confirmation</span>. Dates sourced from SEC 8-K filings, earnings call transcripts, and contemporaneous press releases.</figcaption>
+<div class="ma-timeline">
+<div class="col-header">Plan year 2025 cycle<span>bid year 2024</span></div>
+<div class="col-header">Plan year 2026 cycle<span>bid year 2025</span></div>
+<div class="ev milestone"><span class="d">Jan 15</span>Advance Notice</div>
+<div class="ev milestone"><span class="d">Jan 15</span>Advance Notice</div>
+<div class="ev accent"><span class="d">Jan 31</span>Cigna 8-K, HCSC sale<span class="note">M&amp;A, not rate</span></div>
+<div class="ev empty"></div>
+<div class="ev milestone"><span class="d">Apr 1</span>Final Rate</div>
+<div class="ev milestone"><span class="d">Apr 7</span>Final Rate</div>
+<div class="ev empty"></div>
+<div class="ev"><span class="d">Apr 29</span>Humana Q1, 550K affirmed</div>
+<div class="ev milestone"><span class="d">Jun 3</span>Bid Deadline</div>
+<div class="ev milestone"><span class="d">Jun 2</span>Bid Deadline</div>
+<div class="cluster-band">Q2 earnings cluster, late July and early August</div>
+<div class="ev"><span class="d">Jul 31</span>Humana Q2, 500K decline</div>
+<div class="ev"><span class="d">Jul 29</span>UHC Q2, 600K PPO</div>
+<div class="ev"><span class="d">Aug 7</span>Centene, 6-state withdrawal</div>
+<div class="ev"><span class="d">Jul 30</span>Humana Q2</div>
+<div class="ev"><span class="d">Aug 8</span>CVS/Aetna</div>
+<div class="ev empty"></div>
+<div class="cluster-band">public confirmation, October landscape file</div>
+<div class="ev milestone"><span class="d">Oct 1</span>Landscape released</div>
+<div class="ev milestone"><span class="d">Oct 1</span>Landscape released</div>
+<div class="ev confirmation"><span class="d">Oct 1</span>Oliver Wyman count: 18 brand exits</div>
+<div class="ev confirmation"><span class="d">Oct 1</span>UHC plans, 180K with no alternative</div>
+<div class="ev empty"></div>
+<div class="ev confirmation"><span class="d">Oct 2</span>Becker's: 8+ brand exits</div>
+</div>
+<figcaption>Two plan-year cycles, in chronological order. Rows pair the same calendar month across cycles; an empty cell means that cycle had no announcement that month. Open circles = fixed CMS regulatory milestones. Filled circles = exit announcements, plotted by the date of first public disclosure. Color indicates announcement type: <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#7a0000"/></svg> 8-K or definitive agreement</span>; <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#111"/></svg> earnings-call disclosure</span>; <span style="white-space:nowrap"><svg width="9" height="9" viewBox="0 0 9 9" style="vertical-align:baseline;display:inline-block"><circle cx="4.5" cy="4.5" r="3.5" fill="#6a6a6a"/></svg> landscape file or press confirmation</span>. Dashed bands span both cycles where exit announcements cluster: late-July Q2 earnings calls and the October 1 landscape release. Dates sourced from SEC 8-K filings, earnings call transcripts, and contemporaneous press releases.</figcaption>
 </figure>
 
 Two clusters dominate. The first sits in late July and early August, the same days each year that the major insurers report Q2 earnings, days after bids are due. The second sits at October 1, the day the public plan landscape goes live. The Cigna circle at January 31, 2024 is the lone outlier in either cycle. Cigna sold its entire Medicare Advantage book to HCSC under a definitive agreement that month, well before the April rate notice. That exit was driven by a portfolio sale, not by payment policy.
