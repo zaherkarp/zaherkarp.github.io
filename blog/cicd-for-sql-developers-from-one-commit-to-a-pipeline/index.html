@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD for SQL Developers: From One Commit to a Pipeline — Zaher Karp</title>
+<meta name="description" content="The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.">
+<link rel="canonical" href="https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="CI/CD for SQL Developers: From One Commit to a Pipeline — Zaher Karp">
+<meta property="og:description" content="The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.">
+<meta property="og:url" content="https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CI/CD for SQL Developers: From One Commit to a Pipeline — Zaher Karp">
+<meta name="twitter:description" content="The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "CI/CD for SQL Developers: From One Commit to a Pipeline", "description": "The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.", "url": "https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T23:50:20Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2787, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "healthcare-data, ci-cd, sql, data-engineering, version-control, pull-requests"}
+</script>
+
+
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"
+        data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/"></script>
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">CI/CD for SQL Developers: From One Commit to a Pipeline</h1>
+    <div class="blog-meta">
+      <time datetime="2026-05-17" class="blog-date">May 17, 2026</time>
+      
+      <span class="blog-readtime">11 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>healthcare-data</li><li>ci-cd</li><li>sql</li><li>data-engineering</li><li>version-control</li><li>pull-requests</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>For a long time my workflow had three steps. Open a file, write the SQL, run it. If the row counts matched what I expected, I committed and moved on. If something else broke, I fixed that file too, ran them both, and committed when everything was green. The repo was a place I copied finished work into when I was done thinking about it. Git was a save button with history.</p>
+<h2>The Workflow I Used to Have</h2>
+<p>Picture a small warehouse team. Three or four developers, a reporting database, a stack of stored procedures that build last night's facts, maybe two dozen views that the BI tool reads from. Someone has to add a channel breakdown to the daily sales rollup so the marketing team can split web from store. That someone is me.</p>
+<p>I open the file for the procedure in whichever editor is already open. I edit it. The change is small, two new columns in the <code>GROUP BY</code> and two new columns in the target table. Something like this:</p>
+<pre><code class="language-sql">-- MySQL 8.0 dialect throughout this series.
+-- Daily aggregate from the staging order table into the warehouse fact.
+
+DROP PROCEDURE IF EXISTS daily_sales_rollup;
+DELIMITER //
+CREATE PROCEDURE daily_sales_rollup(IN run_date DATE)
+BEGIN
+  -- Wipe out any previous run for this date so reruns are idempotent.
+  DELETE FROM fact_sales_daily WHERE sales_date = run_date;
+
+  -- Aggregate staged orders into one row per store and channel.
+  INSERT INTO fact_sales_daily
+    (sales_date, store_id, channel, gross_revenue, net_revenue)
+  SELECT
+    DATE(order_ts) AS sales_date,
+    store_id,
+    channel,
+    SUM(line_total) AS gross_revenue,
+    SUM(line_total - discount) AS net_revenue
+  FROM stg_orders
+  WHERE DATE(order_ts) = run_date
+  GROUP BY DATE(order_ts), store_id, channel;
+END //
+DELIMITER ;
+</code></pre>
+<p>I run it against the dev database. The procedure creates without error. I call it with yesterday's date. I check the result against a quick aggregate of the staging table. The numbers reconcile to the cent. I commit the file with the message &quot;Add channel to daily sales rollup&quot; and push.</p>
+<p>What happens next depends on the team. Sometimes I deploy it to QA myself by running the file there. Sometimes I send the file to whoever owns the QA box. Sometimes I message the channel and say &quot;this is ready when you're ready,&quot; and the SQL ends up on QA an hour or a day later. Eventually it goes to prod, by whichever mechanism prod changes happen. Sometimes that mechanism is me. Sometimes it is a ticket and a release window.</p>
+<p>There is a lot to recommend this workflow. It is fast. The feedback loop between writing SQL and seeing the result is tighter than in any other kind of programming I have done. The tools are minimal, the ceremony is zero, and you stay close to the data the whole time. If you are working alone on a small system you understand completely, this workflow can carry you indefinitely.</p>
+<p>It carried me for years. Then it did not.</p>
+<h2>Where It Quietly Breaks</h2>
+<p>The breakage is not loud. It accretes. The workflow keeps working on the file in front of you, and the rest of the system slowly drifts away from the file in front of you.</p>
+<p>A 2am page goes off because the nightly load is failing. I open the stored procedure and find it does not match what I last committed. Someone, possibly me, ran an <code>ALTER PROCEDURE</code> against prod three weeks ago to handle an edge case and never put it back in the repo. The repo says version A. Prod is running version B. The file on the shared drive that another developer was about to edit is version A, the one in the repo, which means the next deploy is going to overwrite the prod fix and the same page is going to go off again next week. The repo does not know what prod looks like. Nothing in this workflow does.</p>
+<p>A migration that ran in eight seconds on dev locks prod for forty minutes because the dev database has five thousand rows in <code>stg_orders</code> and prod has sixty million. I knew the migration was going to be slow, in the abstract. I had no way to estimate how slow because the only place that exists at prod scale is prod.</p>
+<p>A column changes from <code>CHAR(1)</code> to <code>TINYINT</code> to save space. Two reports that cast the column to a string break the next morning. Those reports live in a different repository, owned by a different team, and nothing connects a schema change in one repo to a regression in the other.</p>
+<p>A regulator or an internal auditor asks when a specific column on a specific table last changed, why, and who approved it. The git log says when the file in the repo was last edited. The file in the repo may or may not match what was actually deployed. There is no record of approval because the approval was a Slack thread that has since rolled out of free-tier retention. The honest answer is &quot;I think it was Maria in March, possibly April, and I am not sure why.&quot;</p>
+<p>A <code>DROP TABLE</code> that was supposed to run on staging runs on prod, because the two databases are in the same client and the connection string was the wrong one. The rollback is restoring last night's backup, which means losing today's data, which means an awkward conversation with the team whose reports were built on today's data.</p>
+<p>A simpler version of the same problem: two files for the same object, and no way to tell which one is real.</p>
+<pre><code class="language-sql">-- File in the repo, last commit timestamp says April.
+CREATE PROCEDURE refresh_member_eligibility() ...
+
+-- File on the shared drive, edited as a hotfix in June.
+CREATE PROCEDURE refresh_member_eligibility() ...
+
+-- The actual definition currently running in prod.
+SHOW CREATE PROCEDURE refresh_member_eligibility;
+-- Could match either of the above. Could match neither. Nobody has checked in months.
+</code></pre>
+<p>These are all solo failure modes. They all happened to me with a team of one editing a single repo.</p>
+<p>Now add a second person. They edit the same stored procedure I edited, the same week, from their own copy on their own laptop. We both deploy. Whoever deploys second wins. The first person's change is gone. Neither of us notices until the report that depended on it breaks two days later, and by then it is hard to reconstruct what the original change even was. Git would have caught the conflict if either of us had pulled before pushing, but in this workflow pulling is something you do when you remember, which is mostly when something has already broken.</p>
+<p>The new hire asks where the latest version of the warehouse schema is. The honest answer is &quot;the prod database, sort of, plus some uncommitted changes from last sprint.&quot; There is no version anywhere that you can point at and say: this is what we believe is true. Onboarding becomes an oral tradition.</p>
+<p>The &quot;I thought you'd already deployed that&quot; gap. Two people, each assuming the other ran the migration on QA. The migration never ran. The next deploy fails because the table the new code expects does not exist. Or both people run it, one of the runs fails silently because the column already exists, and now both of you believe it ran and neither of you can tell whose attempt actually applied.</p>
+<p>A change goes out at midnight on a Saturday. There is no record of who approved it because there was no approval. Compliance has questions later. So does the person trying to figure out what changed between Friday and Monday.</p>
+<p>The common thread is the same in every case. The workflow stores code. It does not represent state, ownership, or sequence. Everyone working on the system is carrying around a mental model of what is where and which version is real. The mental models do not agree, and there is no shared place to check.</p>
+<p>Version control, used well, is the shared place. The pipeline is what keeps the place honest.</p>
+<h2>Version Control as Scaffolding</h2>
+<p>You already use the basic moves. <code>git add</code> stages a file. <code>git commit</code> saves a snapshot of the staged files into the history of your current copy of the repository. <code>git push</code> sends those commits to a shared repository that everyone else can read. <code>git pull</code> fetches everyone else's commits from the shared repository and merges them into your copy. If you have used git at all, even as a save button, those four commands are where you live.</p>
+<p>Pull is the move the save-button workflow tends to skip. Without pulling, two people can edit the same file at the same time and neither of them will see the other's edits until one of them tries to push. At that point git will refuse, on the grounds that the shared repository has commits the pusher has not seen. The fix is to pull, resolve any conflicts the merge surfaces, and push again. This is annoying but valuable; the alternative is the silent overwrite I described above, which is much worse.</p>
+<p>The first concept the save-button workflow is missing is the branch. A branch is a separate line of history. By convention every repository has a branch called <code>main</code> (older repos call it <code>master</code>) that represents the canonical version of the project. Until you do otherwise, when you commit, you commit on <code>main</code>. Everyone else also commits on <code>main</code>. There is one shared line of history and everyone is writing on it.</p>
+<p>When you start a piece of work, you make a branch off of <code>main</code>. The branch starts as a copy of main at the moment you branched. As you commit on the branch, you add to that separate line. Main keeps moving independently. Your branch does not affect what anyone else sees until you choose to bring it back into main.</p>
+<p>The mental shift this enables is small but consequential. <code>main</code> stops being &quot;where I save my work&quot; and becomes &quot;what we believe is the canonical state of the project.&quot; Work in progress lives on a branch. The branch is a place where things can be wrong, half-finished, or experimental, and that is fine, because the branch is not what anyone else is reading from. When the work is ready, you bring the branch back into main.</p>
+<p>The mechanism for bringing a branch back is a pull request. GitLab and a few others call it a merge request. The two terms mean the same thing. A pull request is a structured proposal that says: here are the commits on my branch, here is the diff against main, please merge them. The proposal sits in the open until it is approved. While it sits there, three things happen that do not happen with a bare commit.</p>
+<p>The change is visible. Anyone on the team can read the diff, comment on specific lines, and ask why a stored procedure was rewritten the way it was. There is a record of the discussion attached to the change.</p>
+<p>Automated checks can run. The pull request is a known target. A pipeline can hook itself to &quot;every new pull request&quot; and &quot;every push to an existing pull request&quot; and run a battery of checks. This is the seam where CI lives. Without a branch and a pull request, there is no clear moment at which to run the checks.</p>
+<p>Someone reads it. Even if that someone is me an hour later. The review need not be elaborate, but it is structurally required for the change to land. The moment of commitment is the merge into main, not the commit on the branch. That distinction is the whole point of the system.</p>
+<p>I want to be honest about the overhead. For a typo fix in a file nobody else depends on, branches and pull requests feel like ceremony. They are. But for the SQL changes that matter, which is most of them once a system is more than a few months old, the friction is the feature. Every shared stored procedure, every schema migration, every view that downstream reports depend on benefits from being visible, reviewable, and reversible before it lands. The reason it feels heavy is the same reason it works.</p>
+<p>There is one more piece of vocabulary worth knowing before we move on. The <code>main</code> branch is usually configured to be protected. Protection means you cannot push directly to main; you have to go through a pull request. This is what closes the loophole. Without protection, the team can branch and review when they feel like it, and commit directly to main when they are in a hurry. With protection, every change to main goes through the same door, which means every change to main can be checked the same way.</p>
+<p>The branch gives you a thing to check. The pull request gives you a place to check it. The thing doing the checking is the pipeline.</p>
+<h2>The Pipeline in Plain English</h2>
+<p>A pipeline is a sequence of automated steps that runs against a change. Two parts are doing work here: &quot;sequence of automated steps&quot; and &quot;runs against a change.&quot; The first part means a stack of small jobs that each verify something specific. The second part means the stack is triggered by something concrete: a new pull request, a push to a branch, a merge into main, a tag being created. The pipeline runs every time the trigger fires, without anyone having to remember to ask.</p>
+<p>For a SQL codebase, the questions a pipeline can answer for you, automatically, on every change:</p>
+<ul>
+<li>Does every SQL file parse against the dialect we use?</li>
+<li>Does each migration apply cleanly to a fresh schema, in order, from the beginning of the project?</li>
+<li>Does each migration apply cleanly to a clone of the current production schema?</li>
+<li>After the migrations run, do the tests we wrote still pass?</li>
+<li>Does the resulting schema match what is checked into source control as the canonical definition?</li>
+<li>Is this change safe to deploy automatically, or does it need a human to look first?</li>
+</ul>
+<p>Every one of these is a question a careful developer asks before deploying. The pipeline asks them every time. It is consistent in a way that a person performing them by hand cannot be.</p>
+<p>The pipeline is usually split into two halves, and the names matter because they appear in every conversation about this. CI is continuous integration. It is the half that checks the change. Every pull request triggers it, every push to a branch triggers it, and merges into main trigger it. CD is continuous delivery, sometimes continuous deployment. The two terms mean slightly different things, and the next article unpacks the difference. For now, treat CD as the half that moves a change that has passed CI through the staged environments on its way to production.</p>
+<p>There are two tradeoffs to name before this gets oversold.</p>
+<p>The first is setup cost. The initial pipeline for a project is real work. You have to decide what counts as a test, how to provision a database for the pipeline to run against, how to handle credentials, where to store the results, what the deployment target looks like. None of this is free. The payoff arrives later, and only if you commit to running the pipeline against every change. A pipeline that exists but is not enforced is decorative.</p>
+<p>The second is the pipeline you cannot trust. A slow pipeline gets bypassed; people start pushing changes before the pipeline finishes, on the theory that they know their change is fine. A flaky pipeline gets ignored; if half the failures are spurious infrastructure issues, people stop reading the failures. Once trust erodes, the pipeline is not a check, it is noise. Building one well takes more discipline than tooling.</p>
+<p>There is one thing the pipeline does not do, and pretending it does is the most common way to sell people sour on CI/CD. A pipeline does not replace thinking. It catches the things a checklist catches: syntax errors, migrations that fail on a fresh schema, regressions in tests you wrote, schema drift between source control and the database. It does not catch a join that looks correct and produces subtly wrong numbers under prod data. It does not catch a deadlock that only manifests at prod concurrency. It does not catch a business rule that is encoded incorrectly. The pipeline takes care of the boring stuff so that human review can focus on intent.</p>
+<p>That last point is the underrated one. The reason to automate the checklist is not that humans are bad at running checklists. It is that humans are bad at running the same checklist on every single change, every single time, when the change is small and the developer is confident. The pipeline does not get tired or skip steps. That consistency is what lets you trust the system as it grows past the size where any one person can hold it in their head.</p>
+<h2>What's in the Pipeline</h2>
+<p>The next article walks through what each piece of a SQL pipeline looks like in concrete terms. Linting that catches dialect violations and naming-convention drift before review. Migration validation that applies the change against a clean database and against a production-shaped clone. Unit tests for stored procedures and functions, with notes on what tools like tSQLt, pgTAP, and similar harnesses do well and where they do not. Schema-drift checks that compare the live database against the source-controlled definition. The distinction between continuous delivery and continuous deployment, and what each one means for who pushes the deploy button. Daily life on a team that has one of these set up, the objections SQL developers tend to raise about each piece of it, and a survey of the tools that fill each slot.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/2ec4183">2ec4183</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>

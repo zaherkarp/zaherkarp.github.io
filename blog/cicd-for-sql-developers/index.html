@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD for SQL Developers: What the Pipeline Actually Does — Zaher Karp</title>
+<meta name="description" content="Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.">
+<link rel="canonical" href="https://zaherkarp.com/blog/cicd-for-sql-developers/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="CI/CD for SQL Developers: What the Pipeline Actually Does — Zaher Karp">
+<meta property="og:description" content="Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.">
+<meta property="og:url" content="https://zaherkarp.com/blog/cicd-for-sql-developers/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CI/CD for SQL Developers: What the Pipeline Actually Does — Zaher Karp">
+<meta name="twitter:description" content="Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "CI/CD for SQL Developers: What the Pipeline Actually Does", "description": "Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.", "url": "https://zaherkarp.com/blog/cicd-for-sql-developers/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/cicd-for-sql-developers/"}, "datePublished": "2026-05-18T00:00:00Z", "dateModified": "2026-05-18T23:50:26Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2748, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "healthcare-data, ci-cd, sql, data-engineering, devops, pipelines"}
+</script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">CI/CD for SQL Developers: What the Pipeline Actually Does</h1>
+    <div class="blog-meta">
+      <time datetime="2026-05-18" class="blog-date">May 18, 2026</time>
+      
+      <span class="blog-readtime">11 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>healthcare-data</li><li>ci-cd</li><li>sql</li><li>data-engineering</li><li>devops</li><li>pipelines</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>The branch sits on your laptop. The pull request sits on the server. A reviewer leaves a comment, you push a fix, the comment turns green. Eventually someone merges. The first article in this series treated that as the destination. It is not. It is the runway.</p>
+<p>The merge is the moment a pipeline takes the change off your hands. The pipeline is what runs the tests you would otherwise forget to run, deploys to environments you would otherwise deploy to by hand, and writes the trail you would otherwise reconstruct from Slack. The pipeline is continuous integration and continuous delivery, and most of what people argue about under those names is operational, not philosophical. This article walks through what those words mean when the code you are shipping is SQL.</p>
+<h2>What CI Is Doing While You Sleep</h2>
+<p>Continuous integration is a polite name for &quot;every time anyone pushes, run the checks.&quot; The checks are whatever you have written down: lint, build, tests. The point is that they run automatically and on every commit, not on a Wednesday when someone remembers.</p>
+<p>For application code the checks have been worn smooth by twenty years of practice. For SQL they have been worn smooth by about eight years of practice, mostly outside the SQL community proper. That is why a SQL developer's first encounter with CI feels like reading a translation. The words map. The texture is different.</p>
+<p>Four things tend to live in a SQL CI pipeline. None of them are negotiable. All of them are negotiable in practice, and skipped by real-world teams to their later regret.</p>
+<p>The first is <strong>lint.</strong> sqlfluff is the dominant open-source linter and supports a dozen dialects. It catches capitalization drift, missing aliases, ambiguous joins, dead <code>SELECT *</code> in production views, and reserved words used as identifiers. Run on every commit, it stops the kind of pull request comment that begins &quot;Just a nit, but...&quot; from existing. Reviewers can spend their attention on logic instead of casing. Lint is also where you encode house style: comma-leading or comma-trailing, lowercase or uppercase keywords, table aliases required or not. The argument about which style is correct is uninteresting. The argument about whether to enforce one is the interesting one, and lint settles it.</p>
+<p>The second is <strong>migration validation.</strong> Most teams running SQL through CI use a migration tool: Flyway, Liquibase, sqlpackage, or dbt for warehouse-shaped work. The migration is a versioned, immutable script that the tool tracks in a metadata table. The CI job applies the new migrations to a fresh database, then to a clone of production, and fails loudly if either fails. This catches the migration that runs on an empty schema and dies on a real one because it tries to alter a column that does not exist on the latest production row. Migration validation is the single most valuable thing CI does for SQL teams. It is also the thing most SQL teams skip.</p>
+<p>The third is <strong>SQL tests.</strong> This is where the translation gets awkward. SQL has unit test frameworks: tSQLt for SQL Server, pgTAP for Postgres, utPLSQL for Oracle, dbt tests for warehouse models. They work. They are not pleasant. The pattern is the same as application code: set up fixtures, run the procedure or query under test, assert on the output. The friction is that fixture data for a clinical claims table runs to fifty columns and twelve foreign-key dependencies, and writing one fixture takes an afternoon. Teams that succeed at SQL testing pick their targets carefully: the procedure that computes risk scores gets unit tests; the view that lists facilities does not. The realistic coverage is not the seventy percent that an application team brags about. It is the ten or fifteen percent that protects the logic that would hurt if it were wrong.</p>
+<p>The fourth is <strong>schema drift checks.</strong> The source of truth for the schema lives in the repository. The schema in production lives in production. These should match. They often do not, because somebody fixed a Sev-1 at two in the morning by running an <code>ALTER TABLE</code> directly. The drift check is a CI job that compares the live schema to the repository's schema and flags differences. Some teams treat any drift as a build failure. Most settle for a weekly report. Either way, the existence of the check changes behavior. People stop running ad-hoc alters once they know the alter will show up in a pull request next Monday with their name on it.</p>
+<p>That is the CI half. Lint clean, migrations apply cleanly, tests pass, schema matches. When the four lights are green, a human is allowed to merge.</p>
+<h2>Delivery, Deployment, and the One Decision That Matters</h2>
+<p>The next half is CD, and there is exactly one thing worth knowing about the name. CD can mean continuous <em>delivery</em> or continuous <em>deployment</em>. The difference is who pushes the button.</p>
+<p>In continuous delivery, the pipeline takes the change as far as the last gate before production, then waits for a human to approve the final step. In continuous deployment, the pipeline goes all the way, and a green main branch means a production change minutes later. Both are CD. Both are legitimate. The choice is not philosophical. It is operational: it depends on how much it hurts when the change is wrong.</p>
+<p>For a SQL team shipping changes against a customer-facing OLTP database that runs a billing system, continuous deployment is reckless. A bad migration that locks a 200-million-row table at nine in the morning is the kind of incident that gets a write-up. Use delivery. Put a human in the loop for prod. The cost is one Slack message and a click. The benefit is the ability to say no.</p>
+<p>For a SQL team shipping changes against an analytics warehouse where a broken model affects an internal dashboard that nobody looks at until Tuesday, deployment is fine. The blast radius is small. The recovery is fast. The pipeline does not need a babysitter.</p>
+<p>The mistake is treating the choice as a maturity ladder. It is not. Continuous deployment is not more advanced than continuous delivery. It is a different policy for a different blast radius. Mature teams pick deliberately.</p>
+<h2>What CD Is Doing Once It Has the Merged Code</h2>
+<p>Whichever flavor you pick, the deployment half of the pipeline has the same three concerns when the payload is SQL.</p>
+<p>The first is <strong>applying the migration.</strong> This is mostly the migration tool doing what migration tools do: read the metadata table, find the new versions, run them in order, write the success rows back. The pipeline runs the tool against dev, then QA or staging, then production. If any step fails, the pipeline stops. The next push will try again with the same migration plus whatever fix you have made. The migration tool is idempotent against its own metadata, which is why this works. How to actually execute a schema change against a live, busy table is a separate problem, and it is large enough that the next article in this series is about nothing else.</p>
+<p>The second is <strong>rollback, told honestly.</strong> There is a fiction in continuous-deployment evangelism that you can roll back a database change by re-deploying the previous build. This is true for code. It is not true for data. If your migration added a column and your application started writing to it, rolling back the migration means dropping the column, and dropping the column means losing the writes. Nobody is rolling that back.</p>
+<p>The realistic options when a SQL deployment goes wrong are three. You can forward-fix, which is what teams do ninety percent of the time: ship the next migration, on the next pipeline run, that corrects the mistake. You can restore from backup, which works if the mistake is recent and the data loss from rewinding is acceptable, and works much worse than people imagine if either is not true. You can write a compensating script, which is the careful version of forward-fix: a one-off migration that undoes the data-level damage of the previous one. None of these are clean. All of them want you to have thought about them before you needed them. The pipeline does not give you rollback. It gives you the discipline to recover.</p>
+<p>The third is <strong>gates.</strong> A gate is anything the pipeline waits on before continuing. Automated gates are easy: a smoke test against the deployed database, a row-count sanity check, a query plan that has not regressed past some threshold. Manual gates are the political ones: a human in the change-advisory-board meeting checking a box, an on-call engineer approving the deployment window, a release manager confirming that the marketing team is not running a campaign at the moment. Healthy teams automate as many gates as they can stand and leave the rest manual, on purpose. Unhealthy teams skip all the gates, or automate so few of them that the pipeline becomes a slow file-copy and nobody trusts the trail.</p>
+<h2>What the Day Actually Looks Like</h2>
+<p>A SQL developer on a team with CI/CD opens a small number of pull requests through the week. Maybe two. Maybe five. Each one runs the pipeline on push. Most of the runs are green and the developer ignores them. The interesting runs are the red ones: a lint error caught a missing alias, a migration validation caught an alter against a missing column, a test caught a regression in the readmission risk score. The red runs are read with attention. The fix is fast. The next push is green.</p>
+<p>Code review happens in the pull request thread once the build is green. A clinician asks why a particular ICD-10 family is included. A senior engineer points out that a join could be done before an aggregate to avoid a stage spill. The thread accumulates. Eventually someone approves. The merge happens.</p>
+<p>The merge is the visible event. What follows it is invisible to the developer most of the time. The pipeline applies the migration to QA. A smoke test runs. A human approves the production step. The migration runs against production overnight, on a window that has been agreed in advance. By morning, the change is live.</p>
+<p>Walk one change end to end, concretely. Friday morning, an analyst notices that the dual-eligible flag in the Star Ratings rollup is being computed incorrectly for a small subset of beneficiaries with retroactive enrollment dates. She branches off main, edits the stored procedure, adds two rows to the tSQLt fixture for the new edge case, and commits. The push fires the pipeline. sqlfluff is clean. The migration validation runs the new procedure-replacement script against a fresh schema and against a production-shaped clone; both pass. The tSQLt run passes, including the two new fixture cases. The drift check is clean. She opens the pull request, links the Jira ticket, and tags a clinician for the medical logic and a senior engineer for the SQL. The thread runs through Friday afternoon. Monday morning the thread is approved. She merges. The pipeline applies the migration to QA before lunch, runs a smoke test on a known sample, and posts to Slack. Tuesday's release manager approves the production gate. Tuesday night the procedure replaces in production. Wednesday's batch run uses the new logic. The dual-eligible flag is correct. The change took four working days, and the developer touched it on two of them.</p>
+<p>That is the win. Not that the work is faster. It is roughly the same speed it always was. The win is that the work happens in a system that catches the kinds of mistakes a tired person makes on a Friday afternoon, and that the trail of the change is sitting in the pull request when the auditor asks for it in six months.</p>
+<h2>The Two Objections Worth Taking Seriously</h2>
+<p>The first objection is that CI/CD slows you down. For a trivial change, it does. A one-line view fix that used to be a five-minute edit in SSMS is now a branch, a pull request, two reviewers, a pipeline run, and a merge. That is twenty minutes of overhead for a five-minute change. The objection is correct as stated.</p>
+<p>It is also misleading as a frame. The honest accounting is not the trivial-change case, where the overhead is real and noticeable. It is the bad-change case, where the overhead would have caught a mistake that would otherwise have taken a day to find and a week to clean up. The asymmetry is the point. Trivial changes pay a small tax all the time. Bad changes pay a large refund some of the time. If your work mix is mostly trivial changes against systems that nobody depends on, skip the pipeline. If your work mix is mostly material changes against systems people depend on, the math works out. Most SQL work in healthcare is the second kind. The honest version of this objection is not &quot;the pipeline is slow.&quot; It is &quot;I would rather pay the costs of bad changes in production than the costs of the pipeline.&quot; Stated that way, it usually loses.</p>
+<p>The second objection is that you cannot really test SQL the way you can test code. There is a real version of this objection and a lazy one. The real version is that SQL behavior depends on data, and the fixture data you write for a test never quite matches the data shape in production. A query that runs in 200 milliseconds on five fixture rows can spill to disk on five million production rows. A predicate that filters correctly on a clean fixture can miss the dirty edge cases that actually exist. Both are true. Both are not what tests are for.</p>
+<p>What SQL tests are good for is logic. They can verify that a CASE expression returns the right bucket for a specific input. They can verify that a window function partitions correctly. They can verify that a join does not double-count when the right side has duplicates. They cannot verify that the query is fast on real data, or that the data is shaped the way you think it is. For those, you need a clone of production data in CI (which is what the migration-validation step is doing, partly), plus data-quality checks (Great Expectations and dbt tests are the obvious ones), plus the human discipline to look at query plans before merging. Tests are one tool in the toolbox. The objection that tests are not enough is correct. The conclusion that tests are pointless does not follow.</p>
+<h2>What People Are Using</h2>
+<p>The tool landscape is unstable on the edges and stable in the middle. The middle is short.</p>
+<p>For migrations: Flyway and Liquibase are the cross-database defaults. dbt is what warehouse teams use for transformation-shaped work. sqlpackage handles SQL Server DACPACs for shops that have committed to the Microsoft stack. For linting: sqlfluff is the consensus. For SQL unit tests: tSQLt on SQL Server, pgTAP on Postgres, utPLSQL on Oracle, dbt tests on warehouses. For data quality: Great Expectations, dbt tests pulling double duty, Soda. For pipelines: GitHub Actions, GitLab CI, Jenkins, Azure DevOps. The choice of pipeline runner matters less than committing to one and writing the YAML once.</p>
+<p>The instability is at the joints. Which migration tool plays best with which test framework. Which lint plugin understands your dialect. Which secrets manager your pipeline runner can reach. Most teams pick a stack in a week and live with the joints in production for years. That is fine. The choice is reversible at a known cost. The non-choice is not.</p>
+<h2>What This Article Skipped on Purpose</h2>
+<p>The thing this article kept skating past is what happens when the migration is not a tidy create-or-replace, but a schema change against a table that the application is actively reading from. Adding a column with a default. Renaming a column without breaking the app. Dropping a column that something somewhere still selects. Backfilling a column on a 200-million-row table without locking it for an hour. These are the changes that make people frightened of migrations, and reasonably so.</p>
+<p>The pattern that makes them safe has a name. It is called expand, migrate, contract. The next article in this series is about nothing else.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/2ec4183">2ec4183</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>

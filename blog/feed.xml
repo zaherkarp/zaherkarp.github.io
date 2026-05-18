@@ -6,8 +6,68 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 May 2026 18:50:22 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2026 23:51:06 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>CI/CD for SQL Developers: Watching It Land, and a Project to Practice On</title>
+      <link>https://zaherkarp.com/blog/cicd-for-sql-developers-observability/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/cicd-for-sql-developers-observability/</guid>
+      <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
+      <description>The pipeline shipped the change. Friday morning the dashboard went red. Observability closes the loop. Plus a weekend project for the SQL developer who wants to build the whole series end to end.</description>
+      <category>healthcare-data</category>
+      <category>ci-cd</category>
+      <category>sql</category>
+      <category>data-engineering</category>
+      <category>observability</category>
+      <category>dbt</category>
+      
+    </item>
+    
+    <item>
+      <title>CI/CD for SQL Developers: Changing the Schema Without Locking the App Out</title>
+      <link>https://zaherkarp.com/blog/cicd-for-sql-developers-schema-changes/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/cicd-for-sql-developers-schema-changes/</guid>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <description>The ALTER TABLE at nine in the morning that does not end. The rename that breaks the app between deploys. The pattern that fixes both is called expand, migrate, contract, and it costs three deploys where one would do.</description>
+      <category>healthcare-data</category>
+      <category>ci-cd</category>
+      <category>sql</category>
+      <category>data-engineering</category>
+      <category>schema-changes</category>
+      <category>migrations</category>
+      
+    </item>
+    
+    <item>
+      <title>CI/CD for SQL Developers: What the Pipeline Actually Does</title>
+      <link>https://zaherkarp.com/blog/cicd-for-sql-developers/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/cicd-for-sql-developers/</guid>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <description>Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.</description>
+      <category>healthcare-data</category>
+      <category>ci-cd</category>
+      <category>sql</category>
+      <category>data-engineering</category>
+      <category>devops</category>
+      <category>pipelines</category>
+      
+    </item>
+    
+    <item>
+      <title>CI/CD for SQL Developers: From One Commit to a Pipeline</title>
+      <link>https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/</guid>
+      <pubDate>Sun, 17 May 2026 00:00:00 +0000</pubDate>
+      <description>The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.</description>
+      <category>healthcare-data</category>
+      <category>ci-cd</category>
+      <category>sql</category>
+      <category>data-engineering</category>
+      <category>version-control</category>
+      <category>pull-requests</category>
+      
+    </item>
     
     <item>
       <title>Paper Saver: estimating XGBoost compute costs on AWS without SageMaker</title>
@@ -362,64 +422,6 @@
       <category>data-architecture</category>
       <category>apis</category>
       <category>analytics</category>
-      
-    </item>
-    
-    <item>
-      <title>Making PostgreSQL Connections More Resilient with TCP Keepalive</title>
-      <link>https://zaherkarp.com/blog/tcp-keepalive-postgresql/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/tcp-keepalive-postgresql/</guid>
-      <pubDate>Sun, 30 Nov 2025 00:00:00 +0000</pubDate>
-      <description>Why idle database connections fail, and how TCP keepalive tuning prevents silent disconnects in PostgreSQL.</description>
-      <category>postgresql</category>
-      <category>networking</category>
-      <category>tcp</category>
-      <category>reliability</category>
-      
-    </item>
-    
-    <item>
-      <title>HEDIS Measure-Level ETL Patterns: Building the Pipeline from Claims to Measure Rates</title>
-      <link>https://zaherkarp.com/blog/hedis-measure-etl-patterns/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/hedis-measure-etl-patterns/</guid>
-      <pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate>
-      <description>A practitioner&#39;s walkthrough of how HEDIS measure pipelines actually work -- from eligible population builds and numerator event matching to exclusion logic, supplemental data integration, and rate calculation.</description>
-      <category>HEDIS</category>
-      <category>ETL</category>
-      <category>Healthcare Data Engineering</category>
-      <category>Medicare Stars</category>
-      <category>dbt</category>
-      <category>Data Pipelines</category>
-      
-    </item>
-    
-    <item>
-      <title>I Don’t Actually Care About Making Change</title>
-      <link>https://zaherkarp.com/blog/making-change/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/making-change/</guid>
-      <pubDate>Sun, 23 Nov 2025 00:00:00 +0000</pubDate>
-      <description>Solving the same problem in Haskell, Python, and SQL reveals less about coins and more about how programming languages shape how we think about correctness, process, and structure.</description>
-      <category>software-engineering</category>
-      <category>data-engineering</category>
-      <category>algorithms</category>
-      <category>python</category>
-      <category>sql</category>
-      <category>haskell</category>
-      <category>functional-programming</category>
-      
-    </item>
-    
-    <item>
-      <title>Deletes Are Data Too</title>
-      <link>https://zaherkarp.com/blog/deletes-are-data-too/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/deletes-are-data-too/</guid>
-      <pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate>
-      <description>Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for.</description>
-      <category>data-engineering</category>
-      <category>cdc</category>
-      <category>data-pipelines</category>
-      <category>data-quality</category>
-      <category>architecture</category>
       
     </item>
     
