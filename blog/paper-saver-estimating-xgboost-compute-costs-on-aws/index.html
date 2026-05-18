@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-17T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3419, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-17T22:18:38-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3419, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
 </script>
 
 
@@ -129,31 +129,26 @@ floor = 4 GiB  (Python + libraries + overhead)
     <text class="bar-label" x="195" y="30" text-anchor="end">Single retrain (1M x 200)</text>
     <rect x="200" y="10" width="2" height="32" fill="#888780"/>
     <text class="bar-value" x="210" y="30">$0.005</text>
-<pre><code>&lt;rect x=&quot;200&quot; y=&quot;50&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;70&quot; text-anchor=&quot;end&quot;&gt;Daily batch scoring (30d)&lt;/text&gt;
-&lt;rect x=&quot;200&quot; y=&quot;50&quot; width=&quot;3&quot; height=&quot;32&quot; fill=&quot;#888780&quot;/&gt;
-&lt;text class=&quot;bar-value&quot; x=&quot;210&quot; y=&quot;70&quot;&gt;$0.07&lt;/text&gt;
-
-&lt;rect x=&quot;200&quot; y=&quot;90&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;110&quot; text-anchor=&quot;end&quot;&gt;Large training (50M x 500)&lt;/text&gt;
-&lt;rect x=&quot;200&quot; y=&quot;90&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
-&lt;text class=&quot;bar-value&quot; x=&quot;290&quot; y=&quot;110&quot;&gt;$5.72&lt;/text&gt;
-
-&lt;rect x=&quot;200&quot; y=&quot;130&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;150&quot; text-anchor=&quot;end&quot;&gt;100-config HPO sweep&lt;/text&gt;
-&lt;rect x=&quot;200&quot; y=&quot;130&quot; width=&quot;116&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
-&lt;text class=&quot;bar-value&quot; x=&quot;326&quot; y=&quot;150&quot;&gt;$8.44&lt;/text&gt;
-
-&lt;rect x=&quot;200&quot; y=&quot;170&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;190&quot; text-anchor=&quot;end&quot;&gt;Distributed 500M (8 nodes)&lt;/text&gt;
-&lt;rect x=&quot;200&quot; y=&quot;170&quot; width=&quot;195&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
-&lt;text class=&quot;bar-value&quot; x=&quot;405&quot; y=&quot;190&quot;&gt;$14.55&lt;/text&gt;
-
-&lt;rect x=&quot;200&quot; y=&quot;210&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;230&quot; text-anchor=&quot;end&quot;&gt;Always-on endpoint (30d)&lt;/text&gt;
-&lt;rect x=&quot;200&quot; y=&quot;210&quot; width=&quot;290&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
-&lt;text class=&quot;bar-value&quot; x=&quot;500&quot; y=&quot;230&quot;&gt;$21.77&lt;/text&gt;
-</code></pre>
+    <rect x="200" y="50" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="70" text-anchor="end">Daily batch scoring (30d)</text>
+    <rect x="200" y="50" width="3" height="32" fill="#888780"/>
+    <text class="bar-value" x="210" y="70">$0.07</text>
+    <rect x="200" y="90" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="110" text-anchor="end">Large training (50M x 500)</text>
+    <rect x="200" y="90" width="80" height="32" fill="#378ADD"/>
+    <text class="bar-value" x="290" y="110">$5.72</text>
+    <rect x="200" y="130" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="150" text-anchor="end">100-config HPO sweep</text>
+    <rect x="200" y="130" width="116" height="32" fill="#378ADD"/>
+    <text class="bar-value" x="326" y="150">$8.44</text>
+    <rect x="200" y="170" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="190" text-anchor="end">Distributed 500M (8 nodes)</text>
+    <rect x="200" y="170" width="195" height="32" fill="#378ADD"/>
+    <text class="bar-value" x="405" y="190">$14.55</text>
+    <rect x="200" y="210" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="230" text-anchor="end">Always-on endpoint (30d)</text>
+    <rect x="200" y="210" width="290" height="32" fill="#378ADD"/>
+    <text class="bar-value" x="500" y="230">$21.77</text>
   </g>
   <g transform="translate(20, 290)">
     <rect x="0" y="0" width="10" height="10" fill="#888780"/>
@@ -214,48 +209,41 @@ floor = 4 GiB  (Python + libraries + overhead)
     <rect x="280" y="0" width="280" height="32" fill="#378ADD"/>
     <text class="tco-value" x="570" y="20">$13,856</text>
     <text class="tco-pct" x="630" y="20">41.3%</text>
-<pre><code>&lt;rect x=&quot;0&quot; y=&quot;40&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;60&quot;&gt;Cluster idle overhead&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;40&quot; width=&quot;140&quot; height=&quot;32&quot; fill=&quot;#1D9E75&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;430&quot; y=&quot;60&quot;&gt;$6,928&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;60&quot;&gt;20.7%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;80&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;100&quot;&gt;Monitoring and observability&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;80&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#7F77DD&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;370&quot; y=&quot;100&quot;&gt;$4,000&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;100&quot;&gt;11.9%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;120&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;140&quot;&gt;Compliance and audit infra&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;120&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#888780&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;370&quot; y=&quot;140&quot;&gt;$4,000&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;140&quot;&gt;11.9%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;160&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;180&quot;&gt;Training compute (annualized)&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;160&quot; width=&quot;48&quot; height=&quot;32&quot; fill=&quot;#D85A30&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;338&quot; y=&quot;180&quot;&gt;$2,309&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;180&quot;&gt;6.9%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;200&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;220&quot;&gt;Storage&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;200&quot; width=&quot;35&quot; height=&quot;32&quot; fill=&quot;#BA7517&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;325&quot; y=&quot;220&quot;&gt;$1,706&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;220&quot;&gt;5.1%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;240&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;260&quot;&gt;Inference serving&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;240&quot; width=&quot;14&quot; height=&quot;32&quot; fill=&quot;#D4537E&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;304&quot; y=&quot;260&quot;&gt;$618&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;260&quot;&gt;1.8%&lt;/text&gt;
-
-&lt;rect x=&quot;0&quot; y=&quot;280&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
-&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;300&quot;&gt;Data egress&lt;/text&gt;
-&lt;rect x=&quot;280&quot; y=&quot;280&quot; width=&quot;3&quot; height=&quot;32&quot; fill=&quot;#5F5E5A&quot;/&gt;
-&lt;text class=&quot;tco-value&quot; x=&quot;293&quot; y=&quot;300&quot;&gt;$108&lt;/text&gt;
-&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;300&quot;&gt;0.3%&lt;/text&gt;
-</code></pre>
+    <rect x="0" y="40" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="60">Cluster idle overhead</text>
+    <rect x="280" y="40" width="140" height="32" fill="#1D9E75"/>
+    <text class="tco-value" x="430" y="60">$6,928</text>
+    <text class="tco-pct" x="630" y="60">20.7%</text>
+    <rect x="0" y="80" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="100">Monitoring and observability</text>
+    <rect x="280" y="80" width="80" height="32" fill="#7F77DD"/>
+    <text class="tco-value" x="370" y="100">$4,000</text>
+    <text class="tco-pct" x="630" y="100">11.9%</text>
+    <rect x="0" y="120" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="140">Compliance and audit infra</text>
+    <rect x="280" y="120" width="80" height="32" fill="#888780"/>
+    <text class="tco-value" x="370" y="140">$4,000</text>
+    <text class="tco-pct" x="630" y="140">11.9%</text>
+    <rect x="0" y="160" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="180">Training compute (annualized)</text>
+    <rect x="280" y="160" width="48" height="32" fill="#D85A30"/>
+    <text class="tco-value" x="338" y="180">$2,309</text>
+    <text class="tco-pct" x="630" y="180">6.9%</text>
+    <rect x="0" y="200" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="220">Storage</text>
+    <rect x="280" y="200" width="35" height="32" fill="#BA7517"/>
+    <text class="tco-value" x="325" y="220">$1,706</text>
+    <text class="tco-pct" x="630" y="220">5.1%</text>
+    <rect x="0" y="240" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="260">Inference serving</text>
+    <rect x="280" y="240" width="14" height="32" fill="#D4537E"/>
+    <text class="tco-value" x="304" y="260">$618</text>
+    <text class="tco-pct" x="630" y="260">1.8%</text>
+    <rect x="0" y="280" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="300">Data egress</text>
+    <rect x="280" y="280" width="3" height="32" fill="#5F5E5A"/>
+    <text class="tco-value" x="293" y="300">$108</text>
+    <text class="tco-pct" x="630" y="300">0.3%</text>
   </g>
 </svg>
 <p>The training compute slice in orange is the thing the original estimator measures. Everything else is what determines your actual annual bill. The pattern holds across all three worked examples in the repo. For a small POC at $8,200 per year, training compute is essentially zero. For the typical Stars model at $8,300 per year, training compute is $2.22 against $8,000 in monitoring and compliance flat costs. For the large production model at $33,500 per year, training is 6.9 percent. In no realistic scenario is training compute the cost driver.</p>
@@ -292,7 +280,7 @@ floor = 4 GiB  (Python + libraries + overhead)
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/dbb0915">dbb0915</a>.</p>
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/97a826a">97a826a</a>.</p>
     
   </footer>
 
