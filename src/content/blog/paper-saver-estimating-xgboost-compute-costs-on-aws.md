@@ -88,27 +88,22 @@ Here is the full spread across workload types, all on spot:
     <text class="bar-label" x="195" y="30" text-anchor="end">Single retrain (1M x 200)</text>
     <rect x="200" y="10" width="2" height="32" fill="#888780"/>
     <text class="bar-value" x="210" y="30">$0.005</text>
-
     <rect x="200" y="50" width="380" height="32" fill="#f5f5f5"/>
     <text class="bar-label" x="195" y="70" text-anchor="end">Daily batch scoring (30d)</text>
     <rect x="200" y="50" width="3" height="32" fill="#888780"/>
     <text class="bar-value" x="210" y="70">$0.07</text>
-
     <rect x="200" y="90" width="380" height="32" fill="#f5f5f5"/>
     <text class="bar-label" x="195" y="110" text-anchor="end">Large training (50M x 500)</text>
     <rect x="200" y="90" width="80" height="32" fill="#378ADD"/>
     <text class="bar-value" x="290" y="110">$5.72</text>
-
     <rect x="200" y="130" width="380" height="32" fill="#f5f5f5"/>
     <text class="bar-label" x="195" y="150" text-anchor="end">100-config HPO sweep</text>
     <rect x="200" y="130" width="116" height="32" fill="#378ADD"/>
     <text class="bar-value" x="326" y="150">$8.44</text>
-
     <rect x="200" y="170" width="380" height="32" fill="#f5f5f5"/>
     <text class="bar-label" x="195" y="190" text-anchor="end">Distributed 500M (8 nodes)</text>
     <rect x="200" y="170" width="195" height="32" fill="#378ADD"/>
     <text class="bar-value" x="405" y="190">$14.55</text>
-
     <rect x="200" y="210" width="380" height="32" fill="#f5f5f5"/>
     <text class="bar-label" x="195" y="230" text-anchor="end">Always-on endpoint (30d)</text>
     <rect x="200" y="210" width="290" height="32" fill="#378ADD"/>
@@ -138,12 +133,10 @@ The memory side is easier to reason about because it is a hard constraint:
   <text class="zone-title" x="60" y="44" fill="#444441">Local fits</text>
   <text class="zone-text" x="60" y="62">Under ~50M rows. Workstation with 64 to 128 GiB RAM.</text>
   <text class="zone-sub" x="60" y="78">100K x 80, 1M x 200, 5M x 300 all comfortable. Train locally, push outputs to cloud.</text>
-
   <rect x="40" y="100" width="620" height="70" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
   <text class="zone-title" x="60" y="124" fill="#0C447C">Single cloud node</text>
   <text class="zone-text" x="60" y="142">50M to ~500M rows. Memory exceeds typical workstation.</text>
   <text class="zone-sub" x="60" y="158">50M x 500 fits r7i.16xlarge (512 GiB). Cloud earns it on the memory dimension alone.</text>
-
   <rect x="40" y="180" width="620" height="70" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
   <text class="zone-title" x="60" y="204" fill="#085041">Distributed required</text>
   <text class="zone-text" x="60" y="222">Above ~500M rows. No single AWS box holds enough RAM.</text>
@@ -188,50 +181,42 @@ The repo includes a second tool that wraps the base estimator and adds these cat
   </style>
   <text class="tco-title" x="20" y="24">Annual TCO breakdown: large production model, daily retrain, always-on endpoint</text>
   <text class="tco-pct" x="20" y="42">$33,525/year, training compute is 6.9% of total</text>
-
   <g transform="translate(20, 60)">
     <rect x="0" y="0" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="20">ETL and feature pipelines</text>
     <rect x="280" y="0" width="280" height="32" fill="#378ADD"/>
     <text class="tco-value" x="570" y="20">$13,856</text>
     <text class="tco-pct" x="630" y="20">41.3%</text>
-
     <rect x="0" y="40" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="60">Cluster idle overhead</text>
     <rect x="280" y="40" width="140" height="32" fill="#1D9E75"/>
     <text class="tco-value" x="430" y="60">$6,928</text>
     <text class="tco-pct" x="630" y="60">20.7%</text>
-
     <rect x="0" y="80" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="100">Monitoring and observability</text>
     <rect x="280" y="80" width="80" height="32" fill="#7F77DD"/>
     <text class="tco-value" x="370" y="100">$4,000</text>
     <text class="tco-pct" x="630" y="100">11.9%</text>
-
     <rect x="0" y="120" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="140">Compliance and audit infra</text>
     <rect x="280" y="120" width="80" height="32" fill="#888780"/>
     <text class="tco-value" x="370" y="140">$4,000</text>
     <text class="tco-pct" x="630" y="140">11.9%</text>
-
     <rect x="0" y="160" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="180">Training compute (annualized)</text>
     <rect x="280" y="160" width="48" height="32" fill="#D85A30"/>
     <text class="tco-value" x="338" y="180">$2,309</text>
     <text class="tco-pct" x="630" y="180">6.9%</text>
-
     <rect x="0" y="200" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="220">Storage</text>
     <rect x="280" y="200" width="35" height="32" fill="#BA7517"/>
     <text class="tco-value" x="325" y="220">$1,706</text>
     <text class="tco-pct" x="630" y="220">5.1%</text>
-
     <rect x="0" y="240" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="260">Inference serving</text>
     <rect x="280" y="240" width="14" height="32" fill="#D4537E"/>
     <text class="tco-value" x="304" y="260">$618</text>
     <text class="tco-pct" x="630" y="260">1.8%</text>
-
     <rect x="0" y="280" width="660" height="32" fill="#f5f5f5"/>
     <text class="tco-label" x="10" y="300">Data egress</text>
     <rect x="280" y="280" width="3" height="32" fill="#5F5E5A"/>
