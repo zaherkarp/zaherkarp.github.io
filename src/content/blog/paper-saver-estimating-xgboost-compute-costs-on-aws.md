@@ -48,9 +48,9 @@ This gives a max speedup of 5x no matter how many nodes you add, which matches e
 
 ## Calibration evidence
 
-The per-work-unit compute constant defaults to 1.0e-8 seconds. Two public benchmarks anchor it. The cleaner one is Masudahiroto's 2024 DEV Community post: 1M rows times 200 features times 100 trees on 2-vCPU Google Colab in 96 seconds wall time. Working back through the formula implies the constant should be about 8.1e-9 seconds per work unit. The HackerNoon Amex Default Prediction benchmark from 2025 (5.5M rows times 313 features on M3 Pro 12-core CPU in 27 minutes) implies about 4.0e-9 if you assume n_trees around 1500.
+The per-work-unit compute constant defaults to 1.0e-8 seconds. The anchor is Masudahiroto's 2024 DEV Community post: 1M rows times 200 features times 100 trees of XGBoost 2.0.3 at default settings (which selects `hist` for data this size) on free-tier Google Colab in 96 seconds wall time. Working back through the formula implies the constant should be about 8.1e-9 seconds per work unit.
 
-The default sits conservatively above both anchors so the estimator over-budgets rather than under-budgets. The repo ships with a `--calibrate` command that runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated constant. Run it once before trusting dollar figures for real budgeting.
+The default sits conservatively above that anchor so the estimator over-budgets rather than under-budgets. The repo ships with a `--calibrate` command that runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated constant. Run it once before trusting dollar figures for real budgeting.
 
 For distributed scaling, the alpha = 0.20 default is anchored on GitHub issue dmlc/xgboost#10853, which documents a practitioner getting worse performance from a Dask cluster with 3x more RAM and 4x more cores than from a single big EC2 instance training on 50 million rows. The takeaway: distributed XGBoost has substantial overhead, and the primary reason to use it is memory constraints rather than wall-time speedup.
 
@@ -239,7 +239,7 @@ For program TCO (cloud bill plus engineering labor), add an FTE allocation on to
 
 ## What the model still does not capture
 
-GPU training, where the Amex benchmark shows 27 minutes on CPU becoming 35 seconds on A100. If your workload is large enough to benefit, the economics flip and a separate model is needed.
+GPU training. Published CPU-vs-GPU benchmarks for XGBoost regularly show 30-50x speedups on A100-class GPUs; if your workload is large enough to benefit, the economics flip and a separate model is needed.
 
 S3 I/O wall time. For typical analytics workloads this is negligible (a few minutes to pull a few GB), but for TB-scale workloads it can dominate.
 
