@@ -6,6 +6,12 @@ playbook. Every command in this file runs from a bash shell (including
 the VS Code integrated terminal — `Terminal → New Terminal`, then pick
 `bash`).
 
+> **New to the CLI?** Start with [scripts/blog-cheatsheet.md](./blog-cheatsheet.md)
+> — task-oriented ("I want to start a new post", "the push was
+> rejected", etc.) with copy-pasteable commands for every common
+> scenario. This file is the comprehensive playbook; the cheat sheet
+> is the day-to-day reference.
+
 The CLI lives at `scripts/blog` (no `.py` extension). Three valid
 invocation forms:
 
@@ -16,6 +22,16 @@ ln -s "$(pwd)/scripts/blog" ~/.local/bin/blog && blog --help   # symlink
 ```
 
 Below, `blog` is shorthand for whichever form you prefer.
+
+> **Every new shell session, activate the venv first** (`source
+> .venv/bin/activate` from the repo root). Two things break without
+> it: the `#!/usr/bin/env python3` shebang on `scripts/blog` resolves
+> to whichever system `python3` is first on `PATH` — usually one that
+> doesn't have `frontmatter`/`typer`/etc. installed — and the pre-push
+> hook calls `python` (not `python3`), which only exists inside the
+> activated venv. Symptoms: `ModuleNotFoundError: No module named
+> 'frontmatter'` from the CLI, or `python: command not found` from
+> the hook on `git push`.
 
 ---
 

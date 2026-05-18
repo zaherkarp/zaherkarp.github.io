@@ -100,6 +100,59 @@ Blog posts use client-side CDN loads, conditional on content:
 - ` ```mermaid ` fenced blocks → Mermaid
 - Language-tagged fenced code → Prism syntax highlighting
 
+## Writing blog posts
+
+`scripts/blog` is the canonical entry point for authoring. It wraps the
+lint, preview, and publish flow so a post moves from idea to live with
+one terminal-side command. Two companion docs:
+
+- [scripts/blog-cheatsheet.md](./scripts/blog-cheatsheet.md) — task-oriented
+  ("I want to start a new post", "push was rejected", etc.) with
+  copy-pasteable commands. **Start here if you're new to the CLI.**
+- [scripts/blog.md](./scripts/blog.md) — comprehensive playbook with
+  architecture diagram, redundancy toggles, security footguns, file map.
+
+The section below is the one-paragraph orientation.
+
+**One-time setup:**
+
+```bash
+uv venv && uv pip install -r scripts/requirements.txt   # or python3 -m venv
+export EDITOR='code --wait'                              # in ~/.zshrc, for VS Code
+```
+
+**Every new shell session, activate the venv first.** Without it, the
+CLI shebang resolves to a system Python that lacks the deps and the
+pre-push lint hook can't find `python`:
+
+```bash
+cd ~/git/zaherkarp.github.io
+source .venv/bin/activate
+```
+
+**Day-to-day:**
+
+```bash
+./scripts/blog new "My Post Title"     # scaffold draft, open in $EDITOR
+./scripts/blog list --drafts           # see what's in flight
+./scripts/blog edit my-post            # reopen a draft (slug fragment works)
+./scripts/blog lint my-post            # scoped lint, no subprocess
+./scripts/blog preview my-post         # browser preview (no KaTeX/Mermaid/Prism — see §2d)
+./scripts/blog publish my-post --dry-run   # show the plan, change nothing
+./scripts/blog publish my-post             # lint, flip draft, commit, push to main
+./scripts/blog status                  # drafts + last 5 published + git state
+```
+
+**Less common:** `blog draft <slug>` un-publishes (no commit; see §2h),
+`blog rename old new` renames (does NOT rewrite inbound links; see §2i),
+`blog config show` inspects redundancy toggles. Symlink `scripts/blog`
+into `~/.local/bin/blog` if you'd rather type `blog` than `./scripts/blog`.
+
+The bypass path still works: drop `src/content/blog/<slug>.md` with
+`draft: false` frontmatter and `git push`. CI runs the same linters, so
+a bypass that violates [scripts/lint_blog.py](./scripts/lint_blog.py)
+fails the build rather than shipping silently.
+
 ## Deploy (GitHub Pages)
 
 Served at `https://zaherkarp.com/` (CNAME present, apex domain).
@@ -167,8 +220,11 @@ Serve locally (`python3 -m http.server 8765`) and check:
 
 ## Maintenance rhythm
 
-- Write a blog post: drop `src/content/blog/<slug>.md` with frontmatter, push.
-  Two CI workflows run automatically: `build_blog.yml` generates `/blog/<slug>/`
+- Write a blog post: use `./scripts/blog new "Title"` (see [§Writing blog posts](#writing-blog-posts)
+  above; full playbook in [scripts/blog.md](./scripts/blog.md)). The CLI handles
+  scaffolding, lint, preview, and the publish commit + push. Direct-edit fallback:
+  drop `src/content/blog/<slug>.md` with frontmatter and push.
+  Two CI workflows then run automatically: `build_blog.yml` generates `/blog/<slug>/`
   and updates the sitemap; `build_portfolio.yml` regenerates the activity-grid
   sparkline and the six most recent entries in the homepage writing section
   between the `<!-- writing-list:start --> ... <!-- writing-list:end -->`
