@@ -6,7 +6,7 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 May 2026 03:18:56 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2026 05:17:26 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
     
     <item>
@@ -20,21 +20,6 @@
       <category>mlops</category>
       <category>healthcare-analytics</category>
       <category>cost-modeling</category>
-      
-    </item>
-    
-    <item>
-      <title>A Back-of-the-Envelope Cost Model for XGBoost on AWS</title>
-      <link>https://zaherkarp.com/blog/xgboost-aws-cost-estimator/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/xgboost-aws-cost-estimator/</guid>
-      <pubDate>Sun, 17 May 2026 00:00:00 +0000</pubDate>
-      <description>How much will it cost to train and serve this XGBoost model on AWS without SageMaker. A small estimator that takes row count, feature count, and a few hyperparameters and returns dollars, with the calibration anchors and the honest places it can be wrong.</description>
-      <category>xgboost</category>
-      <category>aws</category>
-      <category>cost-estimation</category>
-      <category>machine-learning</category>
-      <category>healthcare-data-engineering</category>
-      <category>infrastructure</category>
       
     </item>
     
@@ -421,6 +406,20 @@
       <category>sql</category>
       <category>haskell</category>
       <category>functional-programming</category>
+      
+    </item>
+    
+    <item>
+      <title>Deletes Are Data Too</title>
+      <link>https://zaherkarp.com/blog/deletes-are-data-too/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/deletes-are-data-too/</guid>
+      <pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate>
+      <description>Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for.</description>
+      <category>data-engineering</category>
+      <category>cdc</category>
+      <category>data-pipelines</category>
+      <category>data-quality</category>
+      <category>architecture</category>
       
     </item>
     

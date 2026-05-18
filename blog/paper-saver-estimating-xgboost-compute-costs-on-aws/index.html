@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-17T22:18:38-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3419, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T00:17:02-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3625, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
 </script>
 
 
@@ -81,7 +81,7 @@
   <div class="blog-body">
     <p>A common ask: how much will it cost to train this XGBoost model and serve it? Naive answers fail. Cost depends on data shape, hyperparameters, infrastructure choices, and whether you mean the marginal compute cost of one training run or the realistic annual cost of keeping a production model running. Most attempts at answering conflate these and produce numbers that are either implausibly low or pulled from thin air.</p>
 <p>Paper Saver is a back-of-the-envelope tool for both. The name is the joke: it replaces the napkin or scratch-paper math an analyst would otherwise scribble to budget a model, and the saved-trees pun lands twice (trees as in paper, trees as in the gradient-boosted kind whose cloud spend the tool is sizing).</p>
-<p>The code lives at <code>https://github.com/zaherkarp/paper-saver</code> and runs as a self-contained uv script.</p>
+<p>The code lives at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a> and runs as a self-contained uv script.</p>
 <h2>Scope</h2>
 <p>AWS only. No SageMaker. CPU only. XGBoost with <code>tree_method='hist'</code>, which has been the default since 1.5 and is what almost all CPU production deployments use. The model targets analytics-scale workloads (a few million to a few hundred million rows, up to a few thousand features) which is where most healthcare, payer, and actuarial XGBoost lives.</p>
 <h2>The compute model</h2>
@@ -256,6 +256,12 @@ floor = 4 GiB  (Python + libraries + overhead)
 <p>GPU training, where the Amex benchmark shows 27 minutes on CPU becoming 35 seconds on A100. If your workload is large enough to benefit, the economics flip and a separate model is needed.</p>
 <p>S3 I/O wall time. For typical analytics workloads this is negligible (a few minutes to pull a few GB), but for TB-scale workloads it can dominate.</p>
 <p>Categorical feature handling overhead. XGBoost's native categorical support is fast but high-cardinality categoricals add memory and time that the linear N times P model does not capture.</p>
+<p>Drift monitoring as a distinct line item. Currently lumped into monitoring. In healthcare contexts where periodic re-validation may be regulator-required, this deserves its own category.</p>
+<p>Engineering labor. The dominant program cost, as noted above. The repo's TCO model is cloud-bill TCO only.</p>
+<h2>Using the tools</h2>
+<p>The base estimator runs as a self-contained uv script. The first run downloads xgboost and numpy via uv's cache; subsequent runs are instant. The recommended one-time step before trusting dollar figures is <code>uv run xgboost_cost_estimator.py --calibrate</code>, which runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated per-work-unit constant. Replace the default constant with the calibrated value and the estimator becomes accurate for your specific hardware.</p>
+<p>The annualized TCO tool wraps the base estimator and adds the cost categories that dominate real production deployments. All defaults are documented in the source with their citation. Override any of them if you have better numbers for your environment.</p>
+<p>Code, calibration sources, and this post live at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a>. Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.</p>
 
   </div>
 </article>
@@ -280,7 +286,7 @@ floor = 4 GiB  (Python + libraries + overhead)
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/97a826a">97a826a</a>.</p>
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/d56c5b2">d56c5b2</a>.</p>
     
   </footer>
 
