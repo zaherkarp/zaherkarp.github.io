@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T00:33:21-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3600, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T18:51:24-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3807, "timeRequired": "PT15M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
 </script>
 
 
@@ -69,7 +69,7 @@
     <div class="blog-meta">
       <time datetime="2026-05-17" class="blog-date">May 17, 2026</time>
       
-      <span class="blog-readtime">14 min read</span>
+      <span class="blog-readtime">15 min read</span>
       
       
       <ul class="blog-tags">
@@ -84,6 +84,7 @@
 <p>The code lives at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a> and runs as a self-contained uv script.</p>
 <h2>Scope</h2>
 <p>AWS only. No SageMaker. CPU only. XGBoost with <code>tree_method='hist'</code>, which has been the default since 1.5 and is what almost all CPU production deployments use. The model targets analytics-scale workloads (a few million to a few hundred million rows, up to a few thousand features) which is where most healthcare, payer, and actuarial XGBoost lives.</p>
+<p>For Azure and GCP, and for the maturity gating that determines whether the discount mechanisms below are reachable in practice on any cloud, see the <a href="/blog/paper-saver-cloud-maturity-and-lock-in/">follow-up post</a>. The two posts complement each other: this one establishes the math and anchors the AWS pricing, that one applies the same compute model across clouds and across operational tiers.</p>
 <h2>The compute model</h2>
 <p>For single-node training, wall time is dominated by the product of rows, features, and trees. Memory is dominated by rows times features after histogram quantization. So if you know only N and P, you have the two biggest cost levers. Tree count and depth default to 500 and 6 (canonical XGBoost defaults), and the formula is:</p>
 <pre><code>work_units = N * P * n_trees * (depth / 6) * early_stopping_factor
@@ -258,10 +259,12 @@ floor = 4 GiB  (Python + libraries + overhead)
 <p>Categorical feature handling overhead. XGBoost's native categorical support is fast but high-cardinality categoricals add memory and time that the linear N times P model does not capture.</p>
 <p>Drift monitoring as a distinct line item. Currently lumped into monitoring. In healthcare contexts where periodic re-validation may be regulator-required, this deserves its own category.</p>
 <p>Engineering labor. The dominant program cost, as noted above. The repo's TCO model is cloud-bill TCO only.</p>
+<p>Azure and GCP cost paths. Out of scope here by design (this post is about AWS without SageMaker), but covered in the <a href="/blog/paper-saver-cloud-maturity-and-lock-in/">follow-up post</a>, which extends the same compute model across the three major clouds and adds a maturity-tier framing for discount realization.</p>
 <h2>Using the tools</h2>
 <p>The base estimator runs as a self-contained uv script. The first run downloads xgboost and numpy via uv's cache; subsequent runs are instant. The recommended one-time step before trusting dollar figures is <code>uv run xgboost_cost_estimator.py --calibrate</code>, which runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated per-work-unit constant. Replace the default constant with the calibrated value and the estimator becomes accurate for your specific hardware.</p>
 <p>The annualized TCO tool wraps the base estimator and adds the cost categories that dominate real production deployments. All defaults are documented in the source with their citation. Override any of them if you have better numbers for your environment.</p>
-<p>Code, calibration sources, and this post live at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a>. Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.</p>
+<p>A third tool added later, <code>cloud_maturity.py</code>, takes the same compute math and runs it across AWS, Azure, and GCP at three operational maturity tiers (Crawl, Walk, Run) to produce a cross-cloud, cross-maturity cost grid. It is documented in detail in the <a href="/blog/paper-saver-cloud-maturity-and-lock-in/">follow-up post</a>. Use it when the question is not &quot;how much does this cost on AWS&quot; but &quot;given the cloud my organization is locked into and my team's operational maturity, am I leaving compute savings on the table?&quot;</p>
+<p>Code, calibration sources, and both posts live at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a>. Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.</p>
 
   </div>
 </article>
@@ -286,7 +289,7 @@ floor = 4 GiB  (Python + libraries + overhead)
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/2ec4183">2ec4183</a>.</p>
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1e64289">1e64289</a>.</p>
     
   </footer>
 

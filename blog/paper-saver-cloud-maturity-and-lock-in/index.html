@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP — Zaher Karp</title>
+<meta name="description" content="A follow-up to the original Paper Saver post. The wrong-shaped question is &#39;now do Azure and GCP.&#39; The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.">
+<link rel="canonical" href="https://zaherkarp.com/blog/paper-saver-cloud-maturity-and-lock-in/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP — Zaher Karp">
+<meta property="og:description" content="A follow-up to the original Paper Saver post. The wrong-shaped question is &#39;now do Azure and GCP.&#39; The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.">
+<meta property="og:url" content="https://zaherkarp.com/blog/paper-saver-cloud-maturity-and-lock-in/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP — Zaher Karp">
+<meta name="twitter:description" content="A follow-up to the original Paper Saver post. The wrong-shaped question is &#39;now do Azure and GCP.&#39; The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP", "description": "A follow-up to the original Paper Saver post. The wrong-shaped question is 'now do Azure and GCP.' The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.", "url": "https://zaherkarp.com/blog/paper-saver-cloud-maturity-and-lock-in/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-cloud-maturity-and-lock-in/"}, "datePublished": "2026-05-19T00:00:00Z", "dateModified": "2026-05-18T18:51:24-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3510, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, azure, gcp, xgboost, mlops, finops, cost-modeling, healthcare-analytics"}
+</script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP</h1>
+    <div class="blog-meta">
+      <time datetime="2026-05-19" class="blog-date">May 19, 2026</time>
+      
+      <span class="blog-readtime">14 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>aws</li><li>azure</li><li>gcp</li><li>xgboost</li><li>mlops</li><li>finops</li><li>cost-modeling</li><li>healthcare-analytics</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>The <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">original Paper Saver post</a> drew one consistent piece of feedback: &quot;now do Azure and GCP.&quot; It is the natural follow-up question, and it is also wrong-shaped in a way worth examining before answering it.</p>
+<p>The rate-card delta between AWS, Azure, and GCP is the least interesting part of multi-cloud cost work. For a typical XGBoost workload the headline difference between m7i, Dasv5, and n2d-standard at the same vCPU and memory is on the order of 10 to 20 percent of list price. The difference between paying list price and paying the spot or commitment price the same cloud advertises is 50 to 70 percent. So the load-bearing question is not which cloud you are on. It is whether your organization has the operational maturity to capture the discount mechanisms your existing cloud already offers.</p>
+<p>There is also a question readers were not asking but should be: if you are a Microsoft shop with data in ADLS and identity in Entra ID, the rate card is not the cost of switching. The cost of switching is egress, re-platforming, identity migration, and a year of re-doing every compliance review for a new control plane. Naive cloud comparison hides that under the rate-card delta.</p>
+<p>So the follow-up tool is not &quot;the same estimator with three price lists.&quot; It is a maturity-and-lock-in diagnostic. The code lives at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a> as <code>cloud_maturity.py</code>, alongside the original estimator and the annualized TCO model.</p>
+<h2>What naive cloud comparison gets wrong</h2>
+<p>Three things, in increasing order of how much they matter.</p>
+<p>CPU microarchitecture is not portable. The compute constant in the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#calibration-evidence">original post's calibration evidence</a> was derived from Intel Xeon performance on Colab. AWS m7i is Intel Sapphire Rapids; Azure Dasv5 and GCP n2d are both AMD EPYC Milan. XGBoost histogram throughput on those parts differs by maybe 10 to 25 percent per clock, and the difference compounds across long training runs. The new module uses one constant for all three clouds because the maturity-tier deltas (50 to 70 percent) are larger than the microarchitecture noise. If you need precision, run <code>--calibrate</code> on each target environment. For budgeting and scoping decisions, the noise is below the signal.</p>
+<p>Spot semantics are not equivalent. AWS Spot, Azure Spot, and GCP Spot VMs all advertise &quot;up to 90 percent off,&quot; and all three have eviction risk that varies by region and SKU. The <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#pricing-anchors">working spot factor in the original post</a> (0.30, anchored on real EC2 Spot workshop and case-study data) applies broadly across all three clouds, but the operational lift to actually realize that 70 percent is not the same. Eviction models differ: Azure Spot is eager and varies more aggressively by region; GCP Spot has a 30-second preemption notice and a 24-hour maximum lifetime on some SKUs, which constrains long training jobs that lack mid-flight checkpointing; AWS Spot has the longest operational track record and the most third-party tooling for graceful eviction handling.</p>
+<p>The rate-card delta hides the lock-in delta. The egress fee is the visible piece, but it is the smallest part of the lock-in story for an enterprise. The unmoveable costs are data gravity (S3 vs ADLS vs GCS, plus the warehouse layer on top), identity gravity (IAM vs Entra ID vs Google IAM with Workload Identity Federation), and the compliance review burden of bringing a new control plane through legal, security, and audit. A Microsoft shop saving 12 percent on compute by moving an XGBoost workload to GCP will spend that 12 percent multiple times over within a year on the costs the rate card does not show.</p>
+<h2>Reframe: maturity gates the discount</h2>
+<p>The cleaner question is: given the cloud you are locked into for organizational reasons, what fraction of the theoretical compute discount can your team actually realize? That is the question the new module answers, with a three-tier model inspired by the FinOps Foundation's Crawl/Walk/Run maturity framework.</p>
+<p>The tiers are not aspirational labels. They are observable operational capabilities that gate which discount mechanisms a team can use without breaking production.</p>
+<p><strong>Crawl</strong> is on-demand only. No spot, no commitments, single-node training. This is the modal starting point for organizations whose ML workloads run on the team's general-purpose dev cluster or an ad-hoc EC2 or VM provisioned per training run. There is nothing wrong with Crawl as a starting point. It is a cost problem only when an organization is paying Crawl prices for a workload portfolio large enough that the unrealized discount is material.</p>
+<p><strong>Walk</strong> is spot for training and batch scoring, plus a 1-year commitment for always-on inference. Single-node training only. This requires three operational pieces that an organization at Crawl tier does not have: spot-tolerant training workflows (checkpoint to object storage every N rounds; tolerate retry on eviction), a job-orchestrator that survives interruption (AWS Batch, Azure Batch, GCP Batch, or equivalent), and a FinOps practice mature enough to make a 1-year commitment without flinching. Most production-ML teams reach Walk tier by the second year of running models in production.</p>
+<p><strong>Run</strong> is spot for training with multi-node where memory dictates, spot for batch scoring, and 3-year commitments for always-on inference. This requires a dedicated MLOps function, a mature FinOps practice that rebalances commitments rather than buying once, and a portfolio large enough that 3-year lock-in carries acceptable risk against demand uncertainty. Run is where compute scaling is mostly captured. Further optimization moves into TCO categories outside the compute slice (data pipelines, monitoring consolidation, FTE leverage), which the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#from-marginal-compute-to-annual-tco">original TCO model</a> covers.</p>
+<h2>What the grid actually shows</h2>
+<p>The module's output is a 3x3 grid: three clouds (AWS, Azure, GCP) across three maturity tiers (Crawl, Walk, Run), with annual compute cost in each cell for a given workload. Each cloud uses its own native instance catalog and discount vocabulary: AWS pulls from m7i and r7i with EC2 Spot and Compute Savings Plans, Azure from Dasv5 and Easv5 with Azure Spot and Reserved Instances, GCP from n2d-standard and n2d-highmem with Spot VMs and CUDs.</p>
+<p>Here is the grid for a large production model representative of payer-side analytics: 20M rows, 400 features, 1000 trees, depth 8, weekly retrain, always-on inference endpoint.</p>
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+  <style>
+    .grid-title { font: 14px sans-serif; font-weight: 500; fill: #222; }
+    .grid-sub { font: 11px sans-serif; fill: #888; }
+    .grid-cell-label { font: 12px sans-serif; fill: #444; }
+    .grid-cell-value { font: 13px sans-serif; font-weight: 500; fill: #222; }
+    .grid-axis { font: 12px sans-serif; font-weight: 500; fill: #444; }
+    .grid-pct { font: 11px sans-serif; fill: #1D9E75; }
+  </style>
+  <text class="grid-title" x="20" y="24">Annual compute cost: 20M x 400, weekly retrain, always-on endpoint</text>
+  <text class="grid-sub" x="20" y="42">Single workload, three clouds, three maturity tiers. Lower is better.</text>
+  <g transform="translate(20, 70)">
+    <text class="grid-axis" x="120" y="0" text-anchor="middle">AWS</text>
+    <text class="grid-axis" x="330" y="0" text-anchor="middle">Azure</text>
+    <text class="grid-axis" x="540" y="0" text-anchor="middle">GCP</text>
+    <g transform="translate(0, 20)">
+      <rect x="40" y="0" width="160" height="50" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="120" y="30" text-anchor="middle">$1,086/yr</text>
+      <rect x="250" y="0" width="160" height="50" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="330" y="30" text-anchor="middle">$927/yr</text>
+      <rect x="460" y="0" width="160" height="50" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="540" y="30" text-anchor="middle">$910/yr</text>
+      <text class="grid-axis" x="35" y="30" text-anchor="end">Crawl</text>
+    </g>
+    <g transform="translate(0, 80)">
+      <rect x="40" y="0" width="160" height="50" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="120" y="30" text-anchor="middle">$679/yr</text>
+      <rect x="250" y="0" width="160" height="50" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="330" y="30" text-anchor="middle">$513/yr</text>
+      <rect x="460" y="0" width="160" height="50" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="540" y="30" text-anchor="middle">$517/yr</text>
+      <text class="grid-axis" x="35" y="30" text-anchor="end">Walk</text>
+    </g>
+    <g transform="translate(0, 140)">
+      <rect x="40" y="0" width="160" height="50" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="120" y="30" text-anchor="middle">$502/yr</text>
+      <rect x="250" y="0" width="160" height="50" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="330" y="30" text-anchor="middle">$362/yr</text>
+      <rect x="460" y="0" width="160" height="50" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="grid-cell-value" x="540" y="30" text-anchor="middle">$384/yr</text>
+      <text class="grid-axis" x="35" y="30" text-anchor="end">Run</text>
+    </g>
+    <g transform="translate(0, 210)">
+      <text class="grid-pct" x="120" y="0" text-anchor="middle">Crawl to Run: 54% off</text>
+      <text class="grid-pct" x="330" y="0" text-anchor="middle">Crawl to Run: 61% off</text>
+      <text class="grid-pct" x="540" y="0" text-anchor="middle">Crawl to Run: 58% off</text>
+    </g>
+  </g>
+</svg>
+<p>The pattern is the headline. Reading across any row (same maturity, different cloud), the three numbers are within 30 percent of each other. Reading down any column (same cloud, different maturity), the numbers move by a factor of 2 to 3. Maturity dominates the cloud choice for compute spend. A Crawl-tier AWS shop and a Crawl-tier Azure shop are both leaving roughly the same money on the table, in roughly the same shape; a Run-tier shop on either captures roughly the same savings.</p>
+<p>The Azure column running cheapest at the Run tier is not a marketing recommendation. Azure Reserved Instances at 3-year are published with a deeper discount on compute than AWS Compute Savings Plans (about 60 percent off list versus 50 percent), and the Dasv5 series prices below m7i at the same vCPU and memory. Both of those are conservative working numbers, not the highest marketing figures. The point is not which cloud wins. The point is that the Crawl-to-Run delta within Azure (61 percent) is essentially the same diagnostic as the Crawl-to-Run delta within AWS (54 percent) or GCP (58 percent), and an enterprise reader on any of those three clouds should be asking the same question about their team's tier rather than asking whether to migrate.</p>
+<p>Two other examples in the module are worth noting briefly. For a typical small workload (5M rows, 300 features, monthly retrain, daily batch scoring) the grid produces dollar amounts in the single digits per year. The 70-percent reduction from Crawl to Run is real, but going from $6 to $2 in compute is not a planning event. That is the honest finding: most analytics-scale XGBoost workloads have compute as a noise-level line item in TCO, and maturity work on these is not where the return is.</p>
+<p>For a memory-bound workload (1 billion rows, 500 features), the Crawl and Walk tiers are infeasible on all three clouds because the workload exceeds the largest single-node instance in each catalog (768 GiB on AWS, 512 GiB on Azure and GCP). Only the Run tier (multi-node capable) handles it. In that case maturity is not an optimization knob. It is the gate that determines whether the workload runs at all.</p>
+<h2>Lock-in is not in the rate card</h2>
+<p>The cost asymmetry that does not appear in the comparison grid is the load-bearing one for any enterprise reader. Three categories matter here, with rough order-of-magnitude impact on a hypothetical migration.</p>
+<p>Egress is the visible piece and the smallest piece. AWS S3 internet egress is $0.09 per GB, Azure ADLS is $0.0875 per GB, GCP GCS is $0.12 per GB. For a 5 TB training dataset the one-time egress cost to move clouds is on the order of $450 to $600. That is real money but is dwarfed by the rest.</p>
+<p>Data gravity is the data warehouse layer above object storage. An organization on AWS with Glue catalogs and Redshift, or Azure with Synapse and Fabric, or GCP with BigQuery, has a non-portable layer of joins, ETL pipelines, dashboards, and downstream consumers built on those primitives. Re-platforming that layer is a multi-quarter engineering project even before considering retraining the analysts who use it. The same anchor that motivates the ETL multiplier in the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#from-marginal-compute-to-annual-tco">original post's TCO model</a> applies with extra force here: data-pipeline costs are doubly hidden in a cloud-comparison conversation that focuses on training compute alone.</p>
+<p>Identity gravity is the hardest piece to estimate because it does not appear as a direct cost. An organization running on Entra ID with conditional access policies, SSO integrations, and on-prem AD trust does not move that to AWS IAM in a quarter. Workload Identity Federation across clouds works as a bridge, but the operational cost of maintaining two identity systems is non-zero and the security-review cost of doing so in regulated industries is substantial.</p>
+<p>The honest enterprise read on a multi-cloud cost comparison: if the rate-card delta is below 20 percent, lock-in costs swamp the savings, and the right move is to mature on the cloud you are on. That is the case in all three examples in the new module. The path to compute savings goes through your existing cloud's discount mechanisms, not through migration.</p>
+<h2>Using the new module</h2>
+<p>The new <code>cloud_maturity.py</code> module exposes three pieces:</p>
+<p>A <code>CloudCatalog</code> dataclass with three pre-built instances: <code>AWS</code> (m7i and r7i, EC2 Spot factor 0.30, Savings Plan 1yr 0.70, Savings Plan 3yr 0.50), <code>AZURE</code> (Dasv5 and Easv5, Azure Spot factor 0.35, Reserved Instance 1yr 0.60, Reserved Instance 3yr 0.40), and <code>GCP</code> (n2d-standard and n2d-highmem, Spot VM factor 0.30, CUD 1yr 0.63, CUD 3yr 0.45). Each catalog also carries a <code>lock_in_hooks</code> field that surfaces the egress, identity, and data-gravity hooks for that cloud as a reminder that the rate-card comparison is not the full comparison.</p>
+<p>A <code>MaturityProfile</code> dataclass with three pre-built instances: <code>CRAWL</code> (no spot, no commitments, no multi-node), <code>WALK</code> (spot for training and batch, 1-year commitment for always-on, no multi-node), and <code>RUN</code> (spot, 3-year commitment, multi-node capable). Each profile includes an <code>unlock_next</code> field that names the operational capabilities required to climb to the next tier.</p>
+<p>A <code>compare()</code> function that takes a <code>TrainingSpec</code> and optional <code>InferenceSpec</code> and returns the full 3x3 grid as a nested dict, plus a <code>format_comparison()</code> helper that renders it as the plain-text table shown above. Both accept overrides for which clouds and which maturity tiers to include, so a reader only interested in their own cloud across all three tiers can do <code>compare(spec, clouds=[AZURE])</code>.</p>
+<p>The module imports the compute math (<code>estimate_training_seconds</code>, <code>estimate_training_memory_gib</code>, <code>estimate_inference_throughput</code>) directly from the original estimator, so the calibration story is unified. Run <code>--calibrate</code> on the original estimator to refresh the per-work-unit constant for your CPU; the same constant flows through to the multi-cloud diagnostic.</p>
+<h2>What this still does not capture</h2>
+<p>CPU microarchitecture variance across clouds. Same caveat as the original estimator, larger surface area now. Calibrate on each target environment if precision matters.</p>
+<p>Managed-platform premiums. The paper-saver framing remains &quot;without the managed-platform layer,&quot; as <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#why-no-sagemaker">originally argued for SageMaker on AWS</a>. The same operational reasoning extends to Vertex AI on GCP and Azure ML on Azure: instance-type markup, container and SDK lock-in, parallel-platform operational ownership, and the compliance review burden of bringing a new control plane through review. Comparing managed platforms across clouds is a different question with different operational considerations.</p>
+<p>Network-bandwidth differences for multi-node training. AWS ENA, Azure Accelerated Networking, and GCP Andromeda all support greater than 25 Gbps on the instance sizes relevant to distributed XGBoost. The Amdahl alpha of 0.20 from the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#the-compute-model">original distributed-training model</a> assumes &quot;good but not best&quot; networking, which is a fair approximation for all three.</p>
+<p>Egress costs as a quantitative migration estimate. Discussed narratively here but not modeled. Egress at the rate-card level is straightforward to compute for a known data volume, but lock-in costs are dominated by re-platforming and identity migration which are not.</p>
+<p>Engineering labor and program TCO. The cloud-bill comparison above is below the line of what determines program economics; loaded ML-engineer FTE allocations dominate. The math, the working numbers, and the program-vs-cloud-bill distinction are in the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#what-this-means-for-budgeting">original post's budgeting section</a>.</p>
+<h2>Where this leaves the tool</h2>
+<p>Paper Saver started as a single-purpose AWS-without-SageMaker estimator and is now three things. The <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">base estimator and TCO model in the original post</a> answer the marginal-compute and annual-TCO questions, both on AWS. The new maturity diagnostic answers the cross-cloud, cross-maturity question and is meant to be the first one to run for an enterprise reader trying to figure out what to ask next.</p>
+<p>The right entry point depends on the question. For &quot;how much does this one training run cost on AWS spot,&quot; use the base estimator. For &quot;what is my annual cloud bill for this model in production,&quot; use the TCO model. Both are documented in the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">original post</a>. For &quot;given my cloud and my team's maturity, am I leaving compute savings on the table, and what would I need to invest in to capture them,&quot; use the new diagnostic. The last one is where most enterprise readers should probably start.</p>
+<p>Code, calibration sources, and both posts live at <a href="https://github.com/zaherkarp/paper-saver">github.com/zaherkarp/paper-saver</a>. Pricing constants in the new module are public list rates as of May 2026 and should be re-validated quarterly before quoting externally. Pull requests welcome for refreshed pricing, additional calibration anchors on other CPU microarchitectures, and any maturity-tier criteria worth adding to the model.</p>
+<h2>Sources</h2>
+<p>Pricing pages used for the per-cloud catalogs in <code>cloud_maturity.py</code>:</p>
+<ul>
+<li>AWS EC2 on-demand pricing: <a href="https://instances.vantage.sh">instances.vantage.sh</a> (third-party mirror of AWS list pricing for <code>m7i.*</code> and <code>r7i.*</code> in us-east-1, Linux on-demand)</li>
+<li>Azure Linux VM pricing: <a href="https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/">azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/</a> (Dasv5 and Easv5 in East US 2, Linux pay-as-you-go)</li>
+<li>GCP Compute Engine pricing: <a href="https://cloud.google.com/compute/vm-instance-pricing">cloud.google.com/compute/vm-instance-pricing</a> (n2d-standard and n2d-highmem in us-central1, Linux on-demand)</li>
+</ul>
+<p>Discount mechanism documentation:</p>
+<ul>
+<li>AWS Compute Savings Plans: <a href="https://aws.amazon.com/savingsplans/compute-pricing/">aws.amazon.com/savingsplans/compute-pricing/</a></li>
+<li>AWS EC2 Spot pricing model: <a href="https://aws.amazon.com/ec2/spot/pricing/">aws.amazon.com/ec2/spot/pricing/</a></li>
+<li>Azure Reserved VM Instances: <a href="https://azure.microsoft.com/en-us/pricing/reserved-vm-instances/">azure.microsoft.com/en-us/pricing/reserved-vm-instances/</a></li>
+<li>Azure Spot Virtual Machines: <a href="https://azure.microsoft.com/en-us/products/virtual-machines/spot">azure.microsoft.com/en-us/products/virtual-machines/spot</a></li>
+<li>GCP Committed Use Discounts (resource-based): <a href="https://cloud.google.com/compute/cud-analysis-docs/concepts">cloud.google.com/compute/cud-analysis-docs/concepts</a></li>
+<li>GCP Spot VMs: <a href="https://cloud.google.com/compute/docs/instances/spot">cloud.google.com/compute/docs/instances/spot</a></li>
+</ul>
+<p>Maturity-model framing: <a href="https://www.finops.org/framework/maturity-model/">FinOps Foundation Maturity Assessment</a> (Crawl/Walk/Run capability tiers, adapted here to compute-scaling discount realization).</p>
+<p>XGBoost benchmark anchor: as documented in the <a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/#calibration-evidence">original post's calibration evidence</a>, the per-work-unit constant default is anchored on Masudahiroto's 2024 DEV Community XGBoost benchmark. Replace with <code>--calibrate</code> output for tighter estimates on your own hardware.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1e64289">1e64289</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
