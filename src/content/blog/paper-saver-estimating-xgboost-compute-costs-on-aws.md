@@ -10,7 +10,7 @@ A common ask: how much will it cost to train this XGBoost model and serve it? Na
 
 Paper Saver is a back-of-the-envelope tool for both. The name is the joke: it replaces the napkin or scratch-paper math an analyst would otherwise scribble to budget a model, and the saved-trees pun lands twice (trees as in paper, trees as in the gradient-boosted kind whose cloud spend the tool is sizing).
 
-The code lives at `https://github.com/zaherkarp/paper-saver` and runs as a self-contained uv script.
+The code lives at [github.com/zaherkarp/paper-saver](https://github.com/zaherkarp/paper-saver) and runs as a self-contained uv script.
 
 ## Scope
 
@@ -244,3 +244,15 @@ GPU training, where the Amex benchmark shows 27 minutes on CPU becoming 35 secon
 S3 I/O wall time. For typical analytics workloads this is negligible (a few minutes to pull a few GB), but for TB-scale workloads it can dominate.
 
 Categorical feature handling overhead. XGBoost's native categorical support is fast but high-cardinality categoricals add memory and time that the linear N times P model does not capture.
+
+Drift monitoring as a distinct line item. Currently lumped into monitoring. In healthcare contexts where periodic re-validation may be regulator-required, this deserves its own category.
+
+Engineering labor. The dominant program cost, as noted above. The repo's TCO model is cloud-bill TCO only.
+
+## Using the tools
+
+The base estimator runs as a self-contained uv script. The first run downloads xgboost and numpy via uv's cache; subsequent runs are instant. The recommended one-time step before trusting dollar figures is `uv run xgboost_cost_estimator.py --calibrate`, which runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated per-work-unit constant. Replace the default constant with the calibrated value and the estimator becomes accurate for your specific hardware.
+
+The annualized TCO tool wraps the base estimator and adds the cost categories that dominate real production deployments. All defaults are documented in the source with their citation. Override any of them if you have better numbers for your environment.
+
+Code, calibration sources, and this post live at [github.com/zaherkarp/paper-saver](https://github.com/zaherkarp/paper-saver). Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.
