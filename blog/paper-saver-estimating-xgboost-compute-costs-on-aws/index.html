@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T00:17:02-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3625, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-18T00:33:21-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3600, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
 </script>
 
 
@@ -102,8 +102,8 @@ floor = 4 GiB  (Python + libraries + overhead)
 </code></pre>
 <p>This gives a max speedup of 5x no matter how many nodes you add, which matches empirical experience that distributed XGBoost on CPU plateaus around 8 to 16 nodes due to histogram all-reduce overhead. Memory partitions across nodes (each node holds roughly 1/N of the data, plus a 2 GiB baseline for comm buffers), and cost scales linearly with N because all nodes run concurrently and you pay for each.</p>
 <h2>Calibration evidence</h2>
-<p>The per-work-unit compute constant defaults to 1.0e-8 seconds. Two public benchmarks anchor it. The cleaner one is Masudahiroto's 2024 DEV Community post: 1M rows times 200 features times 100 trees on 2-vCPU Google Colab in 96 seconds wall time. Working back through the formula implies the constant should be about 8.1e-9 seconds per work unit. The HackerNoon Amex Default Prediction benchmark from 2025 (5.5M rows times 313 features on M3 Pro 12-core CPU in 27 minutes) implies about 4.0e-9 if you assume n_trees around 1500.</p>
-<p>The default sits conservatively above both anchors so the estimator over-budgets rather than under-budgets. The repo ships with a <code>--calibrate</code> command that runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated constant. Run it once before trusting dollar figures for real budgeting.</p>
+<p>The per-work-unit compute constant defaults to 1.0e-8 seconds. The anchor is Masudahiroto's 2024 DEV Community post: 1M rows times 200 features times 100 trees of XGBoost 2.0.3 at default settings (which selects <code>hist</code> for data this size) on free-tier Google Colab in 96 seconds wall time. Working back through the formula implies the constant should be about 8.1e-9 seconds per work unit.</p>
+<p>The default sits conservatively above that anchor so the estimator over-budgets rather than under-budgets. The repo ships with a <code>--calibrate</code> command that runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated constant. Run it once before trusting dollar figures for real budgeting.</p>
 <p>For distributed scaling, the alpha = 0.20 default is anchored on GitHub issue dmlc/xgboost#10853, which documents a practitioner getting worse performance from a Dask cluster with 3x more RAM and 4x more cores than from a single big EC2 instance training on 50 million rows. The takeaway: distributed XGBoost has substantial overhead, and the primary reason to use it is memory constraints rather than wall-time speedup.</p>
 <h2>Pricing anchors</h2>
 <p>m7i (general purpose, 4 GiB per vCPU) and r7i (memory optimized, 8 GiB per vCPU) families from us-east-1, May 2026 pricing pulled from instances.vantage.sh. AWS documentation explicitly recommends M-family over C-family for XGBoost because the workload is memory-bound, not compute-bound.</p>
@@ -253,7 +253,7 @@ floor = 4 GiB  (Python + libraries + overhead)
 <p>For annual budgeting of a production model, use the TCO tool. The realistic range is $8K to $35K per cloud-bill TCO per model per year, scaling with how much of an always-on infrastructure stack the model occupies. ModelOp's $25K to $100K range from PharmExec is the right sanity check; if your TCO model produces numbers outside that range, double-check your overrides.</p>
 <p>For program TCO (cloud bill plus engineering labor), add an FTE allocation on top. A loaded ML engineer is $200K to $400K per year, and a single production model in regulated industries typically needs 0.2 to 1.0 FTE depending on its criticality. That alone is $50K to $400K per model per year, dwarfing the cloud bill. The repo's TCO tool is explicitly cloud-bill TCO, not program TCO.</p>
 <h2>What the model still does not capture</h2>
-<p>GPU training, where the Amex benchmark shows 27 minutes on CPU becoming 35 seconds on A100. If your workload is large enough to benefit, the economics flip and a separate model is needed.</p>
+<p>GPU training. Published CPU-vs-GPU benchmarks for XGBoost regularly show 30-50x speedups on A100-class GPUs; if your workload is large enough to benefit, the economics flip and a separate model is needed.</p>
 <p>S3 I/O wall time. For typical analytics workloads this is negligible (a few minutes to pull a few GB), but for TB-scale workloads it can dominate.</p>
 <p>Categorical feature handling overhead. XGBoost's native categorical support is fast but high-cardinality categoricals add memory and time that the linear N times P model does not capture.</p>
 <p>Drift monitoring as a distinct line item. Currently lumped into monitoring. In healthcare contexts where periodic re-validation may be regulator-required, this deserves its own category.</p>
@@ -286,7 +286,7 @@ floor = 4 GiB  (Python + libraries + overhead)
 
     <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
     
-    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/d56c5b2">d56c5b2</a>.</p>
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/28bac8d">28bac8d</a>.</p>
     
   </footer>
 
