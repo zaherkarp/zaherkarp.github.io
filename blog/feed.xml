@@ -6,8 +6,22 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 17 May 2026 15:42:49 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2026 02:44:15 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Paper Saver: estimating XGBoost compute costs on AWS without SageMaker</title>
+      <link>https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/</guid>
+      <pubDate>Sun, 17 May 2026 00:00:00 +0000</pubDate>
+      <description>A practitioner&#39;s working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.</description>
+      <category>aws</category>
+      <category>xgboost</category>
+      <category>mlops</category>
+      <category>healthcare-analytics</category>
+      <category>cost-modeling</category>
+      
+    </item>
     
     <item>
       <title>A Back-of-the-Envelope Cost Model for XGBoost on AWS</title>
@@ -407,20 +421,6 @@
       <category>sql</category>
       <category>haskell</category>
       <category>functional-programming</category>
-      
-    </item>
-    
-    <item>
-      <title>Deletes Are Data Too</title>
-      <link>https://zaherkarp.com/blog/deletes-are-data-too/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/deletes-are-data-too/</guid>
-      <pubDate>Sun, 16 Nov 2025 00:00:00 +0000</pubDate>
-      <description>Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for.</description>
-      <category>data-engineering</category>
-      <category>cdc</category>
-      <category>data-pipelines</category>
-      <category>data-quality</category>
-      <category>architecture</category>
       
     </item>
     
