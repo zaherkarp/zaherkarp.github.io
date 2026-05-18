@@ -142,10 +142,12 @@ If `lint_facts` fails on what looks like an unrelated post, see
 blog preview my-post-slug
 ```
 
-Renders to `/tmp/zaherkarp-blog-preview/<slug>/index.html` and opens
-the browser. Side-effect-free: no `/blog/` rebuild, no draft-flag
-mutation, no commit. Asset references (`/blog.css`, `/fonts/...`) are
-rewritten to `file://` URIs of the actual repo files.
+Renders to `<tempdir>/zaherkarp-blog-preview/<slug>/index.html` and
+opens the browser. `<tempdir>` is whatever `tempfile.gettempdir()`
+returns: `/tmp` on Linux, `/var/folders/...` on macOS, `%TEMP%` on
+Windows. Side-effect-free: no `/blog/` rebuild, no draft-flag mutation,
+no commit. Asset references (`/blog.css`, `/fonts/...`) are rewritten
+to `file://` URIs of the actual repo files.
 
 **Preview omissions, by design:**
 
@@ -381,7 +383,7 @@ unpatched entries are accepted behavior with a documented mitigation.
 | 6 | P2 | Slug-fragment one-match-by-accident not confirmed | **Patched.** `publish`, `draft`, and `rename` now prompt before mutating when the slug resolved via fragment match; `edit`, `lint`, `preview` remain unprompted (non-destructive) |
 | 7 | P2 | `blog rename` does not update inbound references despite the module-docstring claim | **Partially patched.** Docstring now says "does not update inbound /blog/&lt;old-slug&gt;/ references"; the manual sweep in §2i is still required |
 | 8 | P2 | Hooks auto-install on `--help` | **Accepted.** The auto-install is intentional and idempotent; opt-out documented in §1d |
-| 9 | P2 | `blog status` showed stale `commits_ahead` if `origin/main` was not fetched | **Patched.** `commits_ahead` accepts a `fetch=True` flag and `status` passes it; "fetched origin/main" notice prints when the refresh runs |
+| 9 | P2 | `blog status` showed stale `commits_ahead` if `origin/main` was not fetched | **Patched.** `commits_ahead` accepts a `fetch=True` flag and `status` passes it. The "fetched origin/main" notice prints unconditionally — the underlying fetch swallows offline / missing-remote errors, so the count falls back to whatever ref is local without surfacing the failure |
 | 10 | P2 | Hand-edited `blog.config.yaml` with a non-dict `redundancy:` value crashed `blog config show` with `AttributeError` | **Patched.** `redundancy.toggle_value` now `isinstance`-guards the section and falls back to "always" |
 
 Also fixed in the same pass:
@@ -395,11 +397,74 @@ Also fixed in the same pass:
 
 ---
 
-## 6. Reference: file map
+## 6. Architecture
+
+```mermaid
+flowchart TB
+    Dev([Developer])
+
+    subgraph Local["Local machine"]
+        CLI["<b>scripts/blog</b><br/>Typer CLI"]
+        Hook["scripts/hooks/pre-push"]
+
+        subgraph Shared["Shared Python modules"]
+            LB[lint_blog]
+            LV[lint_vocab]
+            LF[lint_facts]
+            BB["build_blog<br/>(parse + render)"]
+            Red[redundancy.py]
+        end
+
+        Posts[("src/content/blog/*.md")]
+        Cfg[("scripts/blog.config.yaml")]
+    end
+
+    subgraph Remote["GitHub"]
+        Main[(origin/main)]
+        CI1[".github/workflows/<br/>build_blog.yml"]
+        CI2[".github/workflows/<br/>build_portfolio.yml"]
+        Pages["GitHub Pages<br/>zaherkarp.com"]
+    end
+
+    Dev -->|"new / edit / lint /<br/>preview / publish / ..."| CLI
+    CLI <-->|read + write| Posts
+    CLI <-->|read + write| Cfg
+    CLI -->|"pre-flight lint,<br/>scoped lint, render preview"| Shared
+    CLI -->|"first run installs<br/>via core.hooksPath"| Hook
+    CLI -->|"publish: git push"| Main
+
+    Hook -->|"on push,<br/>gated by redundancy + config"| Shared
+
+    Main -->|push event| CI1
+    Main -->|push event| CI2
+    CI1 -->|"lint + build,<br/>gated by redundancy + config"| Shared
+    CI1 -->|commits rendered HTML| Main
+    CI2 -->|commits index.html| Main
+
+    Main --> Pages
+```
+
+The architectural point: **the same five Python modules are reused at
+three layers** — the CLI's pre-flight, the pre-push hook, and the CI
+workflow. The "Shared Python modules" subgraph is the contract; the
+three callers (CLI, hook, CI) all reach into it. `redundancy.py` plus
+`blog.config.yaml` is the toggle plane that lets the hook and CI
+short-circuit when the CLI already linted (see §3).
+
+`build_blog.parse_post` / `render_post` are imported in-process by
+`blog preview` so the preview path doesn't shell out to a second
+Python; the same functions are also called by `build_blog.py` from
+inside the `build_blog.yml` workflow. `build_portfolio.yml` runs
+`build_portfolio.py` directly (no shared-module call out of `blog`
+into it today, hence no arrow from CI2 into the Shared box).
+
+---
+
+## 7. Reference: file map
 
 | Path | Purpose |
 |---|---|
-| `scripts/blog` | The CLI (Typer-based, ~790 lines) |
+| `scripts/blog` | The CLI (Typer-based, ~910 lines) |
 | `scripts/blog.config.yaml` | Redundancy-toggle storage |
 | `scripts/redundancy.py` | Shared toggle checker; called by hook + CI |
 | `scripts/hooks/pre-push` | Bash hook installed via `core.hooksPath` |
