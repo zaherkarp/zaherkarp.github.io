@@ -10,7 +10,7 @@ Data platform leader building production analytics systems in regulated healthca
 
 **Baltimore Health Analytics** | Manager of Data Science & Engineering
 Nov 2025 – Present
-*MariaDB, Python, JavaScript, Ruby on Rails, Docker*
+*MariaDB, Python, JavaScript, Ruby on Rails, Docker, Perl*
 
 - Own the data platform for a Medicare Advantage analytics product, including ETL/ELT architecture, stored procedure design, and the regulatory validation layer against CMS technical specifications
 - Hardened and validated an ETS forecasting pipeline for Stars cutpoint prediction under regulatory scrutiny, reducing forecast error 34–53% versus standard Holt-Winters by downweighting COVID-era outliers with robust M-estimators
@@ -43,6 +43,8 @@ Sep 2009 – Jun 2018
 **Healthcare domain:** HEDIS, CMS Medicare Stars, HIPAA, HITRUST, EHR systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, CMS technical specifications, value-based care, ACO / MSSP
 
 **Governance and delivery:** ETL/ELT architecture, data modeling, semantic layers, metric governance, release readiness, data quality frameworks, biostatistics, cross-functional stakeholder communication
+
+**Writing and open source:** Technical writing paired with small companion tools at zaherkarp.com (recent topics: XGBoost cloud cost modeling and TCO, Stars cutpoint forecasting methodology, HEDIS measure ETL patterns)
 
 ## Education
 
