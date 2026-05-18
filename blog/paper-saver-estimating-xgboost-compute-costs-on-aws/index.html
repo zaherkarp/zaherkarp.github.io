@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Saver: estimating XGBoost compute costs on AWS without SageMaker — Zaher Karp</title>
+<meta name="description" content="A practitioner&#39;s working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.">
+<link rel="canonical" href="https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="Paper Saver: estimating XGBoost compute costs on AWS without SageMaker — Zaher Karp">
+<meta property="og:description" content="A practitioner&#39;s working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.">
+<meta property="og:url" content="https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Paper Saver: estimating XGBoost compute costs on AWS without SageMaker — Zaher Karp">
+<meta name="twitter:description" content="A practitioner&#39;s working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Paper Saver: estimating XGBoost compute costs on AWS without SageMaker", "description": "A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.", "url": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/"}, "datePublished": "2026-05-17T00:00:00Z", "dateModified": "2026-05-17T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3419, "timeRequired": "PT14M", "inLanguage": "en-US", "keywords": "aws, xgboost, mlops, healthcare-analytics, cost-modeling"}
+</script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Paper Saver: estimating XGBoost compute costs on AWS without SageMaker</h1>
+    <div class="blog-meta">
+      <time datetime="2026-05-17" class="blog-date">May 17, 2026</time>
+      
+      <span class="blog-readtime">14 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>aws</li><li>xgboost</li><li>mlops</li><li>healthcare-analytics</li><li>cost-modeling</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>A common ask: how much will it cost to train this XGBoost model and serve it? Naive answers fail. Cost depends on data shape, hyperparameters, infrastructure choices, and whether you mean the marginal compute cost of one training run or the realistic annual cost of keeping a production model running. Most attempts at answering conflate these and produce numbers that are either implausibly low or pulled from thin air.</p>
+<p>Paper Saver is a back-of-the-envelope tool for both. The name is the joke: it replaces the napkin or scratch-paper math an analyst would otherwise scribble to budget a model, and the saved-trees pun lands twice (trees as in paper, trees as in the gradient-boosted kind whose cloud spend the tool is sizing).</p>
+<p>The code lives at <code>https://github.com/zaherkarp/paper-saver</code> and runs as a self-contained uv script.</p>
+<h2>Scope</h2>
+<p>AWS only. No SageMaker. CPU only. XGBoost with <code>tree_method='hist'</code>, which has been the default since 1.5 and is what almost all CPU production deployments use. The model targets analytics-scale workloads (a few million to a few hundred million rows, up to a few thousand features) which is where most healthcare, payer, and actuarial XGBoost lives.</p>
+<h2>The compute model</h2>
+<p>For single-node training, wall time is dominated by the product of rows, features, and trees. Memory is dominated by rows times features after histogram quantization. So if you know only N and P, you have the two biggest cost levers. Tree count and depth default to 500 and 6 (canonical XGBoost defaults), and the formula is:</p>
+<pre><code>work_units = N * P * n_trees * (depth / 6) * early_stopping_factor
+single_core_seconds = work_units * SECONDS_PER_WORK_UNIT_TRAIN * 1.10
+wall_seconds = single_core_seconds / vcpu ** 0.75
+</code></pre>
+<p>The 0.75 exponent on vCPU count reflects sub-linear scaling: XGBoost's histogram method gets diminishing returns past about 16 cores due to memory bandwidth and synchronization. The 1.10 multiplier covers the validation set used for early stopping.</p>
+<p>Memory follows the same shape:</p>
+<pre><code>raw_bytes = N * P  (1 byte per cell after histogram quantization)
+total_gib = 3 * raw_bytes / 1 GiB
+floor = 4 GiB  (Python + libraries + overhead)
+</code></pre>
+<p>The 3x multiplier covers the original DataFrame, the DMatrix, the validation set, the model itself, and Python runtime overhead.</p>
+<p>For multi-node distributed training, the model adds an Amdahl's-law speedup with alpha = 0.20:</p>
+<pre><code>speedup(N) = N / (1 + (N - 1) * 0.20)
+</code></pre>
+<p>This gives a max speedup of 5x no matter how many nodes you add, which matches empirical experience that distributed XGBoost on CPU plateaus around 8 to 16 nodes due to histogram all-reduce overhead. Memory partitions across nodes (each node holds roughly 1/N of the data, plus a 2 GiB baseline for comm buffers), and cost scales linearly with N because all nodes run concurrently and you pay for each.</p>
+<h2>Calibration evidence</h2>
+<p>The per-work-unit compute constant defaults to 1.0e-8 seconds. Two public benchmarks anchor it. The cleaner one is Masudahiroto's 2024 DEV Community post: 1M rows times 200 features times 100 trees on 2-vCPU Google Colab in 96 seconds wall time. Working back through the formula implies the constant should be about 8.1e-9 seconds per work unit. The HackerNoon Amex Default Prediction benchmark from 2025 (5.5M rows times 313 features on M3 Pro 12-core CPU in 27 minutes) implies about 4.0e-9 if you assume n_trees around 1500.</p>
+<p>The default sits conservatively above both anchors so the estimator over-budgets rather than under-budgets. The repo ships with a <code>--calibrate</code> command that runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated constant. Run it once before trusting dollar figures for real budgeting.</p>
+<p>For distributed scaling, the alpha = 0.20 default is anchored on GitHub issue dmlc/xgboost#10853, which documents a practitioner getting worse performance from a Dask cluster with 3x more RAM and 4x more cores than from a single big EC2 instance training on 50 million rows. The takeaway: distributed XGBoost has substantial overhead, and the primary reason to use it is memory constraints rather than wall-time speedup.</p>
+<h2>Pricing anchors</h2>
+<p>m7i (general purpose, 4 GiB per vCPU) and r7i (memory optimized, 8 GiB per vCPU) families from us-east-1, May 2026 pricing pulled from instances.vantage.sh. AWS documentation explicitly recommends M-family over C-family for XGBoost because the workload is memory-bound, not compute-bound.</p>
+<p>Spot discount of 70 percent off on-demand, factor 0.30. This is anchored on the EC2 Spot Workshop documented run (68.8 percent actual savings) and the Cinnamon AI AWS customer case study (70 percent reduction). The &quot;up to 90 percent&quot; you'll see in AWS marketing is the ceiling, not the working number.</p>
+<p>For always-on inference endpoints, spot is risky because interruptions break real-time serving. The realistic discount path is a 1-year Compute Savings Plan at about 30 percent off on-demand.</p>
+<h2>Why no SageMaker</h2>
+<p>A few common reasons a tech stakeholder vetoes SageMaker. ml.* instance markup of 15 to 40 percent over equivalent EC2. Lock-in to SageMaker-specific containers and SDK conventions. Operational ownership of a parallel ML platform that the team has to learn and maintain. Compliance review burden for managed services handling regulated data. Even with the AWS HIPAA BAA covering SageMaker, healthcare organizations that already have a worked review for EC2 in a locked-down VPC often don't want to re-run that review for a different control plane.</p>
+<p>Equivalent alternatives without SageMaker: AWS Batch on EC2 Spot (closest functional substitute, no premium), AWS Batch Multi-Node Parallel Jobs for distributed training, ECS or EKS scheduled tasks if a container platform already exists, AWS Lambda for low-volume inference, Fargate for scheduled batch scoring. The same 70 percent spot discount applies because the underlying capacity pool is identical.</p>
+<h2>The single-run cost picture</h2>
+<p>For a typical Medicare member-level Stars risk model (5M rows, 300 features, 1000 trees, depth 8, one-hour training budget), the estimator returns about $0.18 on spot for a single training run on m7i.4xlarge. Inference of 500K rows in a five-minute batch window costs pennies. These numbers are correct but easy to misread. They are marginal compute costs, not the cost of running a model in production.</p>
+<p>Here is the full spread across workload types, all on spot:</p>
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+  <style>
+    .bar-label { font: 12px sans-serif; fill: #444; }
+    .bar-value { font: 11px sans-serif; fill: #222; }
+    .axis { font: 10px sans-serif; fill: #888; }
+    .title { font: 14px sans-serif; font-weight: 500; fill: #222; }
+    .legend-text { font: 11px sans-serif; fill: #555; }
+  </style>
+  <text class="title" x="20" y="24">Monthly cost on AWS spot, by workload type</text>
+  <g transform="translate(0, 40)">
+    <rect x="200" y="10" width="380" height="32" fill="#f5f5f5"/>
+    <text class="bar-label" x="195" y="30" text-anchor="end">Single retrain (1M x 200)</text>
+    <rect x="200" y="10" width="2" height="32" fill="#888780"/>
+    <text class="bar-value" x="210" y="30">$0.005</text>
+<pre><code>&lt;rect x=&quot;200&quot; y=&quot;50&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;70&quot; text-anchor=&quot;end&quot;&gt;Daily batch scoring (30d)&lt;/text&gt;
+&lt;rect x=&quot;200&quot; y=&quot;50&quot; width=&quot;3&quot; height=&quot;32&quot; fill=&quot;#888780&quot;/&gt;
+&lt;text class=&quot;bar-value&quot; x=&quot;210&quot; y=&quot;70&quot;&gt;$0.07&lt;/text&gt;
+
+&lt;rect x=&quot;200&quot; y=&quot;90&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;110&quot; text-anchor=&quot;end&quot;&gt;Large training (50M x 500)&lt;/text&gt;
+&lt;rect x=&quot;200&quot; y=&quot;90&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
+&lt;text class=&quot;bar-value&quot; x=&quot;290&quot; y=&quot;110&quot;&gt;$5.72&lt;/text&gt;
+
+&lt;rect x=&quot;200&quot; y=&quot;130&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;150&quot; text-anchor=&quot;end&quot;&gt;100-config HPO sweep&lt;/text&gt;
+&lt;rect x=&quot;200&quot; y=&quot;130&quot; width=&quot;116&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
+&lt;text class=&quot;bar-value&quot; x=&quot;326&quot; y=&quot;150&quot;&gt;$8.44&lt;/text&gt;
+
+&lt;rect x=&quot;200&quot; y=&quot;170&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;190&quot; text-anchor=&quot;end&quot;&gt;Distributed 500M (8 nodes)&lt;/text&gt;
+&lt;rect x=&quot;200&quot; y=&quot;170&quot; width=&quot;195&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
+&lt;text class=&quot;bar-value&quot; x=&quot;405&quot; y=&quot;190&quot;&gt;$14.55&lt;/text&gt;
+
+&lt;rect x=&quot;200&quot; y=&quot;210&quot; width=&quot;380&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;bar-label&quot; x=&quot;195&quot; y=&quot;230&quot; text-anchor=&quot;end&quot;&gt;Always-on endpoint (30d)&lt;/text&gt;
+&lt;rect x=&quot;200&quot; y=&quot;210&quot; width=&quot;290&quot; height=&quot;32&quot; fill=&quot;#378ADD&quot;/&gt;
+&lt;text class=&quot;bar-value&quot; x=&quot;500&quot; y=&quot;230&quot;&gt;$21.77&lt;/text&gt;
+</code></pre>
+  </g>
+  <g transform="translate(20, 290)">
+    <rect x="0" y="0" width="10" height="10" fill="#888780"/>
+    <text class="legend-text" x="16" y="9">local fits</text>
+    <rect x="100" y="0" width="10" height="10" fill="#378ADD"/>
+    <text class="legend-text" x="116" y="9">cloud earns it</text>
+  </g>
+</svg>
+<p>The pattern is bimodal. Single-job training and daily batch scoring are pennies. Then there is a roughly 100x jump to scenarios that actually justify cloud spend. There is no smooth gradient between them. The trigger for the gray-to-blue transition is one of three things: memory beyond workstation RAM, HPO parallelism, or always-on serving with real uptime requirements. Everything else is a wash, and for most analytics shops with a decent workstation, &quot;train locally and push flat files to cloud&quot; is the right architecture.</p>
+<h2>Where the threshold actually lives</h2>
+<p>The memory side is easier to reason about because it is a hard constraint:</p>
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+  <style>
+    .zone-title { font: 14px sans-serif; font-weight: 500; }
+    .zone-text { font: 12px sans-serif; fill: #444; }
+    .zone-sub { font: 11px sans-serif; fill: #666; }
+  </style>
+  <rect x="40" y="20" width="620" height="70" rx="8" fill="#f1efe8" stroke="#888780" stroke-width="0.5"/>
+  <text class="zone-title" x="60" y="44" fill="#444441">Local fits</text>
+  <text class="zone-text" x="60" y="62">Under ~50M rows. Workstation with 64 to 128 GiB RAM.</text>
+  <text class="zone-sub" x="60" y="78">100K x 80, 1M x 200, 5M x 300 all comfortable. Train locally, push outputs to cloud.</text>
+  <rect x="40" y="100" width="620" height="70" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+  <text class="zone-title" x="60" y="124" fill="#0C447C">Single cloud node</text>
+  <text class="zone-text" x="60" y="142">50M to ~500M rows. Memory exceeds typical workstation.</text>
+  <text class="zone-sub" x="60" y="158">50M x 500 fits r7i.16xlarge (512 GiB). Cloud earns it on the memory dimension alone.</text>
+  <rect x="40" y="180" width="620" height="70" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+  <text class="zone-title" x="60" y="204" fill="#085041">Distributed required</text>
+  <text class="zone-text" x="60" y="222">Above ~500M rows. No single AWS box holds enough RAM.</text>
+  <text class="zone-sub" x="60" y="238">500M x 200 needs 8+ nodes via AWS Batch Multi-Node Parallel or Dask cluster.</text>
+</svg>
+<p>The exact row count shifts with feature width. A 64 GiB workstation can hold roughly 64 divided by (3 times P times 1 byte) million rows in DMatrix memory. At 80 features that is 270M rows. At 500 features it is 43M rows. At 1000 features it is 21M rows. So the &quot;under 50M rows&quot; boundary above is a rough lower bound for healthcare-typical feature widths.</p>
+<p>The other two triggers are independent of memory. An HPO sweep that needs 20 to 100 parallel boxes is a parallelism trigger: a workstation can run those configs sequentially but a sweep that takes three days locally takes 90 minutes in cloud. An always-on serving requirement is an uptime trigger: workstations do not stay on with a load balancer in front. Each of these triggers independently moves a workload from gray to blue in the chart above, even when memory is comfortably within local bounds.</p>
+<h2>From marginal compute to annual TCO</h2>
+<p>Here is where the original framing falls apart. The estimator above measures <code>xgb.train</code> wall time multiplied by a spot rate. That captures maybe 3 to 5 percent of what a production XGBoost program actually costs to keep running. Anyone who has paid an AWS bill for a production ML deployment will look at &quot;$0.18 per training run&quot; and know that number cannot be right at the program level.</p>
+<p>The industry literature is consistent on this. ModelOp, an MLOps vendor that publishes pharma-specific benchmarks in PharmExec, gives a working range of $25,000 to $100,000 per use case annually for big pharma ML programs. A 2025 Mondaysys healthcare TCO study found that one provider discovered 63 percent of their ML expenses came from data pipeline optimization and GPU cluster management, costs that were absent from vendor proposals. The same study reported that 68 percent of organizations underestimate data preparation and retraining costs. Sumatosoft's ongoing-cost framework breaks annual TCO down by category and lands on 17 to 30 percent of initial development cost per year, with up to 50 percent in the worst case. Glean's TCO framework is in the same range: 15 to 25 percent maintenance, $20K to $60K in infrastructure annually per system.</p>
+<p>The gap is real and predictable. Training compute is the thing everyone measures and the thing that matters least to annual TCO. The seven or eight cost categories that dominate are:</p>
+<p>ETL and feature pipeline compute, which runs continuously to produce the features the model consumes. In healthcare analytics with member-level joins this is typically 3 to 8 times the cost of training compute itself.</p>
+<p>Cluster idle overhead, which is the fair share of an always-on EKS or EMR cluster that exists 24/7 whether or not your model is training. Industry rule of thumb is 30 to 60 percent average utilization on always-on ML clusters, so the allocated cost is roughly 1.5 to 3 times the marginal training cost.</p>
+<p>Storage of training data and model artifacts. S3 Standard at $0.023 per GB-month, and you typically keep three copies (raw, processed, intermediate) plus model versions, eval reports, and logs.</p>
+<p>Inference serving, especially for always-on endpoints which carry 24/7 instance costs and cannot use spot pricing.</p>
+<p>Monitoring and observability. CloudWatch logs and metrics, Datadog or equivalent APM, model drift monitoring through Arize, Fiddler, WhyLabs, or homegrown. Realistic floor is about $3K to $5K per production model per year.</p>
+<p>Compliance and audit infrastructure. Audit trail storage, access review tooling, change management workflows, security scanning. Higher in regulated industries.</p>
+<p>Data egress. Pulling raw EHR data, scoring outputs, and model artifacts in and out of S3 across regions or to external customers. At $0.09 per GB this adds up.</p>
+<p>The repo includes a second tool that wraps the base estimator and adds these categories with industry-anchored defaults that can be overridden. For a typical Medicare member-level Stars model (5M members, 300 features, monthly retrain, daily batch scoring), it produces the breakdown below.</p>
+<svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+  <style>
+    .tco-title { font: 14px sans-serif; font-weight: 500; fill: #222; }
+    .tco-label { font: 12px sans-serif; fill: #444; }
+    .tco-value { font: 12px sans-serif; fill: #222; }
+    .tco-pct { font: 11px sans-serif; fill: #888; }
+    .total-line { font: 13px sans-serif; font-weight: 500; fill: #222; }
+  </style>
+  <text class="tco-title" x="20" y="24">Annual TCO breakdown: large production model, daily retrain, always-on endpoint</text>
+  <text class="tco-pct" x="20" y="42">$33,525/year, training compute is 6.9% of total</text>
+  <g transform="translate(20, 60)">
+    <rect x="0" y="0" width="660" height="32" fill="#f5f5f5"/>
+    <text class="tco-label" x="10" y="20">ETL and feature pipelines</text>
+    <rect x="280" y="0" width="280" height="32" fill="#378ADD"/>
+    <text class="tco-value" x="570" y="20">$13,856</text>
+    <text class="tco-pct" x="630" y="20">41.3%</text>
+<pre><code>&lt;rect x=&quot;0&quot; y=&quot;40&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;60&quot;&gt;Cluster idle overhead&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;40&quot; width=&quot;140&quot; height=&quot;32&quot; fill=&quot;#1D9E75&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;430&quot; y=&quot;60&quot;&gt;$6,928&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;60&quot;&gt;20.7%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;80&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;100&quot;&gt;Monitoring and observability&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;80&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#7F77DD&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;370&quot; y=&quot;100&quot;&gt;$4,000&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;100&quot;&gt;11.9%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;120&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;140&quot;&gt;Compliance and audit infra&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;120&quot; width=&quot;80&quot; height=&quot;32&quot; fill=&quot;#888780&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;370&quot; y=&quot;140&quot;&gt;$4,000&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;140&quot;&gt;11.9%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;160&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;180&quot;&gt;Training compute (annualized)&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;160&quot; width=&quot;48&quot; height=&quot;32&quot; fill=&quot;#D85A30&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;338&quot; y=&quot;180&quot;&gt;$2,309&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;180&quot;&gt;6.9%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;200&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;220&quot;&gt;Storage&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;200&quot; width=&quot;35&quot; height=&quot;32&quot; fill=&quot;#BA7517&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;325&quot; y=&quot;220&quot;&gt;$1,706&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;220&quot;&gt;5.1%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;240&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;260&quot;&gt;Inference serving&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;240&quot; width=&quot;14&quot; height=&quot;32&quot; fill=&quot;#D4537E&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;304&quot; y=&quot;260&quot;&gt;$618&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;260&quot;&gt;1.8%&lt;/text&gt;
+
+&lt;rect x=&quot;0&quot; y=&quot;280&quot; width=&quot;660&quot; height=&quot;32&quot; fill=&quot;#f5f5f5&quot;/&gt;
+&lt;text class=&quot;tco-label&quot; x=&quot;10&quot; y=&quot;300&quot;&gt;Data egress&lt;/text&gt;
+&lt;rect x=&quot;280&quot; y=&quot;280&quot; width=&quot;3&quot; height=&quot;32&quot; fill=&quot;#5F5E5A&quot;/&gt;
+&lt;text class=&quot;tco-value&quot; x=&quot;293&quot; y=&quot;300&quot;&gt;$108&lt;/text&gt;
+&lt;text class=&quot;tco-pct&quot; x=&quot;630&quot; y=&quot;300&quot;&gt;0.3%&lt;/text&gt;
+</code></pre>
+  </g>
+</svg>
+<p>The training compute slice in orange is the thing the original estimator measures. Everything else is what determines your actual annual bill. The pattern holds across all three worked examples in the repo. For a small POC at $8,200 per year, training compute is essentially zero. For the typical Stars model at $8,300 per year, training compute is $2.22 against $8,000 in monitoring and compliance flat costs. For the large production model at $33,500 per year, training is 6.9 percent. In no realistic scenario is training compute the cost driver.</p>
+<h2>What this means for budgeting</h2>
+<p>If you are sizing a new XGBoost workload in healthcare or insurance, here is what to take from the two tools together.</p>
+<p>For the marginal compute cost of a single training run, use the base estimator. The numbers are honest and will keep you from over-budgeting one training job to thousands of dollars when it actually costs cents.</p>
+<p>For annual budgeting of a production model, use the TCO tool. The realistic range is $8K to $35K per cloud-bill TCO per model per year, scaling with how much of an always-on infrastructure stack the model occupies. ModelOp's $25K to $100K range from PharmExec is the right sanity check; if your TCO model produces numbers outside that range, double-check your overrides.</p>
+<p>For program TCO (cloud bill plus engineering labor), add an FTE allocation on top. A loaded ML engineer is $200K to $400K per year, and a single production model in regulated industries typically needs 0.2 to 1.0 FTE depending on its criticality. That alone is $50K to $400K per model per year, dwarfing the cloud bill. The repo's TCO tool is explicitly cloud-bill TCO, not program TCO.</p>
+<h2>What the model still does not capture</h2>
+<p>GPU training, where the Amex benchmark shows 27 minutes on CPU becoming 35 seconds on A100. If your workload is large enough to benefit, the economics flip and a separate model is needed.</p>
+<p>S3 I/O wall time. For typical analytics workloads this is negligible (a few minutes to pull a few GB), but for TB-scale workloads it can dominate.</p>
+<p>Categorical feature handling overhead. XGBoost's native categorical support is fast but high-cardinality categoricals add memory and time that the linear N times P model does not capture.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-05-18 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/dbb0915">dbb0915</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
