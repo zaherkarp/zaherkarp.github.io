@@ -16,6 +16,8 @@ The code lives at [github.com/zaherkarp/paper-saver](https://github.com/zaherkar
 
 AWS only. No SageMaker. CPU only. XGBoost with `tree_method='hist'`, which has been the default since 1.5 and is what almost all CPU production deployments use. The model targets analytics-scale workloads (a few million to a few hundred million rows, up to a few thousand features) which is where most healthcare, payer, and actuarial XGBoost lives.
 
+For Azure and GCP, and for the maturity gating that determines whether the discount mechanisms below are reachable in practice on any cloud, see the [follow-up post](/blog/paper-saver-cloud-maturity-and-lock-in/). The two posts complement each other: this one establishes the math and anchors the AWS pricing, that one applies the same compute model across clouds and across operational tiers.
+
 ## The compute model
 
 For single-node training, wall time is dominated by the product of rows, features, and trees. Memory is dominated by rows times features after histogram quantization. So if you know only N and P, you have the two biggest cost levers. Tree count and depth default to 500 and 6 (canonical XGBoost defaults), and the formula is:
@@ -249,10 +251,14 @@ Drift monitoring as a distinct line item. Currently lumped into monitoring. In h
 
 Engineering labor. The dominant program cost, as noted above. The repo's TCO model is cloud-bill TCO only.
 
+Azure and GCP cost paths. Out of scope here by design (this post is about AWS without SageMaker), but covered in the [follow-up post](/blog/paper-saver-cloud-maturity-and-lock-in/), which extends the same compute model across the three major clouds and adds a maturity-tier framing for discount realization.
+
 ## Using the tools
 
 The base estimator runs as a self-contained uv script. The first run downloads xgboost and numpy via uv's cache; subsequent runs are instant. The recommended one-time step before trusting dollar figures is `uv run xgboost_cost_estimator.py --calibrate`, which runs a real XGBoost benchmark on your CPU and prints the empirically-calibrated per-work-unit constant. Replace the default constant with the calibrated value and the estimator becomes accurate for your specific hardware.
 
 The annualized TCO tool wraps the base estimator and adds the cost categories that dominate real production deployments. All defaults are documented in the source with their citation. Override any of them if you have better numbers for your environment.
 
-Code, calibration sources, and this post live at [github.com/zaherkarp/paper-saver](https://github.com/zaherkarp/paper-saver). Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.
+A third tool added later, `cloud_maturity.py`, takes the same compute math and runs it across AWS, Azure, and GCP at three operational maturity tiers (Crawl, Walk, Run) to produce a cross-cloud, cross-maturity cost grid. It is documented in detail in the [follow-up post](/blog/paper-saver-cloud-maturity-and-lock-in/). Use it when the question is not "how much does this cost on AWS" but "given the cloud my organization is locked into and my team's operational maturity, am I leaving compute savings on the table?"
+
+Code, calibration sources, and both posts live at [github.com/zaherkarp/paper-saver](https://github.com/zaherkarp/paper-saver). Pull requests welcome for additional calibration anchors, alternative cost models, or extensions into GPU and distributed-training cost paths.
