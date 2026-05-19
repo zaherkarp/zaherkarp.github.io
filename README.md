@@ -53,6 +53,155 @@ archive/                    Historical reference (not served)
   source-resumes/           Pre-consolidation resume drafts
 ```
 
+## Pipelines
+
+Pure HTML/CSS at the surface, but four Python pipelines stand behind it.
+Each reads a source under `src/content/` or `index.html`, transforms it,
+and commits the output back to the repo. The only network call at build
+time is Semantic Scholar for citation counts; everything else is local.
+All four are idempotent: re-running them against unchanged inputs is a
+no-op.
+
+```
+  src/content/blog/*.md  ──▶ lint_vocab + lint_blog ──▶ build_blog
+                                                          │
+                                                          ▼
+                                            blog/<slug>/index.html
+                                            blog/index.html
+                                            blog/archive/index.html
+                                            sitemap.xml
+
+  src/content/resume.md  ─────────────────────────────▶ build_resume
+                                                          │
+                                                          ▼
+                                                resume.pdf, resume.html
+
+  src/content/blog/*.md  ──┐
+  index.html (markers)   ──┴──────────────────────────▶ build_portfolio
+                                                          │
+                                                          ▼
+                                            index.html (activity grid,
+                                                       writing list,
+                                                       citations)
+
+  git push  ──▶  scripts/hooks/pre-push  ──▶ lint_blog + lint_vocab
+                                              + lint_facts
+                 (self-installed via _common.install_git_hooks)
+```
+
+### Blog (`scripts/build_blog.py`)
+
+- **Source:** `src/content/blog/*.md` (markdown + YAML frontmatter)
+- **Output:** `blog/<slug>/index.html`, `blog/index.html`,
+  `blog/archive/index.html`, `sitemap.xml`
+- **CI:** [build_blog.yml](.github/workflows/build_blog.yml) on push to
+  `src/content/blog/**`, `scripts/build_blog.py`,
+  `scripts/templates/blog/**`, or `scripts/requirements.txt`
+
+CI runs `lint_vocab.py` and `lint_blog.py` first; either failure aborts
+the build. The build uses markdown-it-py + mdit-py-plugins + Jinja2.
+Math (`\(...\)` inline, `\[...\]` display) is stashed before parsing
+and restored verbatim for client-side KaTeX. Fenced ` ```mermaid `
+blocks are rewritten to `<pre class="mermaid">` so the Mermaid runtime
+picks them up. Posts split at the 2019 archive cutoff: 2009–2011
+journalism pieces land in `/blog/archive/` so the main listing reads
+as a coherent data-engineering portfolio. Drafts (`draft: true`) and
+`_`-prefixed files are skipped. The CI job commits regenerated HTML
+back to the repo.
+
+### Resume (`scripts/build_resume.py`)
+
+- **Source:** `src/content/resume.md`
+- **Output:** `resume.pdf` (US Letter, single column, ATS-parseable),
+  `resume.html`
+- **CI:** [build_resume.yml](.github/workflows/build_resume.yml) on push
+  to `src/content/resume.md`, `scripts/build_resume.py`,
+  `scripts/templates/resume/**`, `scripts/fonts/**`, or
+  `scripts/requirements.txt`
+
+Markdown renders through a Jinja2 template; WeasyPrint prints the PDF.
+A regex post-pass converts the three-line role block (`**Company** |
+Title` / `Date` / `*Stack*`) into a structured `<header class="role">`
+element so the print CSS can style each line distinctly. ETBook (MIT)
+is bundled under `scripts/fonts/et-book/` and embedded in the PDF so
+the resume matches the site's body face.
+
+The CI Ubuntu runner installs `libpango-1.0-0` + `libpangoft2-1.0-0`
+for WeasyPrint. Locally on macOS: `brew install pango` and prefix
+runs with `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib`.
+
+### Portfolio (`scripts/build_portfolio.py`)
+
+- **Source:** `src/content/blog/*.md` frontmatter + `index.html` marker
+  comments
+- **Output:** in-place updates to `index.html` (no new files)
+- **CI:** [build_portfolio.yml](.github/workflows/build_portfolio.yml)
+  on push to `index.html`, `scripts/build_portfolio.py`,
+  `scripts/requirements.txt`, or `src/content/blog/**.md`. Also Sundays
+  06:00 UTC. Manual dispatch supported.
+
+Three insertions land between marker comments in `index.html`:
+
+- `<!-- activity-grid:start --> ... :end -->` — a 24-week Tufte-style
+  dot sparkline showing recent posting cadence. No external requests.
+- `<!-- writing-list:start --> ... :end -->` — the six most recent
+  non-draft posts. Em-dashes are stripped on import; homepage chrome
+  stays em-dash-clean even when source markdown isn't.
+- `<span class="pub-citations">` inside each `<div class="pub-entry"
+  data-sid="...">` — Semantic Scholar citation count. The public tier
+  rate-limits aggressively (HTTP 429); the script retries with
+  exponential backoff and preserves the existing value on failure.
+
+New posts populate the homepage on the same CI run that publishes
+them, because the workflow triggers on the blog path too. Both
+`build_blog` and `build_portfolio` commit during a blog-source push,
+so `build_portfolio.yml` does a rebase-and-retry loop in case of a
+race with `build_blog.yml`.
+
+### Pre-push lints (`scripts/hooks/pre-push`)
+
+- **Source:** `src/content/blog/*.md`, `src/content/resume.md`,
+  `index.html`
+- **Output:** no files — the push proceeds or aborts with stderr from
+  the failed lint
+- **Trigger:** every `git push`
+
+Installed automatically by `scripts/_common.install_git_hooks()`, which
+runs at the top of every `build_*.py` and `lint_*.py` script. On first
+run after a clone the hook points git's `core.hooksPath` at
+`scripts/hooks/` and prints a one-line notice; subsequent runs are
+no-ops. The hook runs three linters:
+
+- `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
+  code nested in an HTML comment, blockquote-as-Mermaid, blank lines
+  inside `<svg>`.
+- `lint_vocab.py` — canonical CMS program-name capitalization (Star
+  Ratings, Medicare Advantage, HEDIS, etc.) across blog, resume, and
+  homepage.
+- `lint_facts.py` — cross-surface fact drift between `resume.md`,
+  `index.html` h3+meta, and the JSON-LD block. Failure playbook at
+  [scripts/lint_facts.md](./scripts/lint_facts.md).
+
+Both the pre-push hook and `build_blog.yml` can short-circuit via a
+`Blog-CLI-Linted:` commit trailer written by `scripts/blog publish`.
+The behavior is gated by toggles in `scripts/blog.config.yaml`
+(`prepush_lint`, `ci_blog_lint`; both default to `always`). When a
+toggle is `skip-if-cli-linted` AND every commit in the push range
+carries the trailer, lints are skipped — the CLI already ran them on
+the same content. Otherwise lints run.
+
+### OG image (`scripts/build_og.py`, manual)
+
+Rebuilds `og-default.png` (1200×630, Open Graph canonical size) from
+inlined design tokens via Pillow. Not on a CI trigger because the card
+content (name, subtitle, domain) changes rarely. Run locally when the
+design changes:
+
+```bash
+pip install Pillow
+.venv/bin/python scripts/build_og.py
+```
+
 ## Local preview
 
 No build step for the main site. Serve the repo root:
