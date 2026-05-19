@@ -124,16 +124,7 @@ nav {
   padding: 0.3rem 0;
   position: relative;
 }
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 0; height: 1px;
-  background: var(--muted);
-  transition: width 0.2s ease;
-}
 .nav-links a:hover { color: var(--text); }
-.nav-links a:hover::after { width: 100%; }
 
 /* SECTION LABEL */
 .section-label {
