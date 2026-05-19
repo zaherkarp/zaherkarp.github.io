@@ -1580,59 +1580,57 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <circle cx="252" cy="10" r="2" fill="#111"/>
         <circle cx="263" cy="10" r="2" fill="#111"/>
       </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">26 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle tag breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (8) · medicare (5) · architecture (4) · healthcare (4) · star-ratings (4) · analytics (3) · healthcare-data (3) · hedis (3) · apis (2) · cms (2) · data-analysis (2) · dbt (2) · health policy (2) · healthcare-analytics (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · methodology (2) · ordinal-regression (2) · policy (2) · public-health (2) · python (2) · reliability (2) · systems (2) · version-control (2)</span>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">27 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle tag breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (12) · healthcare-data (7) · medicare (5) · sql (5) · architecture (4) · ci-cd (4) · healthcare (4) · star-ratings (4) · analytics (3) · dbt (3) · healthcare-analytics (3) · hedis (3) · version-control (3) · apis (2) · aws (2) · cms (2) · cost-modeling (2) · data-analysis (2) · health policy (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · methodology (2) · mlops (2) · ordinal-regression (2) · policy (2) · public-health (2) · pull-requests (2) · python (2) · reliability (2) · systems (2) · xgboost (2)</span>
     </p>
     <!-- activity-grid:end -->
 
     <!-- writing-list:start -->
     <div class="entry">
       <div>
+        <span class="date">2026-05-20</span>
+        <span class="title"><a href="/blog/cicd-for-sql-developers-observability/">CI/CD for SQL Developers: Watching It Land, and a Project to Practice On</a></span>
+      </div>
+      <p class="summary">The pipeline shipped the change. Friday morning the dashboard went red. Observability closes the loop. Plus a weekend project for the SQL developer who wants to build the whole series end to end.</p>
+    </div>
+
+    <div class="entry">
+      <div>
+        <span class="date">2026-05-19</span>
+        <span class="title"><a href="/blog/cicd-for-sql-developers-schema-changes/">CI/CD for SQL Developers: Changing the Schema Without Locking the App Out</a></span>
+      </div>
+      <p class="summary">The ALTER TABLE at nine in the morning that does not end. The rename that breaks the app between deploys. The pattern that fixes both is called expand, migrate, contract, and it costs three deploys where one would do.</p>
+    </div>
+
+    <div class="entry">
+      <div>
+        <span class="date">2026-05-19</span>
+        <span class="title"><a href="/blog/paper-saver-cloud-maturity-and-lock-in/">Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP</a></span>
+      </div>
+      <p class="summary">A follow-up to the original Paper Saver post. The wrong-shaped question is 'now do Azure and GCP.' The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.</p>
+    </div>
+
+    <div class="entry">
+      <div>
+        <span class="date">2026-05-18</span>
+        <span class="title"><a href="/blog/cicd-for-sql-developers/">CI/CD for SQL Developers: What the Pipeline Actually Does</a></span>
+      </div>
+      <p class="summary">Branches and pull requests get the code reviewed. Continuous integration and deployment get the code shipped. Here is what that means when the code is SQL.</p>
+    </div>
+
+    <div class="entry">
+      <div>
+        <span class="date">2026-05-17</span>
+        <span class="title"><a href="/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/">CI/CD for SQL Developers: From One Commit to a Pipeline</a></span>
+      </div>
+      <p class="summary">The default SQL workflow is open a file, write it, run it, commit. It works until it does not. This is the article about how it breaks, what version control and pull requests look like once you outgrow the save-button model, and what a pipeline is supposed to do.</p>
+    </div>
+
+    <div class="entry">
+      <div>
         <span class="date">2026-05-17</span>
         <span class="title"><a href="/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/">Paper Saver: estimating XGBoost compute costs on AWS without SageMaker</a></span>
       </div>
       <p class="summary">A practitioner's working tool for budgeting XGBoost training and inference on AWS, anchored to public benchmarks. Includes the gap between marginal compute cost and realistic annual TCO.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-05-15</span>
-        <span class="title"><a href="/blog/python-compiled/">What I Got Wrong About Python Over Dinner</a></span>
-      </div>
-      <p class="summary">A confident dinner-table claim that Python isn't compiled, walked back. Bytecode, .pyc files, and what compiled vs. interpreted actually means.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-05-09</span>
-        <span class="title"><a href="/blog/medicare-advantage-market-exits-timing/">When Insurers Leave: The Hidden Calendar Behind Medicare Advantage Exits</a></span>
-        <label for="mn-w-medicare-advantage-market-exits-timing" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-w-medicare-advantage-market-exits-timing" class="margin-toggle"/><span class="marginnote">Exit announcements cluster in a 2-day window each July. That's not a coincidence.</span>
-      </div>
-      <p class="summary">Private Medicare coverage is contracting. The exits aren't random, they follow a regulatory clock most people never see. Two charts explain what's happening and when.
-</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-04-30</span>
-        <span class="title"><a href="/blog/jemalloc-healthcare/">jemalloc and the Healthcare Allocation Pattern</a></span>
-      </div>
-      <p class="summary">Healthcare data systems have allocation patterns that punish general-purpose allocators. jemalloc's arena isolation, thread-local caches, and size-class slabs map directly to HEDIS pipelines, claims adjudication, and variable-width ETL.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-04-29</span>
-        <span class="title"><a href="/blog/git-cherry-for-data-engineers/">Git Cherry and Cherry-Pick for Data Engineers</a></span>
-      </div>
-      <p class="summary">Treating git cherry and git cherry-pick as a pair: one tells you what's missing, the other moves it. With three healthcare-data-pipeline scenarios and the flags you actually need.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-04-28</span>
-        <span class="title"><a href="/blog/the-inversion-developer-infrastructure/">The Inversion: When Developer Infrastructure Breaks Under Its Own Momentum</a></span>
-      </div>
-      <p class="summary">Stack Overflow visits collapsed while GitHub commits surged, and the platform underneath both is degrading in real time. The productivity gains from AI coding agents are real. So is the load they put on infrastructure that wasn't designed for them.</p>
     </div>
     <!-- writing-list:end -->
 
