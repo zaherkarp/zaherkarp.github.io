@@ -6,10 +6,8 @@
 :root {
   /* Tufte palette, cream paper, charcoal ink, rust accent */
   --bg:       #fffff8;
-  --surface:  #f7f2e8;
   --rule:     #d0d0c8;
   --text:     #111;
-  --text-sec: #4a4238;
   --muted:    #6a6a6a;
   --accent:   #7a0000;
 
@@ -41,10 +39,8 @@
   :root {
     /* Tufte dark variant A, warm near-black, bright cream, saturated rust */
     --bg:       #201b14;
-    --surface:  #2b2418;
     --rule:     #3a3024;
     --text:     #f5ecd7;
-    --text-sec: #d4c7a9;
     --muted:    #c2b8a0;
     --accent:   #e05e3e;
 
@@ -140,7 +136,7 @@ nav {
 .blog-index { padding: var(--gap) 0 1rem; }
 .blog-index-intro {
   font-size: var(--size-body);
-  color: var(--text-sec);
+  color: var(--muted);
   max-width: 34em;
   margin-bottom: 1.5rem;
 }
@@ -163,7 +159,7 @@ nav {
   letter-spacing: 0.04em;
 }
 .writing-title { font-size: var(--size-body); color: var(--text); display: block; margin-bottom: 0.08rem; }
-.writing-desc  { font-size: var(--size-caption); color: var(--text-sec); }
+.writing-desc  { font-size: var(--size-caption); color: var(--muted); }
 
 /* BLOG POST */
 .blog-article { padding: 2.5rem 0 var(--gap); }
@@ -221,7 +217,7 @@ nav {
   font-size: calc(var(--size-caption) * 0.88);
   font-variant: small-caps;
   letter-spacing: 0.06em;
-  color: var(--text-sec);
+  color: var(--muted);
   border: 1px solid var(--rule);
   padding: 0.08rem 0.5rem;
   border-radius: 2px;
@@ -249,7 +245,7 @@ nav {
 }
 .blog-body h2 { font-size: 1.35rem; }
 .blog-body h3 { font-size: 1.3rem; }
-.blog-body h4 { font-size: 1rem; font-variant: small-caps; letter-spacing: 0.06em; color: var(--text-sec); }
+.blog-body h4 { font-size: 1rem; font-variant: small-caps; letter-spacing: 0.06em; color: var(--muted); }
 
 .blog-body a { color: var(--text); border-bottom: 1px solid var(--rule); }
 .blog-body a:hover { border-bottom-color: var(--text); }
@@ -262,11 +258,11 @@ nav {
   border-left: 2px solid var(--accent);
   padding-left: 1rem;
   margin: 1.25rem 0;
-  color: var(--text-sec);
+  color: var(--muted);
   font-style: italic;
   max-width: 32em;
 }
-.blog-body blockquote p { color: var(--text-sec); margin-bottom: 0.5rem; }
+.blog-body blockquote p { color: var(--muted); margin-bottom: 0.5rem; }
 
 .blog-body hr {
   border: none;
@@ -277,7 +273,7 @@ nav {
 .blog-body code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.88em;
-  background: var(--surface);
+  background: var(--sol-bg);
   padding: 0.08em 0.35em;
   border-radius: 2px;
   color: var(--text);
@@ -355,11 +351,11 @@ nav {
   margin: 1.25rem 0;
   width: auto;
 }
-.blog-body thead { border-top: 1px solid var(--text-sec); border-bottom: 1px solid var(--rule); }
+.blog-body thead { border-top: 1px solid var(--muted); border-bottom: 1px solid var(--rule); }
 .blog-body th {
   font-variant: small-caps;
   letter-spacing: 0.06em;
-  color: var(--text-sec);
+  color: var(--muted);
   font-weight: 400;
   text-align: left;
   padding: 0.25rem 0.75rem 0.25rem 0;
@@ -369,7 +365,7 @@ nav {
   color: var(--text);
   border-bottom: 1px solid var(--rule);
 }
-.blog-body tbody tr:last-child td { border-bottom: 1px solid var(--text-sec); }
+.blog-body tbody tr:last-child td { border-bottom: 1px solid var(--muted); }
 
 /* Italic reserved per CLAUDE.md; em/i in blog prose render as weighted emphasis. */
 .blog-body em, .blog-body i { font-style: normal; font-weight: 500; }
@@ -383,7 +379,7 @@ nav {
   padding-top: 1rem;
   border-top: 1px solid var(--rule);
   font-size: var(--size-caption);
-  color: var(--text-sec);
+  color: var(--muted);
 }
 .blog-body .footnotes ol { margin-left: 1.2rem; }
 
@@ -392,7 +388,7 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
 .footer-contact { margin-bottom: 1.5rem; }
 .footer-contact p {
   font-size: var(--size-caption);
-  color: var(--text-sec);
+  color: var(--muted);
   line-height: 1.85;
 }
 .footer-contact a { color: var(--muted); border-bottom: none; }
@@ -414,7 +410,7 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
   font-size: var(--size-caption);
   font-variant: small-caps;
   letter-spacing: 0.08em;
-  color: var(--text-sec);
+  color: var(--muted);
 }
 .footer-links a:hover { color: var(--muted); }
 .footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }
