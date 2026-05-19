@@ -56,4 +56,12 @@ jobs:
             exit 0
           fi
           git commit -m "build: regenerate resume.pdf + resume.html"
-          git push
+          # Rebase onto any commits other build_* workflows may have pushed
+          # in parallel for the same source push; retry a few times in case
+          # the race repeats. Pattern mirrors build_portfolio.yml.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            echo "push attempt $i failed, retrying..."
+            sleep 5
+          done
+          exit 1
