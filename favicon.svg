@@ -1,7 +1,5 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#3b82f6"/>
-  <!-- Z -->
-  <path d="M7 10h8l-8 12h8" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- K -->
-  <path d="M19 10v12M19 16l6-6M19 16l6 6" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="32" height="32" rx="6" fill="#7a0000"/>
+  <text x="16" y="24" font-family="Palatino, 'Palatino Linotype', Georgia, 'Book Antiqua', serif"
+        font-size="22" font-weight="normal" text-anchor="middle" fill="#fffff8" letter-spacing="-0.5">ZK</text>
 </svg>
