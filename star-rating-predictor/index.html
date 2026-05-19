@@ -841,11 +841,43 @@ footer a:hover { color: var(--accent); }
     updateImpact(rawExpected, hedis, cahps, med, readmit);
   }
 
+  // Persist control values in location.hash so the page is shareable
+  // and bookmarkable. replaceState (not pushState) keeps slider scrubs
+  // out of the back-button stack.
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function readHashIntoControls() {
+    if (!location.hash || location.hash.length < 2) return;
+    var p = new URLSearchParams(location.hash.slice(1));
+    var fields = [["hedis", hedisSlider], ["cahps", cahpsSlider], ["adh", medSlider], ["readm", readmitSlider]];
+    fields.forEach(function (kv) {
+      var v = parseFloat(p.get(kv[0]));
+      if (!isNaN(v)) {
+        kv[1].value = clamp(v, parseFloat(kv[1].min), parseFloat(kv[1].max));
+      }
+    });
+    var rw = p.get("reward");
+    if (rewardToggle && (rw === "1" || rw === "0")) rewardToggle.checked = (rw === "1");
+  }
+  function syncHash() {
+    var p = new URLSearchParams();
+    p.set("hedis", hedisSlider.value);
+    p.set("cahps", cahpsSlider.value);
+    p.set("adh", medSlider.value);
+    p.set("readm", readmitSlider.value);
+    p.set("reward", (rewardToggle && rewardToggle.checked) ? "1" : "0");
+    history.replaceState(null, "", "#" + p.toString());
+  }
+
   [hedisSlider, cahpsSlider, medSlider, readmitSlider].forEach(function (s) {
     s.addEventListener("input", predict);
+    s.addEventListener("input", syncHash);
   });
-  if (rewardToggle) rewardToggle.addEventListener("change", predict);
+  if (rewardToggle) {
+    rewardToggle.addEventListener("change", predict);
+    rewardToggle.addEventListener("change", syncHash);
+  }
 
+  readHashIntoControls();
   predict();
 })();
 </script>

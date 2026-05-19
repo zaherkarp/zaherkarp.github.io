@@ -123,6 +123,7 @@ function handleStateClick(abb) {
   }
   updateSelectionDisplay();
   drawMap();
+  syncHash();
 }
 
 // --------------------------------------------------------------- Sim
@@ -316,6 +317,51 @@ function hexA(hex, a) {
 
 // ------------------------------------------------------------- Wiring
 
+// Persist control values in location.hash so the page is shareable and
+// bookmarkable. replaceState (not pushState) keeps slider scrubs out of
+// the back-button stack. The initial Pyodide run uses whatever values
+// the hash seeded into the controls, so a shared link arrives with both
+// its parameters and its first-run output.
+function clampSlider(slider, v) {
+  return Math.min(parseFloat(slider.max), Math.max(parseFloat(slider.min), v));
+}
+
+function readHashIntoControls() {
+  if (!location.hash || location.hash.length < 2) return;
+  const p = new URLSearchParams(location.hash.slice(1));
+
+  const disease = p.get("disease");
+  if (disease === "measles" || disease === "flu") {
+    for (const el of ui.diseaseInputs()) el.checked = (el.value === disease);
+  }
+
+  const slots = [["n_runs", ui.nRuns], ["pop", ui.pop], ["tmax", ui.tmax]];
+  for (const [k, slider] of slots) {
+    const v = parseFloat(p.get(k));
+    if (!isNaN(v)) slider.value = clampSlider(slider, v);
+  }
+
+  const states = p.get("states");
+  if (states !== null) {
+    const parsed = states
+      .split(",")
+      .map(s => s.trim().toUpperCase())
+      .filter(s => s && state_by_abb[s])
+      .slice(0, MAX_SELECTION);
+    state.selected = parsed;
+  }
+}
+
+function syncHash() {
+  const p = new URLSearchParams();
+  p.set("disease", currentDisease());
+  p.set("n_runs", ui.nRuns.value);
+  p.set("pop", ui.pop.value);
+  p.set("tmax", ui.tmax.value);
+  p.set("states", state.selected.join(","));
+  history.replaceState(null, "", "#" + p.toString());
+}
+
 function wireControls() {
   const syncLabel = (slider, out, fmt) => {
     const update = () => { out.textContent = fmt(slider.value); };
@@ -326,11 +372,13 @@ function wireControls() {
   syncLabel(ui.pop, ui.popVal, v => Number(v).toLocaleString());
   syncLabel(ui.tmax, ui.tmaxVal, v => `${v} days`);
 
-  ui.diseaseInputs().forEach(el => el.addEventListener("change", () => drawMap()));
+  [ui.nRuns, ui.pop, ui.tmax].forEach(s => s.addEventListener("input", syncHash));
+  ui.diseaseInputs().forEach(el => el.addEventListener("change", () => { drawMap(); syncHash(); }));
   ui.runBtn.addEventListener("click", runSim);
 }
 
 async function main() {
+  readHashIntoControls();
   wireControls();
   updateSelectionDisplay();
   drawMap();
