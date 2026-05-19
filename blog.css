@@ -14,7 +14,7 @@
   --accent:   #7a0000;
 
   --size-caption: 0.78rem;
-  --size-body:    1rem;
+  --size-body:    1.15rem;
   --gap:          1.75rem;
 
   /* Solarized palette (Ethan Schoonover, MIT-licensed). Used by the
@@ -257,7 +257,7 @@ nav {
   max-width: 28em;
 }
 .blog-body h2 { font-size: 1.35rem; }
-.blog-body h3 { font-size: 1.15rem; }
+.blog-body h3 { font-size: 1.3rem; }
 .blog-body h4 { font-size: 1rem; font-variant: small-caps; letter-spacing: 0.06em; color: var(--text-sec); }
 
 .blog-body a { color: var(--text); border-bottom: 1px solid var(--rule); }
