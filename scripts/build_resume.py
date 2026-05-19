@@ -42,7 +42,8 @@ install_git_hooks()
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src" / "content" / "resume.md"
-OUT = ROOT / "resume.pdf"
+OUT_PDF = ROOT / "resume.pdf"
+OUT_HTML = ROOT / "resume.html"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 FONT_DIR = Path(__file__).resolve().parent / "fonts"
 
@@ -150,9 +151,14 @@ def render() -> None:
     remaining = transform_role_blocks(remaining)
     remaining = wrap_sections(remaining)
 
-    body = (
+    pdf_body = (
         f'<div class="hdr-name">{name}</div>\n'
         f'<div class="hdr-contact">{contact}</div>\n'
+        f'{remaining}'
+    )
+    web_body = (
+        f'<h1>{name}</h1>\n'
+        f'<p class="contact">{contact}</p>\n'
         f'{remaining}'
     )
 
@@ -160,17 +166,22 @@ def render() -> None:
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape([]),  # body is pre-rendered HTML
     )
-    template = env.get_template("resume/resume.html")
-    html = template.render(
+
+    pdf_html = env.get_template("resume/resume.html").render(
         name=name,
-        body=body,
+        body=pdf_body,
         font_dir=str(FONT_DIR),
     )
+    pdf_bytes = HTML(string=pdf_html, base_url=str(ROOT)).write_pdf()
+    OUT_PDF.write_bytes(pdf_bytes)
+    print(f"wrote {OUT_PDF.relative_to(ROOT)} ({len(pdf_bytes):,} bytes)")
 
-    # Render to PDF
-    pdf_bytes = HTML(string=html, base_url=str(ROOT)).write_pdf()
-    OUT.write_bytes(pdf_bytes)
-    print(f"wrote {OUT.relative_to(ROOT)} ({len(pdf_bytes):,} bytes)")
+    web_html = env.get_template("resume/resume-web.html").render(
+        name=name,
+        body=web_body,
+    )
+    OUT_HTML.write_text(web_html, encoding="utf-8")
+    print(f"wrote {OUT_HTML.relative_to(ROOT)} ({len(web_html):,} bytes)")
 
 
 if __name__ == "__main__":

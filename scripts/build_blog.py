@@ -386,6 +386,7 @@ def write_sitemap(current_posts: list[dict], archive_posts: list[dict]) -> None:
     urls: list[dict] = [
         {"loc": f"{SITE_URL}/", "lastmod": homepage_lastmod},
         {"loc": f"{SITE_URL}/blog/", "lastmod": newest_post_iso},
+        {"loc": f"{SITE_URL}/resume.html", "lastmod": git_iso_lastmod(ROOT / "resume.html")},
     ]
     for p in SUBPAGES:
         urls.append({"loc": f"{SITE_URL}{p}", "lastmod": _subpage_lastmod(p)})
