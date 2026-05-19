@@ -129,7 +129,7 @@ nav {
   position: absolute;
   bottom: 0; left: 0;
   width: 0; height: 1px;
-  background: var(--accent);
+  background: var(--muted);
   transition: width 0.2s ease;
 }
 .nav-links a:hover { color: var(--text); }
@@ -186,7 +186,7 @@ nav {
   display: inline-block;
   margin-bottom: 2rem;
 }
-.back-link:hover { color: var(--accent); }
+.back-link:hover { color: var(--muted); }
 
 .blog-header { margin-bottom: 2rem; }
 
@@ -260,8 +260,8 @@ nav {
 .blog-body h3 { font-size: 1.15rem; }
 .blog-body h4 { font-size: 1rem; font-variant: small-caps; letter-spacing: 0.06em; color: var(--text-sec); }
 
-.blog-body a { color: var(--accent); border-bottom: 1px solid var(--rule); }
-.blog-body a:hover { border-bottom-color: var(--accent); }
+.blog-body a { color: var(--text); border-bottom: 1px solid var(--rule); }
+.blog-body a:hover { border-bottom-color: var(--text); }
 
 .blog-body ul,
 .blog-body ol { margin: 0 0 1.1rem 1.4rem; max-width: 34em; }
@@ -404,8 +404,8 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
   color: var(--text-sec);
   line-height: 1.85;
 }
-.footer-contact a { color: var(--accent); border-bottom: none; }
-.footer-contact a:hover { border-bottom-color: var(--accent); }
+.footer-contact a { color: var(--muted); border-bottom: none; }
+.footer-contact a:hover { border-bottom-color: var(--muted); }
 .footer-contact .contact-label {
   font-variant: small-caps;
   letter-spacing: 0.06em;
@@ -425,7 +425,7 @@ footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 
   letter-spacing: 0.08em;
   color: var(--text-sec);
 }
-.footer-links a:hover { color: var(--accent); }
+.footer-links a:hover { color: var(--muted); }
 .footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }
 .footer-build {
   font-family: 'Courier New', Courier, monospace;
