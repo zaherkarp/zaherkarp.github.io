@@ -29,17 +29,10 @@ design lives at archive/redesign/zaherkarp-tufte-rationale.md.
   (c) The life-in-weeks grid at /life-in-weeks/ — inline vanilla JS
       only, no CDN. Renders the 4,680-week grid client-side so the
       "current week" stays accurate without a rebuild.
-  (d) The SkillSprout career trajectory explorer at /skillsprout/ —
-      loads the vendored @zaherkarp/skillsprout-client ES module
-      (/skillsprout/lib/skillsprout-client.js, ~900KB, bundled O*NET
-      28.3 data inside). Page shell is inline vanilla JS (~80 lines).
-      Vendored, not linked from a CDN, to keep the site self-hosted
-      and to avoid a third-party dependency surface. Do not swap to
-      a CDN without discussion.
-  (e) Blog posts load KaTeX / Mermaid / Prism (tokenizer only) from CDN,
+  (d) Blog posts load KaTeX / Mermaid / Prism (tokenizer only) from CDN,
       conditionally, when the post contains the relevant syntax. See
       Blog section below for the conditional logic.
-  (f) The stochastic epidemic simulator at /epidemic-simulation/ —
+  (e) The stochastic epidemic simulator at /epidemic-simulation/ —
       Python (sim.py) runs in the browser via Pyodide; charts render
       via Plotly.js; both load from CDN. External files split into
       app.js (UI + Pyodide glue), data.js (CDC coverage + state
@@ -76,10 +69,9 @@ design lives at archive/redesign/zaherkarp-tufte-rationale.md.
     - The lane does NOT apply to index.html, the blog pipeline
       templates, or any chrome-bearing page. Those stay pure HTML/CSS.
   Currently served under this exception: /epidemic-simulation/.
-  Other subpages (/star-rating-predictor/, /life-in-weeks/,
-  /skillsprout/) predate this lane and stay within their original
-  inline-vanilla-JS pattern. Do not widen the exception without
-  discussion.
+  Other subpages (/star-rating-predictor/, /life-in-weeks/) predate this
+  lane and stay within their original inline-vanilla-JS pattern. Do not
+  widen the exception without discussion.
 
 ---
 
@@ -108,7 +100,7 @@ authoritative on the tree. Things not obvious from the filesystem:
 - `/blog/`, `/blog/archive/`, `resume.pdf`, `sitemap.xml` are GENERATED.
   Sources at `src/content/`. Do not hand-edit the generated outputs.
 - Interactive subpages (`star-rating-predictor/`, `life-in-weeks/`,
-  `skillsprout/`, `epidemic-simulation/`) are served as-is, no build step.
+  `epidemic-simulation/`) are served as-is, no build step.
 - `archive/redesign/` is read-only reference from the 2026-04-25 rebuild.
 
 ---
@@ -425,7 +417,7 @@ historical voice); only chrome and the homepage are em-dash-clean.
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
   Client-Side Stars Rating Predictor (internal, BHA): no link, private
-  SkillSprout: /skillsprout/
+  SkillSprout: GitHub repo only (standalone; subpage removed 2026-05-19)
   Medicare Advantage Insight Engine: GitHub repo only
   ECDS Shock Index: GitHub repo only
   Epidemic simulator: /epidemic-simulation/ + /blog/two-states-one-pathogen/
@@ -435,11 +427,15 @@ historical voice); only chrome and the homepage are em-dash-clean.
     oriented demo focused on the 4.0★ QBP cliff. Inline vanilla JS.
   /life-in-weeks/ — 90-year weekly life grid (Tim Urban-style),
     inline vanilla JS. EVENTS array hand-maintained in the page.
-  /skillsprout/ — career trajectory explorer. Vendors the
-    @zaherkarp/skillsprout-client ES module (~900KB, includes O*NET 28.3
-    data inline). Page shell is vanilla JS in index.html.
   /epidemic-simulation/ — stochastic SEIRV epidemic simulator, companion
     to /blog/two-states-one-pathogen/. Pyodide + Plotly via CDN.
+
+**SkillSprout subpage removal (2026-05-19):** /skillsprout/ deleted from
+this repo; the project survives at github.com/zaherkarp/skillsprout.
+Homepage card 03 (Healthcare Workforce Transition Platform) keeps the
+slope-graph figure and links out to the standalone repo. The 900KB
+vendored client was the loudest contradiction between the site's
+no-bundler discipline and what it shipped; removing it eliminated that.
 
 **Stars tools distinction — two tools, do not conflate:**
   1. Stars Cliff Simulator — public, at /star-rating-predictor/.
@@ -483,8 +479,8 @@ Experiments section:
   Rendered at the bottom of blog/index.html. Hard-coded list in
   build_blog.py (EXPERIMENTS constant) pointing to small interactive
   pages that don't fit the long-form format. Currently: /life-in-weeks/.
-  /star-rating-predictor/, /skillsprout/, and /epidemic-simulation/ are
-  deliberately NOT listed here — they have first-class project cards or
+  /star-rating-predictor/ and /epidemic-simulation/ are deliberately NOT
+  listed here — they have first-class project cards or
   writing-section entries on the homepage.
 
 Shared prose styles live in /blog.css (referenced by all generated pages).

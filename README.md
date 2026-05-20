@@ -22,8 +22,6 @@ robots.txt, .nojekyll, CNAME GitHub Pages config
 star-rating-predictor/      Interactive Medicare Star Rating predictor
                             (inline vanilla JS)
 life-in-weeks/              90-year life-in-weeks grid (inline vanilla JS)
-skillsprout/                Career trajectory explorer
-  lib/skillsprout-client.js   Vendored O*NET 28.3 engine (~900KB)
 
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
@@ -35,7 +33,7 @@ scripts/
   build_resume.py           Resume build pipeline (WeasyPrint)
   build_portfolio.py        Activity grid + writing list + citation counts
   requirements.txt
-  fonts/                    EB Garamond variable TTFs (OFL)
+  fonts/et-book/            ETBook TTFs (MIT, roman + italic)
   templates/
     blog/                   Jinja templates (base, list, post)
     resume/                 Resume Jinja template

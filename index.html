@@ -90,12 +90,30 @@
 }
 
 /* ============================================================
-   2. COLOR PALETTE
-   Tufte's softened off-white and off-black.
-   Pure white (#fff) on screens produces harsher contrast than
-   paper, and pure black text over it reads as harder still.
-   #fffff8 + #111 is Tufte's canonical compromise. The small
-   warmth shift is what makes the page feel book-like.
+   2. DESIGN TOKEN CONTRACT
+   Five color tokens, declared once per mode. The whole site's
+   palette flows from these, locked per CLAUDE.md §Design
+   decisions:
+
+     paper   page background, warm off-white per Tufte
+     ink     body text, near-black not pure black
+     muted   metadata, sidenote bodies, dates, stack lines
+     rule    hairline separators only, never type
+     accent  chart callouts only, 1-2 per figure, never
+             decorative; pre-push grep cap of 20 in
+             scripts/hooks/pre-push prevents drift
+
+   Three mode blocks below (default light, prefers-color-scheme:
+   dark, print) override the same five tokens. SVGs hardcode
+   the light-mode hex values as presentation attributes; the
+   attribute-selector adapter further down maps them back to
+   var() so charts respond to mode without per-element CSS.
+
+   Tufte rationale for paper / ink: pure white (#fff) on
+   screens reads harsher than paper, and pure black text over
+   it reads harder still. #fffff8 + #111 is Tufte's canonical
+   compromise; the small warmth shift is what makes the page
+   feel book-like.
    ============================================================ */
 :root {
   --paper: #fffff8;   /* background, warm off-white                 */
@@ -2065,7 +2083,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         </figure>
 
         <p class="links">
-          <a href="/skillsprout/" data-goatcounter-click="project-skillsprout-demo" data-goatcounter-title="SkillSprout demo" aria-label="Live demo: SkillSprout">Live demo</a>
           <a href="https://github.com/zaherkarp/skillsprout" data-goatcounter-click="project-skillsprout-github" data-goatcounter-title="SkillSprout GitHub" aria-label="GitHub repository: SkillSprout">GitHub</a>
         </p>
         <p class="stack">FastAPI &middot; PostgreSQL &middot; scikit-learn &middot; logistic regression &middot; O*NET</p>
