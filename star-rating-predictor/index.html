@@ -424,13 +424,10 @@ footer a:hover { color: var(--accent); }
 
   <main id="main">
   <div class="intro">
-    <p class="sub">Interactive demo · the 4.0★ cliff, explored</p>
-    <h1>The Stars Cliff Simulator</h1>
+    <p class="sub">Interactive demo · Medicare Advantage Star Ratings</p>
+    <h1>What does it take to clear the 4.0★ cliff?</h1>
     <p>
-      CMS assigns each Medicare Advantage contract a Star Rating from 1 to 5, derived from 42 measures across 9 domains. One threshold in that whole system matters more than any other. At <strong>4.0★</strong>, a plan qualifies for <strong>Quality Bonus Payments</strong>, a 5% increase to its CMS benchmark. Below 4.0★, nothing. For a 200,000-member plan, that single tenth-of-a-star cliff is worth $50–80 million a year.
-    </p>
-    <p>
-      This simulator is built around that one number. An ordinal logistic regression, calibrated to CMS 2025 weights and the MA-PD distribution, collapses 42 measures into four high-leverage inputs. As you move the sliders, the readouts focus on the question an analyst actually asks: <em>what is the probability my plan clears the 4.0★ QBP cliff, and how far are we from it right now?</em> For the full derivation, see <a href="/blog/star-rating-predictor-methodology/">the methodology post</a>.
+      Move four sliders covering the highest-weight CMS Star Ratings measures, and an ordinal logistic regression estimates a Medicare Advantage contract's probability of clearing the <strong>4.0★ Quality Bonus Payment</strong> threshold. For a 200,000-member plan, that single tenth-of-a-star cliff is worth $50–80 million a year, and most contracts that miss it miss by less than 0.1★.
     </p>
   </div>
 
