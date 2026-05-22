@@ -16,6 +16,7 @@ name: Build portfolio
 
 on:
   push:
+    branches: [main, master]
     paths:
       - 'index.html'
       - 'scripts/build_portfolio.py'
