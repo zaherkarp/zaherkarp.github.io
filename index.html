@@ -486,6 +486,15 @@ figure.timeline figcaption {
   margin-bottom: 0.8rem;
 }
 
+/* Career arc figure: cap below fullwidth so it doesn't dominate
+   the fold. Targets only the career arc (via :has on the
+   horizontal SVG) so the dot plot keeps its true fullwidth
+   treatment, which it needs for the year axis to breathe. */
+figure.timeline:has(svg.tl-horizontal) {
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
 /* Career arc: horizontal/vertical SVG swap at 760px.
    Horizontal version is the desktop default; vertical version
    is a native redesign for narrow viewports (NOT a rotated copy
