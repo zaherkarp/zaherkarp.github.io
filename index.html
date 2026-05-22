@@ -650,6 +650,144 @@ table.numbers td:last-child {
 }
 
 /* ============================================================
+   NEW: Section subhead
+   Optional italic muted label preceding the featured projects.
+   Provides a textual "Featured" cue without committing to a full
+   subheading. If the visual contrast between featured and index
+   is sufficient on its own, this rule can be removed without
+   affecting layout.
+   ============================================================ */
+.section-subhead {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 1rem 0 1.5rem 0;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   NEW: Project index (small-multiples grid)
+
+   Architectural note: this element sits OUTSIDE the
+   <section id="projects"> in the DOM, as a sibling. That mirrors
+   the existing fullwidth pattern (career arc, dot plot) and lets
+   the grid use the page's 90% max-width without overriding the
+   60% width rule on sections.
+
+   Grid behaviour:
+     - auto-fit with minmax(240px, 1fr) gives 2 to 4 columns
+       depending on viewport
+     - 1.8rem row gap, 2.5rem column gap matches the visual rhythm
+       of the body column's prose spacing
+     - Single column below 760px (matches the page's mobile
+       breakpoint everywhere else)
+   ============================================================ */
+.projects-index {
+  max-width: 90%;
+  margin: 2.5rem 0 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.8rem 2.5rem;
+}
+
+/* Index label spans full grid width so it sits as a header above
+   the tile rows rather than inside a tile cell. */
+.projects-index .index-label {
+  grid-column: 1 / -1;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 0 0 0.3rem 0;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 760px) {
+  .projects-index {
+    max-width: 100%;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   NEW: Individual project tile
+
+   Layout pattern mirrors the .project hanging-number pattern but
+   at smaller scale, using position:absolute (not float:left)
+   because the tile is its own grid cell and doesn't need to share
+   horizontal space with siblings.
+
+   padding-left 2.6rem leaves room for the hanging number
+   (~1.5rem wide oldstyle-numeral) plus a small visual gutter.
+   ============================================================ */
+.project-tile {
+  position: relative;
+  padding-left: 2.6rem;
+  padding-top: 0.1rem;
+}
+
+.project-tile .num {
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  font-family: inherit;
+  font-size: 1.5rem;
+  color: var(--muted);
+  font-variant-numeric: oldstyle-nums;
+  line-height: 1;
+}
+
+.project-tile h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.25;
+  font-weight: normal;
+}
+
+.project-tile .tile-summary {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0 0 0.5rem 0;
+  color: var(--ink);
+}
+
+/* ============================================================
+   NEW: Tile links row
+
+   Optional paragraph between .tile-summary and .stack carrying
+   one or more outbound links (repo, post, demo, paper, docs).
+   Mirrors the .links pattern used by featured projects, just at
+   tile scale.
+
+   Behaviour:
+     - Omit the entire paragraph when a tile has zero links.
+       The stack line then flows directly under the summary
+       with the summary's existing margin-bottom of 0.5rem.
+     - Include one or more <a> children when the tile has links.
+       Anchors are separated by whitespace plus the margin-right
+       rule below, no explicit delimiter character, which matches
+       the featured .links convention.
+     - Anchors inherit the page's standard link styling: underline,
+       text-decoration-color: var(--rule). No special tile-link
+       treatment because in tile context the links are
+       intentionally lower-weight than the title.
+   ============================================================ */
+.project-tile .tile-links {
+  font-size: 0.9rem;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.3;
+}
+.project-tile .tile-links a {
+  margin-right: 0.8rem;
+}
+
+.project-tile .stack {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ============================================================
    CLIFF FIGURE
    The Stars Cliff density curve in Project 02. Sits inline
    inside the project body, so it's smaller than the full-width
@@ -1723,6 +1861,9 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <p>
         HEDIS hybrid measures add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
       </p>
+      <p>
+        Compliance-driven architecture is part of the role's design discipline. A recent example: a client-side Stars rating predictor where the cut-point projection runs entirely in the analyst's browser, so member-level data never transits off the machine. The browser-side compute sidesteps the data-transit review a server-side version would trigger; a side benefit has been a faster iteration loop than a comparable server-side tool would offer.
+      </p>
     </details>
 
     <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Selenium &middot; Python</p>
@@ -1814,23 +1955,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="projects">
     <h2>Projects</h2>
 
-    <div class="project">
-      <span class="num">01</span>
-      <div class="body">
-        <h3>Client-Side Stars Rating Predictor</h3>
-        <p>
-          A cut-point dashboard built at Baltimore Health Analytics for internal Stars forecasting across our client contracts. The design constraint, no member-level data leaves the analyst's machine, was a compliance requirement, not an aesthetic one.<label for="sn-client-side" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-client-side" class="margin-toggle"/><span class="sidenote">Running the model client-side in the browser keeps PHI on the analyst's machine and sidesteps an entire class of data-transit and data-residency concerns that would otherwise need a server-side review.</span> It runs ordinal logistic regression on live measure feeds entirely in the browser, projects cut-point crossings at the contract level, and surfaces which measures are closest to their next tier for remediation planning. Source is private.
-        </p>
-        <p class="stack">Ordinal logistic regression &middot; cut-point projection &middot; client-side &middot; internal tool</p>
-      </div>
-    </div>
+    <p class="section-subhead">Featured</p>
 
     <div class="project">
       <span class="num">02</span>
       <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
-          A public, teaching-oriented companion to the internal predictor. Single-page interactive demo built around one number, the 4.0 star QBP cliff that separates Medicare Advantage plans that qualify for Quality Bonus Payments from the 3.5 to 3.99 star "dead zone" that does not.<label for="mn-qbp" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-qbp" class="margin-toggle"/><span class="marginnote">For a mid-size MA contract, clearing 4.0 is worth roughly $50M relative to a 3.5 star rating. A tenth of a star literally changes the plan's financial structure.</span> An ordinal logistic regression calibrated to CMS 2025 weights runs in the browser; four sliders collapse the 42-measure surface down to its highest-leverage inputs, and a cut-point visualization exposes the mechanism that makes a tenth of a star worth $50 million. No data leaves the user's machine.
+          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP threshold, a tenth of a star is worth $50 million. An ordinal logistic regression calibrated to CMS 2025 weights runs in the browser. No data leaves the user's machine.
         </p>
 
         <!-- ==========================================================
@@ -1962,7 +2094,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>Healthcare Workforce Transition Platform</h3>
         <p>
-          The original question was about healthcare workforce shortages, which adjacent roles can clinical and administrative staff reskill into. O*NET occupation and skill data provided the structure; logistic regression calibrated the transition probability estimates. Produces Ready Now, Trainable, and Long-Term Reskill recommendations with gap analysis by skill domain.
+          Estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data provides the feature structure; logistic regression produces Ready Now, Trainable, and Long-Term Reskill recommendations with skill-domain gap analysis.
         </p>
 
         <!-- ==========================================================
@@ -2084,61 +2216,81 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
         <p class="links">
           <a href="https://github.com/zaherkarp/skillsprout" data-goatcounter-click="project-skillsprout-github" data-goatcounter-title="SkillSprout GitHub" aria-label="GitHub repository: SkillSprout">GitHub</a>
+          <a href="/blog/onet-reskilling-probabilities/" data-goatcounter-click="project-skillsprout-methodology" data-goatcounter-title="O*NET reskilling methodology post" aria-label="Methodology post: O*NET reskilling probabilities">Methodology post</a>
         </p>
         <p class="stack">FastAPI &middot; PostgreSQL &middot; scikit-learn &middot; logistic regression &middot; O*NET</p>
       </div>
     </div>
 
-    <div class="project">
-      <span class="num">04</span>
-      <div class="body">
-        <h3>Medicare Advantage Insight Engine</h3>
-        <p>
-          A local news monitor that fetches public Medicare Advantage sources, scores items for analytic relevance using keyword and domain heuristics, and posts structured alerts to a Teams-compatible webhook. Distinguishing a CMS rulemaking notice from a press release that mentions Medicare Advantage requires knowing what questions a Stars analyst is actually trying to answer.
-        </p>
-        <p class="links">
-          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub repository: Medicare Advantage Insight Engine">GitHub</a>
-        </p>
-        <p class="stack">Python &middot; automation &middot; webhook</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <span class="num">05</span>
-      <div class="body">
-        <h3>ECDS Shock Index</h3>
-        <p>
-          ECDS adoption introduces a distributional shift into the Stars ecosystem that most health plans are not yet modeling.<label for="mn-ecds" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-ecds" class="margin-toggle"/><span class="marginnote">ECDS, Electronic Clinical Data Systems, is the HEDIS reporting method that allows structured clinical data to supplement or replace claims-based measure reporting.</span> This repository implements the shock index methodology, quantifying the expected change in measure rate distributions when ECDS replaces legacy ED visit coding, and estimating the downstream effect on Stars cutpoint crossings at the plan level.
-        </p>
-        <p class="links">
-          <a href="https://github.com/zaherkarp/ecds-shock-index" data-goatcounter-click="project-ecds-shock-github" data-goatcounter-title="ECDS Shock Index GitHub" aria-label="GitHub repository: ECDS Shock Index">GitHub</a>
-        </p>
-        <p class="stack">Python &middot; Medicare Advantage &middot; Stars methodology</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <span class="num">06</span>
-      <div class="body">
-        <h3>Care Delivery Workflow Changes</h3>
-        <p>
-          Analyzed organization-wide care delivery changes using interrupted time series analysis on clinic panel data. The methodological question was whether observed changes in care patterns were attributable to redesign initiatives or to secular trends, which requires a study design that can separate the two. The design combined segmentation with regression across multiple clinic sites to isolate the redesign effect from background drift.
-        </p>
-        <p class="stack">Stata &middot; SAS &middot; interrupted time series &middot; outpatient analytics</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <span class="num">07</span>
-      <div class="body">
-        <h3>Practice Automation Analytics, healthfinch Charlie</h3>
-        <p>
-          I built the analytics for a case study of healthfinch's Charlie deployment across multiple community health centers at OCHIN. The case study asked two questions: how did clinician workflows change after Charlie deployment, and what was the ROI for the health centers that adopted it? Linear regression on the workflow data produced quantified outcome measures that the commercial team used in renewal conversations and new-customer pitches.
-        </p>
-        <p class="stack">linear regression &middot; Sisense &middot; Epic Clarity &middot; SQL</p>
-      </div>
-    </div>
   </section>
+
+  <!-- ==========================================================
+       PROJECTS INDEX (small-multiples grid)
+
+       Sibling of <section id="projects">, NOT a child, so the
+       grid can use the page's 90% max-width without overriding
+       the section's 60% width rule. Mirrors the fullwidth
+       pattern used by the career arc and dot plot.
+
+       Tiles are numbered 04, 05, 06, 07 in numeric order. The
+       former Project 01 (an internal Stars cut-point dashboard)
+       is not reconstructed here; its content moved to the BHA
+       fold in the Experience section as a compliance-driven
+       architecture example.
+       ========================================================== -->
+  <div class="projects-index">
+    <p class="index-label">More projects</p>
+
+    <div class="project-tile">
+      <span class="num">04</span>
+      <h3>Medicare Advantage Insight Engine</h3>
+      <p class="tile-summary">
+        Scores public Medicare Advantage news for analytic relevance using keyword and domain heuristics, then posts structured alerts to a Teams webhook.
+      </p>
+      <p class="tile-links">
+        <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub repository: Medicare Advantage Insight Engine">GitHub</a>
+        <a href="/blog/medicare-advantage-insight-engine/" data-goatcounter-click="project-medicare-engine-post" data-goatcounter-title="Medicare Insight Engine post" aria-label="Blog post: Medicare Advantage Insight Engine">post</a>
+      </p>
+      <p class="stack">Python &middot; automation &middot; webhook</p>
+    </div>
+
+    <div class="project-tile">
+      <span class="num">05</span>
+      <h3>ECDS Shock Index</h3>
+      <p class="tile-summary">
+        Models how HEDIS measure rates shift when ECDS replaces claims-based ED coding, and estimates the Stars cutpoint effect at the plan level.
+      </p>
+      <p class="tile-links">
+        <a href="https://github.com/zaherkarp/ecds-shock-index" data-goatcounter-click="project-ecds-shock-github" data-goatcounter-title="ECDS Shock Index GitHub" aria-label="GitHub repository: ECDS Shock Index">GitHub</a>
+        <a href="/blog/ecds-shock-index/" data-goatcounter-click="project-ecds-shock-post" data-goatcounter-title="ECDS Shock Index post" aria-label="Blog post: ECDS Shock Index">post</a>
+      </p>
+      <p class="stack">Python &middot; Medicare Advantage &middot; Stars methodology</p>
+    </div>
+
+    <div class="project-tile">
+      <span class="num">06</span>
+      <h3>Care Delivery Workflow Changes</h3>
+      <p class="tile-summary">
+        Interrupted time series with multi-site segmented regression on clinic panel data, separating redesign effect from background drift.
+      </p>
+      <p class="tile-links">
+        <a href="/blog/interrupted-time-series-care-redesign/" data-goatcounter-click="project-its-care-redesign-post" data-goatcounter-title="ITS care redesign post" aria-label="Blog post: Interrupted time series care redesign">post</a>
+      </p>
+      <p class="stack">Stata &middot; SAS &middot; interrupted time series</p>
+    </div>
+
+    <div class="project-tile">
+      <span class="num">07</span>
+      <h3>Practice Automation Analytics, healthfinch Charlie</h3>
+      <p class="tile-summary">
+        Multi-clinic case study of healthfinch Charlie at OCHIN. Linear regression on workflow data quantified time saved per refill and refills per FTE-hour.
+      </p>
+      <p class="tile-links">
+        <a href="/blog/practice-automation-workflow-roi/" data-goatcounter-click="project-charlie-roi-post" data-goatcounter-title="Practice automation workflow ROI post" aria-label="Blog post: Practice automation workflow ROI">post</a>
+      </p>
+      <p class="stack">linear regression &middot; Sisense &middot; Epic Clarity &middot; SQL</p>
+    </div>
+  </div>
 
   <hr>
 
