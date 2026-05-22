@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp</title>
+<meta name="description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<link rel="canonical" href="https://zaherkarp.com/blog/practice-automation-workflow-roi/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp">
+<meta property="og:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<meta property="og:url" content="https://zaherkarp.com/blog/practice-automation-workflow-roi/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp">
+<meta name="twitter:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ROI Modeling from Clinical Workflow Data: A Case Study", "description": "ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.", "url": "https://zaherkarp.com/blog/practice-automation-workflow-roi/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/practice-automation-workflow-roi/"}, "datePublished": "2026-04-26T00:00:00Z", "dateModified": "2026-04-26T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2951, "timeRequired": "PT12M", "inLanguage": "en-US", "keywords": "healthfinch, automation, linear-regression, epic-clarity, case-study"}
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+        integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+        integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+        onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">ROI Modeling from Clinical Workflow Data: A Case Study</h1>
+    <div class="blog-meta">
+      <time datetime="2026-04-26" class="blog-date">April 26, 2026</time>
+      
+      <span class="blog-readtime">12 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>healthfinch</li><li>automation</li><li>linear-regression</li><li>epic-clarity</li><li>case-study</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <h2>The setup</h2>
+<p>OCHIN runs the EHR for a network of federally qualified health centers across the western U.S. healthfinch Charlie is a prescription-refill automation tool that, at the time, sat inside Epic and processed inbound refill requests through a configurable protocol: route the auto-approvable ones through automatically, escalate the rest to a clinician with the protocol-relevant context attached. When OCHIN deployed Charlie across a subset of its member health centers, the question that came back to the analytics team was the question that comes back about every clinical-workflow tool: did it actually save clinician time, and if so, how much.</p>
+<p>The temptation, when the question is &quot;did this save time,&quot; is to ask the clinicians. Surveys are cheap and produce numbers fast. The numbers from surveys tend to be either wildly optimistic (clinicians want the tool to work, want to support their colleagues' adoption decisions, want to be helpful in answering) or wildly pessimistic (clinicians had a bad week, the tool failed last Tuesday, the survey landed at the wrong time). Either way, the variance is high and the signal is contaminated with social and emotional factors that the question was not asking about.</p>
+<p>The workflow data Epic Clarity captures, by contrast, is unconcerned with how anyone feels about Charlie. It records when a refill request arrived, when it was processed, when it was forwarded to a clinician for review, when it was closed. The timestamps are not perfect, but they are independent of the clinician's after-the-fact recollection of how much time they spent on the encounter. They tell a quieter, more reliable story.</p>
+<p>This post is the case-study version of how we used that workflow data to estimate Charlie's effect on clinician time per refill, with linear regression as the analytic spine, and with a deliberate accounting of where the regression's clean estimate diverged from the metric the commercial team needed for renewal conversations.</p>
+<hr />
+<h2>What the workflow data captured</h2>
+<p>The Clarity tables we worked from had several timestamps per refill request:</p>
+<ul>
+<li>The arrival timestamp, when the request landed in the in-basket.</li>
+<li>The processing-start timestamp, when somebody (a tech, a nurse, a physician, or Charlie itself) first touched it.</li>
+<li>The processing-end timestamp, when the request was either auto-approved by Charlie, escalated by Charlie to a clinician, manually approved by a clinician, or denied.</li>
+<li>A downstream documentation completion timestamp, when the patient record was updated to reflect the action.</li>
+<li>A series of user-action timestamps in between, indicating which user touched the request at each stage.</li>
+</ul>
+<p>Per-refill processing time, the quantity we cared about, is the processing-end minus the processing-start. The other timestamps mattered for separating reliable signal from noise. Documentation completion frequently lagged the processing event by hours or days, sometimes spanning shifts; the gap between processing-end and documentation-end was not &quot;clinician time on the refill&quot; but &quot;the operational lag between completing the work and updating the chart.&quot; Confusing the two would have overstated Charlie's effect by counting documentation lag as clinician time.</p>
+<p>The unreliable parts of the data were also identifiable, and that identification was itself part of the analysis.</p>
+<p>In-basket arrival timestamps were reliable, generally. The exception was a small fraction of requests that arrived through a fax-to-EHR pipeline that batched overnight; for those requests, the arrival timestamp reflected the batch-processing time, not the real-world receipt time. We filtered those out by source channel. They were too small a fraction of the overall volume to materially affect the estimates, and including them would have introduced a known bias.</p>
+<p>Processing-start timestamps were less reliable in clinics where requests were sometimes touched briefly (a glance, a re-routing, a &quot;leave for later&quot;) and then re-touched substantively later. The Clarity system recorded the first touch, not the substantive one. We addressed this by collapsing same-user same-day touches into a single processing event, defined by the start of the first touch and the end of the last touch. This conflated brief touches with sustained ones, which was the lesser of two evils given the alternatives.</p>
+<p>User-action timestamps were reliable when populated and were sometimes not populated. The not-populated case appeared in older Clarity records and was a known data-completeness issue. We worked from the post-2014 records exclusively, where the population rate was above 95%.</p>
+<p>The reliable/noisy distinction is the part of the work that does not appear in the published case study but is the most important part of the analyst's job on engagements like this. The regression's quality depends on the inputs more than on the regression's specification. If the inputs are wrong, fitting a more elaborate model on top of them does not recover the missing signal.</p>
+<hr />
+<h2>The regression</h2>
+<p>The model is a linear regression on per-request processing time. The specification:</p>
+<p>\[\text{time}_i = \beta_0 + \beta_1 \cdot \text{Charlie}_i + \beta_2 \cdot \text{complexity}_i + \gamma_{c(i)} + \delta_{m(i)} + \varepsilon_i\]</p>
+<p>where \(\text{time}_i\) is the per-refill processing time for request \(i\) in minutes, \(\text{Charlie}_i\) is an indicator for whether Charlie was processing requests at this clinic at the time of the request, \(\text{complexity}_i\) is the request-complexity covariate (more on which below), \(\gamma_{c(i)}\) is a clinic fixed effect, \(\delta_{m(i)}\) is a month fixed effect for seasonality, and \(\varepsilon_i\) is the error term.</p>
+<p>\(\beta_1\) is the quantity of interest: the average change in per-request processing time attributable to Charlie's presence, controlling for complexity and for time-invariant clinic differences.</p>
+<p>A few things to note about the specification.</p>
+<p>The dependent variable is the natural log of processing time in some published variants of this analysis, to handle the right-skewed distribution of processing times and to interpret the coefficient as a proportional change. We tested both specifications. The substantive conclusions did not differ; the log specification produced tidier residuals. The published version used the log specification for that reason; the natural-units version stayed in the appendix because the renewal-conversation audience preferred minutes to log-minutes.</p>
+<p>Standard errors were clustered at the clinic level, for the same reasons described in the ITS post: residuals within a clinic are correlated, and treating them as independent invents precision the data does not support.</p>
+<p>Clinic fixed effects rather than random effects, on the principle that we had no reason to assume the clinic-level deviations were uncorrelated with the regressors. Random effects would have been more efficient if the assumption held; fixed effects are safer when it does not, and the cost is small at the sample sizes we were working with.</p>
+<p>The seasonal term was per-month rather than a continuous time trend, because the seasonality in refill volume was non-monotonic (a spike in January when prescriptions renewed for the new plan year, smaller spikes around school start, an August dip), and a smooth trend would have absorbed the pre-Charlie post-Charlie variation in ways that would have biased the estimate.</p>
+<hr />
+<h2>The complexity covariate is doing the load-bearing work</h2>
+<p>The complexity covariate is the part of the model that, if mis-specified, breaks the whole estimate. Charlie auto-approves the easy refills and escalates the hard ones. If complexity is not in the model, the comparison between Charlie-on and Charlie-off conflates &quot;Charlie made the easy ones faster&quot; with &quot;Charlie made everything faster.&quot; The two are different. The first is real; the second is not.</p>
+<p>The complexity score was constructed from request features that did not depend on Charlie's processing:</p>
+<ul>
+<li>The number of medications on the refill request.</li>
+<li>The presence of controlled substances.</li>
+<li>The presence of medications requiring lab monitoring or prior authorization.</li>
+<li>The patient's chronic-disease count (from problem-list data).</li>
+<li>The interval since the most recent in-person visit.</li>
+<li>The clinical role of the originally-routed clinician.</li>
+</ul>
+<p>These features were combined into a complexity score using a separate logistic regression trained on Clarity data from before Charlie's deployment, with &quot;request escalated to physician review&quot; as the dependent variable. The fitted score is the model's estimate of the probability of escalation under pre-Charlie conditions, used as a proxy for clinical complexity.</p>
+<p>The construction has the property that the complexity score is determined by the request, not by the system that processed it. A high-complexity request is high-complexity whether Charlie or a clinician handled it. This is the property the regression needs to make the comparison meaningful.</p>
+<p>The construction also has the property of being entirely defensible. Every feature in the complexity model is a feature the clinical team agrees corresponds to complexity. The weights are calibrated against pre-Charlie escalation patterns, which means the score reflects the clinic's own historical sense of which requests are hard. This was important because the analysis had to survive scrutiny from clinical leadership; a complexity score that the clinical team did not recognize as complexity would have been rejected, regardless of its statistical properties.</p>
+<p>If I were running the analysis again with current tools, I would build the complexity model the same way. The temptation would be to use a gradient-boosted ensemble for slightly better calibration, and that would be a mistake for the same reason it was a mistake in the Stars predictor: when clinical leadership needs to interpret the model's behavior on a contested request, the linear-logistic structure carries the conversation and the boosted ensemble does not.</p>
+<hr />
+<h2>Why linear regression and not survival analysis</h2>
+<p>A reasonable methodological reader will ask why we did not use survival analysis. The dependent variable is time-to-event (processing-end minus processing-start), which is exactly the variable survival models are designed for.</p>
+<p>The answer is that the events were not censored. Every request in the analytic sample had a completed processing event within the observation window. Survival analysis is the right tool when some observations have not yet reached the event by the end of follow-up, and you have to model the right-tail of the time distribution under censoring. When all events are observed, survival analysis reduces to a regression on observed times, with extra machinery that does not buy precision.</p>
+<p>We could have used a survival model for theoretical tidiness. We did not, because the model would have had no censoring to handle, and the linear-regression-on-log-time specification is more compact, more interpretable, and produces estimates that converged faster against the cluster-robust variance estimator.</p>
+<p>If the dataset had included open requests that had not yet been processed by the end of the observation window, the answer would have been different. We chose the window so that this case did not arise: the analytic window closed at a date sufficiently before our analysis date that all requests in the window had been processed.</p>
+<p>This is a small methodological choice that has more general implications. The right tool for a problem is often the one the data structure actually requires, not the one a textbook chapter title suggests. A heavily right-censored time-to-event dataset is a survival problem. A fully-observed processing-time dataset is a regression problem. They are not interchangeable, and choosing between them is an act of judgement about the data, not about the canonical method.</p>
+<hr />
+<h2>The two metrics</h2>
+<p>The model produced an estimate of \(\beta_1\) in log-minutes, which translates to an average proportional reduction in per-request processing time. The point estimate was sizable, in the range expected from the operational team's prior intuition about the tool's effect, with a confidence interval that excluded zero by a substantial margin.</p>
+<p>That was the methodologically clean metric. The renewal-conversation metric was different.</p>
+<p>For renewal conversations, the commercial team needed time saved per refill, in minutes, multiplied by refill volume per FTE-hour, to produce a dollar value of clinician time recovered. The product of those numbers is what the health center's CFO wanted to see. The clean methodological estimate was an input to that calculation, but it was not the calculation.</p>
+<p>There were two places the gap opened up between the clean metric and the renewal metric.</p>
+<p>The first was the assumption about what clinician time was worth. The clinical team's hourly cost is not a single number; it is a function of role mix (MD, NP, RN, MA), of regional wage levels, of benefit overhead, of the way the health center accounted for clinician time. The renewal metric had to pick an hourly cost figure, multiply through, and produce a single dollar number. Any single number embedded an assumption that varied across the clinics we were reporting to. The methodologically clean way to handle this is to publish the time savings and let each health center apply its own cost figure. The renewal-conversation way to handle this is to pick a number that is defensible across the average and own the assumption.</p>
+<p>The second was the question of fixed versus variable clinical capacity. If Charlie saves twelve minutes per clinician per day, and the clinician's day is not made shorter as a result, is that twelve minutes recovered? The methodological answer is yes, with the caveat that the recovered time is redirected to other work and the value of that other work is the operational variable that determines the dollar return. The renewal-conversation answer is also yes, with the same caveat largely suppressed because the renewal conversation needs a number. The gap between the two answers is small in the cases where the redirected work is clearly higher-value (more patient visits, more clinical documentation, fewer overtime hours); the gap is larger in the cases where the redirected work is administrative slack that does not produce identifiable downstream value.</p>
+<p>I am not arguing the renewal metric was wrong. I am arguing that the gap between it and the methodologically clean metric was real, and the responsible thing was to report both and to be explicit about the assumptions that converted one into the other.</p>
+<hr />
+<h2>What the case study fed</h2>
+<p>The model output became the methodological backbone of the published case study, which the commercial team used in renewal conversations and new-customer pitches. The published version emphasized the time-saved-per-refill and refills-per-FTE-hour numbers, with the methodologically cleaner log-minutes specification in the appendix.</p>
+<p>Internally, the model also surfaced something the commercial team found useful: the heterogeneity across clinics. Charlie's effect was larger at clinics with higher-complexity request mixes (more complex patients, more controlled substances, more lab-monitored medications) and smaller at clinics with simpler mixes. The interpretation, which I find still defensible, is that Charlie's auto-approval logic captures most of the easy requests in any environment; the marginal time savings come from the harder requests where the protocol-relevant context attachment is most useful to the escalating clinician. At a simple-mix clinic, fewer requests fall into that category; at a complex-mix clinic, more do.</p>
+<p>This heterogeneity was the part of the analysis I would emphasize most in retrospect. The commercial team's pitch was naturally about &quot;Charlie saves time,&quot; with a single number for the magnitude. The honest story was &quot;Charlie saves time, more so when the mix is harder, and the implementation pays off fastest at clinics whose mix already runs complex.&quot; That second story is harder to fit on a slide. It is also more useful to a health-center CFO trying to decide whether their clinic resembles the ones in the case study or differs from them.</p>
+<hr />
+<h2>Lessons for the next ROI study</h2>
+<p>A short list of operational habits that survived from this engagement into later ones.</p>
+<p>Capture timestamps from day one. The hardest data-engineering problem in any retrospective ROI analysis is the timestamps that were not captured during the pre-period because nobody knew they would be needed. If you are deploying anything that you might want to evaluate in twelve months, instrument the in-basket fully, the user-action timestamps fully, and the documentation lags fully, before the deployment. The marginal cost is small; the marginal value of having the data when the evaluation question comes is large.</p>
+<p>Define complexity before the deployment. The complexity score in the Charlie analysis worked because we could train it on pre-deployment data. If we had had to construct it after the deployment, we would have had to use Charlie's own processing patterns to define complexity, which would have circularized the comparison. Constructing a complexity model on pre-period data is cheap if you do it early; it is expensive if you do it late.</p>
+<p>Save the pre-period. The single biggest determinant of the analysis's credibility was the length of the pre-Charlie observation window. We had over a year of pre-deployment workflow data on most of the clinics in the sample. If the pre-period had been three months, the seasonal terms would have been unidentified and the complexity score would have been poorly calibrated, and the analysis would have been a story rather than an estimate. Pre-period data is the foundation of the entire design.</p>
+<p>Report the methodologically clean metric and the renewal-conversation metric, and own the gap. The commercial team did not have a vocabulary for that distinction at the start. Building the vocabulary, with the team, was part of the work, and the conversations were the kind of internal handoff that determines whether the analysis lives past the deployment. The temptation to report only one metric (either the clean one, which the commercial team cannot use, or the renewal one, which methodologists will critique) is the temptation to ship something less useful than the analysis actually produced.</p>
+<p>ROI from clinical workflow data is a regression problem. It is also a stakeholder-communication problem and a data-completeness problem. The regression is the smallest part. That is the case-study-shaped version of what I would tell anyone planning the next one.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer id="contact">
+    <div class="footer-contact">
+      <p><span class="contact-label">Email</span><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;</a></p>
+      <p><span class="contact-label">LinkedIn</span><a href="https://linkedin.com/in/zkarp">linkedin.com/in/zkarp</a></p>
+      <p><span class="contact-label">GitHub</span><a href="https://github.com/zaherkarp">github.com/zaherkarp</a></p>
+      <p><span class="contact-label">Scholar</span><a href="https://scholar.google.com/citations?user=exrRbXMAAAAJ">Google Scholar</a></p>
+      <p><span class="contact-label">Resume</span><a href="/resume.pdf">PDF download</a></p>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="mailto:&#109;&#101;&#64;&#122;&#97;&#104;&#101;&#114;&#107;&#97;&#114;&#112;&#46;&#99;&#111;&#109;">Email</a></li>
+      <li><a href="https://linkedin.com/in/zkarp">LinkedIn</a></li>
+      <li><a href="https://github.com/zaherkarp">GitHub</a></li>
+      <li><a href="/resume.pdf">Resume</a></li>
+    </ul>
+
+    <p class="footer-copy">&copy; 2026 Zaher Karp. All rights reserved.</p>
+    
+    <p class="footer-build">Built 2026-05-21 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1774da0">1774da0</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
