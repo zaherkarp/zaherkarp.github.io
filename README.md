@@ -354,8 +354,8 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - All 7 `<details>` folds open/close (4 experience + speaking + 2 testimonials).
 - All sidenote/margin-note toggles fire on a narrow viewport (DevTools at
   600px; click superscripts and ⊕ labels).
-- Stars cliff figure renders inside Project 02 body.
-- SkillSprout slope graph renders inside Project 03 body.
+- Stars cliff figure renders inside the Stars Cliff Simulator project body.
+- SkillSprout slope graph renders inside the Healthcare Workforce Transition Platform project body.
 - Academic dot plot renders above publication entries; mobile compressed
   version fires below 760px.
 - Education + Service Gantt renders between Testimonials and Education.
