@@ -382,11 +382,42 @@ disclosure markers are suppressed.
 The Huber psi-function formula sits inside the BHA fold as pure HTML/CSS
 math (no MathJax/KaTeX dependency for one short formula).
 
-### Project numbering
+### Project numbering and layout
 
-Seven projects, numbered 01 through 07. The number `<span class="num">`
-floats left as a hanging old-style figure (font-size 2.2rem, color
-var(--muted)). The h3 title and body sit to the right.
+Six projects, numbered 02 through 07. (Project 01 was removed in the
+2026-05-21 restructure; the slot is intentionally vacant rather than
+renumbered so existing project numbers stay stable across the page,
+git history, and external references.) The section uses a featured +
+small-multiples-index pattern:
+
+  - **Featured** (inside `<section id="projects">`, 60% body column):
+    Projects 02 (Stars Cliff Simulator) and 03 (Healthcare Workforce
+    Transition Platform). Each renders as a `<div class="project">`
+    with an inline SVG figure (cliff-figure, sankey-figure), full
+    prose, links row, and stack line. The number `<span class="num">`
+    floats left as a hanging old-style figure (font-size 2.2rem,
+    color var(--muted)).
+  - **Index** (outside the section, as a sibling `<div
+    class="projects-index">`, 90% max-width grid): Projects 04, 05,
+    06, 07 as `<div class="project-tile">` small multiples. Tiles
+    use `position:absolute` for their hanging number (not float),
+    a smaller h3, a `.tile-summary` paragraph (30-50 words), an
+    optional `.tile-links` row, and `.stack`. The grid is
+    `auto-fit, minmax(240px, 1fr)` so it renders 4 columns at
+    desktop and collapses to 1 column at the 760px breakpoint.
+
+A small italic `<p class="section-subhead">Featured</p>` label sits
+between the H2 and project 02 to cue the two-tier structure. This
+label can be removed in a later pass if the visual contrast between
+featured and index is sufficient on its own.
+
+**Promotion/demotion rules** (matches the prompt that drove the
+restructure): a featured project compressed to a tile gets its prose
+trimmed to 30-50 words, its link labels shortened to tile
+conventions ("GitHub", "post", "demo", "paper", "docs"), and its
+inline figures removed. A tile promoted to featured expands the
+summary to full prose, lengthens link labels ("Live demo",
+"Methodology post"), and gains inline figures if applicable.
 
 ### .exp-stack contrast
 
@@ -416,11 +447,20 @@ historical voice); only chrome and the homepage are em-dash-clean.
 
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
-  Client-Side Stars Rating Predictor (internal, BHA): no link, private
-  SkillSprout: GitHub repo only (standalone; subpage removed 2026-05-19)
-  Medicare Advantage Insight Engine: GitHub repo only
-  ECDS Shock Index: GitHub repo only
+  Healthcare Workforce Transition Platform (SkillSprout): GitHub repo + /blog/onet-reskilling-probabilities/
+  Medicare Advantage Insight Engine: GitHub repo + /blog/medicare-advantage-insight-engine/
+  ECDS Shock Index: GitHub repo + /blog/ecds-shock-index/
+  Care Delivery Workflow Changes: /blog/interrupted-time-series-care-redesign/
+  Practice Automation Analytics (Charlie at OCHIN): /blog/practice-automation-workflow-roi/
   Epidemic simulator: /epidemic-simulation/ + /blog/two-states-one-pathogen/
+
+The tile-link blog posts assume the four posts at
+/blog/medicare-advantage-insight-engine/,
+/blog/ecds-shock-index/,
+/blog/interrupted-time-series-care-redesign/, and
+/blog/practice-automation-workflow-roi/ have been (or will be)
+drafted. If a slug changes during drafting, update the corresponding
+tile-links href on index.html.
 
 **Subpages in this repo:**
   /star-rating-predictor/ — "Stars Cliff Simulator." Public, teaching-
@@ -440,16 +480,37 @@ no-bundler discipline and what it shipped; removing it eliminated that.
 **Stars tools distinction — two tools, do not conflate:**
   1. Stars Cliff Simulator — public, at /star-rating-predictor/.
      Teaching-oriented, synthetic weights, 4.0★ QBP cliff focus.
-     Project card 02 on index.html. Both Stars methodology blog
-     posts describe this tool.
+     Project card 02 on index.html. Both Stars Cliff Simulator
+     methodology blog posts (star-rating-demo-methodology.md and
+     star-rating-predictor-methodology.md) describe this tool.
   2. Client-Side Stars Rating Predictor — internal, built at Baltimore
      Health Analytics. Cut-point dashboard running against live measure
      feeds for contract-level remediation planning. Source is private.
-     Project card 01 on index.html (intentionally no live-demo link,
-     no GitHub link, no methodology post).
-  Do not "consolidate" the two project cards, cross-link the internal
-  tool to the public methodology posts, or add a GitHub/demo link to
-  card 01. That would misrepresent the tools.
+     As of the 2026-05-21 restructure, this tool no longer has its own
+     project card. Two surfaces on the public site reference it:
+       (a) The BHA role's "More detail" fold in the Experience section
+           describes the architectural pattern ("a client-side Stars
+           rating predictor where the cut-point projection runs
+           entirely in the analyst's browser") as a compliance-driven
+           architecture example, alongside the HEDIS hybrid measures
+           paragraph.
+       (b) The blog post compliance-as-architecture-stars-predictor.md
+           (PR #40, merged 2026-05-21) names the tool explicitly and
+           uses it as a case study for the broader thesis that some
+           compliance constraints are best treated as architectural
+           premises rather than bolted-on controls.
+     The two surfaces are intentionally different in framing depth:
+     the Experience fold treats the tool as job-history evidence;
+     the blog post treats it as a methodology essay where the tool is
+     the worked example. Source code remains private; the public
+     artifacts describe what the tool does and why, not its
+     implementation.
+  Do not reconstruct a Project 01 card for this tool, do not cross-
+  link the BHA fold to the Stars Cliff Simulator's methodology posts,
+  and do not add the tool back as a small-multiple tile. The
+  reasoning: a private internal tool reads better as job history
+  plus a standalone methodology post than as a portfolio entry with
+  no inspectable artifact.
 
 ---
 
