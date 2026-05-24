@@ -442,10 +442,10 @@ modes.
 
 ## Content — source of truth
 
-The Tufte rebuild content was ported from `archive/redesign/
-zaherkarp-tufte-demo.html` with em-dashes stripped (replaced with
-commas, periods, or rephrased — see Em dash policy below). Real prose
-adaptations are documented in the rationale doc.
+The Tufte rebuild content was ported from a demo HTML (now removed)
+with em-dashes stripped (replaced with commas, periods, or rephrased —
+see Em dash policy below). Real prose adaptations are documented in
+the rationale doc at archive/redesign/zaherkarp-tufte-rationale.md.
 
 **Live site:** zaherkarp.com (= this repo).
 **Email:** me@zaherkarp.com.

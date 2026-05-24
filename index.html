@@ -262,15 +262,7 @@ a:hover {
 }
 
 /* ============================================================
-   7. EPIGRAPH (removed)
-   The epigraph block and its styles were removed. The page
-   now opens with H1 + subtitle + timeline, without an
-   additional pullquote layer. The unused CSS was stripped to
-   keep the stylesheet lean.
-   ============================================================ */
-
-/* ============================================================
-   8. SIDENOTES AND MARGIN NOTES
+   7. SIDENOTES AND MARGIN NOTES
    The signature Tufte element.
 
      - sidenote: numbered, footnote-equivalent
@@ -401,7 +393,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
 }
 
 /* ============================================================
-   9. NEWTHOUGHT
+   8. NEWTHOUGHT
    Small-caps treatment for the first few words of a paragraph.
    Tufte uses this at the start of sections in Beautiful Evidence.
    Used once here on the About paragraph for demonstration;
@@ -414,7 +406,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
 }
 
 /* ============================================================
-   10. FULLWIDTH
+   9. FULLWIDTH
    For figures that break the body column. Used below for the
    career arc timeline and (in a real deployment) for the
    Stars Cliff simulator embed.
@@ -429,7 +421,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
 }
 
 /* ============================================================
-   11. NAV / HEADER
+   10. NAV / HEADER
    Minimal top nav. Tufte books don't have nav. For a personal
    site we still need one, but it is restrained: small caps,
    small size, rule underneath.
@@ -459,7 +451,7 @@ nav.top a {
 nav.top a:hover { color: var(--ink); text-decoration: underline; }
 
 /* ============================================================
-   12. CAREER ARC TIMELINE
+   11. CAREER ARC TIMELINE
    An annotated time series replaces the original bare
    year-and-label row. Each inflection point carries a label
    placed directly above or below it, so the reader does not
@@ -529,54 +521,8 @@ figure.timeline:has(svg.tl-horizontal) {
   .timeline svg.dp-mobile     { display: block; }
 }
 
-/* Legacy horizontal-scroll fallback. Kept available for other
-   figures that might need it. The dot plot used to use this; it
-   doesn't anymore. */
-.timeline-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.timeline-scroll svg {
-  min-width: 800px;
-}
-
-/* timeline-list fallback removed.
-   Previously this was a semantic <ol> replacement shown on mobile
-   when the SVG was hidden. The SVG is now always visible in one
-   orientation or the other. Figcaption + role="img" + aria-label
-   still provide accessible text for screen readers. */
-
 /* ============================================================
-   13. NUMBERS TABLE
-   Stripped of the vestigial empty "shape" column. Now a clean
-   two-column: value and measure.
-   ============================================================ */
-table.numbers {
-  border-collapse: collapse;
-  margin: 1rem 0 2rem 0;
-  font-size: 1.15rem;
-  width: auto;
-}
-table.numbers td {
-  padding: 0.35rem 1.2rem 0.35rem 0;
-  border: none;
-  vertical-align: baseline;
-}
-table.numbers td:first-child {
-  font-variant-numeric: oldstyle-nums;
-  font-size: 1.3rem;
-  text-align: right;
-  padding-right: 1rem;
-  border-right: 1px solid var(--rule);
-  color: var(--ink);
-}
-table.numbers td:last-child {
-  color: var(--muted);
-  padding-left: 1rem;
-}
-
-/* ============================================================
-   14. WRITING CADENCE SPARKLINE
+   12. WRITING CADENCE SPARKLINE
    Replaces the 24-week GitHub-style heatmap. The sparkline is
    a true Tufte-inspired element: tiny, inline, rewards looking
    because it carries information at the density of a word.
@@ -589,7 +535,7 @@ table.numbers td:last-child {
 }
 
 /* ============================================================
-   15. WRITING / EXPERIENCE / PUBLICATION ENTRIES
+   13. WRITING / EXPERIENCE / PUBLICATION ENTRIES
    ============================================================ */
 .entry {
   margin-bottom: 2.2rem;
@@ -1104,7 +1050,7 @@ details.speaking-list ol li .place {
 }
 
 /* ============================================================
-   16. HORIZONTAL RULES
+   14. HORIZONTAL RULES
    Tufte uses hairline rules sparingly between sections. Half-
    opacity helps them recede.
    ============================================================ */
@@ -1117,7 +1063,7 @@ hr {
 }
 
 /* ============================================================
-   17. CONTACT ROW
+   15. CONTACT ROW
    ============================================================ */
 .contact {
   margin-top: 2rem;
@@ -1133,7 +1079,7 @@ hr {
 }
 
 /* ============================================================
-   17b. PAGE FOOTER (closer)
+   16. PAGE FOOTER (closer)
    A single hairline rule and a date stamp close the page.
    Section uses the same 60% column as everything else, oldstyle
    numerals to match other dates on the page, muted color so it
@@ -1156,7 +1102,7 @@ hr {
 }
 
 /* ============================================================
-   18. SVG PALETTE ADAPTATION
+   17. SVG PALETTE ADAPTATION
    The figure SVGs hard-code hex colors as presentation
    attributes (fill/stroke). Presentation attributes have CSS
    specificity 0, so attribute selectors here override them at
@@ -1174,7 +1120,7 @@ svg [fill="#d0d0c8"]   { fill: var(--rule); }
 svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* ============================================================
-   19. PRINT OVERRIDES
+   18. PRINT OVERRIDES
    Paper is always a light medium regardless of the reader's
    screen mode, so we force light tokens. Hide nav and the
    career arc SVG (its 1200-unit viewBox exceeds printable
@@ -1239,29 +1185,15 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </ul>
   </nav>
 
-  <!-- ==========================================================
-       H1 + SUBTITLE
-       Name as document title. One plain line below for context.
-       No epigraph, no pullquote, no manifesto framing above the
-       fold; the career arc that follows carries the "what I do"
-       visually, and the About section carries the "who I am"
-       narratively. Over-framing the top with both a subtitle
-       and an epigraph became performative, so the epigraph was
-       removed.
-       ========================================================== -->
   <h1>Zaher Karp</h1>
   <p class="subtitle">Healthcare data engineering and Medicare Advantage analytics.</p>
 
   <!-- ==========================================================
        CAREER ARC (hero figure)
-       Promoted from below-fold to directly-after-epigraph, so
-       the first scroll position shows a dense visual artifact
-       rather than a bare title+subtitle. This answers two pieces
-       of feedback at once: (a) the top felt visually empty, and
-       (b) the timeline was too small before. At hero size, the
-       viewBox is 1200x440, stroke weights and type sizes are
-       roughly 1.8x the previous draft, and spacing between rows
-       leaves clear breathing room.
+       The hero figure: a dense visual artifact at first scroll.
+       At hero size, the viewBox is 1200x440, stroke weights and
+       type sizes are sized to read at full column width, and
+       spacing between rows leaves clear breathing room.
 
        On Tufte's small multiples: small multiples are for showing
        the SAME visual structure across different slices of data
@@ -1466,17 +1398,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </svg>
   </figure>
 
-  <!-- ==========================================================
-       ABOUT SECTION
-       Demonstrates:
-         (a) newthought opener (small caps first phrase)
-         (b) one numbered sidenote glossing "grounded theory"
-         (c) one unnumbered margin note about methodological
-             continuity
-       The "More detail / Less" toggle has been removed entirely;
-       any detail that would have lived behind the toggle is
-       either promoted to body text or demoted to a sidenote.
-       ========================================================== -->
   <section id="about">
     <h2>About</h2>
     <p>
@@ -1490,19 +1411,8 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
   <!-- ==========================================================
        ACADEMIC ACTIVITY DOT PLOT
-       Replaces the "By the numbers" table. That table was five
-       decontextualized self-stats (16+ years, 50+ systems, 4
-       EHRs, 6 publications, 17 presentations) stacked as a flex.
-       Tufte rejects bare number displays; he wants data with
-       shape. This figure shows the actual shape of academic
-       activity: burst of presentations 2014-2015, highly-cited
-       2014 paper, tapering through 2019, cessation after
-       transition to industry.
-
-       Structure:
-         - Year axis at y=140
-         - Publications above, dots sized by citation count
-         - Presentations below, stacked vertically per year
+       Year axis at y=140; publications above sized by citation
+       count; presentations below, stacked vertically per year.
        ========================================================== -->
   <figure class="fullwidth timeline">
     <figcaption>
@@ -1706,41 +1616,16 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
   <hr>
 
-  <!-- ==========================================================
-       WRITING SECTION
-       Replaces the 24-week heatmap with a small inline sparkline
-       that actually carries information: one dot per post over
-       the last eight weeks, showing cadence and the return from
-       a short pause.
-
-       Two entries shown with different note treatments:
-         - first entry: margin note carrying a brief gloss
-         - second entry: plain, no note, to show that sidenotes
-           are for material that is actually secondary
-       ========================================================== -->
   <section id="writing">
     <h2>Writing</h2>
 
     <!-- CADENCE HEADER
-         Twenty-four-week sparkline replaces the original eight-week
-         draft. 24 dots, ~11px apart, r=2. Pattern shown is a
-         representative late-2025-return-to-writing cadence: sparse
-         at the start (the return), denser at the end (the current
-         run of weekly posts visible in the entries below). Swap
-         the fill values below with real data when you wire this
-         to your actual post history.
-
-         Trailing "11 posts" is the Tufte last-point-label pattern:
-         a small numeric annotation at the end of a sparkline giving
-         the series total, so the chart is self-legending.
-
-         Margin note carries the context of the return-from-hiatus,
-         so the sparkline itself remains visually quiet and the
-         narrative lives in the side column.
-         The wrapping markers (activity-grid:start / activity-grid:end)
-         are anchors for scripts/build_portfolio.py to regenerate the
-         sparkline content from the actual blog frontmatter on every
-         CI run. -->
+         24-week sparkline, ~11px apart, r=2. Trailing post count
+         is the Tufte last-point-label pattern, so the chart is
+         self-legending. The wrapping markers (activity-grid:start
+         / activity-grid:end) are anchors for
+         scripts/build_portfolio.py to regenerate the sparkline
+         content from the actual blog frontmatter on every CI run. -->
     <!-- activity-grid:start -->
 <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
       24 weeks
@@ -1787,14 +1672,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <div class="entry">
       <div>
         <span class="date">2026-05-19</span>
-        <span class="title"><a href="/blog/paper-saver-cloud-maturity-and-lock-in/">Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP</a></span>
-      </div>
-      <p class="summary">A follow-up to the original Paper Saver post. The wrong-shaped question is 'now do Azure and GCP.' The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-05-19</span>
         <span class="title"><a href="/blog/compliance-as-architecture-stars-predictor/">Compliance as Architecture: A Stars Rating Predictor That Never Sees Member Data</a></span>
       </div>
       <p class="summary">Treating 'no member-level data leaves the machine' as an architectural premise, not a control bolted on afterward, changed every other design decision in the internal Stars predictor we use at Baltimore Health Analytics.</p>
@@ -1806,6 +1683,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="title"><a href="/blog/cicd-for-sql-developers-schema-changes/">CI/CD for SQL Developers: Changing the Schema Without Locking the App Out</a></span>
       </div>
       <p class="summary">The ALTER TABLE at nine in the morning that does not end. The rename that breaks the app between deploys. The pattern that fixes both is called expand, migrate, contract, and it costs three deploys where one would do.</p>
+    </div>
+
+    <div class="entry">
+      <div>
+        <span class="date">2026-05-19</span>
+        <span class="title"><a href="/blog/paper-saver-cloud-maturity-and-lock-in/">Paper Saver: cloud maturity and lock-in across AWS, Azure, and GCP</a></span>
+      </div>
+      <p class="summary">A follow-up to the original Paper Saver post. The wrong-shaped question is 'now do Azure and GCP.' The right one is whether your organization is mature enough to capture the compute-scaling discount its cloud already advertises. A new diagnostic module returns a 3x3 grid of cost by cloud and by maturity.</p>
     </div>
 
     <div class="entry">
@@ -2423,7 +2308,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/25584902/" aria-label="PubMed: Approaches and challenges to optimizing primary care teams' EHR usage (Journal of Innovation in Health Informatics 2014)">PubMed</a>
           <br>
-          <span class="pub-citations">24 citations</span>
+          <span class="pub-citations">25 citations</span>
         </span>
       </p>
       <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">

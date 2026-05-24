@@ -47,8 +47,7 @@ scripts/
                             new posts auto-populate on the homepage.
 
 archive/                    Historical reference (not served)
-  tufte-concept-v18.html    Design mockup
-  source-resumes/           Pre-consolidation resume drafts
+  redesign/                 Tufte rebuild rationale doc
 ```
 
 ## Pipelines
