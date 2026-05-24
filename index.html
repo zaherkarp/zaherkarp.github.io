@@ -502,7 +502,7 @@ figure.timeline:has(svg.tl-horizontal) {
    Note: selectors are compound (.timeline svg.tl-...) to beat
    the specificity of the .timeline svg rule above, which
    otherwise forced display:block on every SVG in the figure. */
-.timeline svg.tl-horizontal { display: block; }
+.timeline svg.tl-horizontal { display: block; overflow: visible; }
 .timeline svg.tl-vertical {
   display: none;
   max-width: 440px;   /* prevent overgrowth on tablets */
