@@ -13,6 +13,16 @@ The parser only picks up `- [ ]` lines under `### Tier N` headings.
 
 ## Recently shipped
 
+### Iteration 3 — Group C: hiring-signal additions to Experience
+
+Landed as commit `site-review iteration 3` on `claude/multi-agent-page-critique-BYmwb`.
+
+- BHA role meta line restructured to surface team size and work mode: `Baltimore Health Analytics · remote · team of two data scientists · Nov 2025 to Present (Lead Data Engineer through Apr 2026)`. The Lead-through-Apr-2026 parenthetical defuses the "April 2026 promotion + May 2026 page = title aspiration racing ahead" reading the director-track HM flagged, while staying within the format the `lint_facts.py` parser accepts (org first, date range last; modifiers in between).
+- Added a Health Catalyst platform-outcomes paragraph with three real customer case studies, each as an inline anchor to the published Health Catalyst success story: Community Health Network (>373,000 care gaps closed in six months at 4X value realization), St. Joseph Heritage Healthcare (37,000 monthly refills, turnaround dropping from 72 hours to 12, supporting 200 PCPs), Valley Medical Group (60% reduction in provider-bound refill requests). The executive's "five-year tenure with no platform-level outcome" flag and the manager-track HM's "five years that may have been IC work in practice" flag both addressed by concrete platform-level customer metrics.
+- Added a third testimonial from William Barber (copy editor reporting directly to Z at Sustainable Clarity, 2013). Speaks to specific management craft: prompt and constructive feedback, project assignments matched to ability and growth. Addresses the manager-track HM's "no testimonial from a direct report" flag, and corroborates the Sustainable Clarity entry's claim of having "Managed up to eight copy editors, graphic designers, and photographers" with a quote from one of those reports.
+- Updated the testimonials-section comment from "Two testimonials" to "Three testimonials" describing the new split (two HC-era downstream-consumer quotes plus one Sustainable Clarity-era direct-report quote).
+- Pre-push checks green after restructuring the BHA meta line to put the date range last (required by the `lint_facts.py` parser which uses `parts[-1]` as the date chunk).
+
 ### Iteration 2 — Group B: cliff figure honesty pass
 
 Landed as commit `site-review iteration 2` on `claude/multi-agent-page-critique-BYmwb`.
@@ -49,32 +59,23 @@ comment on the tracking issue starting with `defer: <reason>` or
 
 ### Tier 1 (ship now)
 
-Hiring-signal additions to the Experience section. The single most
-universal flag in the hiring evaluation was the absence of a
-headcount line on the BHA role (5 of 8 evaluators). Some of these
-require information only the author has (team size, prior-role
-context, available testimonials).
-
-- [ ] Add team-size / span-of-control line on the BHA role (line 1852 area). Five of eight hiring evaluators flagged the headcount absence as the single most universal gap.
-- [ ] Add location / work-mode hint near h1 or in the About lead paragraph
-- [ ] Reframe the April 2026 promotion timeline so the parenthetical does not read as "title aspiration racing ahead of experience"
-- [ ] Surface one Health Catalyst outcome at platform/customer level, not pipeline level (customer count, ARR-influenced figure, contracts deployed across N plans)
-- [ ] Replace one downstream-consumer testimonial with a peer-manager or direct-report quote, or annotate the existing testimonials to set expectations
-
-### Tier 2 (queue)
-
-Technical and domain credibility details (Group D) plus the
-remaining encoding-consistency fixes (Groups F, G). None of these
-are coupled to each other; ship in any order. The sparkline
-regeneration (last item) touches `scripts/build_portfolio.py` and
-has the broadest blast radius of the queue.
+Technical and domain credibility deepening in the Experience
+section. All small-surface prose additions (one sentence each)
+inside the BHA or HC entries. None coupled.
 
 - [ ] Name 1-2 specific Stars measures (SUPD, MAH/MAC/MAD, PACR, CAHPS/HOS, MTM-CMR) in BHA fold or Stars project prose
-- [ ] Defend Selenium mention with one-sentence context (HPMS scraping?) in the BHA stack line
+- [ ] Defend Selenium mention with one-sentence context (HPMS scraping?) in the BHA stack-line prose
 - [ ] Add one sentence on dbt program shape (model count, layering, test coverage) somewhere in BHA or Health Catalyst fold
 - [ ] Add one production-system anchor with a number (volume, schema count, DAG size, freshness SLO) inside the BHA or Health Catalyst fold
 - [ ] Add CMS clustering / CAI / disaster-adjustment awareness to the BHA fold or the Stars project description
 - [ ] Fix "built it under HITRUST" framing (line 1933) → "designed to HITRUST CSF controls"
+
+### Tier 2 (queue)
+
+Encoding-consistency and chart-fix items. Independent of each
+other; the sparkline regeneration is the largest piece (touches
+`scripts/build_portfolio.py`).
+
 - [ ] Rewrite slope-graph figcaption (lines 2167-2169) to limit claim to the one worked example
 - [ ] Mobile dot plot: replace bar encoding with scaled-down stacked dots (Data humanists' hill-to-die + Encoding rigorists' viewport-consistency rule)
 - [ ] Add non-color marker to 2020 acquisition callout in career arc (both SVGs, lines 1334-1336 and 1416-1419)
