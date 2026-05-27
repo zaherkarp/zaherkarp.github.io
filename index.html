@@ -1870,7 +1870,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </p>
 
     <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, hierarchical clustering for cutpoint regeneration, and disaster adjustment provisions, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and browser automation for source extraction, producing auditable outputs where every threshold and weighted average is traceable to its source.
     </p>
 
     <!-- ==========================================================
@@ -1907,14 +1907,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        HEDIS hybrid measures add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
+        HEDIS hybrid measures like Transitions of Care, and the Part D medication adherence triplet (MAH, MAC, MAD), add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
       </p>
       <p>
         Compliance-driven architecture is part of the role's design discipline. A recent example: a client-side Stars rating predictor where the cut-point projection runs entirely in the analyst's browser, so member-level data never transits off the machine. The browser-side compute sidesteps the data-transit review a server-side version would trigger; a side benefit has been a faster iteration loop than a comparable server-side tool would offer.
       </p>
     </details>
 
-    <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Selenium &middot; Python</p>
+    <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Python</p>
 
     <hr>
 
@@ -1932,7 +1932,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Layered dbt models with vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved against all four EHR schemas.
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -1947,7 +1947,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      First analytics hire meant the infrastructure did not exist. I built it under HIPAA and HITRUST compliance requirements on AWS, which meant that every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
+      First analytics hire meant the infrastructure did not exist. I built it on AWS to HIPAA and HITRUST controls, which meant that every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
     </p>
 
     <details class="fold">
