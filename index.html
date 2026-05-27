@@ -1345,7 +1345,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            that ties the red-above to the red-below.
            Larger red circle (r=6) at the band to anchor the eye. -->
       <line x1="800" y1="260" x2="800" y2="320" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="800" cy="260" r="6" fill="#7a0000"/>
+      <circle cx="800" cy="260" r="6" fill="#7a0000" stroke="#111" stroke-width="1.5"/>
       <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
 
       <!-- ERA ANNOTATIONS (quiet)
@@ -1423,9 +1423,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <text x="55" y="585"  text-anchor="end" fill="#6a6a6a">2017</text>
         <line x1="60" y1="580" x2="70" y2="580" stroke="#6a6a6a"/>
 
-        <!-- 2020: red year label; secondary "acquired" caption
-             in smaller italic directly below. Replaces the
-             horizontal version's below-axis text annotation. -->
+        <!-- 2020: red year label with a small dark triangle marker
+             at x=40 so the inflection reads under color-vision
+             constraints; secondary "acquired" caption in smaller
+             italic directly below. Replaces the horizontal version's
+             below-axis text annotation. -->
+        <polygon points="40,728 50,735 40,742" fill="#111"/>
         <text x="55" y="735"  text-anchor="end" fill="#7a0000">2020</text>
         <line x1="60" y1="730" x2="70" y2="730" stroke="#6a6a6a"/>
         <text x="55" y="753"  text-anchor="end" font-size="14" font-style="italic" fill="#7a0000">acquired by</text>
@@ -1695,25 +1698,37 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, 11 cites -->
       <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, 4 cites -->
 
-      <!-- PRESENTATIONS, below axis at y=110.
-           Bars (vertical line segments) instead of stacked dots.
-           Bar height = count * 4. Width 6, centered at year x.
-           The peak at 2015 becomes the tallest bar (7 talks * 4
-           = 28px), reading visually as the same peak the wide
-           version shows but in a form legible at phone scale. -->
+      <!-- PRESENTATIONS, below axis at y=85.
+           Stacked dots, one per presentation. First dot at cy=108,
+           each subsequent +6px (r=2). 2015's tall column of 7 dots
+           visually echoes the wide version's same-year peak while
+           staying legible at phone scale; the encoding is constant
+           across viewport sizes (countable dots, not aggregated
+           bars). -->
 
-      <!-- 2010: 1 talk, h=4 -->
-      <rect x="67"  y="105" width="6" height="4"  fill="#6a6a6a"/>
-      <!-- 2012: 2 talks, h=8 -->
-      <rect x="143" y="105" width="6" height="8"  fill="#6a6a6a"/>
-      <!-- 2014: 3 talks, h=12 -->
-      <rect x="219" y="105" width="6" height="12" fill="#6a6a6a"/>
-      <!-- 2015: 7 talks, h=28 (the visual peak) -->
-      <rect x="257" y="105" width="6" height="28" fill="#6a6a6a"/>
-      <!-- 2016: 2 talks, h=8 -->
-      <rect x="295" y="105" width="6" height="8"  fill="#6a6a6a"/>
-      <!-- 2017: 2 talks, h=8 -->
-      <rect x="333" y="105" width="6" height="8"  fill="#6a6a6a"/>
+      <!-- 2010: 1 talk -->
+      <circle cx="70"  cy="108" r="2" fill="#6a6a6a"/>
+      <!-- 2012: 2 talks -->
+      <circle cx="146" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="146" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2014: 3 talks -->
+      <circle cx="222" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="120" r="2" fill="#6a6a6a"/>
+      <!-- 2015: 7 talks (the visual peak) -->
+      <circle cx="260" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="120" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="126" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="132" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="138" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="144" r="2" fill="#6a6a6a"/>
+      <!-- 2016: 2 talks -->
+      <circle cx="298" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="298" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2017: 2 talks -->
+      <circle cx="336" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="336" cy="114" r="2" fill="#6a6a6a"/>
     </svg>
   </figure>
 
@@ -2176,7 +2191,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              ========================================================== -->
         <figure class="sankey-figure">
           <figcaption>
-            Example transition pathway for a Medical Assistant. Illustrative shares: bar widths and stroke widths reflect the share routed to each target occupation.
+            One worked example: a Medical Assistant routed to five candidate target occupations. Bar widths and stroke widths reflect illustrative shares.
           </figcaption>
 
           <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
