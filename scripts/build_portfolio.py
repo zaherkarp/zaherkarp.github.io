@@ -134,7 +134,14 @@ def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
 
 
 def build_activity_grid(posts: list[dict]) -> str:
-    """Emit the 24-week inline cadence sparkline.
+    """Emit the 24-week inline cadence sparkline as per-week stems.
+
+    Each week with N posts renders as a vertical line of height N * UNIT
+    pixels (capped at the SVG top so stems don't overflow the viewBox).
+    Weeks with no posts render as empty space; the faint baseline rule
+    provides visual continuity across the time axis. This carries
+    actual cadence variance ("burst weeks vs. quiet weeks") that the
+    earlier binary-dot encoding flattened away.
 
     Tufte's last-point-label pattern: a small numeric annotation at the
     end of the sparkline gives the trailing total so the chart is self-
@@ -146,45 +153,50 @@ def build_activity_grid(posts: list[dict]) -> str:
     if not cadence_posts:
         return ""
 
-    dots: list[str] = []
+    # Stem geometry. Baseline at y=16, top of usable area at y=2; 14
+    # SVG units of vertical room. UNIT=2 means 7 posts/week hits the
+    # ceiling, which is a sensible cap given observed cadence.
+    BASE_Y = 16
+    TOP_Y = 2
+    UNIT = 2
+
+    stems: list[str] = []
     cadence_total_in_window = 0
     for i in range(SPARKLINE_WEEKS - 1, -1, -1):
         week_end = anchor - timedelta(weeks=i)
         week_start = week_end - timedelta(days=6)
         n = sum(1 for p in posts if week_start <= p["date"] <= week_end and p["date"] >= PRE_BLOG_CUTOFF)
         cadence_total_in_window += n
+        if n == 0:
+            continue
         cx = SPARKLINE_X0 + (SPARKLINE_WEEKS - 1 - i) * SPARKLINE_DX
-        # Filled = publication week, empty = silent week. The hardcoded
-        # hex values are intentional: index.html's <style> block has CSS
-        # attribute selectors that map them to var(--ink) and var(--rule)
-        # so the same SVG renders correctly in both light and dark mode.
-        fill = "#111" if n > 0 else "#d0d0c8"
-        dots.append(f'        <circle cx="{cx}" cy="10" r="2" fill="{fill}"/>')
+        y_top = max(TOP_Y, BASE_Y - n * UNIT)
+        # Hardcoded #111 is intentional; index.html's <style> block has
+        # CSS attribute selectors that map it to var(--ink) so the same
+        # markup renders correctly in light and dark mode.
+        stems.append(
+            f'        <line x1="{cx}" y1="{BASE_Y}" x2="{cx}" y2="{y_top}" '
+            f'stroke="#111" stroke-width="1.6"/>'
+        )
 
+    stems_block = ("\n".join(stems) + "\n") if stems else ""
     label = "post" if cadence_total_in_window == 1 else "posts"
     tag_rollup = build_cadence_marginnote(cadence_posts)
     marginnote_html = (
         f'<span class="marginnote">{tag_rollup}</span>' if tag_rollup else ""
     )
-    # Header framing: "24 weeks" + sparkline + "{N} posts".
-    # Earlier framing said "24 weeks of activity" + "{N} posts", which
-    # implied a one-dot-per-event encoding that the chart doesn't use
-    # (each dot is one week, filled if any post landed; weeks with two
-    # posts still get one dot). Dropping "of activity" lets "24 weeks"
-    # label the time range cleanly and "{N} posts" label the total,
-    # so the reader is not asked to mentally match dots to posts.
     return (
         '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
         '      24 weeks\n'
         '      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" '
-        'aria-label="writing cadence sparkline, 24 weeks">\n'
+        'aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">\n'
         '        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>\n'
-        + "\n".join(dots) + "\n"
+        + stems_block +
         '      </svg>\n'
         f'      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); '
         f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>'
         '<label for="mn-cadence" class="margin-toggle">&#8853;</label>'
-        '<input type="checkbox" aria-label="Toggle tag breakdown" id="mn-cadence" class="margin-toggle"/>'
+        '<input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/>'
         f'{marginnote_html}\n'
         '    </p>'
     )
