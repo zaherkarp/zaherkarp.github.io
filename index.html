@@ -11,10 +11,6 @@
 <link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
-<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
-     https://www.bing.com/webmasters when ready. See TODO.md.
-<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
--->
 
 <meta property="og:title" content="Zaher Karp, Healthcare Data Engineering">
 <meta property="og:description" content="15+ years building production analytics in regulated healthcare. Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.">
@@ -1174,6 +1170,23 @@ svg [fill="#d0d0c8"]   { fill: var(--rule); }
 svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* ============================================================
+   18.5. REDUCED MOTION
+   Vestibular-sensitive readers signal prefers-reduced-motion in
+   their OS. The page doesn't animate anything explicitly today,
+   but declaring the contract here means any future transition,
+   details-open animation, or smooth-scroll lands respecting the
+   preference without re-asking the access question.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
    19. PRINT OVERRIDES
    Paper is always a light medium regardless of the reader's
    screen mode, so we force light tokens. Hide nav and the
@@ -1480,11 +1493,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
     </p>
 
     <p>
-      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
+      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
     </p>
   </section>
 
@@ -1545,21 +1558,21 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <circle cx="410" cy="95" r="4" fill="#111"/>
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2014: Pandhi et al JIHI, 23 citations (most-cited) -->
-      <circle cx="620" cy="95" r="10" fill="#111"/>
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"/></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <circle cx="830" cy="95" r="4" fill="#111"/>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <circle cx="1040" cy="95" r="4" fill="#111"/>
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2019a: Karp et al HERD, 11 citations -->
-      <circle cx="1138" cy="95" r="7" fill="#111"/>
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"/></a>
       <!-- 2019b: Pandhi et al Acad Med, 4 citations (slight x offset) -->
-      <circle cx="1156" cy="95" r="5" fill="#111"/>
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"/></a>
 
       <!-- PRESENTATIONS (below the axis).
            Each dot is a presentation, stacked vertically when a
@@ -1646,7 +1659,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
              (10 years, 38px apart, 360-unit usable width)
            ========================================================== -->
-    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity, mobile compressed view, 2010 to 2019">
+    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout">
 
       <!-- LANE LABELS, left edge -->
       <text x="6" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">pubs</text>
@@ -1675,12 +1688,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              4 citations      = 3
              11 citations     = 4
              23 citations     = 5.5 (the 2014 standout) -->
-      <circle cx="146" cy="55" r="2.5" fill="#111"/>     <!-- 2012 WCEL -->
-      <circle cx="222" cy="55" r="5.5" fill="#111"/>     <!-- 2014 JIHI, 23 cites -->
-      <circle cx="298" cy="55" r="2.5" fill="#111"/>     <!-- 2016 ImplSci -->
-      <circle cx="374" cy="55" r="2.5" fill="#111"/>     <!-- 2018 IJHM -->
-      <circle cx="408" cy="55" r="4"   fill="#111"/>     <!-- 2019 HERD, 11 cites -->
-      <circle cx="416" cy="55" r="3"   fill="#111"/>     <!-- 2019 AcadMed, 4 cites -->
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="#111"/></a>     <!-- 2012 WCEL -->
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, 23 cites -->
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="#111"/></a>     <!-- 2016 ImplSci -->
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="#111"/></a>     <!-- 2018 IJHM -->
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, 11 cites -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, 4 cites -->
 
       <!-- PRESENTATIONS, below axis at y=110.
            Bars (vertical line segments) instead of stacked dots.
@@ -1857,7 +1870,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </p>
 
     <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
     </p>
 
     <!-- ==========================================================
@@ -1909,13 +1922,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
     </p>
 
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -1954,7 +1967,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
+        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on Oxford methodological training" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
       </p>
       <p>
         A sustained research thread on primary care redesign used grounded theory for qualitative analysis of field notes and focus group transcripts, and interrupted time series analysis to measure the effect of care delivery change initiatives on clinic panel data.
@@ -2345,12 +2358,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="publications">
     <h2>Publications</h2>
 
-    <div class="entry pub-entry" data-sid="PMID:30913920">
+    <div class="entry pub-entry" id="pub-herd" data-sid="PMID:30913920">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2019</span>
         <em>Influence of environmental design on team interactions across 3 family medicine clinics</em>
         <label for="mn-herd" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-herd" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for HERD 2019 paper" id="mn-herd" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/30913920/" aria-label="PubMed: Influence of environmental design on team interactions (HERD 2019)">PubMed</a> &middot;
           <a href="https://www.researchgate.net/publication/332030639" aria-label="ResearchGate: Influence of environmental design on team interactions (HERD 2019)">ResearchGate</a>
@@ -2364,12 +2377,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry pub-entry" data-sid="PMID:31348072">
+    <div class="entry pub-entry" id="pub-acadmed" data-sid="PMID:31348072">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2019</span>
         <em>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial</em>
         <label for="mn-acadmed" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-acadmed" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for Academic Medicine 2019 paper" id="mn-acadmed" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/31348072/" aria-label="PubMed: Broadening medical students' exposure to the range of illness experiences (Academic Medicine 2019)">PubMed</a>
           <br>
@@ -2382,12 +2395,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-acos">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2018</span>
         <em>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings</em>
         <label for="mn-acos" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-acos" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show note on Medicare Shared Savings Programs analysis, IJHM 2018" id="mn-acos" class="margin-toggle"/>
         <span class="marginnote">
           Published in the <em>International Journal of Healthcare Management</em>, 2018. First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts.
         </span>
@@ -2398,12 +2411,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-implsci">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2016</span>
         <em>An efficient process of gathering diverse community opinions to inform an intervention</em>
         <label for="mn-implsci" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-implsci" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show full-text link for Implementation Science 2016 paper" id="mn-implsci" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6" aria-label="Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)">Full text</a>
         </span>
@@ -2414,12 +2427,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry pub-entry" data-sid="PMID:25584902">
+    <div class="entry pub-entry" id="pub-jihi" data-sid="PMID:25584902">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2014</span>
         <em>Approaches and challenges to optimizing primary care teams' electronic health record usage</em>
         <label for="mn-jihi" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-jihi" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for JIHI 2014 paper" id="mn-jihi" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/25584902/" aria-label="PubMed: Approaches and challenges to optimizing primary care teams' EHR usage (Journal of Innovation in Health Informatics 2014)">PubMed</a>
           <br>
@@ -2432,12 +2445,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-wcel">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2012</span>
         <em>Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings)</em>
         <label for="mn-wcel" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-wcel" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show full-text link for WCEL 2012 proceedings paper" id="mn-wcel" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://www.learntechlib.org/p/41869/" aria-label="Full text: Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL 2012)">Full text</a>
         </span>
@@ -2462,7 +2475,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="speaking">
     <h2>Speaking</h2>
     <p>
-      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
+      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on Patient Choice Award 2015 recognition" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
     </p>
 
     <details class="speaking-list">
