@@ -1,0 +1,90 @@
+name: Critique
+
+# Runs the critique pipeline against a target file in the repo (default:
+# index.html) using Claude Code's GitHub Action, then commits the
+# resulting critique artifact under critiques/.
+#
+# Independence contract (see CLAUDE.md §Critique pipeline):
+#   - This workflow does NOT use anthropic/setup-anthropic or any
+#     action that takes ANTHROPIC_API_KEY. The only secret it reads
+#     is CLAUDE_CODE_OAUTH_TOKEN (subscription auth).
+#   - No Python script in scripts/ imports the anthropic SDK; the
+#     LLM engine is Claude Code, the codebase has no API coupling.
+#   - The pre-push hook grep enforces both of the above on every push.
+#
+# Triggers:
+#   - manual dispatch with an optional `target` input (default
+#     index.html). Use this when iterating on a particular page or
+#     post.
+#   - first-of-month schedule, runs against index.html so the
+#     portfolio gets a periodic fresh-eyes pass without anyone
+#     having to remember.
+# Deliberately not push-triggered: the workflow commits its artifact
+# back to the branch, and a push-trigger would loop on that commit.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'File to critique (relative to repo root). See docs/critique/playbook.md §Supported targets.'
+        required: false
+        default: 'index.html'
+        type: string
+  schedule:
+    - cron: '0 7 1 * *'  # 1st of month, 07:00 UTC
+
+concurrency:
+  group: critique-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  critique:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve target
+        id: target
+        run: |
+          target="${{ github.event.inputs.target }}"
+          if [ -z "$target" ]; then
+            target="index.html"
+          fi
+          if [ ! -f "$target" ]; then
+            echo "Target file '$target' not found in the repo." >&2
+            exit 1
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "Target: $target"
+
+      - name: Run critique playbook
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Read docs/critique/playbook.md and execute it against
+            ${{ steps.target.outputs.target }}. Follow every step in
+            order. Write the output to the path the playbook
+            computes under critiques/. Do not edit the target file.
+            Do not commit anything; the workflow commits the artifact
+            in the next step.
+
+      - name: Commit critique artifact
+        run: |
+          if ! git diff --quiet -- critiques/ || [ -n "$(git ls-files --others --exclude-standard critiques/)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add critiques/
+            git commit -m "critique: $(basename '${{ steps.target.outputs.target }}') $(date -u +%Y-%m-%d)"
+            for i in 1 2 3; do
+              git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" && git push && exit 0
+              echo "push attempt $i failed, retrying..."
+              sleep 5
+            done
+            exit 1
+          else
+            echo "No critique artifact produced; nothing to commit."
+          fi
