@@ -176,7 +176,7 @@ def build_activity_grid(posts: list[dict]) -> str:
         # markup renders correctly in light and dark mode.
         stems.append(
             f'        <line x1="{cx}" y1="{BASE_Y}" x2="{cx}" y2="{y_top}" '
-            f'stroke="#111" stroke-width="1.6"/>'
+            f'stroke="#111" stroke-width="1.2"/>'
         )
 
     stems_block = ("\n".join(stems) + "\n") if stems else ""
