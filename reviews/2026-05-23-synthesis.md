@@ -13,6 +13,16 @@ The parser only picks up `- [ ]` lines under `### Tier N` headings.
 
 ## Recently shipped
 
+### Streamlining pass — subtractive iteration (2026-05-28)
+
+Landed on `claude/aesthetic-streamlining-pass-3X0Oc`. A single Design-Council convening (Edward for data-ink, Massimo for italic policy) to subtract the visual and prose weight accumulated across Iterations 1-5b without undoing any shipped hiring-signal content. No new sections, figures, or facts.
+
+- **Italic.** The audit found the page's only drift was the `Featured` section subhead, styled italic via the `.section-subhead` and `.projects-index .index-label` CSS rules. Removed `font-style: italic` from both; every `<em>`/`<i>` tag (publication titles, the Huber formula's `k`/`r` variables) and every chart `font-style="italic"` annotation is reserved per policy and left intact.
+- **Charts.** Removed three marks that duplicated information already carried by an adjacent element: the `+$50M` triangle bridge from Iteration 2 (the dashed line + adjacent label already link), the dark `stroke` outline on the desktop career-arc 2020 circle from Iteration 5a (the red fill pops on its own), and the mobile career-arc 2020 triangle from Iteration 5a (the "acquired by Health Catalyst" caption is a non-color identifier, so WCAG 1.4.1 still holds). Reduced the cadence sparkline stem `stroke-width` from 1.6 to 1.2 at its source in `build_portfolio.py` and in the generated `index.html`.
+- **Charts left alone.** The mobile dot plot's 17 dots and the cliff hatch were *not* lightened. The dot count is load-bearing signal; the hatch's 0.6 opacity / 0.7 stroke was raised from 0.4 in Iteration 1 specifically to clear the WCAG 1.4.11 non-text contrast floor, so lowering it would regress an accessibility fix (Haben's soft veto).
+- **Prose.** Cut the BHA meta line's `(Lead Data Engineer through Apr 2026)` parenthetical (the timeline is carried elsewhere), the About section's "I lead a data function…" sentence (flagged aspirational; the team-size meta now carries the evidence), one redundant figure per Health Catalyst customer (`4X value realization`, `supporting 200 primary care physicians`), and two of four examples in the BHA tech-notes sidenote (`hierarchical clustering for`, `disaster adjustment provisions`). Tightened the HC fold's dbt-layering sentence from 22 to 18 words. All named facts and links the hiring panel asked for are preserved.
+- Pre-push checks green: em-dash 0, accent budget 19/20 (unchanged; no edit adds an accent use), fact/vocab/blog lint clean.
+
 ### Iteration 5b — sparkline regeneration
 
 Landed as commit `site-review iteration 5b` on `claude/multi-agent-page-critique-BYmwb`. Closes the four-camp-backed HC #2 item from the original craft critique (Editorial + Encoding + Pipeline + Data humanists).

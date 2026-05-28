@@ -8,6 +8,7 @@
 <link rel="canonical" href="https://zaherkarp.com/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" href="/fonts/et-book/et-book-roman-line-figures.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
@@ -72,14 +73,16 @@
    ============================================================ */
 @font-face {
   font-family: "et-book";
-  src: url("/fonts/et-book/et-book-roman-line-figures.woff") format("woff");
+  src: url("/fonts/et-book/et-book-roman-line-figures.woff2") format("woff2"),
+       url("/fonts/et-book/et-book-roman-line-figures.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "et-book";
-  src: url("/fonts/et-book/et-book-display-italic-old-style-figures.woff") format("woff");
+  src: url("/fonts/et-book/et-book-display-italic-old-style-figures.woff2") format("woff2"),
+       url("/fonts/et-book/et-book-display-italic-old-style-figures.woff") format("woff");
   font-weight: normal;
   font-style: italic;
   font-display: swap;
@@ -159,6 +162,8 @@ body {
   -webkit-font-smoothing: antialiased;
   counter-reset: sidenote-counter; /* auto-number sidenotes page-wide      */
 }
+::selection     { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
+::-moz-selection { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
 
 /* ============================================================
    4. ARTICLE / SECTION STRUCTURE
@@ -211,6 +216,7 @@ h1 {
   line-height: 1;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 h2 {
   font-weight: 400;
@@ -219,12 +225,14 @@ h2 {
   line-height: 1;
   margin: 2.8rem 0 1rem 0;
   letter-spacing: -0.005em;
+  text-wrap: balance;
 }
 h3 {
   font-weight: 400;
   font-size: 1.5rem;
   line-height: 1.2;
-  margin: 2rem 0 0.4rem 0;
+  margin: 1.7rem 0 0.4rem 0;
+  text-wrap: balance;
 }
 
 p.subtitle {
@@ -234,9 +242,10 @@ p.subtitle {
   color: var(--muted);
   display: block;
   line-height: 1.3;
+  text-wrap: balance;
 }
 
-p { margin: 0 0 1.4rem 0; }
+p { margin: 0 0 1.4rem 0; text-wrap: pretty; }
 
 /* ============================================================
    6. LINKS
@@ -382,7 +391,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
     margin: 1rem 2.5% 1rem 2.5%;
     padding: 0.5rem 1rem;
     border-left: 3px solid var(--rule);
-    background: rgba(0,0,0,0.015);
+    background: color-mix(in srgb, var(--ink) 2%, transparent);
     vertical-align: baseline;
     position: relative;
   }
@@ -604,14 +613,13 @@ figure.timeline:has(svg.tl-horizontal) {
 
 /* ============================================================
    NEW: Section subhead
-   Optional italic muted label preceding the featured projects.
+   Optional muted label preceding the featured projects.
    Provides a textual "Featured" cue without committing to a full
    subheading. If the visual contrast between featured and index
    is sufficient on its own, this rule can be removed without
    affecting layout.
    ============================================================ */
 .section-subhead {
-  font-style: italic;
   color: var(--muted);
   font-size: 1.1rem;
   margin: 1rem 0 1.5rem 0;
@@ -647,7 +655,6 @@ figure.timeline:has(svg.tl-horizontal) {
    the tile rows rather than inside a tile cell. */
 .projects-index .index-label {
   grid-column: 1 / -1;
-  font-style: italic;
   color: var(--muted);
   font-size: 1.1rem;
   margin: 0 0 0.3rem 0;
@@ -850,8 +857,8 @@ figure.sankey-figure figcaption {
    .formula-caption: small italic explanation below the formula
    ============================================================ */
 .formula-block {
-  margin: 1.5rem 0;
-  padding: 0.5rem 0;
+  margin: 1rem 0;
+  padding: 0;
   text-align: center;
 }
 .formula {
@@ -1277,7 +1284,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            that ties the red-above to the red-below.
            Larger red circle (r=6) at the band to anchor the eye. -->
       <line x1="800" y1="260" x2="800" y2="320" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="800" cy="260" r="6" fill="#7a0000" stroke="#111" stroke-width="1.5"/>
+      <circle cx="800" cy="260" r="6" fill="#7a0000"/>
       <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
 
       <!-- ERA ANNOTATIONS (quiet)
@@ -1355,12 +1362,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <text x="55" y="585"  text-anchor="end" fill="#6a6a6a">2017</text>
         <line x1="60" y1="580" x2="70" y2="580" stroke="#6a6a6a"/>
 
-        <!-- 2020: red year label with a small dark triangle marker
-             at x=40 so the inflection reads under color-vision
-             constraints; secondary "acquired" caption in smaller
-             italic directly below. Replaces the horizontal version's
-             below-axis text annotation. -->
-        <polygon points="40,728 50,735 40,742" fill="#111"/>
+        <!-- 2020: red year label with a secondary "acquired" caption
+             in smaller italic directly below. The caption text
+             identifies the inflection independent of color, so no
+             separate marker is needed. Replaces the horizontal
+             version's below-axis text annotation. -->
         <text x="55" y="735"  text-anchor="end" fill="#7a0000">2020</text>
         <line x1="60" y1="730" x2="70" y2="730" stroke="#6a6a6a"/>
         <text x="55" y="753"  text-anchor="end" font-size="14" font-style="italic" fill="#7a0000">acquired by</text>
@@ -1421,7 +1427,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </p>
 
     <p>
-      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
+      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span>
     </p>
   </section>
 
@@ -1672,29 +1678,29 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       24 weeks
       <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
         <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
-        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="76" y1="16" x2="76" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="120" y1="16" x2="120" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="131" y1="16" x2="131" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="142" y1="16" x2="142" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="153" y1="16" x2="153" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="164" y1="16" x2="164" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="186" y1="16" x2="186" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="197" y1="16" x2="197" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="208" y1="16" x2="208" y2="14" stroke="#111" stroke-width="1.6"/>
-        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.6"/>
-        <line x1="230" y1="16" x2="230" y2="8" stroke="#111" stroke-width="1.6"/>
-        <line x1="241" y1="16" x2="241" y2="12" stroke="#111" stroke-width="1.6"/>
-        <line x1="252" y1="16" x2="252" y2="8" stroke="#111" stroke-width="1.6"/>
-        <line x1="263" y1="16" x2="263" y2="6" stroke="#111" stroke-width="1.6"/>
+        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="76" y1="16" x2="76" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="120" y1="16" x2="120" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="131" y1="16" x2="131" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="142" y1="16" x2="142" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="153" y1="16" x2="153" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="164" y1="16" x2="164" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="186" y1="16" x2="186" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="197" y1="16" x2="197" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="208" y1="16" x2="208" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="230" y1="16" x2="230" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="241" y1="16" x2="241" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="252" y1="16" x2="252" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="263" y1="16" x2="263" y2="6" stroke="#111" stroke-width="1.2"/>
       </svg>
       <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">35 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (12) · healthcare-data (7) · architecture (5) · healthcare (5) · medicare (5) · sql (5) · ci-cd (4) · methodology (4) · star-ratings (4) · analytics (3) · dbt (3) · healthcare-analytics (3) · hedis (3) · medicare-advantage (3) · python (3) · stars (3) · version-control (3) · apis (2) · automation (2) · aws (2) · cms (2) · cost-modeling (2) · data-analysis (2) · health policy (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · mlops (2) · ordinal-regression (2) · policy (2) · public-health (2) · pull-requests (2) · reliability (2) · systems (2) · xgboost (2)</span>
     </p>
@@ -1775,14 +1781,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <h2>Experience</h2>
 
     <h3>Manager of Data Science &amp; Engineering</h3>
-    <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present (Lead Data Engineer through Apr 2026)</p>
+    <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform. The role spans direct management, code review across the engineering team, and coordination of data science and QA across two geographies, plus the product roadmap and translation between CMS requirements and organizational priorities.
+      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities.
     </p>
 
     <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, hierarchical clustering for cutpoint regeneration, and disaster adjustment provisions, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and browser automation for source extraction, producing auditable outputs where every threshold and weighted average is traceable to its source.
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
     </p>
 
     <!-- ==========================================================
@@ -1812,7 +1818,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         </span>
       </div>
       <div class="formula-caption">
-        Huber's &psi;-function. Residuals smaller than the threshold <i>k</i> contribute linearly to the gradient; residuals larger than <i>k</i> are clipped, so a single COVID-era shock cannot dominate the smoothing parameter estimates.
+        Huber's &psi;-function. Clipping large residuals stops a single COVID-era shock from dominating the smoothing parameter estimates.
       </div>
     </div>
 
@@ -1834,17 +1840,17 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also moved infrastructure from AWS to Azure and Databricks, rebuilding the analytics layer without interrupting service for existing clients.
     </p>
 
     <p>
-      Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months at 4X value realization. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12, supporting 200 primary care physicians. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
+      Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
     </p>
 
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Layered dbt models with vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved against all four EHR schemas.
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -2021,12 +2027,10 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
             <!-- $50M ANNOTATION at top of cliff line.
                  Text label "+$50M" pinned to the right of the
-                 dashed line at the top of the chart. A small dark
-                 triangle marker bridges the line and the label so
-                 the callout reads under color-vision constraints.
-                 Tufte's preference for direct labels over a
-                 separate legend. -->
-            <polygon points="349,52 354,55 349,58" fill="#111"/>
+                 dashed line at the top of the chart. Its position
+                 adjacent to the line top carries the association
+                 without color, so no separate marker or legend is
+                 needed. Tufte's preference for direct labels. -->
             <text x="358" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#7a0000" font-style="italic">+$50M</text>
 
             <!-- ZONE LABELS.
