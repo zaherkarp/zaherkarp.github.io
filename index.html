@@ -8,6 +8,7 @@
 <link rel="canonical" href="https://zaherkarp.com/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" href="/fonts/et-book/et-book-roman-line-figures.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
@@ -72,14 +73,16 @@
    ============================================================ */
 @font-face {
   font-family: "et-book";
-  src: url("/fonts/et-book/et-book-roman-line-figures.woff") format("woff");
+  src: url("/fonts/et-book/et-book-roman-line-figures.woff2") format("woff2"),
+       url("/fonts/et-book/et-book-roman-line-figures.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "et-book";
-  src: url("/fonts/et-book/et-book-display-italic-old-style-figures.woff") format("woff");
+  src: url("/fonts/et-book/et-book-display-italic-old-style-figures.woff2") format("woff2"),
+       url("/fonts/et-book/et-book-display-italic-old-style-figures.woff") format("woff");
   font-weight: normal;
   font-style: italic;
   font-display: swap;
@@ -159,6 +162,8 @@ body {
   -webkit-font-smoothing: antialiased;
   counter-reset: sidenote-counter; /* auto-number sidenotes page-wide      */
 }
+::selection     { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
+::-moz-selection { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
 
 /* ============================================================
    4. ARTICLE / SECTION STRUCTURE
@@ -211,6 +216,7 @@ h1 {
   line-height: 1;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 h2 {
   font-weight: 400;
@@ -219,12 +225,14 @@ h2 {
   line-height: 1;
   margin: 2.8rem 0 1rem 0;
   letter-spacing: -0.005em;
+  text-wrap: balance;
 }
 h3 {
   font-weight: 400;
   font-size: 1.5rem;
   line-height: 1.2;
   margin: 2rem 0 0.4rem 0;
+  text-wrap: balance;
 }
 
 p.subtitle {
@@ -234,9 +242,10 @@ p.subtitle {
   color: var(--muted);
   display: block;
   line-height: 1.3;
+  text-wrap: balance;
 }
 
-p { margin: 0 0 1.4rem 0; }
+p { margin: 0 0 1.4rem 0; text-wrap: pretty; }
 
 /* ============================================================
    6. LINKS
@@ -382,7 +391,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
     margin: 1rem 2.5% 1rem 2.5%;
     padding: 0.5rem 1rem;
     border-left: 3px solid var(--rule);
-    background: rgba(0,0,0,0.015);
+    background: color-mix(in srgb, var(--ink) 2%, transparent);
     vertical-align: baseline;
     position: relative;
   }
