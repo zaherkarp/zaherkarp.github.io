@@ -231,7 +231,7 @@ h3 {
   font-weight: 400;
   font-size: 1.5rem;
   line-height: 1.2;
-  margin: 2rem 0 0.4rem 0;
+  margin: 1.7rem 0 0.4rem 0;
   text-wrap: balance;
 }
 
@@ -857,8 +857,8 @@ figure.sankey-figure figcaption {
    .formula-caption: small italic explanation below the formula
    ============================================================ */
 .formula-block {
-  margin: 1.5rem 0;
-  padding: 0.5rem 0;
+  margin: 1rem 0;
+  padding: 0;
   text-align: center;
 }
 .formula {
@@ -1784,11 +1784,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform. The role spans direct management, code review across the engineering team, and coordination of data science and QA across two geographies, plus the product roadmap and translation between CMS requirements and organizational priorities.
+      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities.
     </p>
 
     <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and browser automation for source extraction, producing auditable outputs where every threshold and weighted average is traceable to its source.
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
     </p>
 
     <!-- ==========================================================
@@ -1818,7 +1818,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         </span>
       </div>
       <div class="formula-caption">
-        Huber's &psi;-function. Residuals smaller than the threshold <i>k</i> contribute linearly to the gradient; residuals larger than <i>k</i> are clipped, so a single COVID-era shock cannot dominate the smoothing parameter estimates.
+        Huber's &psi;-function. Clipping large residuals stops a single COVID-era shock from dominating the smoothing parameter estimates.
       </div>
     </div>
 
@@ -1840,7 +1840,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also moved infrastructure from AWS to Azure and Databricks, rebuilding the analytics layer without interrupting service for existing clients.
     </p>
 
     <p>
