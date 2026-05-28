@@ -2,7 +2,7 @@
 """
 build_portfolio.py
 
-Injects three pieces of build-time content into index.html, between marker
+Injects four pieces of build-time content into index.html, between marker
 comments:
 
   <!-- activity-grid:start --> ... <!-- activity-grid:end -->
@@ -10,10 +10,16 @@ comments:
     blog frontmatter (publishDate, draft). No external requests.
 
   <!-- writing-list:start --> ... <!-- writing-list:end -->
-    The six most recent non-draft posts, rendered as the homepage Writing
-    section's entries. Sourced from the same blog frontmatter; the
-    optional `homepageMarginnote` field renders an inline margin note
-    next to the entry title.
+    The two most recent non-draft posts, rendered as the homepage Writing
+    section's featured entries (full summary). Sourced from the blog
+    frontmatter; the optional `homepageMarginnote` field renders an inline
+    margin note next to the entry title.
+
+  <!-- writing-index:start --> ... <!-- writing-index:end -->
+    The next six posts after the featured pair, rendered as compact
+    .writing-tile small multiples in the sibling .writing-index grid.
+    Same frontmatter source; margin notes are featured-only, so tiles
+    omit homepageMarginnote.
 
   <div class="pub-entry" data-sid="..."> ... </div>
     Semantic Scholar citation counts. Fetched per `data-sid` attribute;
@@ -48,7 +54,8 @@ install_git_hooks()
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
-WRITING_LIST_LIMIT = 6
+WRITING_FEATURED = 2     # most-recent posts shown as full featured entries
+WRITING_TILES = 6        # next posts shown as compact .writing-tile multiples
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
 # Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
 # grid. The pre-2025 journalism pieces live in the blog but aren't part
@@ -218,14 +225,16 @@ def _strip_em_dashes(s: str) -> str:
 
 
 def build_writing_list(posts: list[dict]) -> str:
-    """Emit the homepage Writing section's six most recent post entries.
+    """Emit the homepage Writing section's two most recent featured entries.
 
     Sorted by publishDate desc. Drafts and `_`-prefixed sources are
-    already filtered out in load_posts(). Optional `homepageMarginnote`
+    already filtered out in load_posts(). These are the prominent
+    full-summary `.entry` blocks; the next posts are demoted to compact
+    tiles by build_writing_index(). Optional `homepageMarginnote`
     frontmatter renders an inline ⊕ margin note next to the title; the
     toggle id is `mn-w-<slug>` so it stays unique across entries.
     """
-    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_LIST_LIMIT]
+    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
     blocks: list[str] = []
     for p in recent:
         date_str = p["date"].isoformat()
@@ -250,6 +259,34 @@ def build_writing_list(posts: list[dict]) -> str:
             f'{margin_html}\n'
             '      </div>\n'
             f'      <p class="summary">{desc}</p>\n'
+            '    </div>'
+        )
+    return "\n\n".join(blocks)
+
+
+def build_writing_index(posts: list[dict]) -> str:
+    """Emit the .writing-index small-multiples grid: the WRITING_TILES posts
+    immediately after the featured pair.
+
+    Mirrors the projects-index tile pattern but keys each tile by date
+    (the `.writing-tile` class deliberately has no `.num` span, so the
+    project CSS counter is untouched). Margin notes are a featured-only
+    affordance, so `homepageMarginnote` is intentionally ignored here to
+    keep tiles compact.
+    """
+    by_date = sorted(posts, key=lambda p: p["date"], reverse=True)
+    tiles = by_date[WRITING_FEATURED:WRITING_FEATURED + WRITING_TILES]
+    blocks: list[str] = []
+    for p in tiles:
+        date_str = p["date"].isoformat()
+        title = _esc(_strip_em_dashes(p["title"]))
+        desc = _esc(_strip_em_dashes(p["description"]))
+        slug = p["slug"]
+        blocks.append(
+            '    <div class="writing-tile">\n'
+            f'      <span class="date">{date_str}</span>\n'
+            f'      <span class="title"><a href="/blog/{slug}/">{title}</a></span>\n'
+            f'      <p class="tile-summary">{desc}</p>\n'
             '    </div>'
         )
     return "\n\n".join(blocks)
@@ -370,7 +407,12 @@ def main() -> int:
 
     writing_html = build_writing_list(posts)
     text = replace_between(text, "writing-list", writing_html)
-    print(f"writing list injected ({min(len(posts), WRITING_LIST_LIMIT)} entries)")
+    print(f"writing list injected ({min(len(posts), WRITING_FEATURED)} featured entries)")
+
+    index_html = build_writing_index(posts)
+    text = replace_between(text, "writing-index", index_html)
+    n_tiles = max(0, min(len(posts) - WRITING_FEATURED, WRITING_TILES))
+    print(f"writing index injected ({n_tiles} tiles)")
 
     text, ok, fail = inject_citations(text)
     print(f"citation counts: {ok} updated, {fail} skipped (fetch failed)")
