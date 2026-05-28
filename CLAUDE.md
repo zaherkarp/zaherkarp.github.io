@@ -740,6 +740,32 @@ marginnote, push, and the workflow populates the count.
 
 ---
 
+## Site review workflow
+
+Multi-agent feedback + iterative implementation loop, separate from
+the build pipelines above. Produces no site changes by itself; it
+produces feedback documents that drive hand-applied iterations.
+
+Entry points:
+- `reviews/README.md` — workflow overview, prompt recipes (the four
+  multi-agent prompts), iteration pattern, summary of the 2026-05-23 run
+- `scripts/review/README.md` — publish-workflow operator notes
+- `.github/workflows/site-review-publish.yml` — GitHub Action that
+  opens a tracking issue per review batch and carries unchecked items
+  forward. No API keys; no secrets.
+
+The 2026-05-23 run produced four reports in `critiques/`,
+`evaluations/`, and `reviews/`. Five iterations of changes shipped on
+`claude/multi-agent-page-critique-BYmwb`; remaining Tier 3 discussion
+items documented in `reviews/2026-05-23-synthesis.md`.
+
+The multi-agent prompts themselves are deliberately not committed to
+the repo (Option A scope: publish-only pipeline, prompts live with
+the generator). If you want them versioned, drop them into
+`scripts/review/prompts/`.
+
+---
+
 ## Pre-push checks (agent-runnable)
 
 These run automatically via `scripts/hooks/pre-push`, installed by

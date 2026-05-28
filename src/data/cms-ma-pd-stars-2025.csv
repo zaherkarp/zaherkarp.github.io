@@ -1,0 +1,29 @@
+# CMS 2025 Medicare Advantage Prescription Drug (MA-PD) Star Ratings
+# distribution by overall Star Rating tier.
+#
+# Source: CMS 2025 Part C and D Star Ratings, October 2024 release
+# https://www.cms.gov/medicare/health-drug-plans/part-c-d-performance-data
+# https://www.cms.gov/newsroom/fact-sheets/2025-medicare-advantage-part-d-star-ratings
+#
+# Numbers are rounded to whole-contract counts from the published
+# release. Total MA-PD contracts rated: roughly 412. The 4-or-higher
+# tier holds approximately 40% of MA-PD enrollees in 2025, down from
+# 51% in 2024 and 74% in 2022.
+#
+# Update annually after the October release. The accompanying
+# scripts/build_cliff.py reads this file and writes the density
+# curve into the cliff figure in index.html, between the
+# <!-- cliff-path:start --> and <!-- cliff-path:end --> markers.
+#
+# Schema:
+#   rating  - overall star rating, in 0.5 increments
+#   count   - number of MA-PD contracts at that rating
+rating,count
+1.5,1
+2.0,8
+2.5,35
+3.0,95
+3.5,140
+4.0,100
+4.5,26
+5.0,7

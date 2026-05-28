@@ -11,10 +11,6 @@
 <link rel="preconnect" href="https://gc.zgo.at">
 
 <meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
-<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
-     https://www.bing.com/webmasters when ready. See TODO.md.
-<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
--->
 
 <meta property="og:title" content="Zaher Karp, Healthcare Data Engineering">
 <meta property="og:description" content="15+ years building production analytics in regulated healthcare. Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.">
@@ -1120,7 +1116,24 @@ svg [fill="#d0d0c8"]   { fill: var(--rule); }
 svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* ============================================================
-   18. PRINT OVERRIDES
+   18.5. REDUCED MOTION
+   Vestibular-sensitive readers signal prefers-reduced-motion in
+   their OS. The page doesn't animate anything explicitly today,
+   but declaring the contract here means any future transition,
+   details-open animation, or smooth-scroll lands respecting the
+   preference without re-asking the access question.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   19. PRINT OVERRIDES
    Paper is always a light medium regardless of the reader's
    screen mode, so we force light tokens. Hide nav and the
    career arc SVG (its 1200-unit viewBox exceeds printable
@@ -1264,7 +1277,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            that ties the red-above to the red-below.
            Larger red circle (r=6) at the band to anchor the eye. -->
       <line x1="800" y1="260" x2="800" y2="320" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="800" cy="260" r="6" fill="#7a0000"/>
+      <circle cx="800" cy="260" r="6" fill="#7a0000" stroke="#111" stroke-width="1.5"/>
       <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
 
       <!-- ERA ANNOTATIONS (quiet)
@@ -1342,9 +1355,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <text x="55" y="585"  text-anchor="end" fill="#6a6a6a">2017</text>
         <line x1="60" y1="580" x2="70" y2="580" stroke="#6a6a6a"/>
 
-        <!-- 2020: red year label; secondary "acquired" caption
-             in smaller italic directly below. Replaces the
-             horizontal version's below-axis text annotation. -->
+        <!-- 2020: red year label with a small dark triangle marker
+             at x=40 so the inflection reads under color-vision
+             constraints; secondary "acquired" caption in smaller
+             italic directly below. Replaces the horizontal version's
+             below-axis text annotation. -->
+        <polygon points="40,728 50,735 40,742" fill="#111"/>
         <text x="55" y="735"  text-anchor="end" fill="#7a0000">2020</text>
         <line x1="60" y1="730" x2="70" y2="730" stroke="#6a6a6a"/>
         <text x="55" y="753"  text-anchor="end" font-size="14" font-style="italic" fill="#7a0000">acquired by</text>
@@ -1401,11 +1417,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
     </p>
 
     <p>
-      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
+      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span> I lead a data function, because the decisions I want to influence happen above the individual contributor level.
     </p>
   </section>
 
@@ -1455,21 +1471,21 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <circle cx="410" cy="95" r="4" fill="#111"/>
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2014: Pandhi et al JIHI, 23 citations (most-cited) -->
-      <circle cx="620" cy="95" r="10" fill="#111"/>
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"/></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <circle cx="830" cy="95" r="4" fill="#111"/>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <circle cx="1040" cy="95" r="4" fill="#111"/>
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"/></a>
 
       <!-- 2019a: Karp et al HERD, 11 citations -->
-      <circle cx="1138" cy="95" r="7" fill="#111"/>
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"/></a>
       <!-- 2019b: Pandhi et al Acad Med, 4 citations (slight x offset) -->
-      <circle cx="1156" cy="95" r="5" fill="#111"/>
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"/></a>
 
       <!-- PRESENTATIONS (below the axis).
            Each dot is a presentation, stacked vertically when a
@@ -1556,7 +1572,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
              (10 years, 38px apart, 360-unit usable width)
            ========================================================== -->
-    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity, mobile compressed view, 2010 to 2019">
+    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout">
 
       <!-- LANE LABELS, left edge -->
       <text x="6" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">pubs</text>
@@ -1585,32 +1601,44 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              4 citations      = 3
              11 citations     = 4
              23 citations     = 5.5 (the 2014 standout) -->
-      <circle cx="146" cy="55" r="2.5" fill="#111"/>     <!-- 2012 WCEL -->
-      <circle cx="222" cy="55" r="5.5" fill="#111"/>     <!-- 2014 JIHI, 23 cites -->
-      <circle cx="298" cy="55" r="2.5" fill="#111"/>     <!-- 2016 ImplSci -->
-      <circle cx="374" cy="55" r="2.5" fill="#111"/>     <!-- 2018 IJHM -->
-      <circle cx="408" cy="55" r="4"   fill="#111"/>     <!-- 2019 HERD, 11 cites -->
-      <circle cx="416" cy="55" r="3"   fill="#111"/>     <!-- 2019 AcadMed, 4 cites -->
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="#111"/></a>     <!-- 2012 WCEL -->
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, 23 cites -->
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="#111"/></a>     <!-- 2016 ImplSci -->
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="#111"/></a>     <!-- 2018 IJHM -->
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, 11 cites -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, 4 cites -->
 
-      <!-- PRESENTATIONS, below axis at y=110.
-           Bars (vertical line segments) instead of stacked dots.
-           Bar height = count * 4. Width 6, centered at year x.
-           The peak at 2015 becomes the tallest bar (7 talks * 4
-           = 28px), reading visually as the same peak the wide
-           version shows but in a form legible at phone scale. -->
+      <!-- PRESENTATIONS, below axis at y=85.
+           Stacked dots, one per presentation. First dot at cy=108,
+           each subsequent +6px (r=2). 2015's tall column of 7 dots
+           visually echoes the wide version's same-year peak while
+           staying legible at phone scale; the encoding is constant
+           across viewport sizes (countable dots, not aggregated
+           bars). -->
 
-      <!-- 2010: 1 talk, h=4 -->
-      <rect x="67"  y="105" width="6" height="4"  fill="#6a6a6a"/>
-      <!-- 2012: 2 talks, h=8 -->
-      <rect x="143" y="105" width="6" height="8"  fill="#6a6a6a"/>
-      <!-- 2014: 3 talks, h=12 -->
-      <rect x="219" y="105" width="6" height="12" fill="#6a6a6a"/>
-      <!-- 2015: 7 talks, h=28 (the visual peak) -->
-      <rect x="257" y="105" width="6" height="28" fill="#6a6a6a"/>
-      <!-- 2016: 2 talks, h=8 -->
-      <rect x="295" y="105" width="6" height="8"  fill="#6a6a6a"/>
-      <!-- 2017: 2 talks, h=8 -->
-      <rect x="333" y="105" width="6" height="8"  fill="#6a6a6a"/>
+      <!-- 2010: 1 talk -->
+      <circle cx="70"  cy="108" r="2" fill="#6a6a6a"/>
+      <!-- 2012: 2 talks -->
+      <circle cx="146" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="146" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2014: 3 talks -->
+      <circle cx="222" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="120" r="2" fill="#6a6a6a"/>
+      <!-- 2015: 7 talks (the visual peak) -->
+      <circle cx="260" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="120" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="126" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="132" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="138" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="144" r="2" fill="#6a6a6a"/>
+      <!-- 2016: 2 talks -->
+      <circle cx="298" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="298" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2017: 2 talks -->
+      <circle cx="336" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="336" cy="114" r="2" fill="#6a6a6a"/>
     </svg>
   </figure>
 
@@ -1620,43 +1648,55 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <h2>Writing</h2>
 
     <!-- CADENCE HEADER
-         24-week sparkline, ~11px apart, r=2. Trailing post count
-         is the Tufte last-point-label pattern, so the chart is
-         self-legending. The wrapping markers (activity-grid:start
-         / activity-grid:end) are anchors for
-         scripts/build_portfolio.py to regenerate the sparkline
-         content from the actual blog frontmatter on every CI run. -->
+         Twenty-four-week sparkline generated from blog frontmatter
+         by scripts/build_portfolio.py on every CI run. Each week's
+         post count drives a vertical stem (height = count * 2 SVG
+         units, capped at the chart top); silent weeks render as
+         empty space against the faint baseline rule. The encoding
+         now carries actual cadence variance (burst weeks vs. quiet
+         weeks) that the earlier binary-dot version flattened away.
+
+         Trailing "{N} posts" is the Tufte last-point-label pattern:
+         a small numeric annotation at the end of a sparkline giving
+         the series total, so the chart is self-legending.
+
+         Margin note expands into a tag frequency rollup across the
+         24-week window, computed by the same build step.
+
+         The wrapping markers (activity-grid:start / activity-grid:end)
+         are anchors for scripts/build_portfolio.py to rewrite the
+         entire block. Do not hand-edit between the markers; changes
+         are overwritten on the next CI run. -->
     <!-- activity-grid:start -->
 <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
       24 weeks
-      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" aria-label="writing cadence sparkline, 24 weeks">
+      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
         <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
-        <circle cx="10" cy="10" r="2" fill="#111"/>
-        <circle cx="21" cy="10" r="2" fill="#111"/>
-        <circle cx="32" cy="10" r="2" fill="#111"/>
-        <circle cx="43" cy="10" r="2" fill="#111"/>
-        <circle cx="54" cy="10" r="2" fill="#111"/>
-        <circle cx="65" cy="10" r="2" fill="#111"/>
-        <circle cx="76" cy="10" r="2" fill="#111"/>
-        <circle cx="87" cy="10" r="2" fill="#111"/>
-        <circle cx="98" cy="10" r="2" fill="#111"/>
-        <circle cx="109" cy="10" r="2" fill="#111"/>
-        <circle cx="120" cy="10" r="2" fill="#111"/>
-        <circle cx="131" cy="10" r="2" fill="#111"/>
-        <circle cx="142" cy="10" r="2" fill="#111"/>
-        <circle cx="153" cy="10" r="2" fill="#111"/>
-        <circle cx="164" cy="10" r="2" fill="#111"/>
-        <circle cx="175" cy="10" r="2" fill="#d0d0c8"/>
-        <circle cx="186" cy="10" r="2" fill="#111"/>
-        <circle cx="197" cy="10" r="2" fill="#111"/>
-        <circle cx="208" cy="10" r="2" fill="#111"/>
-        <circle cx="219" cy="10" r="2" fill="#111"/>
-        <circle cx="230" cy="10" r="2" fill="#111"/>
-        <circle cx="241" cy="10" r="2" fill="#111"/>
-        <circle cx="252" cy="10" r="2" fill="#111"/>
-        <circle cx="263" cy="10" r="2" fill="#111"/>
+        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="76" y1="16" x2="76" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="120" y1="16" x2="120" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="131" y1="16" x2="131" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="142" y1="16" x2="142" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="153" y1="16" x2="153" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="164" y1="16" x2="164" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="186" y1="16" x2="186" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="197" y1="16" x2="197" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="208" y1="16" x2="208" y2="14" stroke="#111" stroke-width="1.6"/>
+        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.6"/>
+        <line x1="230" y1="16" x2="230" y2="8" stroke="#111" stroke-width="1.6"/>
+        <line x1="241" y1="16" x2="241" y2="12" stroke="#111" stroke-width="1.6"/>
+        <line x1="252" y1="16" x2="252" y2="8" stroke="#111" stroke-width="1.6"/>
+        <line x1="263" y1="16" x2="263" y2="6" stroke="#111" stroke-width="1.6"/>
       </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">35 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle tag breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (12) · healthcare-data (7) · architecture (5) · healthcare (5) · medicare (5) · sql (5) · ci-cd (4) · methodology (4) · star-ratings (4) · analytics (3) · dbt (3) · healthcare-analytics (3) · hedis (3) · medicare-advantage (3) · python (3) · stars (3) · version-control (3) · apis (2) · automation (2) · aws (2) · cms (2) · cost-modeling (2) · data-analysis (2) · health policy (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · mlops (2) · ordinal-regression (2) · policy (2) · public-health (2) · pull-requests (2) · reliability (2) · systems (2) · xgboost (2)</span>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">35 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote">data-engineering (12) · healthcare-data (7) · architecture (5) · healthcare (5) · medicare (5) · sql (5) · ci-cd (4) · methodology (4) · star-ratings (4) · analytics (3) · dbt (3) · healthcare-analytics (3) · hedis (3) · medicare-advantage (3) · python (3) · stars (3) · version-control (3) · apis (2) · automation (2) · aws (2) · cms (2) · cost-modeling (2) · data-analysis (2) · health policy (2) · healthcare-it (2) · healthcare-policy (2) · interactive (2) · llm (2) · mlops (2) · ordinal-regression (2) · policy (2) · public-health (2) · pull-requests (2) · reliability (2) · systems (2) · xgboost (2)</span>
     </p>
     <!-- activity-grid:end -->
 
@@ -1735,14 +1775,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <h2>Experience</h2>
 
     <h3>Manager of Data Science &amp; Engineering</h3>
-    <p class="meta">Baltimore Health Analytics &middot; Nov 2025 to Present (promoted from Lead Data Engineer, April 2026)</p>
+    <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present (Lead Data Engineer through Apr 2026)</p>
 
     <p>
       I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform. The role spans direct management, code review across the engineering team, and coordination of data science and QA across two geographies, plus the product roadmap and translation between CMS requirements and organizational priorities.
     </p>
 
     <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic changes, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and Selenium for web automation, producing auditable outputs where every threshold and weighted average is traceable to its source.
+      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, hierarchical clustering for cutpoint regeneration, and disaster adjustment provisions, all of which need to round-trip through the analytics layer without drift.</span> The work is translating that regulatory text into executable Python and SQL, using pandas for data transformation, scipy and numpy for statistical components including robust exponential smoothing for time series forecasting, and browser automation for source extraction, producing auditable outputs where every threshold and weighted average is traceable to its source.
     </p>
 
     <!-- ==========================================================
@@ -1779,14 +1819,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        HEDIS hybrid measures add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
+        HEDIS hybrid measures like Transitions of Care, and the Part D medication adherence triplet (MAH, MAC, MAD), add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
       </p>
       <p>
         Compliance-driven architecture is part of the role's design discipline. A recent example: a client-side Stars rating predictor where the cut-point projection runs entirely in the analyst's browser, so member-level data never transits off the machine. The browser-side compute sidesteps the data-transit review a server-side version would trigger; a side benefit has been a faster iteration loop than a comparable server-side tool would offer.
       </p>
     </details>
 
-    <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Selenium &middot; Python</p>
+    <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Python</p>
 
     <hr>
 
@@ -1794,13 +1834,17 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation across the platform cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also meant migrating infrastructure from AWS to Azure and Databricks, an architectural shift that required rebuilding the analytics layer while maintaining continuity of service for existing clients.
+    </p>
+
+    <p>
+      Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months at 4X value realization. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12, supporting 200 primary care physicians. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
     </p>
 
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span>
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Layered dbt models with vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved against all four EHR schemas.
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -1815,7 +1859,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      First analytics hire meant the infrastructure did not exist. I built it under HIPAA and HITRUST compliance requirements on AWS, which meant that every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
+      First analytics hire meant the infrastructure did not exist. I built it on AWS to HIPAA and HITRUST controls, which meant that every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
     </p>
 
     <details class="fold">
@@ -1839,7 +1883,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Toggle sidenote" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
+        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.<label for="sn-wls" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on Oxford methodological training" id="sn-wls" class="margin-toggle"/><span class="sidenote">Methodological training included Contemporary Qualitative Interviewing Methods at the University of Oxford (2014).</span>
       </p>
       <p>
         A sustained research thread on primary care redesign used grounded theory for qualitative analysis of field notes and focus group transcripts, and interrupted time series analysis to measure the effect of care delivery change initiatives on clinic panel data.
@@ -1885,7 +1929,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
-          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP threshold, a tenth of a star is worth $50 million. An ordinal logistic regression calibrated to CMS 2025 weights runs in the browser. No data leaves the user's machine.
+          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP threshold, a tenth of a star is worth $50 million. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser. No data leaves the user's machine.
         </p>
 
         <!-- ==========================================================
@@ -1899,16 +1943,20 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              enough to push them across the cliff.
 
              Design notes:
-               - Density path drawn as a smooth bezier approximating
-                 the rough shape of the CMS contract-rating
-                 distribution: bimodal with a primary mode just
-                 below 4.0 and a secondary mode at 4.5
+               - Density path generated from CMS 2025 MA-PD Star
+                 Ratings by scripts/build_cliff.py (Gaussian KDE
+                 over the contract-count distribution at
+                 src/data/cms-ma-pd-stars-2025.csv). Update the CSV
+                 after CMS's October release each year and re-run
+                 the script to refresh.
                - QBP-zone background uses a faint diagonal hatch
                  pattern so the boundary is visible without color
                  saturation. Tufte prefers texture to fill where
                  possible; hatching also reads in print
                - Red dashed line at x(4.0); $50M label sits to its
-                 right at the top
+                 right at the top, with a small dark triangle
+                 marker connecting the two so the callout reads
+                 under color-vision constraints
                - Y-axis (density) is unlabeled deliberately. The
                  absolute density is not the message; the relative
                  shape is. Showing axis numbers would invite
@@ -1916,52 +1964,38 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              ========================================================== -->
         <figure class="cliff-figure">
           <figcaption>
-            Approximate distribution of Medicare Advantage contract Star Ratings, showing the 4.0 QBP threshold.
+            Most Medicare Advantage contracts in the CMS 2025 Star Ratings cluster just below the 4.0 cutoff that triggers $50M in QBP bonus payments. Data from the CMS October 2024 release.
           </figcaption>
 
-          <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Density curve of MA plan ratings showing 4.0 QBP threshold">
+          <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Density curve of MA-PD contract Star Ratings showing most contracts below the 4.0 QBP cutoff, from CMS 2025 release">
 
             <!-- Define a faint diagonal hatch pattern for the
-                 below-threshold region. Lines at 45 degrees, very
-                 faint stroke, 6px spacing. Reads as "this is the
-                 unfavorable zone" without the visual weight of a
-                 solid fill. -->
+                 below-threshold region. Lines at 45 degrees,
+                 0.7 stroke at 0.6 opacity (raised from 0.4/0.4
+                 to clear the AA non-text contrast floor against
+                 the cream paper). 6px spacing. -->
             <defs>
               <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-                <line x1="0" y1="0" x2="0" y2="6" stroke="#6a6a6a" stroke-width="0.4" opacity="0.4"/>
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#6a6a6a" stroke-width="0.7" opacity="0.6"/>
               </pattern>
             </defs>
 
             <!-- BELOW-THRESHOLD HATCH ZONE.
-                 Spans x=60 (the 2.5 star left edge) to x=340 (the
+                 Spans x=60 (the 2.5 star left edge) to x=348 (the
                  4.0 cliff). Vertical extent matches the chart area. -->
-            <rect x="60" y="40" width="280" height="160" fill="url(#hatch)"/>
+            <rect x="60" y="40" width="288" height="160" fill="url(#hatch)"/>
 
             <!-- DENSITY CURVE.
-                 Smooth bezier path approximating a bimodal MA
-                 rating distribution. Coordinate logic:
-                   x(rating) = 60 + (rating - 2.5) * 56
-                   so 2.5 -> 60, 3.0 -> 88, 3.5 -> 116, 4.0 -> 200,
-                   4.5 -> 228, 5.0 -> 256, but I rescale below to
-                   spread across 60-540 properly:
-                   x(rating) = 60 + (rating - 2.5) * 192
-                   2.5 -> 60, 3.0 -> 156, 3.5 -> 252, 4.0 -> 348,
+                 Generated by scripts/build_cliff.py from the CMS
+                 2025 MA-PD distribution. Coordinate system:
+                   x = 60 + (rating - 2.5) * 192
+                   so 2.5 -> 60, 3.0 -> 156, 3.5 -> 252, 4.0 -> 348,
                    4.5 -> 444, 5.0 -> 540
-                 Y values are inverted (lower y = higher density).
-                 Peak primary mode at 3.9 (~y=70), secondary mode
-                 at 4.5 (~y=110). -->
-            <path d="
-              M 60,200
-              C 100,200 130,195 156,185
-              C 180,175 210,150 240,120
-              C 270,95 310,75 348,72
-              C 386,75 410,90 425,105
-              C 440,118 450,113 460,108
-              C 470,103 480,108 495,118
-              C 510,128 525,160 540,200
-              L 540,200 L 60,200 Z"
-              fill="#111" fill-opacity="0.06"
-              stroke="#111" stroke-width="1.5"/>
+                 y inverted (lower y = higher density). -->
+            <!-- cliff-path:start -->
+            <path d="M 60.00 200.00 L 60.00 161.31 L 62.00 161.04 L 64.00 160.83 L 66.00 160.68 L 68.00 160.58 L 70.00 160.52 L 72.00 160.48 L 74.00 160.46 L 76.00 160.44 L 78.00 160.41 L 80.00 160.35 L 82.00 160.24 L 84.00 160.07 L 86.00 159.82 L 88.00 159.48 L 90.00 159.03 L 92.00 158.46 L 94.00 157.75 L 96.00 156.91 L 98.00 155.90 L 100.00 154.74 L 102.00 153.41 L 104.00 151.91 L 106.00 150.24 L 108.00 148.40 L 110.00 146.40 L 112.00 144.25 L 114.00 141.95 L 116.00 139.53 L 118.00 136.99 L 120.00 134.35 L 122.00 131.64 L 124.00 128.88 L 126.00 126.09 L 128.00 123.29 L 130.00 120.52 L 132.00 117.80 L 134.00 115.15 L 136.00 112.60 L 138.00 110.18 L 140.00 107.91 L 142.00 105.81 L 144.00 103.90 L 146.00 102.21 L 148.00 100.74 L 150.00 99.50 L 152.00 98.51 L 154.00 97.77 L 156.00 97.28 L 158.00 97.03 L 160.00 97.01 L 162.00 97.23 L 164.00 97.65 L 166.00 98.26 L 168.00 99.03 L 170.00 99.95 L 172.00 100.98 L 174.00 102.09 L 176.00 103.25 L 178.00 104.43 L 180.00 105.58 L 182.00 106.68 L 184.00 107.70 L 186.00 108.59 L 188.00 109.32 L 190.00 109.87 L 192.00 110.21 L 194.00 110.31 L 196.00 110.16 L 198.00 109.74 L 200.00 109.03 L 202.00 108.04 L 204.00 106.74 L 206.00 105.16 L 208.00 103.30 L 210.00 101.16 L 212.00 98.77 L 214.00 96.15 L 216.00 93.32 L 218.00 90.32 L 220.00 87.17 L 222.00 83.93 L 224.00 80.62 L 226.00 77.28 L 228.00 73.97 L 230.00 70.71 L 232.00 67.57 L 234.00 64.57 L 236.00 61.76 L 238.00 59.18 L 240.00 56.86 L 242.00 54.84 L 244.00 53.15 L 246.00 51.80 L 248.00 50.82 L 250.00 50.21 L 252.00 50.00 L 254.00 50.18 L 256.00 50.74 L 258.00 51.69 L 260.00 53.00 L 262.00 54.66 L 264.00 56.63 L 266.00 58.90 L 268.00 61.43 L 270.00 64.19 L 272.00 67.12 L 274.00 70.20 L 276.00 73.38 L 278.00 76.62 L 280.00 79.87 L 282.00 83.09 L 284.00 86.24 L 286.00 89.28 L 288.00 92.17 L 290.00 94.88 L 292.00 97.37 L 294.00 99.63 L 296.00 101.62 L 298.00 103.34 L 300.00 104.76 L 302.00 105.89 L 304.00 106.72 L 306.00 107.26 L 308.00 107.50 L 310.00 107.48 L 312.00 107.19 L 314.00 106.67 L 316.00 105.94 L 318.00 105.03 L 320.00 103.96 L 322.00 102.78 L 324.00 101.52 L 326.00 100.21 L 328.00 98.88 L 330.00 97.59 L 332.00 96.35 L 334.00 95.21 L 336.00 94.20 L 338.00 93.35 L 340.00 92.68 L 342.00 92.22 L 344.00 91.99 L 346.00 92.00 L 348.00 92.27 L 350.00 92.81 L 352.00 93.61 L 354.00 94.69 L 356.00 96.04 L 358.00 97.64 L 360.00 99.49 L 362.00 101.58 L 364.00 103.87 L 366.00 106.37 L 368.00 109.03 L 370.00 111.84 L 372.00 114.78 L 374.00 117.80 L 376.00 120.90 L 378.00 124.03 L 380.00 127.18 L 382.00 130.31 L 384.00 133.40 L 386.00 136.44 L 388.00 139.38 L 390.00 142.23 L 392.00 144.95 L 394.00 147.54 L 396.00 149.99 L 398.00 152.27 L 400.00 154.39 L 402.00 156.35 L 404.00 158.13 L 406.00 159.75 L 408.00 161.20 L 410.00 162.49 L 412.00 163.62 L 414.00 164.62 L 416.00 165.47 L 418.00 166.21 L 420.00 166.84 L 422.00 167.36 L 424.00 167.81 L 426.00 168.19 L 428.00 168.51 L 430.00 168.79 L 432.00 169.04 L 434.00 169.27 L 436.00 169.51 L 438.00 169.74 L 440.00 170.00 L 442.00 170.28 L 444.00 170.59 L 446.00 170.94 L 448.00 171.33 L 450.00 171.76 L 452.00 172.24 L 454.00 172.78 L 456.00 173.35 L 458.00 173.98 L 460.00 174.64 L 462.00 175.35 L 464.00 176.09 L 466.00 176.86 L 468.00 177.65 L 470.00 178.47 L 472.00 179.29 L 474.00 180.12 L 476.00 180.95 L 478.00 181.77 L 480.00 182.58 L 482.00 183.38 L 484.00 184.14 L 486.00 184.88 L 488.00 185.59 L 490.00 186.26 L 492.00 186.89 L 494.00 187.48 L 496.00 188.02 L 498.00 188.53 L 500.00 188.98 L 502.00 189.40 L 504.00 189.77 L 506.00 190.09 L 508.00 190.38 L 510.00 190.63 L 512.00 190.85 L 514.00 191.03 L 516.00 191.19 L 518.00 191.32 L 520.00 191.43 L 522.00 191.52 L 524.00 191.60 L 526.00 191.67 L 528.00 191.73 L 530.00 191.79 L 532.00 191.85 L 534.00 191.91 L 536.00 191.98 L 538.00 192.06 L 540.00 192.14 L 540.00 200.00 Z" fill="#111" fill-opacity="0.06" stroke="none"/>
+            <path d="M 60.00 161.31 L 62.00 161.04 L 64.00 160.83 L 66.00 160.68 L 68.00 160.58 L 70.00 160.52 L 72.00 160.48 L 74.00 160.46 L 76.00 160.44 L 78.00 160.41 L 80.00 160.35 L 82.00 160.24 L 84.00 160.07 L 86.00 159.82 L 88.00 159.48 L 90.00 159.03 L 92.00 158.46 L 94.00 157.75 L 96.00 156.91 L 98.00 155.90 L 100.00 154.74 L 102.00 153.41 L 104.00 151.91 L 106.00 150.24 L 108.00 148.40 L 110.00 146.40 L 112.00 144.25 L 114.00 141.95 L 116.00 139.53 L 118.00 136.99 L 120.00 134.35 L 122.00 131.64 L 124.00 128.88 L 126.00 126.09 L 128.00 123.29 L 130.00 120.52 L 132.00 117.80 L 134.00 115.15 L 136.00 112.60 L 138.00 110.18 L 140.00 107.91 L 142.00 105.81 L 144.00 103.90 L 146.00 102.21 L 148.00 100.74 L 150.00 99.50 L 152.00 98.51 L 154.00 97.77 L 156.00 97.28 L 158.00 97.03 L 160.00 97.01 L 162.00 97.23 L 164.00 97.65 L 166.00 98.26 L 168.00 99.03 L 170.00 99.95 L 172.00 100.98 L 174.00 102.09 L 176.00 103.25 L 178.00 104.43 L 180.00 105.58 L 182.00 106.68 L 184.00 107.70 L 186.00 108.59 L 188.00 109.32 L 190.00 109.87 L 192.00 110.21 L 194.00 110.31 L 196.00 110.16 L 198.00 109.74 L 200.00 109.03 L 202.00 108.04 L 204.00 106.74 L 206.00 105.16 L 208.00 103.30 L 210.00 101.16 L 212.00 98.77 L 214.00 96.15 L 216.00 93.32 L 218.00 90.32 L 220.00 87.17 L 222.00 83.93 L 224.00 80.62 L 226.00 77.28 L 228.00 73.97 L 230.00 70.71 L 232.00 67.57 L 234.00 64.57 L 236.00 61.76 L 238.00 59.18 L 240.00 56.86 L 242.00 54.84 L 244.00 53.15 L 246.00 51.80 L 248.00 50.82 L 250.00 50.21 L 252.00 50.00 L 254.00 50.18 L 256.00 50.74 L 258.00 51.69 L 260.00 53.00 L 262.00 54.66 L 264.00 56.63 L 266.00 58.90 L 268.00 61.43 L 270.00 64.19 L 272.00 67.12 L 274.00 70.20 L 276.00 73.38 L 278.00 76.62 L 280.00 79.87 L 282.00 83.09 L 284.00 86.24 L 286.00 89.28 L 288.00 92.17 L 290.00 94.88 L 292.00 97.37 L 294.00 99.63 L 296.00 101.62 L 298.00 103.34 L 300.00 104.76 L 302.00 105.89 L 304.00 106.72 L 306.00 107.26 L 308.00 107.50 L 310.00 107.48 L 312.00 107.19 L 314.00 106.67 L 316.00 105.94 L 318.00 105.03 L 320.00 103.96 L 322.00 102.78 L 324.00 101.52 L 326.00 100.21 L 328.00 98.88 L 330.00 97.59 L 332.00 96.35 L 334.00 95.21 L 336.00 94.20 L 338.00 93.35 L 340.00 92.68 L 342.00 92.22 L 344.00 91.99 L 346.00 92.00 L 348.00 92.27 L 350.00 92.81 L 352.00 93.61 L 354.00 94.69 L 356.00 96.04 L 358.00 97.64 L 360.00 99.49 L 362.00 101.58 L 364.00 103.87 L 366.00 106.37 L 368.00 109.03 L 370.00 111.84 L 372.00 114.78 L 374.00 117.80 L 376.00 120.90 L 378.00 124.03 L 380.00 127.18 L 382.00 130.31 L 384.00 133.40 L 386.00 136.44 L 388.00 139.38 L 390.00 142.23 L 392.00 144.95 L 394.00 147.54 L 396.00 149.99 L 398.00 152.27 L 400.00 154.39 L 402.00 156.35 L 404.00 158.13 L 406.00 159.75 L 408.00 161.20 L 410.00 162.49 L 412.00 163.62 L 414.00 164.62 L 416.00 165.47 L 418.00 166.21 L 420.00 166.84 L 422.00 167.36 L 424.00 167.81 L 426.00 168.19 L 428.00 168.51 L 430.00 168.79 L 432.00 169.04 L 434.00 169.27 L 436.00 169.51 L 438.00 169.74 L 440.00 170.00 L 442.00 170.28 L 444.00 170.59 L 446.00 170.94 L 448.00 171.33 L 450.00 171.76 L 452.00 172.24 L 454.00 172.78 L 456.00 173.35 L 458.00 173.98 L 460.00 174.64 L 462.00 175.35 L 464.00 176.09 L 466.00 176.86 L 468.00 177.65 L 470.00 178.47 L 472.00 179.29 L 474.00 180.12 L 476.00 180.95 L 478.00 181.77 L 480.00 182.58 L 482.00 183.38 L 484.00 184.14 L 486.00 184.88 L 488.00 185.59 L 490.00 186.26 L 492.00 186.89 L 494.00 187.48 L 496.00 188.02 L 498.00 188.53 L 500.00 188.98 L 502.00 189.40 L 504.00 189.77 L 506.00 190.09 L 508.00 190.38 L 510.00 190.63 L 512.00 190.85 L 514.00 191.03 L 516.00 191.19 L 518.00 191.32 L 520.00 191.43 L 522.00 191.52 L 524.00 191.60 L 526.00 191.67 L 528.00 191.73 L 530.00 191.79 L 532.00 191.85 L 534.00 191.91 L 536.00 191.98 L 538.00 192.06 L 540.00 192.14" fill="none" stroke="#111" stroke-width="1.5"/>
+            <!-- cliff-path:end -->
 
             <!-- X-AXIS RULE -->
             <line x1="60" y1="200" x2="540" y2="200" stroke="#111" stroke-width="1"/>
@@ -1987,10 +2021,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
             <!-- $50M ANNOTATION at top of cliff line.
                  Text label "+$50M" pinned to the right of the
-                 dashed line at the top of the chart. Tufte's
-                 preference for direct labels over a separate
-                 legend. -->
-            <text x="356" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#7a0000" font-style="italic">+$50M</text>
+                 dashed line at the top of the chart. A small dark
+                 triangle marker bridges the line and the label so
+                 the callout reads under color-vision constraints.
+                 Tufte's preference for direct labels over a
+                 separate legend. -->
+            <polygon points="349,52 354,55 349,58" fill="#111"/>
+            <text x="358" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#7a0000" font-style="italic">+$50M</text>
 
             <!-- ZONE LABELS.
                  "no QBP" floats over the hatched zone; "QBP" sits
@@ -2006,6 +2043,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
         <p class="links">
           <a href="/star-rating-predictor/" data-goatcounter-click="project-stars-demo" data-goatcounter-title="Stars Cliff Simulator" aria-label="Live demo: Stars Cliff Simulator">Live demo</a>
+          <a href="https://github.com/zaherkarp/zaherkarp.github.io/tree/main/star-rating-predictor" data-goatcounter-click="project-stars-source" data-goatcounter-title="Stars Cliff Simulator source" aria-label="GitHub source: Stars Cliff Simulator">Source</a>
           <a href="/blog/star-rating-predictor-methodology/" data-goatcounter-click="project-stars-methodology" data-goatcounter-title="Stars methodology post" aria-label="Methodology post: The Stars Cliff Simulator: Methodology &amp; Evidence">Methodology post</a>
         </p>
         <p class="stack">Ordinal logistic regression &middot; vanilla JS &middot; no dependencies &middot; client-side</p>
@@ -2050,7 +2088,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
              ========================================================== -->
         <figure class="sankey-figure">
           <figcaption>
-            Example transition pathway for a Medical Assistant. Illustrative shares: bar widths and stroke widths reflect the share routed to each target occupation.
+            One worked example: a Medical Assistant routed to five candidate target occupations. Bar widths and stroke widths reflect illustrative shares.
           </figcaption>
 
           <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
@@ -2230,12 +2268,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="publications">
     <h2>Publications</h2>
 
-    <div class="entry pub-entry" data-sid="PMID:30913920">
+    <div class="entry pub-entry" id="pub-herd" data-sid="PMID:30913920">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2019</span>
         <em>Influence of environmental design on team interactions across 3 family medicine clinics</em>
         <label for="mn-herd" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-herd" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for HERD 2019 paper" id="mn-herd" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/30913920/" aria-label="PubMed: Influence of environmental design on team interactions (HERD 2019)">PubMed</a> &middot;
           <a href="https://www.researchgate.net/publication/332030639" aria-label="ResearchGate: Influence of environmental design on team interactions (HERD 2019)">ResearchGate</a>
@@ -2249,12 +2287,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry pub-entry" data-sid="PMID:31348072">
+    <div class="entry pub-entry" id="pub-acadmed" data-sid="PMID:31348072">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2019</span>
         <em>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial</em>
         <label for="mn-acadmed" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-acadmed" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for Academic Medicine 2019 paper" id="mn-acadmed" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/31348072/" aria-label="PubMed: Broadening medical students' exposure to the range of illness experiences (Academic Medicine 2019)">PubMed</a>
           <br>
@@ -2267,12 +2305,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-acos">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2018</span>
         <em>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings</em>
         <label for="mn-acos" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-acos" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show note on Medicare Shared Savings Programs analysis, IJHM 2018" id="mn-acos" class="margin-toggle"/>
         <span class="marginnote">
           Published in the <em>International Journal of Healthcare Management</em>, 2018. First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts.
         </span>
@@ -2283,12 +2321,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-implsci">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2016</span>
         <em>An efficient process of gathering diverse community opinions to inform an intervention</em>
         <label for="mn-implsci" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-implsci" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show full-text link for Implementation Science 2016 paper" id="mn-implsci" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6" aria-label="Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)">Full text</a>
         </span>
@@ -2299,12 +2337,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry pub-entry" data-sid="PMID:25584902">
+    <div class="entry pub-entry" id="pub-jihi" data-sid="PMID:25584902">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2014</span>
         <em>Approaches and challenges to optimizing primary care teams' electronic health record usage</em>
         <label for="mn-jihi" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-jihi" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show PubMed link and citation count for JIHI 2014 paper" id="mn-jihi" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://pubmed.ncbi.nlm.nih.gov/25584902/" aria-label="PubMed: Approaches and challenges to optimizing primary care teams' EHR usage (Journal of Innovation in Health Informatics 2014)">PubMed</a>
           <br>
@@ -2317,12 +2355,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       </p>
     </div>
 
-    <div class="entry">
+    <div class="entry" id="pub-wcel">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2012</span>
         <em>Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings)</em>
         <label for="mn-wcel" class="margin-toggle">&#8853;</label>
-        <input type="checkbox" aria-label="Toggle margin note" id="mn-wcel" class="margin-toggle"/>
+        <input type="checkbox" aria-label="Show full-text link for WCEL 2012 proceedings paper" id="mn-wcel" class="margin-toggle"/>
         <span class="marginnote">
           <a href="https://www.learntechlib.org/p/41869/" aria-label="Full text: Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL 2012)">Full text</a>
         </span>
@@ -2347,7 +2385,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="speaking">
     <h2>Speaking</h2>
     <p>
-      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
+      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on Patient Choice Award 2015 recognition" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
     </p>
 
     <details class="speaking-list">
@@ -2378,11 +2416,16 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
   <!-- ==========================================================
        TESTIMONIALS
-       Two testimonials. The real site had a "Read full
-       testimonial" expand-collapse toggle. Per the same pattern
-       used throughout, the short and long versions are merged
-       into a single rendering: short version is shown inline,
-       long version is a margin note toggle. No redundant copy.
+       Three testimonials: two from Health Catalyst era
+       (downstream consumers) and one from Sustainable Clarity
+       era (direct report, copy editing practice). The HC pair
+       speaks to recent technical work; the Sustainable Clarity
+       quote speaks to the management craft already cited in the
+       Sustainable Clarity entry above (managed up to 8 copy
+       editors, graphic designers, and photographers).
+
+       Short and long versions are merged into one rendering:
+       short version shown inline, long version a fold toggle.
        ========================================================== -->
   <section id="testimonials">
     <h2>Testimonials</h2>
@@ -2409,6 +2452,19 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <summary>More</summary>
         <p>
           Zaher was solely responsible for ensuring timely, accurate data delivery across multiple Electronic Health Record environments: Cerner, Epic, athenahealth, and Veradigm. He successfully led the migration of analytics from Sisense to Pop Insights, and implemented automated weekly data refreshes for Cerner, significantly improving efficiency and reliability. He often joined client calls to clarify requests and wasn't afraid to push back when necessary to protect data integrity and long-term scalability.
+        </p>
+      </details>
+    </div>
+
+    <div class="testimonial">
+      <blockquote>
+        The feedback Zaher provides is always prompt and constructive, and he consistently assigns projects well suited to my abilities and to continuing their growth, maximizing my opportunities to learn.
+      </blockquote>
+      <div class="attribution">William Barber, copy editor reporting to Zaher at Sustainable Clarity, 2013</div>
+      <details class="fold">
+        <summary>More</summary>
+        <p>
+          Zaher is an excellent supervisor and editing mentor. While I have worked for him, he has provided a wealth of support and knowledge, helping to drastically improve my proofreading and copy editing craft. The feedback Zaher provides is always prompt and constructive, and he consistently assigns projects well suited to my abilities and to continuing their growth, maximizing my opportunities to learn.
         </p>
       </details>
     </div>

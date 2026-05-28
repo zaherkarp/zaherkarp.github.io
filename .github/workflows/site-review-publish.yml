@@ -1,0 +1,39 @@
+name: Site review (publish)
+
+on:
+  push:
+    paths:
+      - 'critiques/**'
+      - 'evaluations/**'
+      - 'reviews/**'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Report date (YYYY-MM-DD). Defaults to the latest detected in critiques/, evaluations/, or reviews/.'
+        required: false
+        type: string
+      notes:
+        description: 'Optional context note rendered as a blockquote in the issue body.'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open or update site-review issue
+        uses: actions/github-script@v7
+        env:
+          REPORT_DATE: ${{ inputs.date }}
+          RUN_NOTES: ${{ inputs.notes }}
+        with:
+          script: |
+            const lifecycle = require('./scripts/review/issue-lifecycle.cjs');
+            await lifecycle.run({ github, context, core });
