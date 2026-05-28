@@ -1,0 +1,109 @@
+# publications.yaml — single source of truth for Zaher Karp's publications.
+#
+# Consumed by two build steps:
+#   - scripts/build_portfolio.py regenerates the homepage Publications block
+#     (index.html, between <!-- pub-list:start --> ... <!-- pub-list:end -->)
+#     and refreshes the cached `citations:` counts below from Semantic Scholar.
+#   - scripts/build_resume.py renders the CV's Publications section (cv.pdf /
+#     cv.html) from this same list, using the cached counts (no network call
+#     during the resume/CV build).
+#
+# Field notes:
+#   id          slug; drives the #pub-<id> / mn-<id> ids in the homepage markup.
+#   year        publication year (oldstyle figure on the homepage).
+#   title       plain text; HTML-escaped on render.
+#   authors     plain text, trailing period included; HTML-escaped on render.
+#   venue       journal/proceedings name, plain text; HTML-escaped, italicised.
+#   detail      volume/issue/pages, trailing period included. May be empty.
+#   toggle_aria aria-label for the homepage margin-note toggle (accessibility).
+#   sid         optional Semantic Scholar id ("PMID:..." / "DOI:..."). When
+#               present, the homepage entry gets class "entry pub-entry" +
+#               data-sid, and build_portfolio refreshes `citations` below.
+#   citations   cached integer count. Refreshed in place by build_portfolio;
+#               omit for entries without a `sid`. On a failed/rate-limited
+#               fetch the cached value is preserved.
+#   links       list of {label, url, aria}. Rendered in the margin note (home)
+#               and inline (CV). Mutually exclusive with `note`.
+#   note        raw HTML margin-note prose (used instead of links). Only the
+#               ACOs entry uses this today.
+#
+# Em-dash policy (CLAUDE.md): keep this file em-dash-clean so the generated
+# homepage chrome stays compliant with the pre-push grep.
+
+- id: herd
+  year: 2019
+  citations: 12
+  sid: "PMID:30913920"
+  title: "Influence of environmental design on team interactions across 3 family medicine clinics"
+  authors: "Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfetter T, Pandhi N."
+  venue: "Health Environments Research & Design Journal"
+  detail: "12(4):159-173."
+  toggle_aria: "Show PubMed link and citation count for HERD 2019 paper"
+  links:
+    - label: "PubMed"
+      url: "https://pubmed.ncbi.nlm.nih.gov/30913920/"
+      aria: "PubMed: Influence of environmental design on team interactions (HERD 2019)"
+    - label: "ResearchGate"
+      url: "https://www.researchgate.net/publication/332030639"
+      aria: "ResearchGate: Influence of environmental design on team interactions (HERD 2019)"
+
+- id: acadmed
+  year: 2019
+  citations: 4
+  sid: "PMID:31348072"
+  title: "Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial"
+  authors: "Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z et al."
+  venue: "Academic Medicine"
+  detail: ""
+  toggle_aria: "Show PubMed link and citation count for Academic Medicine 2019 paper"
+  links:
+    - label: "PubMed"
+      url: "https://pubmed.ncbi.nlm.nih.gov/31348072/"
+      aria: "PubMed: Broadening medical students' exposure to the range of illness experiences (Academic Medicine 2019)"
+
+- id: acos
+  year: 2018
+  title: "Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings"
+  authors: "Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N."
+  venue: "International Journal of Healthcare Management"
+  detail: ""
+  toggle_aria: "Show note on Medicare Shared Savings Programs analysis, IJHM 2018"
+  note: "Published in the <em>International Journal of Healthcare Management</em>, 2018. First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts."
+
+- id: implsci
+  year: 2016
+  title: "An efficient process of gathering diverse community opinions to inform an intervention"
+  authors: "Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z."
+  venue: "Implementation Science"
+  detail: "11(Suppl 1):A13."
+  toggle_aria: "Show full-text link for Implementation Science 2016 paper"
+  links:
+    - label: "Full text"
+      url: "https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6"
+      aria: "Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)"
+
+- id: jihi
+  year: 2014
+  citations: 24
+  sid: "PMID:25584902"
+  title: "Approaches and challenges to optimizing primary care teams' electronic health record usage"
+  authors: "Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P."
+  venue: "Journal of Innovation in Health Informatics"
+  detail: "21(3):142-51."
+  toggle_aria: "Show PubMed link and citation count for JIHI 2014 paper"
+  links:
+    - label: "PubMed"
+      url: "https://pubmed.ncbi.nlm.nih.gov/25584902/"
+      aria: "PubMed: Approaches and challenges to optimizing primary care teams' EHR usage (Journal of Innovation in Health Informatics 2014)"
+
+- id: wcel
+  year: 2012
+  title: "Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings)"
+  authors: "Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P."
+  venue: "Proceedings of World Conference on E-Learning, Montréal"
+  detail: ""
+  toggle_aria: "Show full-text link for WCEL 2012 proceedings paper"
+  links:
+    - label: "Full text"
+      url: "https://www.learntechlib.org/p/41869/"
+      aria: "Full text: Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL 2012)"
