@@ -17,6 +17,7 @@ in prose.
 Surfaces scanned:
   - src/content/blog/*.md (skipping drafts and `_`-prefixed files)
   - src/content/resume.md
+  - src/content/cv.md
   - index.html
 
 Out of scope: CLAUDE.md, README.md, AGENTS.md, scripts/, archive/,
@@ -77,6 +78,7 @@ install_git_hooks()
 ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = ROOT / "src" / "content" / "blog"
 RESUME = ROOT / "src" / "content" / "resume.md"
+CV = ROOT / "src" / "content" / "cv.md"
 INDEX = ROOT / "index.html"
 
 
@@ -161,6 +163,7 @@ CANONICALS: list[Canonical] = [
 EXEMPTIONS: dict[Path, frozenset[str]] = {
     INDEX: frozenset(),
     RESUME: frozenset(),
+    CV: frozenset(),
 }
 
 
@@ -277,6 +280,8 @@ def iter_surfaces() -> list[tuple[Path, bool, frozenset[str]]]:
             surfaces.append((path, True, post_exemptions(path)))
     if RESUME.exists():
         surfaces.append((RESUME, True, EXEMPTIONS.get(RESUME, frozenset())))
+    if CV.exists():
+        surfaces.append((CV, True, EXEMPTIONS.get(CV, frozenset())))
     if INDEX.exists():
         surfaces.append((INDEX, False, EXEMPTIONS.get(INDEX, frozenset())))
     return surfaces

@@ -15,11 +15,12 @@ comments:
     optional `homepageMarginnote` field renders an inline margin note
     next to the entry title.
 
-  <div class="pub-entry" data-sid="..."> ... </div>
-    Semantic Scholar citation counts. Fetched per `data-sid` attribute;
-    injected as <span class="pub-citations"> inside each entry. On fetch
-    failure the existing text is left untouched (so a flaky network or
-    rate-limit doesn't wipe prior values).
+  <!-- pub-list:start --> ... <!-- pub-list:end -->
+    The Publications block, generated from src/content/publications.yaml
+    (the single source of truth shared with the CV build). Semantic Scholar
+    citation counts are refreshed per entry `sid` and written back into the
+    YAML cache; on fetch failure the cached value is preserved (so a flaky
+    network or rate-limit doesn't wipe prior values).
 
 The script is idempotent: running it twice with the same inputs produces
 the same output. See .github/workflows/build_portfolio.yml for the CI
@@ -42,6 +43,11 @@ from pathlib import Path
 import frontmatter
 
 from _common import install_git_hooks
+from _publications import (
+    load_publications,
+    render_homepage_entries,
+    save_citation_counts,
+)
 
 install_git_hooks()
 
@@ -280,48 +286,36 @@ def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
     return None
 
 
-PUB_ENTRY_RE = re.compile(
-    # Match any class attribute that contains the token "pub-entry";
-    # the new index.html uses class="entry pub-entry" so the leading
-    # word may be different.
-    r'(<div class="[^"]*pub-entry[^"]*"[^>]*data-sid="([^"]+)"[^>]*>)(.*?)(</div>)',
-    re.DOTALL,
-)
-INNER_CITATION_RE = re.compile(r'(<span class="pub-citations">)([^<]*)(</span>)')
+def build_publications() -> tuple[str, int, int]:
+    """Refresh citation counts and render the homepage Publications block.
 
-
-def inject_citations(html: str) -> tuple[str, int, int]:
-    """Return (new_html, successes, failures).
-
-    In-place updates only. The static markup decides where the
-    citation span lives (inside the marginnote in the new design);
-    the script just keeps the count current. Entries without an
-    existing pub-citations span are left untouched.
+    Loads publications.yaml (the source of truth shared with the CV build),
+    fetches a fresh Semantic Scholar count for each entry with a `sid`,
+    writes the refreshed counts back into the YAML cache, and returns
+    (homepage_html, successes, failures). Entries without a `sid`, or whose
+    fetch fails, keep their cached count (graceful degradation). A 1s pause
+    between live requests stays under the public-tier rate limit.
     """
+    pubs = load_publications()
     successes = 0
     failures = 0
-
-    def replace(m: re.Match) -> str:
-        nonlocal successes, failures
-        open_tag, sid, inner, close_tag = m.group(1), m.group(2), m.group(3), m.group(4)
-        if not INNER_CITATION_RE.search(inner):
-            return open_tag + inner + close_tag
-        if successes + failures > 0:
+    fetched = 0
+    for pub in pubs:
+        sid = pub.get("sid")
+        if not sid:
+            continue
+        if fetched > 0:
             time.sleep(1.0)
+        fetched += 1
         count = fetch_citation_count(sid)
         if count is None:
             failures += 1
-            return open_tag + inner + close_tag
+            continue
+        pub["citations"] = count
         successes += 1
-        label = "citation" if count == 1 else "citations"
-        new_inner = INNER_CITATION_RE.sub(
-            lambda im: f'{im.group(1)}{count} {label}{im.group(3)}',
-            inner,
-        )
-        return open_tag + new_inner + close_tag
 
-    new_html = PUB_ENTRY_RE.sub(replace, html)
-    return new_html, successes, failures
+    save_citation_counts(pubs)
+    return render_homepage_entries(pubs), successes, failures
 
 
 # ─── marker replacement ───────────────────────────────────────────────────
@@ -372,8 +366,9 @@ def main() -> int:
     text = replace_between(text, "writing-list", writing_html)
     print(f"writing list injected ({min(len(posts), WRITING_LIST_LIMIT)} entries)")
 
-    text, ok, fail = inject_citations(text)
-    print(f"citation counts: {ok} updated, {fail} skipped (fetch failed)")
+    pub_html, ok, fail = build_publications()
+    text = replace_between(text, "pub-list", pub_html)
+    print(f"publications injected (citation counts: {ok} updated, {fail} skipped)")
 
     footer_html = build_updated_footer()
     text = replace_between(text, "updated", footer_html, end_indent="  ")

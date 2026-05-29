@@ -1,15 +1,24 @@
-name: Build resume
+name: Build resume and CV
 
 on:
   push:
     branches: [main, master]
     paths:
       - 'src/content/resume.md'
+      - 'src/content/cv.md'
+      - 'src/content/publications.yaml'
       - 'scripts/build_resume.py'
+      - 'scripts/_publications.py'
       - 'scripts/templates/resume/**'
       - 'scripts/fonts/**'
       - 'scripts/requirements.txt'
       - '.github/workflows/build_resume.yml'
+  # Weekly, one hour after build_portfolio.yml refreshes the cached citation
+  # counts in publications.yaml (Sundays 06:00 UTC). A GITHUB_TOKEN push does
+  # not re-trigger workflows, so this cron is how the CV picks up the freshly
+  # cached counts without a PAT.
+  schedule:
+    - cron: '0 7 * * 0'
   workflow_dispatch: {}
 
 permissions:
@@ -43,19 +52,19 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Build resume (PDF + HTML)
+      - name: Build resume and CV (PDF + HTML)
         run: python scripts/build_resume.py
 
-      - name: Commit regenerated resume artifacts
+      - name: Commit regenerated resume and CV artifacts
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resume.pdf resume.html
+          git add resume.pdf resume.html cv.pdf cv.html
           if git diff --cached --quiet; then
-            echo "No resume changes to commit."
+            echo "No resume/CV changes to commit."
             exit 0
           fi
-          git commit -m "build: regenerate resume.pdf + resume.html"
+          git commit -m "build: regenerate resume + cv (pdf + html)"
           # Rebase onto any commits other build_* workflows may have pushed
           # in parallel for the same source push; retry a few times in case
           # the race repeats. Pattern mirrors build_portfolio.yml.

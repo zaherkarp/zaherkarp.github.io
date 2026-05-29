@@ -2,11 +2,18 @@
 """
 build_resume.py
 
-Reads resume.md at the repo root, renders it through a Jinja2 template,
-and produces resume.pdf via WeasyPrint.
+Reads the document sources under src/content/ (resume.md and cv.md),
+renders each through its Jinja2 templates, and produces a PDF (via
+WeasyPrint) plus a web HTML page for each.
+
+The builder is config-driven: the DOCS list below names the source, the
+PDF/web templates, the output paths, and whether the document carries a
+generated Publications section. Both documents share the same rendering
+pipeline (make_markdown / transform_role_blocks / wrap_sections /
+split_header), so the resume output is unchanged by the addition of the CV.
 
 Design notes:
-- Markdown source drives content. Re-run on every resume.md change.
+- Markdown source drives content. Re-run on every source change.
 - The markdown role blocks follow this shape:
 
       **Company** | Role Title
@@ -20,6 +27,11 @@ Design notes:
   three header lines. A regex post-pass here replaces that with a
   structured <header class="role"> block so the template can style
   each line distinctly.
+- The CV carries a `<!-- publications -->` placeholder inside its
+  `## Publications` section; the build replaces it with the publication
+  list rendered from src/content/publications.yaml (the same source of
+  truth the homepage uses). Cached citation counts are read from the YAML
+  so the resume/CV build makes no network calls.
 - Print CSS targets US Letter at 10.5pt ETBook body, hairline #d0d0c8
   rule color. No bold weight is loaded; any <strong> in the source
   renders as small-caps via the template's global strong rule.
@@ -37,15 +49,40 @@ from markdown_it import MarkdownIt
 from weasyprint import HTML
 
 from _common import install_git_hooks
+from _publications import load_publications, render_cv_entries
 
 install_git_hooks()
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "src" / "content" / "resume.md"
-OUT_PDF = ROOT / "resume.pdf"
-OUT_HTML = ROOT / "resume.html"
+CONTENT_DIR = ROOT / "src" / "content"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 FONT_DIR = Path(__file__).resolve().parent / "fonts"
+
+# Each document: markdown source, the two templates, the two outputs, and
+# whether the body carries a <!-- publications --> placeholder to fill from
+# publications.yaml. Adding a document is a new entry here.
+DOCS = [
+    {
+        "name": "resume",
+        "src": CONTENT_DIR / "resume.md",
+        "pdf_template": "resume/resume.html",
+        "web_template": "resume/resume-web.html",
+        "out_pdf": ROOT / "resume.pdf",
+        "out_html": ROOT / "resume.html",
+        "publications": False,
+    },
+    {
+        "name": "cv",
+        "src": CONTENT_DIR / "cv.md",
+        "pdf_template": "resume/cv.html",
+        "web_template": "resume/cv-web.html",
+        "out_pdf": ROOT / "cv.pdf",
+        "out_html": ROOT / "cv.html",
+        "publications": True,
+    },
+]
+
+PUBLICATIONS_PLACEHOLDER = "<!-- publications -->"
 
 # Matches the 3-line role header block as rendered by markdown-it with
 # linkify/html enabled and breaks=True. We run a targeted regex because
@@ -75,6 +112,13 @@ def wrap_sections(html: str) -> str:
         "Skills": "skills",
         "Education": "education",
         "Awards and Recognition": "awards",
+        # CV-only sections (resume.md never emits these, so the resume
+        # rendering is unaffected):
+        "Publications": "pubs",
+        "Presentations": "talks",
+        "Grants and Funding": "grants",
+        "Service and Professional Activities": "service",
+        "Awards and Honors": "awards",
     }
 
     def replace_section(match: re.Match) -> str:
@@ -138,18 +182,37 @@ def split_header(body_html: str) -> tuple[str, str, str]:
     return name, contact, remaining
 
 
-def render() -> None:
-    if not SRC.exists():
-        print(f"error: {SRC} not found", file=sys.stderr)
+def inject_publications(body_html: str) -> str:
+    """Replace the <!-- publications --> placeholder with the CV pub list.
+
+    Reads cached citation counts from publications.yaml (no network call).
+    """
+    if PUBLICATIONS_PLACEHOLDER not in body_html:
+        print(
+            f"  WARN: {PUBLICATIONS_PLACEHOLDER} not found; "
+            f"skipping publications injection",
+            file=sys.stderr,
+        )
+        return body_html
+    entries = render_cv_entries(load_publications())
+    return body_html.replace(PUBLICATIONS_PLACEHOLDER, entries)
+
+
+def render(doc: dict, env: Environment) -> None:
+    src = doc["src"]
+    if not src.exists():
+        print(f"error: {src} not found", file=sys.stderr)
         sys.exit(1)
 
-    md_text = SRC.read_text(encoding="utf-8")
+    md_text = src.read_text(encoding="utf-8")
     md = make_markdown()
     raw_html = md.render(md_text)
 
     name, contact, remaining = split_header(raw_html)
     remaining = transform_role_blocks(remaining)
     remaining = wrap_sections(remaining)
+    if doc["publications"]:
+        remaining = inject_publications(remaining)
 
     pdf_body = (
         f'<div class="hdr-name">{name}</div>\n'
@@ -162,27 +225,33 @@ def render() -> None:
         f'{remaining}'
     )
 
-    env = Environment(
-        loader=FileSystemLoader(str(TEMPLATES_DIR)),
-        autoescape=select_autoescape([]),  # body is pre-rendered HTML
-    )
-
-    pdf_html = env.get_template("resume/resume.html").render(
+    out_pdf = doc["out_pdf"]
+    pdf_html = env.get_template(doc["pdf_template"]).render(
         name=name,
         body=pdf_body,
         font_dir=str(FONT_DIR),
     )
     pdf_bytes = HTML(string=pdf_html, base_url=str(ROOT)).write_pdf()
-    OUT_PDF.write_bytes(pdf_bytes)
-    print(f"wrote {OUT_PDF.relative_to(ROOT)} ({len(pdf_bytes):,} bytes)")
+    out_pdf.write_bytes(pdf_bytes)
+    print(f"wrote {out_pdf.relative_to(ROOT)} ({len(pdf_bytes):,} bytes)")
 
-    web_html = env.get_template("resume/resume-web.html").render(
+    out_html = doc["out_html"]
+    web_html = env.get_template(doc["web_template"]).render(
         name=name,
         body=web_body,
     )
-    OUT_HTML.write_text(web_html, encoding="utf-8")
-    print(f"wrote {OUT_HTML.relative_to(ROOT)} ({len(web_html):,} bytes)")
+    out_html.write_text(web_html, encoding="utf-8")
+    print(f"wrote {out_html.relative_to(ROOT)} ({len(web_html):,} bytes)")
+
+
+def main() -> None:
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape([]),  # body is pre-rendered HTML
+    )
+    for doc in DOCS:
+        render(doc, env)
 
 
 if __name__ == "__main__":
-    render()
+    main()

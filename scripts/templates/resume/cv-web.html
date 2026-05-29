@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ name }}, Curriculum Vitae</title>
+<meta name="description" content="Curriculum vitae for {{ name }}: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<link rel="canonical" href="https://zaherkarp.com/cv.html">
+<meta property="og:title" content="{{ name }}, Curriculum Vitae">
+<meta property="og:description" content="Curriculum vitae for {{ name }}: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://zaherkarp.com/cv.html">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<style>
+/* This CV web template intentionally duplicates the resume web CSS
+   (scripts/templates/resume/resume-web.html) so the resume output stays
+   byte-stable. Keep the shared rules in sync by hand if the palette
+   changes; CV-only rules are grouped under the "CV-only" comment. */
+:root {
+  --paper:  #fffff8;
+  --ink:    #111;
+  --muted:  #6a6a6a;
+  --rule:   #d0d0c8;
+  --accent: #7a0000;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:  #201b14;
+    --ink:    #f5ecd7;
+    --muted:  #c2b8a0;
+    --rule:   #3a3024;
+    --accent: #e05e3e;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 19px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  line-height: 1.55;
+  background: var(--paper);
+  color: var(--ink);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 2px;
+}
+a:hover { text-decoration-color: var(--ink); }
+
+nav.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+nav.top a { text-decoration: none; }
+nav.top .right { color: var(--muted); }
+nav.top .right a { color: var(--muted); }
+
+h1 {
+  font-size: 2.4rem;
+  font-weight: normal;
+  line-height: 1.05;
+  margin-bottom: 0.25rem;
+}
+
+.contact {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.15rem;
+  margin: 1.8rem 0 0.6rem;
+}
+
+h2 + p {
+  margin-bottom: 0.4rem;
+}
+
+p { margin-bottom: 0.5rem; }
+
+.role {
+  margin: 1rem 0 0.3rem;
+}
+.role-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+.role-where {
+  font-size: 1.05rem;
+}
+.role-where .role-org {
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+.role-where .role-sep {
+  color: var(--muted);
+  margin: 0 0.35em;
+}
+.role-date {
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.role-stack {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+  margin-bottom: 0.3rem;
+}
+
+ul {
+  list-style-type: disc;
+  margin: 0.2rem 0 0.6rem 1.4rem;
+}
+li {
+  margin-bottom: 0.15rem;
+  line-height: 1.55;
+}
+li::marker { color: var(--muted); }
+
+.skills p, .education p, .awards p {
+  margin: 0.15rem 0;
+}
+
+/* ── CV-only sections ──────────────────────────────────────── */
+
+.pubs .pub-entry-cv {
+  margin: 0.3rem 0;
+}
+.pubs .pub-cite {
+  margin: 0;
+  padding-left: 1.4rem;
+  text-indent: -1.4rem;
+}
+.pubs .pub-year { color: var(--muted); }
+.pubs .pub-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.pubs .pub-meta a { color: var(--muted); }
+
+.talks ul, .service ul {
+  list-style-type: none;
+  margin: 0.2rem 0 0.6rem 0;
+}
+.talks li, .service li { line-height: 1.5; }
+.grants p { margin: 0.15rem 0; }
+
+em { font-style: italic; }
+strong {
+  font-weight: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+footer.page-footer {
+  margin-top: 3rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.82rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+footer.page-footer a { color: var(--muted); }
+
+@media print {
+  nav.top, footer.page-footer { display: none; }
+  body { max-width: none; padding: 0; }
+  a { text-decoration: none; color: var(--ink); }
+}
+</style>
+</head>
+<body>
+<nav class="top">
+  <a href="/">← Zaher Karp</a>
+  <span class="right">
+    <a href="/resume.html">Resume</a> ·
+    <a href="/cv.pdf" data-goatcounter-click="cv-pdf-download" data-goatcounter-title="CV PDF (from HTML)">Download PDF</a>
+  </span>
+</nav>
+
+{{ body | safe }}
+
+<footer class="page-footer">
+  <span>Source: <a href="https://github.com/zaherkarp/zaherkarp.github.io/blob/main/src/content/cv.md">cv.md</a></span>
+  <span><a href="/blog/">Writing</a> · <a href="mailto:me@zaherkarp.com">me@zaherkarp.com</a></span>
+</footer>
+
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

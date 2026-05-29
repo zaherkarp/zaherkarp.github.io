@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """lint_facts.py
 
-Cross-surface fact lint. Enforces consistency between three surfaces
+Cross-surface fact lint. Enforces consistency between the surfaces
 that name the same employment facts:
 
   - src/content/resume.md          (canonical Markdown source)
+  - src/content/cv.md              (the longer-form companion source)
   - index.html h3 + <p class="meta"> blocks (visible homepage chrome)
   - index.html <script type="application/ld+json"> (structured data)
 
-Three assertions:
+Assertions:
 
   1. Current role agreement: the newest entry on resume.md (end =
      "Present") must match the first homepage job block AND the
@@ -21,6 +22,10 @@ Three assertions:
   3. Exactly one current role per surface: each of resume.md and
      index.html should have exactly one entry whose end date is
      "Present".
+  4. CV / resume agreement (when cv.md exists): the CV's current role
+     must match the resume's, the CV must have exactly one "Present"
+     role, and every resume employer must also appear on the CV (the
+     CV is the comprehensive surface).
 
 When a check fails, see scripts/lint_facts.md for the per-failure
 incident-response playbook.
@@ -44,6 +49,7 @@ install_git_hooks()
 
 ROOT = Path(__file__).resolve().parent.parent
 RESUME = ROOT / "src" / "content" / "resume.md"
+CV = ROOT / "src" / "content" / "cv.md"
 INDEX = ROOT / "index.html"
 PLAYBOOK_REL = "scripts/lint_facts.md"
 
@@ -269,6 +275,67 @@ def check_orgs_subset(resume_jobs: list[Job], home_jobs: list[Job]) -> list[str]
     return failures
 
 
+def check_cv_against_resume(resume_jobs: list[Job], cv_jobs: list[Job]) -> list[str]:
+    """CV / resume employment agreement.
+
+    The CV reuses the resume's role-header format, so it is parsed with the
+    same matcher. We assert: the CV's first (newest) role matches the
+    resume's current role on org/title/start, the CV has exactly one
+    'Present' role, and every resume employer appears on the CV (the CV is
+    the comprehensive surface, so it must be a superset).
+    """
+    if not cv_jobs:
+        return [
+            "cv.md: no jobs parsed; check format "
+            "(**Org** | Title / Date – Date). Playbook: §G."
+        ]
+    failures: list[str] = []
+
+    cp = [j for j in cv_jobs if j.end == "Present"]
+    if len(cp) != 1:
+        failures.append(
+            f"cv.md: expected exactly 1 'Present' role, found "
+            f"{len(cp)}: {[j.raw_org for j in cp]}. Playbook: §F."
+        )
+
+    if resume_jobs:
+        rj = resume_jobs[0]
+        cj = cv_jobs[0]
+        if cj.end != "Present":
+            failures.append(
+                f"cv.md:{cj.source_line}: first role end='{cj.end}' "
+                f"(expected 'Present'); newest role must come first. Playbook: §F."
+            )
+        if rj.org != cj.org:
+            failures.append(
+                f"current employer mismatch: resume.md:{rj.source_line} "
+                f"says '{rj.raw_org}', cv.md:{cj.source_line} "
+                f"says '{cj.raw_org}'. Playbook: §A."
+            )
+        if rj.title != cj.title:
+            failures.append(
+                f"current title mismatch: resume.md:{rj.source_line} "
+                f"says '{rj.raw_title}', cv.md:{cj.source_line} "
+                f"says '{cj.raw_title}'. Playbook: §B."
+            )
+        if rj.start != cj.start:
+            failures.append(
+                f"current start date mismatch: resume.md:{rj.source_line} "
+                f"says '{rj.start}', cv.md:{cj.source_line} "
+                f"says '{cj.start}'. Playbook: §C."
+            )
+
+    cv_orgs = {j.org for j in cv_jobs}
+    for j in resume_jobs:
+        if j.org not in cv_orgs:
+            failures.append(
+                f"resume.md:{j.source_line}: employer '{j.raw_org}' on "
+                f"resume but not on the CV (cv.md has: {sorted(cv_orgs)}). "
+                f"Playbook: §E."
+            )
+    return failures
+
+
 def check_single_present(resume_jobs: list[Job], home_jobs: list[Job]) -> list[str]:
     failures: list[str] = []
     rp = [j for j in resume_jobs if j.end == "Present"]
@@ -302,11 +369,14 @@ def main() -> int:
     resume_jobs = parse_resume(resume_text)
     home_jobs = parse_homepage_jobs(index_text)
     jsonld = parse_jsonld(index_text)
+    cv_jobs = parse_resume(CV.read_text(encoding="utf-8")) if CV.exists() else None
 
     all_failures: list[str] = []
     all_failures += check_current_role(resume_jobs, home_jobs, jsonld)
     all_failures += check_orgs_subset(resume_jobs, home_jobs)
     all_failures += check_single_present(resume_jobs, home_jobs)
+    if cv_jobs is not None:
+        all_failures += check_cv_against_resume(resume_jobs, cv_jobs)
 
     if all_failures:
         print("Cross-surface fact lint found drift:\n", file=sys.stderr)
@@ -319,9 +389,10 @@ def main() -> int:
         )
         return 1
 
+    cv_note = f" + {len(cv_jobs)} cv role(s)" if cv_jobs is not None else ""
     print(
         f"facts lint: {len(resume_jobs)} resume role(s) + "
-        f"{len(home_jobs)} homepage job block(s) consistent"
+        f"{len(home_jobs)} homepage job block(s){cv_note} consistent"
     )
     return 0
 
