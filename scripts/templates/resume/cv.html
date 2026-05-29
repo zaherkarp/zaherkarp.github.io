@@ -9,12 +9,12 @@
    roman + italic, no bold. Anything that requests a heavier
    weight is forbidden — WeasyPrint would synthesize it.
 
-   This CV template intentionally duplicates the resume print
-   palette/typography (scripts/templates/resume/resume.html) rather
-   than sharing a partial, so the resume output stays byte-stable.
-   The CV deliberately runs far airier than the 1–2 page resume:
-   wide margins, generous leading, and large inter-section space.
-   Keep the shared palette in sync by hand if it changes. */
+   This is a traditional academic CV, structured deliberately unlike the
+   resume: Education leads, Publications are a numbered citation list, and
+   appointments / talks / honors / service are plain dated lists with a
+   left-gutter year column (no tech-stack lines, no achievement bullets).
+   It shares only the Tufte palette + ETBook with the resume; the resume
+   output stays byte-stable. */
 @font-face {
   font-family: 'et-book';
   src: url('file://{{ font_dir }}/et-book/et-book-roman-line-figures.ttf') format('truetype');
@@ -29,8 +29,7 @@
 }
 
 /* Print: near-black ink on white, hairline gray rules. The CV is
-   intentionally multi-page with wide breathing room; page-break-inside
-   guards keep roles and publication entries from splitting. */
+   intentionally multi-page with wide breathing room. */
 @page {
   size: auto;
   margin: 1in 1.1in;
@@ -57,8 +56,7 @@ body {
   background: white;
 }
 
-/* Name + contact. Generous space below the header before the first
-   section sets the airy tone for the whole document. */
+/* Name + contact. Generous space below the header. */
 .hdr-name {
   font-family: 'et-book', Palatino, serif;
   font-size: 26pt;
@@ -76,8 +74,7 @@ body {
   margin-bottom: 34pt;
 }
 
-/* Section headings (## → <h2>). Italic, hairline rule, no accent.
-   Large top margin is the primary whitespace lever between sections. */
+/* Section headings (## → <h2>). Italic, hairline rule, large top margin. */
 h2 {
   font-family: 'et-book', Palatino, serif;
   font-style: italic;
@@ -89,155 +86,71 @@ h2 {
   page-break-after: avoid;
 }
 
-/* Summary paragraph (directly after Summary h2) */
-h2 + p {
+p {
   font-size: 10.5pt;
   line-height: 1.6;
-  margin-bottom: 2pt;
+  margin-bottom: 6pt;
 }
 
-/* Role header block (post-processed <header class="role">) */
-.role {
-  margin: 20pt 0 0 0;
-  page-break-inside: avoid;
-}
-.role-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1em;
-}
-.role-where {
-  font-size: 11.5pt;
-  color: var(--text);
-}
-.role-where .role-org {
-  font-variant: small-caps;
-  letter-spacing: 0.05em;
-}
-.role-where .role-sep {
-  color: var(--text-dim);
-  margin: 0 0.35em;
-}
-.role-date {
-  font-family: 'et-book', Palatino, serif;
-  font-size: 10.5pt;
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-.role-stack {
-  font-family: 'et-book', Palatino, serif;
-  font-size: 10pt;
-  color: var(--text-dim);
-  margin-top: 4pt;
-}
+/* Research interests: a short factual paragraph. */
+.interests p { margin-bottom: 2pt; }
 
-/* Experience bullets */
+/* ── Year-gutter lists ─────────────────────────────────────────
+   Education, Appointments, Presentations, Awards, and Service all
+   render as a year-hung list: the leading **YYYY** (or **YYYY–YYYY**)
+   in the markdown becomes <strong>, set in a muted left column, with
+   the entry text hanging beneath it. */
 ul {
-  list-style-type: disc;
-  margin: 7pt 0 9pt 16pt;
+  list-style: none;
+  margin: 9pt 0 0 0;
   padding: 0;
 }
 li {
-  margin-bottom: 5pt;
-  line-height: 1.6;
   font-size: 10.5pt;
+  line-height: 1.6;
+  margin-bottom: 9pt;
+  padding-left: 5.6em;
+  text-indent: -5.6em;
   page-break-inside: avoid;
 }
-li::marker { color: var(--text-dim); }
+li strong {
+  font-variant: normal;
+  font-weight: normal;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
 
-/* Skills: small-caps category labels + inline list */
+/* ── Publications: numbered academic citation list ───────────── */
+.pubs ol.pub-cv-list {
+  list-style: decimal;
+  margin: 9pt 0 0 0;
+  padding-left: 2em;
+}
+.pubs li {
+  padding-left: 0.4em;
+  text-indent: 0;
+  margin-bottom: 11pt;
+  page-break-inside: avoid;
+}
+.pubs li::marker { color: var(--text-dim); }
+.pubs .pub-cited {
+  color: var(--text-dim);
+  font-size: 9.5pt;
+}
+
+/* Grants: short prose paragraph (no per-grant data to itemize). */
+.grants p { margin: 6pt 0; }
+
+/* Technical skills: small-caps category labels + inline list. */
 .skills p {
   margin: 7pt 0;
   font-size: 10.5pt;
   line-height: 1.6;
 }
 
-/* Education: one entry per paragraph, generous separation */
-.education p {
-  margin: 8pt 0;
-  font-size: 10.5pt;
-  line-height: 1.6;
-}
-
-/* Awards / honors */
-.awards p {
-  margin: 8pt 0;
-  font-size: 10.5pt;
-  line-height: 1.6;
-}
-
-/* ── CV-only sections ──────────────────────────────────────── */
-
-/* Publications (generated from publications.yaml). Hanging paragraphs;
-   the year leads in muted figures, with roomy separation between entries. */
-.pubs .pub-entry-cv {
-  margin: 12pt 0;
-  page-break-inside: avoid;
-}
-.pubs .pub-cite {
-  font-size: 10.5pt;
-  line-height: 1.6;
-  text-indent: -1.4em;
-  margin-left: 1.4em;
-}
-.pubs .pub-year {
-  color: var(--text-dim);
-}
-.pubs .pub-title {
-  /* plain regular; the venue (in <em>) carries the italic */
-}
-.pubs .pub-meta {
-  font-size: 9.5pt;
-  color: var(--text-dim);
-}
-.pubs .pub-meta a { color: var(--text-dim); }
-
-/* Presentations: year-hung list. The leading **YYYY** in the markdown
-   renders as <strong>; here the year sits in a left column and the text
-   hangs beneath it, with generous space between entries. */
-.talks ul {
-  list-style: none;
-  margin: 9pt 0 0 0;
-  padding: 0;
-}
-.talks li {
-  font-size: 10.5pt;
-  line-height: 1.6;
-  margin-bottom: 9pt;
-  padding-left: 3.6em;
-  text-indent: -3.6em;
-}
-.talks li strong {
-  font-variant: normal;
-  letter-spacing: 0;
-  font-weight: normal;
-  color: var(--text-dim);
-}
-
-/* Service: plain, generously spaced list (years sit at the end of each
-   line, so no left year-column). */
-.service ul {
-  list-style: none;
-  margin: 9pt 0 0 0;
-  padding: 0;
-}
-.service li {
-  font-size: 10.5pt;
-  line-height: 1.6;
-  margin-bottom: 8pt;
-}
-.grants p {
-  font-size: 10.5pt;
-  line-height: 1.6;
-  margin: 8pt 0;
-}
-
 /* Inline emphasis. No bold weight loaded; <strong> → small-caps,
-   except where a section above overrides it (year columns). */
-em {
-  font-style: italic;
-}
+   except inside list items, where the leading bold is a muted year. */
+em { font-style: italic; }
 strong {
   font-weight: normal;
   font-variant: small-caps;

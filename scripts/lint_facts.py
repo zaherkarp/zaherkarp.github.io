@@ -122,6 +122,47 @@ def parse_resume(text: str) -> list[Job]:
     return jobs
 
 
+# ─── CV appointments parser ───────────────────────────────────────────────
+
+# The CV (cv.md) is a traditional academic document: appointments live in an
+# "## Appointments" section as a year-gutter list, one entry per line:
+#   - **2025–present** Org, Title. Optional scope sentence.
+# Year-only ranges (not month precision), so we compare on employer + the
+# single "present" role, not on start dates or titles.
+CV_APPT_SECTION_RE = re.compile(
+    r"^##\s+Appointments\s*$(?P<body>.*?)(?=^##\s|\Z)",
+    re.DOTALL | re.MULTILINE,
+)
+CV_APPT_LINE_RE = re.compile(
+    r"^-\s+\*\*(?P<range>[^*]+)\*\*\s+(?P<body>.+?)\s*$",
+    re.MULTILINE,
+)
+
+
+def parse_cv_appointments(text: str) -> list[Job]:
+    """Parse the CV's Appointments list into Jobs (newest first by file order)."""
+    sec = CV_APPT_SECTION_RE.search(text)
+    if not sec:
+        return []
+    base = sec.start("body")
+    jobs: list[Job] = []
+    for m in CV_APPT_LINE_RE.finditer(sec.group("body")):
+        rng = m.group("range").strip()
+        body = m.group("body").strip()
+        end = "Present" if "present" in rng.lower() else rng
+        line = text.count("\n", 0, base + m.start()) + 1
+        jobs.append(Job(
+            org=canonical_org(body),
+            title=canonical_title(body),
+            start="",
+            end=end,
+            raw_org=body.split(",")[0].strip(),
+            raw_title=body,
+            source_line=line,
+        ))
+    return jobs
+
+
 # ─── homepage parser ──────────────────────────────────────────────────────
 
 # <h3>Title</h3> ... <p class="meta">Org · Date to Date</p>
@@ -276,25 +317,26 @@ def check_orgs_subset(resume_jobs: list[Job], home_jobs: list[Job]) -> list[str]
 
 
 def check_cv_against_resume(resume_jobs: list[Job], cv_jobs: list[Job]) -> list[str]:
-    """CV / resume employment agreement.
+    """CV / resume employer agreement.
 
-    The CV reuses the resume's role-header format, so it is parsed with the
-    same matcher. We assert: the CV's first (newest) role matches the
-    resume's current role on org/title/start, the CV has exactly one
-    'Present' role, and every resume employer appears on the CV (the CV is
-    the comprehensive surface, so it must be a superset).
+    The CV is a traditional academic document with a year-gutter Appointments
+    list (year-only ranges, no month precision or stack lines), so we check
+    only what is comparable across the two surfaces: the CV's current (newest,
+    "present") employer matches the resume's current employer, the CV has
+    exactly one "present" appointment, and every resume employer also appears
+    on the CV (the CV is the comprehensive surface, so it must be a superset).
     """
     if not cv_jobs:
         return [
-            "cv.md: no jobs parsed; check format "
-            "(**Org** | Title / Date – Date). Playbook: §G."
+            "cv.md: no appointments parsed; check the '## Appointments' "
+            "list format (- **YYYY–present** Org, Title.). Playbook: §G."
         ]
     failures: list[str] = []
 
     cp = [j for j in cv_jobs if j.end == "Present"]
     if len(cp) != 1:
         failures.append(
-            f"cv.md: expected exactly 1 'Present' role, found "
+            f"cv.md: expected exactly 1 'present' appointment, found "
             f"{len(cp)}: {[j.raw_org for j in cp]}. Playbook: §F."
         )
 
@@ -303,26 +345,14 @@ def check_cv_against_resume(resume_jobs: list[Job], cv_jobs: list[Job]) -> list[
         cj = cv_jobs[0]
         if cj.end != "Present":
             failures.append(
-                f"cv.md:{cj.source_line}: first role end='{cj.end}' "
-                f"(expected 'Present'); newest role must come first. Playbook: §F."
+                f"cv.md:{cj.source_line}: first appointment end='{cj.end}' "
+                f"(expected 'present'); newest must come first. Playbook: §F."
             )
         if rj.org != cj.org:
             failures.append(
                 f"current employer mismatch: resume.md:{rj.source_line} "
                 f"says '{rj.raw_org}', cv.md:{cj.source_line} "
                 f"says '{cj.raw_org}'. Playbook: §A."
-            )
-        if rj.title != cj.title:
-            failures.append(
-                f"current title mismatch: resume.md:{rj.source_line} "
-                f"says '{rj.raw_title}', cv.md:{cj.source_line} "
-                f"says '{cj.raw_title}'. Playbook: §B."
-            )
-        if rj.start != cj.start:
-            failures.append(
-                f"current start date mismatch: resume.md:{rj.source_line} "
-                f"says '{rj.start}', cv.md:{cj.source_line} "
-                f"says '{cj.start}'. Playbook: §C."
             )
 
     cv_orgs = {j.org for j in cv_jobs}
@@ -369,7 +399,7 @@ def main() -> int:
     resume_jobs = parse_resume(resume_text)
     home_jobs = parse_homepage_jobs(index_text)
     jsonld = parse_jsonld(index_text)
-    cv_jobs = parse_resume(CV.read_text(encoding="utf-8")) if CV.exists() else None
+    cv_jobs = parse_cv_appointments(CV.read_text(encoding="utf-8")) if CV.exists() else None
 
     all_failures: list[str] = []
     all_failures += check_current_role(resume_jobs, home_jobs, jsonld)

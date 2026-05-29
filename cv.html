@@ -4,21 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zaher Karp, MPH, Curriculum Vitae</title>
-<meta name="description" content="Curriculum vitae for Zaher Karp, MPH: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<meta name="description" content="Curriculum vitae for Zaher Karp, MPH: education, appointments, publications, presentations, and academic service in healthcare data engineering and health services research.">
 <link rel="canonical" href="https://zaherkarp.com/cv.html">
 <meta property="og:title" content="Zaher Karp, MPH, Curriculum Vitae">
-<meta property="og:description" content="Curriculum vitae for Zaher Karp, MPH: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<meta property="og:description" content="Curriculum vitae for Zaher Karp, MPH: education, appointments, publications, presentations, and academic service in healthcare data engineering and health services research.">
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://zaherkarp.com/cv.html">
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
 <style>
-/* This CV web template intentionally duplicates the resume web palette
-   (scripts/templates/resume/resume-web.html) so the resume output stays
-   byte-stable. The CV runs deliberately airier than the resume: wider
-   leading and large inter-section space. CV-only rules are grouped under
-   the "CV-only" comment. Keep the shared palette in sync by hand. */
+/* Traditional academic CV (web). Shares only the Tufte palette with the
+   resume web template so the resume output stays byte-stable. CV-only
+   structure (year-gutter lists, numbered citation list) lives below. */
 :root {
   --paper:  #fffff8;
   --ink:    #111;
@@ -99,104 +97,51 @@ h2 {
   margin: 3.2rem 0 1rem;
 }
 
-h2 + p {
-  margin-bottom: 0.6rem;
-}
-
 p { margin-bottom: 0.7rem; }
+.interests p { margin-bottom: 0.4rem; }
 
-.role {
-  margin: 1.8rem 0 0.5rem;
-}
-.role-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1em;
-  flex-wrap: wrap;
-}
-.role-where {
-  font-size: 1.1rem;
-}
-.role-where .role-org {
-  font-variant: small-caps;
-  letter-spacing: 0.05em;
-}
-.role-where .role-sep {
-  color: var(--muted);
-  margin: 0 0.35em;
-}
-.role-date {
-  font-size: 0.9rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.role-stack {
-  font-size: 0.88rem;
-  color: var(--muted);
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
-}
-
+/* ── Year-gutter lists (Education, Appointments, Presentations,
+      Awards, Service): leading **YYYY** -> <strong> in a muted
+      left column, entry text hanging beneath. */
 ul {
-  list-style-type: disc;
-  margin: 0.5rem 0 1rem 1.4rem;
+  list-style: none;
+  margin: 0.6rem 0 0 0;
+  padding: 0;
 }
 li {
-  margin-bottom: 0.4rem;
-  line-height: 1.7;
-}
-li::marker { color: var(--muted); }
-
-.skills p, .education p, .awards p {
-  margin: 0.5rem 0;
-}
-
-/* ── CV-only sections ──────────────────────────────────────── */
-
-.pubs .pub-entry-cv {
-  margin: 0.9rem 0;
-}
-.pubs .pub-cite {
-  margin: 0;
-  padding-left: 1.4rem;
-  text-indent: -1.4rem;
-}
-.pubs .pub-year { color: var(--muted); }
-.pubs .pub-meta {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.pubs .pub-meta a { color: var(--muted); }
-
-/* Presentations: year-hung list (leading **YYYY** -> <strong>). */
-.talks ul {
-  list-style: none;
-  margin: 0.6rem 0 0 0;
-}
-.talks li {
   line-height: 1.6;
-  margin-bottom: 0.7rem;
-  padding-left: 3.4rem;
-  text-indent: -3.4rem;
+  margin-bottom: 0.8rem;
+  padding-left: 5.6rem;
+  text-indent: -5.6rem;
 }
-.talks li strong {
+li strong {
   font-variant: normal;
-  letter-spacing: 0;
   font-weight: normal;
+  letter-spacing: 0;
   color: var(--muted);
 }
 
-/* Service: plain, generously spaced list. */
-.service ul {
-  list-style: none;
+/* ── Publications: numbered academic citation list. */
+.pubs ol.pub-cv-list {
+  list-style: decimal;
   margin: 0.6rem 0 0 0;
+  padding-left: 1.9rem;
 }
-.service li {
+.pubs li {
+  padding-left: 0.4rem;
+  text-indent: 0;
+  margin-bottom: 0.9rem;
   line-height: 1.6;
-  margin-bottom: 0.55rem;
 }
+.pubs li::marker { color: var(--muted); }
+.pubs .pub-cited {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .grants p { margin: 0.5rem 0; }
+
+.skills p { margin: 0.5rem 0; }
 
 em { font-style: italic; }
 strong {
@@ -218,6 +163,10 @@ footer.page-footer {
 }
 footer.page-footer a { color: var(--muted); }
 
+@media (max-width: 600px) {
+  li { padding-left: 4.2rem; text-indent: -4.2rem; }
+}
+
 @media print {
   nav.top, footer.page-footer { display: none; }
   body { max-width: none; padding: 0; }
@@ -236,51 +185,29 @@ footer.page-footer a { color: var(--muted); }
 
 <h1>Zaher Karp, MPH</h1>
 <p class="contact">me@zaherkarp.com  |  zaherkarp.com  |  linkedin.com/in/zkarp</p>
-<h2>Summary</h2>
-<p>Data platform leader and health services researcher with 15+ years spanning academic research and production analytics engineering in regulated healthcare. Deep expertise in HEDIS, CMS Medicare Stars, and HIPAA-compliant data handling across Epic, Cerner, Veradigm, and athenahealth, with a peer-reviewed publication record in primary care systems engineering, EHR optimization, and accountable care.</p>
-<h2>Experience</h2>
-<section class="exp"><header class="role"><div class="role-line"><span class="role-where"><span class="role-org">Baltimore Health Analytics</span><span class="role-sep">|</span><span class="role-title">Manager of Data Science &amp; Engineering</span></span><span class="role-date">Nov 2025 – Present</span></div><div class="role-stack">MariaDB, Python, JavaScript, Ruby on Rails, Docker, Perl</div></header>
-<ul>
-<li>Own the data platform for a Medicare Advantage analytics product, including ETL/ELT architecture, stored procedure design, and the regulatory validation layer against CMS technical specifications</li>
-<li>Hardened and validated an ETS forecasting pipeline for Stars cutpoint prediction under regulatory scrutiny, reducing forecast error 34–53% versus standard Holt-Winters by downweighting COVID-era outliers with robust M-estimators</li>
-<li>Built HEDIS TRC, BPD, and CBP benchmarking pipelines using a pooled top-decile denominator methodology to produce structurally defensible performance ceilings</li>
-<li>Ported a legacy Perl pharmacy claims pipeline (Diabetes, RAS Antagonists, Statins PDC) to Python with pre-flight validation, structured logging, and MariaDB compatibility</li>
-<li>Lead a distributed engineering and QA team across schema design, code review, and release decisions; design data quality frameworks and release-readiness rubrics</li>
+<h2>Research Interests</h2>
+<section class="interests"><p>Healthcare data engineering and analytics in regulated environments. Particular focus on CMS Medicare Stars and HEDIS quality measurement, forecasting under regulatory constraints, and the design of compliant, governed data platforms. Earlier work in health services research on primary care systems, EHR optimization, and accountable care.</p>
+</section><h2>Education</h2>
+<section class="education"><ul>
+<li><strong>2015</strong> Master of Public Health, Biostatistics. University of Wisconsin-Madison.</li>
+<li><strong>2015</strong> Graduate Certificate, Patient Safety (Industrial and Systems Engineering). University of Wisconsin-Madison.</li>
+<li><strong>2007</strong> Bachelor of Arts, English Literature. University of Wisconsin-Madison.</li>
 </ul>
-<header class="role"><div class="role-line"><span class="role-where"><span class="role-org">Healthfinch (acquired by Health Catalyst)</span><span class="role-sep">|</span><span class="role-title">Analytics Manager</span></span><span class="role-date">Dec 2017 – Aug 2025</span></div><div class="role-stack">AWS (S3, Redshift), Azure, Databricks, dbt, SQL, Python (pandas, PySpark, Jinja), Airflow, Tableau, Sisense, DataDog</div></header>
-<ul>
-<li>First analytics hire; built HIPAA-certified data infrastructure on AWS, promoted to Manager within a year</li>
-<li>Built and scaled the data platform supporting value-based care and billing analytics across 50+ health systems</li>
-<li>Led analytics integration through the Health Catalyst acquisition, migrating infrastructure from AWS to Azure and Databricks and rebuilding the analytics layer using medallion architecture (bronze/silver/gold) while maintaining continuity of service across the combined portfolio</li>
-<li>Reduced AWS S3 storage costs ~50% and ETL load time 24+ hours via storage-tier redesign and partitioning</li>
-<li>Standardized legacy analytics into governed ELT pipelines (~70% codebase reduction); established semantic layers and data governance practices enabling 7x Sisense user growth and eliminating 400+ manual hours per quarter</li>
-<li>Designed HIPAA and HITRUST compliant security architecture and observability for analytics platforms; built ROI models supporting $1MM+ in recurring revenue decisions</li>
-</ul>
-<header class="role"><div class="role-line"><span class="role-where"><span class="role-org">University of Wisconsin-Madison</span><span class="role-sep">|</span><span class="role-title">Researcher and Research Specialist</span></span><span class="role-date">Sep 2009 – Jun 2018</span></div><div class="role-stack">SAS, Stata, R, NVivo, Qualtrics, Epic</div></header>
-<ul>
-<li>Co-authored 6+ peer-reviewed publications on accountable care shared savings, cancer screening performance, and EHR optimization across Family Medicine, Internal Medicine, Pediatrics, and Population Health Sciences</li>
-<li>Supported $250,000+ in federal grants (AHRQ, NIH, PCORI) through quantitative and qualitative analysis</li>
-<li>Designed and executed mixed-methods studies on primary care team workflows, environmental design, and the dissemination of practice-level improvements</li>
+</section><h2>Appointments</h2>
+<section class="appointments"><ul>
+<li><strong>2025–present</strong> Baltimore Health Analytics, Manager of Data Science and Engineering. Owns the data platform for a Medicare Advantage analytics product, including the regulatory validation layer against CMS technical specifications, and leads a distributed engineering and QA team.</li>
+<li><strong>2017–2025</strong> Healthfinch (acquired by Health Catalyst), Analytics Manager. Built and led the analytics data platform supporting value-based care across more than fifty health systems, including the infrastructure migration following the Health Catalyst acquisition.</li>
+<li><strong>2009–2018</strong> University of Wisconsin-Madison, Researcher and Research Specialist. Quantitative and qualitative analysis for federally funded health services research in primary care, co-authoring peer-reviewed publications and supporting AHRQ, NIH, and PCORI grants.</li>
 </ul>
 </section><h2>Publications</h2>
-<section class="pubs"><div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2019</span> Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfetter T, Pandhi N. <span class="pub-title">Influence of environmental design on team interactions across 3 family medicine clinics.</span> <em>Health Environments Research &amp; Design Journal</em> 12(4):159-173. <span class="pub-meta">(<a href="https://pubmed.ncbi.nlm.nih.gov/30913920/">PubMed</a> &middot; <a href="https://www.researchgate.net/publication/332030639">ResearchGate</a> &middot; 12 citations)</span></p>
-</div>
-<div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2019</span> Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z et al. <span class="pub-title">Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial.</span> <em>Academic Medicine</em>. <span class="pub-meta">(<a href="https://pubmed.ncbi.nlm.nih.gov/31348072/">PubMed</a> &middot; 4 citations)</span></p>
-</div>
-<div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2018</span> Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N. <span class="pub-title">Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings.</span> <em>International Journal of Healthcare Management</em>.</p>
-</div>
-<div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2016</span> Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z. <span class="pub-title">An efficient process of gathering diverse community opinions to inform an intervention.</span> <em>Implementation Science</em> 11(Suppl 1):A13. <span class="pub-meta">(<a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6">Full text</a>)</span></p>
-</div>
-<div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2014</span> Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P. <span class="pub-title">Approaches and challenges to optimizing primary care teams' electronic health record usage.</span> <em>Journal of Innovation in Health Informatics</em> 21(3):142-51. <span class="pub-meta">(<a href="https://pubmed.ncbi.nlm.nih.gov/25584902/">PubMed</a> &middot; 24 citations)</span></p>
-</div>
-<div class="pub-entry-cv">
-  <p class="pub-cite"><span class="pub-year">2012</span> Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. <span class="pub-title">Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings).</span> <em>Proceedings of World Conference on E-Learning, Montréal</em>. <span class="pub-meta">(<a href="https://www.learntechlib.org/p/41869/">Full text</a>)</span></p>
-</div>
+<section class="pubs"><ol class="pub-cv-list">
+  <li>Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfetter T, Pandhi N. Influence of environmental design on team interactions across 3 family medicine clinics. <em>Health Environments Research &amp; Design Journal</em>. 2019;12(4):159-173. PMID: 30913920. <span class="pub-cited">Cited 12 times.</span></li>
+  <li>Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z et al. Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial. <em>Academic Medicine</em>. 2019. PMID: 31348072. <span class="pub-cited">Cited 4 times.</span></li>
+  <li>Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N. Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings. <em>International Journal of Healthcare Management</em>. 2018.</li>
+  <li>Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z. An efficient process of gathering diverse community opinions to inform an intervention. <em>Implementation Science</em>. 2016;11(Suppl 1):A13.</li>
+  <li>Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P. Approaches and challenges to optimizing primary care teams' electronic health record usage. <em>Journal of Innovation in Health Informatics</em>. 2014;21(3):142-51. PMID: 25584902. <span class="pub-cited">Cited 24 times.</span></li>
+  <li>Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings). <em>Proceedings of World Conference on E-Learning, Montréal</em>. 2012.</li>
+</ol>
 </section><h2>Presentations</h2>
 <section class="talks"><p>Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering. A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</p>
 <ul>
@@ -304,26 +231,23 @@ footer.page-footer a { color: var(--muted); }
 </ul>
 </section><h2>Grants and Funding</h2>
 <section class="grants"><p>Contributed quantitative and qualitative analysis to more than $250,000 in federal research funding from the Agency for Healthcare Research and Quality (AHRQ), the National Institutes of Health (NIH), and the Patient-Centered Outcomes Research Institute (PCORI), supporting studies of primary care redesign, EHR optimization, and accountable care performance.</p>
-</section><h2>Education</h2>
-<section class="education"><p>Master of Public Health, Biostatistics | University of Wisconsin-Madison | Dec 2015</p>
-<p>Graduate Certificate, Patient Safety (Industrial &amp; Systems Engineering) | University of Wisconsin-Madison | Dec 2015</p>
-<p>Bachelor of Arts, English Literature | University of Wisconsin-Madison | May 2007</p>
+</section><h2>Awards and Honors</h2>
+<section class="awards"><ul>
+<li><strong>2017</strong> Alumni Hall Service Award, University of Wisconsin-Madison.</li>
+<li><strong>2015</strong> Patient Choice Award (2 of 45), North American Primary Care Research Group Conference.</li>
+</ul>
 </section><h2>Service and Professional Activities</h2>
 <section class="service"><ul>
-<li>Peer reviewer for healthcare services and informatics journals, 2019 to present</li>
-<li>Board member, The Road Home Dane County, 2016 to 2020</li>
-<li>Undergraduate research mentor, University of Wisconsin-Madison, 2014 to 2017</li>
-<li>Board chair, WORT 89.9 FM community radio, 2013 to 2015</li>
-<li>Lean Six Sigma certification, 2015</li>
+<li><strong>2019–present</strong> Peer reviewer for healthcare services and informatics journals.</li>
+<li><strong>2016–2020</strong> Board member, The Road Home Dane County.</li>
+<li><strong>2014–2017</strong> Undergraduate research mentor, University of Wisconsin-Madison.</li>
+<li><strong>2013–2015</strong> Board chair, WORT 89.9 FM community radio.</li>
+<li><strong>2015</strong> Lean Six Sigma certification.</li>
 </ul>
-</section><h2>Awards and Honors</h2>
-<section class="awards"><p>Alumni Hall Service Award, University of Wisconsin-Madison, 2017</p>
-<p>Patient Choice Award (2 of 45), North American Primary Care Research Group Conference, 2015</p>
-</section><h2>Skills</h2>
-<section class="skills"><p><strong>Data platform:</strong> SQL (Postgres, SQL Server, MySQL, MariaDB), Python (pandas, PySpark), dbt, Airflow, Docker, AWS, Azure, Databricks, Tableau, Sisense, DataDog, R, git</p>
-<p><strong>Healthcare domain:</strong> HEDIS, CMS Medicare Stars, HIPAA, HITRUST, EHR systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, CMS technical specifications, value-based care, ACO / MSSP</p>
+</section><h2>Technical Skills</h2>
+<section class="skills"><p><strong>Data platform:</strong> SQL (Postgres, SQL Server, MySQL, MariaDB), Python (pandas, PySpark), dbt, Airflow, Docker, AWS, Azure, Databricks, Tableau, Sisense, R, git</p>
+<p><strong>Healthcare domain:</strong> HEDIS, CMS Medicare Stars, HIPAA, HITRUST, EHR systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, value-based care, ACO / MSSP</p>
 <p><strong>Research methods:</strong> biostatistics, interrupted time series, mixed-methods study design, qualitative coding (NVivo), survey instrumentation (Qualtrics), SAS, Stata</p>
-<p><strong>Governance and delivery:</strong> ETL/ELT architecture, data modeling, semantic layers, metric governance, release readiness, data quality frameworks, cross-functional stakeholder communication</p>
 </section>
 
 <footer class="page-footer">

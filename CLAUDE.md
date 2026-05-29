@@ -699,17 +699,32 @@ Build script: scripts/build_resume.py
   <header class="role">) / wrap_sections (wraps each ## section in a
   class-bearing <section> by heading text) / split_header.
   Resume target: 1-2 pages, US Letter, ATS-parseable (single column).
-  CV: intentionally multi-page; same Tufte palette + ETBook.
+  CV: a traditional academic document, deliberately NOT a long resume.
+  Education leads, then Appointments, Publications (numbered citation
+  list), Presentations, Grants, Awards, Service, Technical Skills. A brief
+  "Research Interests" replaces the resume's Summary. No tech-stack lines,
+  no achievement-metric bullets. Dated entries use a left-gutter year
+  column: each list item starts `- **YYYY**` or `- **YYYY–YYYY**` (the
+  leading bold renders as <strong>, styled as a muted year in a hanging
+  indent). The CV does NOT use transform_role_blocks (no `Org | Title /
+  date / stack` headers); appointments are a year-gutter list instead.
+  Intentionally multi-page; same Tufte palette + ETBook.
 
 Templates (scripts/templates/resume/):
   resume.html / resume-web.html  — resume PDF + web
   cv.html / cv-web.html          — CV PDF + web
   The cv templates intentionally DUPLICATE the resume CSS rather than
   sharing a Jinja partial, so the resume output stays byte-stable (the
-  resume.html bytes must not move when the CV is rebuilt). CV-only rules
-  (.pubs / .talks / .grants / .service) are grouped under a "CV-only"
-  comment in each cv template. If the shared palette/typography changes,
-  update all four templates by hand.
+  resume.html bytes must not move when the CV is rebuilt). The cv templates
+  carry the academic-CV CSS: year-gutter list items (the generic ul/li are
+  styled as hanging year columns) and the numbered `.pubs ol.pub-cv-list`
+  citation list. If the shared palette/typography changes, update all four
+  templates by hand.
+
+lint_facts.py parses the CV's `## Appointments` list (parse_cv_appointments)
+  rather than the resume role format: it checks the CV's current ("present")
+  employer matches the resume's and that resume employers are a subset of CV
+  employers. Year-only ranges mean titles/start-dates are not cross-checked.
 
 Publications on the CV: cv.md carries a `<!-- publications -->` placeholder
   inside its `## Publications` section. build_resume.py replaces it with the

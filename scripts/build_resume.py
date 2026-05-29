@@ -114,11 +114,14 @@ def wrap_sections(html: str) -> str:
         "Awards and Recognition": "awards",
         # CV-only sections (resume.md never emits these, so the resume
         # rendering is unaffected):
+        "Research Interests": "interests",
+        "Appointments": "appointments",
         "Publications": "pubs",
         "Presentations": "talks",
         "Grants and Funding": "grants",
         "Service and Professional Activities": "service",
         "Awards and Honors": "awards",
+        "Technical Skills": "skills",
     }
 
     def replace_section(match: re.Match) -> str:
