@@ -316,15 +316,20 @@ def check_orgs_subset(resume_jobs: list[Job], home_jobs: list[Job]) -> list[str]
     return failures
 
 
-def check_cv_against_resume(resume_jobs: list[Job], cv_jobs: list[Job]) -> list[str]:
+def check_cv_against_resume(
+    resume_jobs: list[Job], cv_jobs: list[Job], cv_text: str
+) -> list[str]:
     """CV / resume employer agreement.
 
-    The CV is a traditional academic document with a year-gutter Appointments
-    list (year-only ranges, no month precision or stack lines), so we check
-    only what is comparable across the two surfaces: the CV's current (newest,
-    "present") employer matches the resume's current employer, the CV has
-    exactly one "present" appointment, and every resume employer also appears
-    on the CV (the CV is the comprehensive surface, so it must be a superset).
+    The CV is a traditional academic document. Its "## Appointments" section
+    holds the professional (industry) appointments as a year-gutter list
+    (year-only ranges, no month precision or stack lines); earlier academic
+    roles live under "## Past Research Positions". So we check: the CV's
+    current ("present") appointment matches the resume's current employer,
+    the Appointments list has exactly one "present" entry, and every resume
+    employer appears somewhere in the CV (the CV is the comprehensive
+    surface, so it must mention them all, whether under Appointments or
+    Past Research Positions).
     """
     if not cv_jobs:
         return [
@@ -355,13 +360,12 @@ def check_cv_against_resume(resume_jobs: list[Job], cv_jobs: list[Job]) -> list[
                 f"says '{cj.raw_org}'. Playbook: §A."
             )
 
-    cv_orgs = {j.org for j in cv_jobs}
+    haystack = cv_text.lower()
     for j in resume_jobs:
-        if j.org not in cv_orgs:
+        if j.org not in haystack:
             failures.append(
                 f"resume.md:{j.source_line}: employer '{j.raw_org}' on "
-                f"resume but not on the CV (cv.md has: {sorted(cv_orgs)}). "
-                f"Playbook: §E."
+                f"resume but not found anywhere in cv.md. Playbook: §E."
             )
     return failures
 
@@ -399,14 +403,15 @@ def main() -> int:
     resume_jobs = parse_resume(resume_text)
     home_jobs = parse_homepage_jobs(index_text)
     jsonld = parse_jsonld(index_text)
-    cv_jobs = parse_cv_appointments(CV.read_text(encoding="utf-8")) if CV.exists() else None
+    cv_text = CV.read_text(encoding="utf-8") if CV.exists() else None
+    cv_jobs = parse_cv_appointments(cv_text) if cv_text is not None else None
 
     all_failures: list[str] = []
     all_failures += check_current_role(resume_jobs, home_jobs, jsonld)
     all_failures += check_orgs_subset(resume_jobs, home_jobs)
     all_failures += check_single_present(resume_jobs, home_jobs)
     if cv_jobs is not None:
-        all_failures += check_cv_against_resume(resume_jobs, cv_jobs)
+        all_failures += check_cv_against_resume(resume_jobs, cv_jobs, cv_text)
 
     if all_failures:
         print("Cross-surface fact lint found drift:\n", file=sys.stderr)

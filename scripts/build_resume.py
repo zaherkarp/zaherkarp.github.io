@@ -116,12 +116,13 @@ def wrap_sections(html: str) -> str:
         # rendering is unaffected):
         "Research Interests": "interests",
         "Appointments": "appointments",
+        "Past Research Positions": "positions",
         "Publications": "pubs",
         "Presentations": "talks",
+        "Posters": "posters",
         "Grants and Funding": "grants",
         "Service and Professional Activities": "service",
         "Awards and Honors": "awards",
-        "Technical Skills": "skills",
     }
 
     def replace_section(match: re.Match) -> str:
