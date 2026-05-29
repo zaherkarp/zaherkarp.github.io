@@ -45,23 +45,23 @@ Sep 2009 – Jun 2018
 
 Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering. A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.
 
-- 2017. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
-- 2017. UW Institute for Clinical and Translational Research, Dissemination and Implementation Short Course. Madison, WI.
-- 2016. AAMC Integrating Quality Meeting. Chicago, IL.
-- 2016. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
-- 2015. Field Innovation Team's Bootcamp. Provo, UT.
-- 2015. Access, Quality, and Outcomes Research Network. Appleton, WI.
-- 2015. Society for Implementation Research Collaboration Conference. Seattle, WA.
-- 2015. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
-- 2015. UW Health Quality Week. Madison, WI.
-- 2015. North American Primary Care Research Group Conference. Cancún, Mexico.
-- 2015. Wisconsin Research and Education Network Convocation of Practices. Oshkosh, WI.
-- 2014. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
-- 2014. AAMC Integrating Quality Meeting. Chicago, IL.
-- 2014. Pharmacy Society of Wisconsin Annual Meeting. Madison, WI.
-- 2012. World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education. Montréal, QC.
-- 2012. UW Health organizational leadership. Middleton, WI.
-- 2010. Wisconsin Primary Care Research and Quality Improvement Forum. Middleton, WI.
+- **2017** National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
+- **2017** UW Institute for Clinical and Translational Research, Dissemination and Implementation Short Course. Madison, WI.
+- **2016** AAMC Integrating Quality Meeting. Chicago, IL.
+- **2016** National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
+- **2015** Field Innovation Team's Bootcamp. Provo, UT.
+- **2015** Access, Quality, and Outcomes Research Network. Appleton, WI.
+- **2015** Society for Implementation Research Collaboration Conference. Seattle, WA.
+- **2015** National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
+- **2015** UW Health Quality Week. Madison, WI.
+- **2015** North American Primary Care Research Group Conference. Cancún, Mexico.
+- **2015** Wisconsin Research and Education Network Convocation of Practices. Oshkosh, WI.
+- **2014** National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.
+- **2014** AAMC Integrating Quality Meeting. Chicago, IL.
+- **2014** Pharmacy Society of Wisconsin Annual Meeting. Madison, WI.
+- **2012** World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education. Montréal, QC.
+- **2012** UW Health organizational leadership. Middleton, WI.
+- **2010** Wisconsin Primary Care Research and Quality Improvement Forum. Middleton, WI.
 
 ## Grants and Funding
 
