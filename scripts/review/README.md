@@ -11,6 +11,19 @@ unchecked items forward so nothing falls off the back.
 **No API keys, no secrets.** The workflow reads files from the working
 tree and writes to GitHub Issues. That's the whole surface.
 
+## Panel prompts (`scripts/review/prompts/`)
+
+Versioned, reusable prompts for the verbal-invocation panels described in
+`CLAUDE.md` §Agent panels. These drive interactive critique sessions; they
+do not produce site changes by themselves.
+
+- `design-council.md` — the **Grumpy Design Council**: convenes the
+  design-decision personas (Edward, Massimo, Steve, Haben, Nathan, Bret,
+  Jess, Alan) as four parallel read-only sub-agent groups that argue across
+  lanes, emit a consensus-graded synthesis table, then iterate with you on
+  fixes one row at a time. Invoke: "Run
+  scripts/review/prompts/design-council.md on `<target>`, goal: `<goal>`."
+
 ---
 
 ## File layout the pipeline expects
