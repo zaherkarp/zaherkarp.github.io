@@ -2,7 +2,7 @@
 """
 build_portfolio.py
 
-Injects three pieces of build-time content into index.html, between marker
+Injects four pieces of build-time content into index.html, between marker
 comments:
 
   <!-- activity-grid:start --> ... <!-- activity-grid:end -->
@@ -10,10 +10,16 @@ comments:
     blog frontmatter (publishDate, draft). No external requests.
 
   <!-- writing-list:start --> ... <!-- writing-list:end -->
-    The six most recent non-draft posts, rendered as the homepage Writing
-    section's entries. Sourced from the same blog frontmatter; the
-    optional `homepageMarginnote` field renders an inline margin note
-    next to the entry title.
+    The two most recent non-draft posts, rendered as the homepage Writing
+    section's featured entries (full summary). Sourced from the blog
+    frontmatter; the optional `homepageMarginnote` field renders an inline
+    margin note next to the entry title.
+
+  <!-- writing-index:start --> ... <!-- writing-index:end -->
+    The next six posts after the featured pair, rendered as compact
+    .writing-tile small multiples in the sibling .writing-index grid.
+    Same frontmatter source; margin notes are featured-only, so tiles
+    omit homepageMarginnote.
 
   <!-- pub-list:start --> ... <!-- pub-list:end -->
     The Publications block, generated from src/content/publications.yaml
@@ -54,7 +60,8 @@ install_git_hooks()
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
-WRITING_LIST_LIMIT = 6
+WRITING_FEATURED = 2     # most-recent posts shown as full featured entries
+WRITING_TILES = 6        # next posts shown as compact .writing-tile multiples
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
 # Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
 # grid. The pre-2025 journalism pieces live in the blog but aren't part
@@ -224,19 +231,25 @@ def _strip_em_dashes(s: str) -> str:
 
 
 def build_writing_list(posts: list[dict]) -> str:
-    """Emit the homepage Writing section's six most recent post entries.
+    """Emit the homepage Writing section's two most recent featured entries.
 
     Sorted by publishDate desc. Drafts and `_`-prefixed sources are
-    already filtered out in load_posts(). Optional `homepageMarginnote`
-    frontmatter renders an inline ⊕ margin note next to the title; the
-    toggle id is `mn-w-<slug>` so it stays unique across entries.
+    already filtered out in load_posts(). These are the prominent
+    entries: the title is an h3 (heading parity with project tiles and a
+    screen-reader nav anchor) and the summary is the frontmatter
+    `description`, the same curated, standard-length blurb the tiles use,
+    so featured and tile text stay visually uniform. The featured/tile
+    distinction is carried by title size and layout, not blurb length.
+    Optional `homepageMarginnote` frontmatter renders an inline ⊕ margin
+    note next to the title; the toggle id is `mn-w-<slug>` so it stays
+    unique across entries.
     """
-    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_LIST_LIMIT]
+    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
     blocks: list[str] = []
     for p in recent:
         date_str = p["date"].isoformat()
         title = _esc(_strip_em_dashes(p["title"]))
-        desc = _esc(_strip_em_dashes(p["description"]))
+        summary = _esc(_strip_em_dashes(p["description"]))
         slug = p["slug"]
         marginnote = _strip_em_dashes((p["marginnote"] or "").strip())
         if marginnote:
@@ -252,10 +265,38 @@ def build_writing_list(posts: list[dict]) -> str:
             '    <div class="entry">\n'
             '      <div>\n'
             f'        <span class="date">{date_str}</span>\n'
-            f'        <span class="title"><a href="/blog/{slug}/">{title}</a></span>'
+            f'        <h3 class="title"><a href="/blog/{slug}/">{title}</a></h3>'
             f'{margin_html}\n'
             '      </div>\n'
-            f'      <p class="summary">{desc}</p>\n'
+            f'      <p class="summary">{summary}</p>\n'
+            '    </div>'
+        )
+    return "\n\n".join(blocks)
+
+
+def build_writing_index(posts: list[dict]) -> str:
+    """Emit the .writing-index small-multiples grid: the WRITING_TILES posts
+    immediately after the featured pair.
+
+    Mirrors the projects-index tile pattern but keys each tile by date
+    (the `.writing-tile` class deliberately has no `.num` span, so the
+    project CSS counter is untouched). Margin notes are a featured-only
+    affordance, so `homepageMarginnote` is intentionally ignored here to
+    keep tiles compact.
+    """
+    by_date = sorted(posts, key=lambda p: p["date"], reverse=True)
+    tiles = by_date[WRITING_FEATURED:WRITING_FEATURED + WRITING_TILES]
+    blocks: list[str] = []
+    for p in tiles:
+        date_str = p["date"].isoformat()
+        title = _esc(_strip_em_dashes(p["title"]))
+        desc = _esc(_strip_em_dashes(p["description"]))
+        slug = p["slug"]
+        blocks.append(
+            '    <div class="writing-tile">\n'
+            f'      <span class="date">{date_str}</span>\n'
+            f'      <h3 class="title"><a href="/blog/{slug}/">{title}</a></h3>\n'
+            f'      <p class="tile-summary">{desc}</p>\n'
             '    </div>'
         )
     return "\n\n".join(blocks)
@@ -364,7 +405,12 @@ def main() -> int:
 
     writing_html = build_writing_list(posts)
     text = replace_between(text, "writing-list", writing_html)
-    print(f"writing list injected ({min(len(posts), WRITING_LIST_LIMIT)} entries)")
+    print(f"writing list injected ({min(len(posts), WRITING_FEATURED)} featured entries)")
+
+    index_html = build_writing_index(posts)
+    text = replace_between(text, "writing-index", index_html)
+    n_tiles = max(0, min(len(posts) - WRITING_FEATURED, WRITING_TILES))
+    print(f"writing index injected ({n_tiles} tiles)")
 
     pub_html, ok, fail = build_publications()
     text = replace_between(text, "pub-list", pub_html)
