@@ -14,10 +14,11 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
 <style>
-/* This CV web template intentionally duplicates the resume web CSS
+/* This CV web template intentionally duplicates the resume web palette
    (scripts/templates/resume/resume-web.html) so the resume output stays
-   byte-stable. Keep the shared rules in sync by hand if the palette
-   changes; CV-only rules are grouped under the "CV-only" comment. */
+   byte-stable. The CV runs deliberately airier than the resume: wider
+   leading and large inter-section space. CV-only rules are grouped under
+   the "CV-only" comment. Keep the shared palette in sync by hand. */
 :root {
   --paper:  #fffff8;
   --ink:    #111;
@@ -45,12 +46,12 @@ html {
 
 body {
   font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  line-height: 1.55;
+  line-height: 1.7;
   background: var(--paper);
   color: var(--ink);
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 2.5rem 1.25rem 4rem;
+  padding: 3.5rem 1.5rem 6rem;
 }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -68,8 +69,8 @@ nav.top {
   justify-content: space-between;
   align-items: baseline;
   font-size: 0.85rem;
-  margin-bottom: 2rem;
-  padding-bottom: 0.6rem;
+  margin-bottom: 3rem;
+  padding-bottom: 0.7rem;
   border-bottom: 1px solid var(--rule);
 }
 nav.top a { text-decoration: none; }
@@ -77,35 +78,35 @@ nav.top .right { color: var(--muted); }
 nav.top .right a { color: var(--muted); }
 
 h1 {
-  font-size: 2.4rem;
+  font-size: 2.7rem;
   font-weight: normal;
   line-height: 1.05;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.4rem;
 }
 
 .contact {
   color: var(--muted);
   font-size: 0.95rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
 }
 
 h2 {
   font-style: italic;
   font-weight: normal;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.15rem;
-  margin: 1.8rem 0 0.6rem;
+  padding-bottom: 0.3rem;
+  margin: 3.2rem 0 1rem;
 }
 
 h2 + p {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.6rem;
 }
 
-p { margin-bottom: 0.5rem; }
+p { margin-bottom: 0.7rem; }
 
 .role {
-  margin: 1rem 0 0.3rem;
+  margin: 1.8rem 0 0.5rem;
 }
 .role-line {
   display: flex;
@@ -115,7 +116,7 @@ p { margin-bottom: 0.5rem; }
   flex-wrap: wrap;
 }
 .role-where {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 .role-where .role-org {
   font-variant: small-caps;
@@ -133,28 +134,28 @@ p { margin-bottom: 0.5rem; }
 .role-stack {
   font-size: 0.88rem;
   color: var(--muted);
-  margin-top: 0.1rem;
-  margin-bottom: 0.3rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 ul {
   list-style-type: disc;
-  margin: 0.2rem 0 0.6rem 1.4rem;
+  margin: 0.5rem 0 1rem 1.4rem;
 }
 li {
-  margin-bottom: 0.15rem;
-  line-height: 1.55;
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
 }
 li::marker { color: var(--muted); }
 
 .skills p, .education p, .awards p {
-  margin: 0.15rem 0;
+  margin: 0.5rem 0;
 }
 
 /* ── CV-only sections ──────────────────────────────────────── */
 
 .pubs .pub-entry-cv {
-  margin: 0.3rem 0;
+  margin: 0.9rem 0;
 }
 .pubs .pub-cite {
   margin: 0;
@@ -168,12 +169,34 @@ li::marker { color: var(--muted); }
 }
 .pubs .pub-meta a { color: var(--muted); }
 
-.talks ul, .service ul {
-  list-style-type: none;
-  margin: 0.2rem 0 0.6rem 0;
+/* Presentations: year-hung list (leading **YYYY** -> <strong>). */
+.talks ul {
+  list-style: none;
+  margin: 0.6rem 0 0 0;
 }
-.talks li, .service li { line-height: 1.5; }
-.grants p { margin: 0.15rem 0; }
+.talks li {
+  line-height: 1.6;
+  margin-bottom: 0.7rem;
+  padding-left: 3.4rem;
+  text-indent: -3.4rem;
+}
+.talks li strong {
+  font-variant: normal;
+  letter-spacing: 0;
+  font-weight: normal;
+  color: var(--muted);
+}
+
+/* Service: plain, generously spaced list. */
+.service ul {
+  list-style: none;
+  margin: 0.6rem 0 0 0;
+}
+.service li {
+  line-height: 1.6;
+  margin-bottom: 0.55rem;
+}
+.grants p { margin: 0.5rem 0; }
 
 em { font-style: italic; }
 strong {
@@ -183,8 +206,8 @@ strong {
 }
 
 footer.page-footer {
-  margin-top: 3rem;
-  padding-top: 0.8rem;
+  margin-top: 4rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 0.82rem;
@@ -261,91 +284,23 @@ footer.page-footer a { color: var(--muted); }
 </section><h2>Presentations</h2>
 <section class="talks"><p>Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering. A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</p>
 <ul>
-<li>
-<ol start="2017">
-<li>National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2017">
-<li>UW Institute for Clinical and Translational Research, Dissemination and Implementation Short Course. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2016">
-<li>AAMC Integrating Quality Meeting. Chicago, IL.</li>
-</ol>
-</li>
-<li>
-<ol start="2016">
-<li>National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>Field Innovation Team's Bootcamp. Provo, UT.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>Access, Quality, and Outcomes Research Network. Appleton, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>Society for Implementation Research Collaboration Conference. Seattle, WA.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>UW Health Quality Week. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>North American Primary Care Research Group Conference. Cancún, Mexico.</li>
-</ol>
-</li>
-<li>
-<ol start="2015">
-<li>Wisconsin Research and Education Network Convocation of Practices. Oshkosh, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2014">
-<li>National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2014">
-<li>AAMC Integrating Quality Meeting. Chicago, IL.</li>
-</ol>
-</li>
-<li>
-<ol start="2014">
-<li>Pharmacy Society of Wisconsin Annual Meeting. Madison, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2012">
-<li>World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education. Montréal, QC.</li>
-</ol>
-</li>
-<li>
-<ol start="2012">
-<li>UW Health organizational leadership. Middleton, WI.</li>
-</ol>
-</li>
-<li>
-<ol start="2010">
-<li>Wisconsin Primary Care Research and Quality Improvement Forum. Middleton, WI.</li>
-</ol>
-</li>
+<li><strong>2017</strong> National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
+<li><strong>2017</strong> UW Institute for Clinical and Translational Research, Dissemination and Implementation Short Course. Madison, WI.</li>
+<li><strong>2016</strong> AAMC Integrating Quality Meeting. Chicago, IL.</li>
+<li><strong>2016</strong> National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
+<li><strong>2015</strong> Field Innovation Team's Bootcamp. Provo, UT.</li>
+<li><strong>2015</strong> Access, Quality, and Outcomes Research Network. Appleton, WI.</li>
+<li><strong>2015</strong> Society for Implementation Research Collaboration Conference. Seattle, WA.</li>
+<li><strong>2015</strong> National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
+<li><strong>2015</strong> UW Health Quality Week. Madison, WI.</li>
+<li><strong>2015</strong> North American Primary Care Research Group Conference. Cancún, Mexico.</li>
+<li><strong>2015</strong> Wisconsin Research and Education Network Convocation of Practices. Oshkosh, WI.</li>
+<li><strong>2014</strong> National Collaborative for Improving Primary Care Through Industrial and Systems Engineering. Madison, WI.</li>
+<li><strong>2014</strong> AAMC Integrating Quality Meeting. Chicago, IL.</li>
+<li><strong>2014</strong> Pharmacy Society of Wisconsin Annual Meeting. Madison, WI.</li>
+<li><strong>2012</strong> World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education. Montréal, QC.</li>
+<li><strong>2012</strong> UW Health organizational leadership. Middleton, WI.</li>
+<li><strong>2010</strong> Wisconsin Primary Care Research and Quality Improvement Forum. Middleton, WI.</li>
 </ul>
 </section><h2>Grants and Funding</h2>
 <section class="grants"><p>Contributed quantitative and qualitative analysis to more than $250,000 in federal research funding from the Agency for Healthcare Research and Quality (AHRQ), the National Institutes of Health (NIH), and the Patient-Centered Outcomes Research Institute (PCORI), supporting studies of primary care redesign, EHR optimization, and accountable care performance.</p>
