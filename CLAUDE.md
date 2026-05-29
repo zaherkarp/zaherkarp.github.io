@@ -701,7 +701,7 @@ Build script: scripts/build_resume.py
   Resume target: 1-2 pages, US Letter, ATS-parseable (single column).
   CV: a traditional academic document, deliberately NOT a long resume.
   Education leads, then Appointments, Publications (numbered citation
-  list), Presentations, Grants, Awards, Service, Technical Skills. A brief
+  list), Presentations, Grants, Awards, Service. A brief
   "Research Interests" replaces the resume's Summary. No tech-stack lines,
   no achievement-metric bullets. Dated entries use a left-gutter year
   column: each list item starts `- **YYYY**` or `- **YYYY–YYYY**` (the

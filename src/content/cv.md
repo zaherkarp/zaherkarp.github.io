@@ -46,7 +46,14 @@ Seventeen podium presentations, workshops, and posters at national and regional 
 
 ## Grants and Funding
 
-Contributed quantitative and qualitative analysis to more than $250,000 in federal research funding from the Agency for Healthcare Research and Quality (AHRQ), the National Institutes of Health (NIH), and the Patient-Centered Outcomes Research Institute (PCORI), supporting studies of primary care redesign, EHR optimization, and accountable care performance.
+<!-- TODO: itemize grants from the old CV (uploaded to chat). For each grant:
+     title, role (Co-I / analyst / etc.), funding agency + mechanism/number,
+     award amount, and project period. Format each as a year-gutter entry,
+     e.g.:
+       - **2014–2017** Grant title. Role. Agency (mechanism, #grant-number). $amount.
+     Then delete this placeholder paragraph below. -->
+
+Itemized grant history is being compiled from prior records. Earlier work contributed quantitative and qualitative analysis to more than $250,000 in federally funded research from the Agency for Healthcare Research and Quality (AHRQ), the National Institutes of Health (NIH), and the Patient-Centered Outcomes Research Institute (PCORI), supporting studies of primary care redesign, EHR optimization, and accountable care performance.
 
 ## Awards and Honors
 
@@ -61,10 +68,3 @@ Contributed quantitative and qualitative analysis to more than $250,000 in feder
 - **2013–2015** Board chair, WORT 89.9 FM community radio.
 - **2015** Lean Six Sigma certification.
 
-## Technical Skills
-
-**Data platform:** SQL (Postgres, SQL Server, MySQL, MariaDB), Python (pandas, PySpark), dbt, Airflow, Docker, AWS, Azure, Databricks, Tableau, Sisense, R, git
-
-**Healthcare domain:** HEDIS, CMS Medicare Stars, HIPAA, HITRUST, EHR systems (Epic Clarity, Cerner, Veradigm, athenahealth), FHIR, HL7, value-based care, ACO / MSSP
-
-**Research methods:** biostatistics, interrupted time series, mixed-methods study design, qualitative coding (NVivo), survey instrumentation (Qualtrics), SAS, Stata
