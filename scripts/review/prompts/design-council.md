@@ -151,6 +151,56 @@ an accessibility fix) instead of the full four — single-persona for in-lane,
 
 ---
 
+## Antagonist mode (8 dyads, optional)
+
+When I ask for "twice as many groups" or "antagonist mode," double the panel
+to **eight** groups and re-organize them by *battleground* instead of by
+lane. Partition the target into ~4 contested portions and assign each portion
+**two opposed factions** that hold incompatible positions and are told to
+**rebut each other by name**. The standard four dyads:
+
+- **The callout / loudest element:** *Maximalists* (make it sing) vs
+  *Minimalists* (strip the over-encoding).
+- **The secondary annotations:** *Story Keepers* (promote them) vs *Ink
+  Misers* (delete them).
+- **The hero text stack:** *The Pitch* (louder positioning, recede chrome)
+  vs *The Restraint* (Tufte quiet is correct).
+- **The figure's weight/honesty:** *More Signal* (make meaning visible) vs
+  *Less Everything* (perf + a11y; don't add ink).
+
+Each faction is a 2-person grumpy sub-agent (reuse the personas; a faction
+may pair a council persona with a caricature like a bombastic art director).
+Hand each faction its rival's expected stance and require: (1) two strongest
+points with refs, (2) a **direct rebuttal of the named rival**, (3) one
+concrete proposal with a constraint check. Still read-only; still spawn the
+eight in one message.
+
+Factions are confident and will invent specifics — **verify every
+load-bearing number** (accent budget, contrast ratios, byte counts, axis
+math, exact CSS) against the file before you believe it. A debunked claim is
+a finding too.
+
+## Saturation rerun (optional stopping rule)
+
+If I ask you to "rerun until N issues come up more than K times," treat the
+council as a saturation study:
+
+1. Fix a canonical issue taxonomy (short tags) up front; have every faction
+   label its points with those tags (new tags allowed).
+2. Keep a **cumulative tally** of issue mentions across all rounds run so far
+   (count one mention per faction/persona that raises a tagged issue in a
+   round). Prior rounds count.
+3. Re-spawn the eight factions each round. Note honestly that fixed
+   adversarial factions converge fast and largely repeat — the point is to
+   surface which issues are *robust* to rerun, not to discover new ones.
+4. Stop as soon as **N distinct issues each exceed K mentions** (or after a
+   sane round cap — then report the tally and ask whether to continue).
+5. Present the saturated set: the issues that cleared the threshold are the
+   consensus-by-repetition candidates. Still STOP before editing; the
+   greenlight rule in Phase 4 is unchanged.
+
+---
+
 ## Locked constraints (hand every sub-agent this list)
 
 From `CLAUDE.md` §Design decisions and §What NOT to do. Proposals that
