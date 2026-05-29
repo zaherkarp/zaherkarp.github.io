@@ -1850,7 +1850,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities.
+      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities. The platform spans Part C and Part D Star Ratings measures, drawing on claims, eligibility, and pharmacy data.
     </p>
 
     <p>
@@ -1867,11 +1867,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
          that calibrate the smoothing parameters, so COVID shocks
          don't permanently bias the trend forecast.
 
-         Promoted out of the BHA "More detail" fold so it's
-         visible by default. The page has one formula and it's
-         the most credentialed depth signal in the Experience
-         section; hiding it behind a click was rewarding only
-         the readers who already knew to look.
+         Visible by default rather than in the BHA "More detail"
+         fold. Framed as a proof of concept the author tested, not
+         a deployed component: the shipped Stars cutpoint pipeline
+         used robust M-estimators, but this Huber psi variant was a
+         separate proposal, so the caption says so plainly rather
+         than implying production customer-analytics use.
 
          Pure HTML/CSS math styling, no MathJax dependency.
          ========================================================== -->
@@ -1884,7 +1885,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         </span>
       </div>
       <div class="formula-caption">
-        Huber's &psi;-function. Clipping large residuals stops a single COVID-era shock from dominating the smoothing parameter estimates.
+        Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
       </div>
     </div>
 
@@ -1907,6 +1908,10 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
     <p>
       In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also moved infrastructure from AWS to Azure and Databricks, rebuilding the analytics layer without interrupting service for existing clients.
+    </p>
+
+    <p>
+      Across five years I led cross-functional teams to implement analytics, build measurement for clinical and operational work, and deliver sales analytics, often the only engineer working alongside analysts and clinical and commercial partners.
     </p>
 
     <p>
