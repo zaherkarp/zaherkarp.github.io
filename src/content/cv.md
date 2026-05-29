@@ -14,7 +14,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ### Graduate
 
-- **2013–2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
+- **2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
 - **2013–2015** Graduate Certificate, Patient Safety. University of Wisconsin-Madison. Advisor: Pascale Carayon (PhD; industrial and systems engineering).
 
 ### Fellowships and Training
@@ -48,13 +48,13 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ## Presentations
 
-- **2017** Karp Z, Kamnetz S, Wietfeldt N, Pandhi N. Primary care patient perceptions of clinic design across three practices. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering, Madison, WI.
+- **2017** Karp Z, Kamnetz S, Wietfeldt N, Pandhi N. Primary care patient perceptions of clinic design across three practices. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2016** Pandhi N, Karp Z, Kamnetz S, Trowbridge E. Developing an effective writing collaborative to rapidly disseminate lessons from system redesign. Workshop, Association of American Medical Colleges Integrating Quality Meeting, Chicago, IL.
-- **2016** Karp Z, Kamnetz S, Pandhi N. Primary care team perceptions of team-based care and clinic design types across three practices. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering, Madison, WI.
+- **2016** Karp Z, Kamnetz S, Pandhi N. Primary care team perceptions of team-based care and clinic design types across three practices. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2015** Karp Z. Participatory research and community engagement. Field Innovation Team Bootcamp, Provo, UT.
 - **2015** Karp Z, Wietfeldt N, Pandhi N. Approaches to involving diverse community partners and patients in integrated mental health research. Seminar, Access, Quality, and Outcomes Research Network, Appleton, WI.
 - **2015** Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, DeCheck N, Karp Z. An efficient process of gathering diverse community opinions to inform an intervention. Society for Implementation Research Collaboration Conference, Seattle, WA.
-- **2015** Karp Z. Influences of the primary care clinic environment on patients and staff: preliminary findings. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering, Madison, WI.
+- **2015** Karp Z. Influences of the primary care clinic environment on patients and staff: preliminary findings. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2012** Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. Approaches and challenges to optimizing the use of electronic health records in primary care. World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education, Montréal, QC.
 - **2012** Pandhi N, Yang W, Karp Z. Clinical application specialists: meeting themes. Presentation to UW Health organizational leadership, Middleton, WI.
 
@@ -64,7 +64,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 - **2015** Karp Z, Wietfeldt N, Pandhi N. Involving community partners in integrated mental health research. UW Health Quality Week, Madison, WI.
 - **2015** Pandhi N, Jacobson N, Wietfeldt N, Karp Z, Zeidler-Schreiter E, Serrano N, Hernandez A. Engaging the community in identifying and prioritizing outcomes for integrated primary care behavioral health. North American Primary Care Research Group Conference, Cancún, Mexico.
 - **2015** Karp Z, Wietfeldt N, Pandhi N. Involving community partners in integrated mental health research. Wisconsin Research and Education Network Convocation of Practices, Oshkosh, WI.
-- **2014** Karp Z, Kamnetz S, Pandhi N. Influences of the primary care clinic environment on patients and staff: research design. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering, Madison, WI.
+- **2014** Karp Z, Kamnetz S, Pandhi N. Influences of the primary care clinic environment on patients and staff: research design. National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2014** Pandhi N, Berkson S, Caplan W, Davis S, Kamnetz S, Koslov S, Trowbridge E, Karp Z, Kraft S. Finding a PATH to support scholarly careers: Primary care Academics Transforming Healthcare. Association of American Medical Colleges Integrating Quality Meeting, Chicago, IL.
 - **2014** Kwak A, Gibbs B, Smith J, Karp Z, Lauscher R, Gray K. Birth date identification for limited English proficiency patients. Pharmacy Society of Wisconsin Annual Meeting, Madison, WI.
 - **2010** Young A, Pandhi N, Karp Z. Using the charting tool Smart Phrase to improve the quality of care provided to patients with chronic pain. Wisconsin Primary Care Research and Quality Improvement Forum, Middleton, WI.
