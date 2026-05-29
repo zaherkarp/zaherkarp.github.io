@@ -4,21 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ name }}, Curriculum Vitae</title>
-<meta name="description" content="Curriculum vitae for {{ name }}: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<meta name="description" content="Curriculum vitae for {{ name }}: education, appointments, publications, presentations, and academic service in healthcare data engineering and health services research.">
 <link rel="canonical" href="https://zaherkarp.com/cv.html">
 <meta property="og:title" content="{{ name }}, Curriculum Vitae">
-<meta property="og:description" content="Curriculum vitae for {{ name }}: experience, publications, presentations, and education in healthcare data engineering and health services research.">
+<meta property="og:description" content="Curriculum vitae for {{ name }}: education, appointments, publications, presentations, and academic service in healthcare data engineering and health services research.">
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://zaherkarp.com/cv.html">
 <meta property="og:image" content="https://zaherkarp.com/og-default.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
 <style>
-/* This CV web template intentionally duplicates the resume web palette
-   (scripts/templates/resume/resume-web.html) so the resume output stays
-   byte-stable. The CV runs deliberately airier than the resume: wider
-   leading and large inter-section space. CV-only rules are grouped under
-   the "CV-only" comment. Keep the shared palette in sync by hand. */
+/* Traditional academic CV (web). Shares only the Tufte palette with the
+   resume web template so the resume output stays byte-stable. CV-only
+   structure (year-gutter lists, numbered citation list) lives below. */
 :root {
   --paper:  #fffff8;
   --ink:    #111;
@@ -99,104 +97,62 @@ h2 {
   margin: 3.2rem 0 1rem;
 }
 
-h2 + p {
-  margin-bottom: 0.6rem;
+/* Subsection labels (### → <h3>): quiet muted small-caps. */
+h3 {
+  font-style: normal;
+  font-variant: small-caps;
+  font-weight: normal;
+  font-size: 0.95rem;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin: 1.7rem 0 0.4rem;
 }
 
 p { margin-bottom: 0.7rem; }
+.interests p { margin-bottom: 0.4rem; }
 
-.role {
-  margin: 1.8rem 0 0.5rem;
-}
-.role-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1em;
-  flex-wrap: wrap;
-}
-.role-where {
-  font-size: 1.1rem;
-}
-.role-where .role-org {
-  font-variant: small-caps;
-  letter-spacing: 0.05em;
-}
-.role-where .role-sep {
-  color: var(--muted);
-  margin: 0 0.35em;
-}
-.role-date {
-  font-size: 0.9rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.role-stack {
-  font-size: 0.88rem;
-  color: var(--muted);
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
-}
-
+/* ── Year-gutter lists (Education, Appointments, Presentations,
+      Awards, Service): leading **YYYY** -> <strong> in a muted
+      left column, entry text hanging beneath. */
 ul {
-  list-style-type: disc;
-  margin: 0.5rem 0 1rem 1.4rem;
+  list-style: none;
+  margin: 0.6rem 0 0 0;
+  padding: 0;
 }
 li {
-  margin-bottom: 0.4rem;
-  line-height: 1.7;
-}
-li::marker { color: var(--muted); }
-
-.skills p, .education p, .awards p {
-  margin: 0.5rem 0;
-}
-
-/* ── CV-only sections ──────────────────────────────────────── */
-
-.pubs .pub-entry-cv {
-  margin: 0.9rem 0;
-}
-.pubs .pub-cite {
-  margin: 0;
-  padding-left: 1.4rem;
-  text-indent: -1.4rem;
-}
-.pubs .pub-year { color: var(--muted); }
-.pubs .pub-meta {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.pubs .pub-meta a { color: var(--muted); }
-
-/* Presentations: year-hung list (leading **YYYY** -> <strong>). */
-.talks ul {
-  list-style: none;
-  margin: 0.6rem 0 0 0;
-}
-.talks li {
   line-height: 1.6;
-  margin-bottom: 0.7rem;
-  padding-left: 3.4rem;
-  text-indent: -3.4rem;
+  margin-bottom: 0.8rem;
+  padding-left: 5.6rem;
+  text-indent: -5.6rem;
 }
-.talks li strong {
+li strong {
   font-variant: normal;
-  letter-spacing: 0;
   font-weight: normal;
+  letter-spacing: 0;
   color: var(--muted);
 }
 
-/* Service: plain, generously spaced list. */
-.service ul {
-  list-style: none;
+/* ── Publications: numbered academic citation list. */
+.pubs ol.pub-cv-list {
+  list-style: decimal;
   margin: 0.6rem 0 0 0;
+  padding-left: 1.9rem;
 }
-.service li {
+.pubs li {
+  padding-left: 0.4rem;
+  text-indent: 0;
+  margin-bottom: 0.9rem;
   line-height: 1.6;
-  margin-bottom: 0.55rem;
 }
+.pubs li::marker { color: var(--muted); }
+.pubs .pub-cited {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .grants p { margin: 0.5rem 0; }
+
+.skills p { margin: 0.5rem 0; }
 
 em { font-style: italic; }
 strong {
@@ -217,6 +173,10 @@ footer.page-footer {
   gap: 0.5rem;
 }
 footer.page-footer a { color: var(--muted); }
+
+@media (max-width: 600px) {
+  li { padding-left: 4.2rem; text-indent: -4.2rem; }
+}
 
 @media print {
   nav.top, footer.page-footer { display: none; }

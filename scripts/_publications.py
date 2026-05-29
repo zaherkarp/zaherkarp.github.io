@@ -119,37 +119,39 @@ def render_homepage_entries(pubs: list[dict]) -> str:
 # ─── CV renderer ───────────────────────────────────────────────────────────
 
 def render_cv_entries(pubs: list[dict]) -> str:
-    """Render the CV Publications list (no checkbox-hack; print/web friendly).
+    """Render the CV Publications section as a numbered academic citation list.
 
-    Each entry is a paragraph: authors, italic title, italic venue + detail,
-    then any links and a cached citation count as muted trailing metadata.
+    Each entry is an <li> in an ordered list, formatted in a compact
+    AMA-style citation: authors, title, italic venue, year and volume/pages,
+    then the identifier (PMID/DOI) and a cached citation count where present.
+    No hyperlinks or checkbox-hack markup (the CV has no sidenote system).
     """
-    blocks: list[str] = []
+    items: list[str] = []
     for pub in pubs:
-        detail = pub.get("detail") or ""
-        venue = f"<em>{_esc(pub['venue'])}</em>"
-        venue += f" {_esc(detail)}" if detail else "."
+        authors = _esc(pub["authors"]).strip()
+        if not authors.endswith("."):
+            authors += "."
+        title = _esc(pub["title"]).rstrip(".")
+        venue = _esc(pub["venue"])
+        detail = (pub.get("detail") or "").strip().rstrip(".")
+        year = pub["year"]
+        if detail:
+            source = f"<em>{venue}</em>. {year};{detail}."
+        else:
+            source = f"<em>{venue}</em>. {year}."
 
-        meta_bits: list[str] = []
-        for link in (pub.get("links") or []):
-            meta_bits.append(f'<a href="{link["url"]}">{_esc(link["label"])}</a>')
+        parts = [f"{authors} {title}. {source}"]
+        sid = pub.get("sid")
+        if sid and ":" in sid:
+            kind, num = sid.split(":", 1)
+            parts.append(f"{_esc(kind)}: {_esc(num)}.")
         count = pub.get("citations")
         if count is not None:
-            meta_bits.append(f"{count} {_citation_label(count)}")
-        meta = ""
-        if meta_bits:
-            meta = ' <span class="pub-meta">(' + " &middot; ".join(meta_bits) + ")</span>"
+            label = "time" if count == 1 else "times"
+            parts.append(f'<span class="pub-cited">Cited {count} {label}.</span>')
 
-        blocks.append(
-            '<div class="pub-entry-cv">\n'
-            f'  <p class="pub-cite">'
-            f'<span class="pub-year">{pub["year"]}</span> '
-            f'{_esc(pub["authors"])} '
-            f'<span class="pub-title">{_esc(pub["title"])}.</span> '
-            f'{venue}{meta}</p>\n'
-            '</div>'
-        )
-    return "\n".join(blocks)
+        items.append("  <li>" + " ".join(parts) + "</li>")
+    return '<ol class="pub-cv-list">\n' + "\n".join(items) + "\n</ol>"
 
 
 # ─── citation cache write-back ─────────────────────────────────────────────

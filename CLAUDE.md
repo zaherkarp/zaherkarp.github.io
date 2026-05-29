@@ -699,17 +699,42 @@ Build script: scripts/build_resume.py
   <header class="role">) / wrap_sections (wraps each ## section in a
   class-bearing <section> by heading text) / split_header.
   Resume target: 1-2 pages, US Letter, ATS-parseable (single column).
-  CV: intentionally multi-page; same Tufte palette + ETBook.
+  CV: a traditional academic document, deliberately NOT a long resume.
+  Sourced from the real academic CV. A brief "Research Interests" replaces
+  the resume's Summary, then: Education, Appointments, Past Research
+  Positions, Publications (numbered citation list), Presentations, Posters,
+  Grants and Funding, Awards and Honors, Service and Professional Activities.
+  Appointments holds the two industry roles (BHA, Healthfinch/HC); the older
+  UW academic roles live under Past Research Positions. Some sections carry
+  `###` subsections (Education: Undergraduate / Graduate / Fellowships;
+  Service: University / Community / Peer Review / Mentoring), rendered as
+  muted small-caps labels. No tech-stack lines, no achievement-metric
+  bullets. Dated entries use a left-gutter year column: each list item
+  starts `- **YYYY**` / `- **YYYY–YYYY**` / `- **YYYY–present**` (the
+  leading bold renders as <strong>, styled as a muted year in a hanging
+  indent); the generic ul/li in the cv templates apply this to every
+  section. The CV does NOT use transform_role_blocks (no `Org | Title /
+  date / stack` headers). Intentionally multi-page; same Tufte palette +
+  ETBook.
 
 Templates (scripts/templates/resume/):
   resume.html / resume-web.html  — resume PDF + web
   cv.html / cv-web.html          — CV PDF + web
   The cv templates intentionally DUPLICATE the resume CSS rather than
   sharing a Jinja partial, so the resume output stays byte-stable (the
-  resume.html bytes must not move when the CV is rebuilt). CV-only rules
-  (.pubs / .talks / .grants / .service) are grouped under a "CV-only"
-  comment in each cv template. If the shared palette/typography changes,
-  update all four templates by hand.
+  resume.html bytes must not move when the CV is rebuilt). The cv templates
+  carry the academic-CV CSS: year-gutter list items (the generic ul/li are
+  styled as hanging year columns) and the numbered `.pubs ol.pub-cv-list`
+  citation list. If the shared palette/typography changes, update all four
+  templates by hand.
+
+lint_facts.py parses the CV's `## Appointments` list (parse_cv_appointments)
+  rather than the resume role format: it checks the CV's current ("present")
+  employer matches the resume's, that Appointments has exactly one "present"
+  entry, and that every resume employer appears somewhere in cv.md (full-text
+  substring, since the UW employer lives under Past Research Positions, not
+  Appointments). Year-only ranges mean titles/start-dates are not
+  cross-checked.
 
 Publications on the CV: cv.md carries a `<!-- publications -->` placeholder
   inside its `## Publications` section. build_resume.py replaces it with the

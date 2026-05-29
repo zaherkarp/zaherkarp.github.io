@@ -114,8 +114,12 @@ def wrap_sections(html: str) -> str:
         "Awards and Recognition": "awards",
         # CV-only sections (resume.md never emits these, so the resume
         # rendering is unaffected):
+        "Research Interests": "interests",
+        "Appointments": "appointments",
+        "Past Research Positions": "positions",
         "Publications": "pubs",
         "Presentations": "talks",
+        "Posters": "posters",
         "Grants and Funding": "grants",
         "Service and Professional Activities": "service",
         "Awards and Honors": "awards",
