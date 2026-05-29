@@ -701,8 +701,10 @@ figure.timeline:has(svg.tl-horizontal) {
 }
 
 /* Index label spans full grid width so it sits as a header above
-   the tile rows rather than inside a tile cell. */
-.projects-index .index-label {
+   the tile rows rather than inside a tile cell. Shared by the projects
+   and writing small-multiples grids for visual parity. */
+.projects-index .index-label,
+.writing-index .index-label {
   grid-column: 1 / -1;
   color: var(--muted);
   font-size: 1.1rem;
@@ -1784,6 +1786,8 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
        Uses .writing-tile (NOT .project-tile) so the project CSS counter
        stays untouched, and keys each tile by date rather than a number. -->
   <div class="writing-index">
+    <p class="index-label">More writing</p>
+
     <!-- writing-index:start -->
     <div class="writing-tile">
       <span class="date">2026-05-19</span>
