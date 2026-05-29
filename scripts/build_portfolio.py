@@ -82,31 +82,6 @@ def _esc(s: str) -> str:
     return html_lib.escape(s, quote=False)
 
 
-# Featured Writing entries show the post's opening paragraph (a genuinely
-# fuller blurb than the one-line frontmatter `description`, which the
-# compact tiles keep). _first_paragraph extracts that lede from the
-# markdown body: it skips leading headings/blank lines, takes the first
-# prose block, and flattens inline markdown (links, emphasis) to plain
-# text. Em-dash stripping happens later, in build_writing_list.
-_MD_LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]*\)")
-_MD_INLINE_RE = re.compile(r"[*_`]+")
-
-
-def _first_paragraph(body: str) -> str:
-    para: list[str] = []
-    for line in body.split("\n"):
-        s = line.strip()
-        if not s or s.startswith(("#", ">", "-", "*", "|", "```", "<", "!")):
-            if para:
-                break          # blank line / non-prose block ends the lede
-            continue           # still skipping leading headings/blank lines
-        para.append(s)
-    text = " ".join(para)
-    text = _MD_LINK_RE.sub(r"\1", text)   # [label](url) -> label
-    text = _MD_INLINE_RE.sub("", text)    # drop * _ ` emphasis markers
-    return text.strip()
-
-
 def load_posts() -> list[dict]:
     posts: list[dict] = []
     for p in POSTS_DIR.glob("*.md"):
@@ -128,7 +103,6 @@ def load_posts() -> list[dict]:
             "date": d,
             "title": fm.metadata.get("title", ""),
             "description": fm.metadata.get("description", ""),
-            "lede": _first_paragraph(fm.content),
             "slug": p.stem,
             "marginnote": fm.metadata.get("homepageMarginnote", ""),
             "tags": tags,
@@ -255,19 +229,21 @@ def build_writing_list(posts: list[dict]) -> str:
 
     Sorted by publishDate desc. Drafts and `_`-prefixed sources are
     already filtered out in load_posts(). These are the prominent
-    entries: the title is an <h3> (heading parity with project tiles and
-    a screen-reader nav anchor) and the summary is the post's opening
-    paragraph (`lede`), a genuinely fuller blurb than the one-line
-    `description` the compact tiles keep. Optional `homepageMarginnote`
-    frontmatter renders an inline ⊕ margin note next to the title; the
-    toggle id is `mn-w-<slug>` so it stays unique across entries.
+    entries: the title is an h3 (heading parity with project tiles and a
+    screen-reader nav anchor) and the summary is the frontmatter
+    `description`, the same curated, standard-length blurb the tiles use,
+    so featured and tile text stay visually uniform. The featured/tile
+    distinction is carried by title size and layout, not blurb length.
+    Optional `homepageMarginnote` frontmatter renders an inline ⊕ margin
+    note next to the title; the toggle id is `mn-w-<slug>` so it stays
+    unique across entries.
     """
     recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
     blocks: list[str] = []
     for p in recent:
         date_str = p["date"].isoformat()
         title = _esc(_strip_em_dashes(p["title"]))
-        summary = _esc(_strip_em_dashes(p["lede"] or p["description"]))
+        summary = _esc(_strip_em_dashes(p["description"]))
         slug = p["slug"]
         marginnote = _strip_em_dashes((p["marginnote"] or "").strip())
         if marginnote:
