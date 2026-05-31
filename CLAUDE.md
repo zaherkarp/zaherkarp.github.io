@@ -352,7 +352,11 @@ the next CI run overwrites them. Two tiers:
     max-width, `auto-fit minmax(240px, 1fr)`, collapses to 1 column at
     760px, just like `.projects-index`). Rendered as compact
     `.writing-tile` small multiples (date + smaller title + tile-summary).
-    `homepageMarginnote` is intentionally ignored on tiles.
+    `homepageMarginnote` is intentionally ignored on tiles. The grid
+    carries a `<p class="index-label">More writing</p>` header (hand-
+    authored, before the `:start` marker) mirroring `.projects-index`'s
+    "More projects" label, kept for visual parity even though the
+    trailing "View all writing" link is also present.
 
 Deliberately NOT reused: `.project-tile` and the `project-num` CSS
 counter. Writing tiles use distinct `.writing-tile`/`.writing-index`
