@@ -859,6 +859,73 @@ the generator). If you want them versioned, drop them into
 
 ---
 
+## Critique pipeline
+
+Generates seance-symposium six-camp critique artifacts under
+`critiques/critique-<target-slug>-<YYYY-MM-DD>.md`. The first
+artifact lives at `critiques/critique-2026-05-23.md` and was produced
+before this pipeline existed; treat it as the baseline shape every
+subsequent run should match.
+
+Two contract surfaces, both committed to the repo:
+  - `docs/critique/methodology.md` — the six camps, voicing critics,
+    archetype weightings (personal portfolio / blog post / resume /
+    subpage), conflict-resolution rules, and the output structure.
+  - `docs/critique/playbook.md` — the prompt-as-document Claude Code
+    runs end-to-end. Local invocation: open the repo in Claude Code,
+    say "Run docs/critique/playbook.md against index.html." CI
+    invocation: `.github/workflows/critique.yml` ships the same
+    playbook as the Claude Code Action's prompt.
+
+GitHub Action: `.github/workflows/critique.yml`
+  Triggers: `workflow_dispatch` with optional `target` input (default
+  `index.html`), plus monthly cron on the 1st. Deliberately not
+  push-triggered to avoid commit-loops on the artifact.
+  Commits the resulting `critiques/critique-*.md` back to the branch
+  via the same github-actions[bot] identity used by the other four
+  pipelines.
+
+Independence contract — "not dependent on Anthropic API" means:
+  - No `import anthropic` anywhere under `scripts/`.
+  - No `ANTHROPIC_API_KEY` referenced in `.github/workflows/`.
+  - `scripts/requirements.txt` does not pin the `anthropic` package.
+  - The workflow authenticates via `CLAUDE_CODE_OAUTH_TOKEN`
+    (Claude Code subscription OAuth), not a raw API key repo secret.
+  - Pre-push grep check (`grep -rE 'import anthropic|ANTHROPIC_API_KEY'
+    scripts/ .github/workflows/`) returns empty; see §Pre-push checks
+    below.
+
+Worth being honest about what the independence buys you: Claude Code
+Action still connects to Anthropic's infrastructure. The independence
+is structural and economic, not metaphysical. The codebase has no SDK
+coupling, the billing path is the existing subscription rather than
+separate API credits, and the secret surface is one OAuth token
+scoped to Claude Code. Full provider neutrality would require either
+a LiteLLM-style Python adapter (which would put an
+`anthropic`/`openai`/etc. dependency back in `requirements.txt`) or a
+non-LLM rule-based linter (which can't reproduce camp critiques). The
+chosen design trades those for simplicity: one runtime, one auth
+path, zero codebase coupling.
+
+What this pipeline does NOT do:
+  - It does not edit the target file. Every finding is a
+    prescription; `APPLY_CHANGES=false` is the contract.
+  - It does not propose new sections, pages, or features. Structural
+    proposals belong in the §Agent panels framework, not in a
+    critique.
+  - It does not read prior critique artifacts before running. Each
+    run is fresh-eyes against the current state of the target;
+    anchoring to the prior run would suppress new findings.
+
+Adding a new target type: extend both `docs/critique/playbook.md`
+§Supported targets and `docs/critique/methodology.md` §Archetype
+weightings in the same change. Splitting them means the runtime has
+to "infer reasonable defaults" the way the 2026-05-23 baseline had
+to, which is exactly the failure mode this pipeline was built to
+remove.
+
+---
+
 ## Pre-push checks (agent-runnable)
 
 These run automatically via `scripts/hooks/pre-push`, installed by
@@ -881,6 +948,9 @@ Checks:
   uses.)
 - `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns
   nothing (catches blank-line-inside-`<svg>` slips)
+- `grep -rE 'import anthropic|ANTHROPIC_API_KEY' scripts/ .github/workflows/`
+  returns empty (critique-pipeline independence contract: no Anthropic
+  SDK import, no API-key env var in workflows; see §Critique pipeline)
 
 Not in the hook (run manually for bigger pushes):
 - `python scripts/build_blog.py` runs without warnings
