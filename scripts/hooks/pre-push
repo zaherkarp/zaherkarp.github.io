@@ -85,15 +85,31 @@ if [ "$CLI_LINTED" = "false" ]; then
   fi
 fi
 
-# 4. Em-dash chrome cleanliness — homepage must be em-dash-clean.
-if [ -f index.html ]; then
-  em_count=$(grep -c '—' index.html || true)
-  if [ "$em_count" = "0" ]; then
-    ok "em-dash chrome clean"
-  else
-    fail "em-dash found in index.html ($em_count occurrence(s))"
+# 4. Em-dash chrome cleanliness — index.html, resume.md, and cv.md
+#    must be em-dash-clean. Blog markdown is exempt (preserves historical
+#    voice); resume + CV render to PDFs handed to recruiters, so they
+#    share the chrome register with the homepage.
+em_total=0
+em_report=""
+em_surfaces=0
+for f in index.html src/content/resume.md src/content/cv.md; do
+  if [ -f "$f" ]; then
+    em_surfaces=$((em_surfaces + 1))
+    n=$(grep -c '—' "$f" || true)
+    em_total=$((em_total + n))
+    [ "$n" -gt 0 ] && em_report="$em_report\n    $f: $n"
   fi
+done
+if [ "$em_surfaces" -gt 0 ]; then
+  if [ "$em_total" = "0" ]; then
+    ok "em-dash chrome clean ($em_surfaces surface(s))"
+  else
+    echo -e "em-dash found in chrome ($em_total occurrence(s)):$em_report" >&2
+    fail "em-dash chrome"
+  fi
+fi
 
+if [ -f index.html ]; then
   # 5. Accent discipline — Tufte 1-2x per chart rule.
   #    Counts BOTH `--accent` (CSS variable references) AND `#7a0000`
   #    (literal hex in SVG callouts and CSS palette plumbing). The
