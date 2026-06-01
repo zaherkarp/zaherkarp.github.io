@@ -30,7 +30,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ## Appointments
 
-- **2025–present** Baltimore Health Analytics, Manager of Data Science and Engineering. Owns the data platform for a Medicare Advantage analytics product, including the regulatory validation layer against CMS technical specifications, and leads a distributed engineering and QA team.
+- **2025–present** Baltimore Health Analytics, Manager, Data Science and Engineering. Owns the data platform for a Medicare Advantage analytics product, including the regulatory validation layer against CMS technical specifications, and leads a distributed engineering and QA team.
 - **2017–2025** Healthfinch (acquired by Health Catalyst), Analytics Manager. Built and led the analytics data platform supporting value-based care across more than fifty health systems, including the infrastructure migration following the Health Catalyst acquisition.
 
 ## Past Research Positions

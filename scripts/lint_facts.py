@@ -68,6 +68,11 @@ class Job:
 # ─── canonicalization ─────────────────────────────────────────────────────
 
 PAREN_RE = re.compile(r"\s*\([^)]*\)")
+# Title comma-fold: collapse the first " of " or ", " in a title to a uniform
+# marker. "Manager of Data Science and Engineering" and "Manager, Data Science
+# and Engineering" are the same role written two ways; this lets surfaces pick
+# their preferred register without forcing one wording.
+TITLE_FOLD_RE = re.compile(r"\s+of\s+|,\s+", re.IGNORECASE)
 
 
 def strip_paren(s: str) -> str:
@@ -80,7 +85,20 @@ def canonical_org(s: str) -> str:
 
 
 def canonical_title(s: str) -> str:
-    return strip_paren(s).strip()
+    base = strip_paren(s).strip()
+    return TITLE_FOLD_RE.sub(" :: ", base, count=1)
+
+
+def cv_appt_title(body: str) -> str:
+    """Extract just the title from a CV Appointments line body.
+
+    Body shape: "Org [(paren)], Title. Optional scope sentence."
+    """
+    cleaned = strip_paren(body)
+    if "," not in cleaned:
+        return ""
+    _, rest = cleaned.split(",", 1)
+    return rest.split(".", 1)[0].strip()
 
 
 def html_decode_minimal(s: str) -> str:
@@ -151,13 +169,14 @@ def parse_cv_appointments(text: str) -> list[Job]:
         body = m.group("body").strip()
         end = "Present" if "present" in rng.lower() else rng
         line = text.count("\n", 0, base + m.start()) + 1
+        title_str = cv_appt_title(body)
         jobs.append(Job(
             org=canonical_org(body),
-            title=canonical_title(body),
+            title=canonical_title(title_str) if title_str else "",
             start="",
             end=end,
             raw_org=body.split(",")[0].strip(),
-            raw_title=body,
+            raw_title=title_str or body,
             source_line=line,
         ))
     return jobs
@@ -358,6 +377,12 @@ def check_cv_against_resume(
                 f"current employer mismatch: resume.md:{rj.source_line} "
                 f"says '{rj.raw_org}', cv.md:{cj.source_line} "
                 f"says '{cj.raw_org}'. Playbook: §A."
+            )
+        if cj.title and rj.title != cj.title:
+            failures.append(
+                f"current title mismatch: resume.md:{rj.source_line} "
+                f"says '{rj.raw_title}', cv.md:{cj.source_line} "
+                f"says '{cj.raw_title}'. Playbook: §B."
             )
 
     haystack = cv_text.lower()
