@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import html as html_lib
 import json
+import json
 import re
 import sys
 import time
@@ -60,6 +61,11 @@ install_git_hooks()
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
+# Dated citation snapshots: one file per build day that actually fetched fresh
+# counts. The YAML cache only ever holds the latest count; these snapshots
+# accrete the longitudinal series the cache discards. Append-only by date,
+# idempotent within a day (a re-run overwrites the same file).
+SNAPSHOTS_DIR = ROOT / "data" / "snapshots"
 WRITING_FEATURED = 2     # most-recent posts shown as full featured entries
 WRITING_TILES = 6        # next posts shown as compact .writing-tile multiples
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
@@ -356,7 +362,44 @@ def build_publications() -> tuple[str, int, int]:
         successes += 1
 
     save_citation_counts(pubs)
+    if successes:
+        write_citation_snapshot(pubs)
     return render_homepage_entries(pubs), successes, failures
+
+
+def write_citation_snapshot(pubs: list[dict]) -> None:
+    """Record today's observed citation counts to data/snapshots/<date>.json.
+
+    Only called when at least one fresh fetch succeeded this run, so a fully
+    rate-limited build never lays down a misleading all-cached snapshot. The
+    file maps each sid to its current count (fresh where the fetch landed,
+    cached otherwise) so the series stays gap-free. Same-day re-runs overwrite.
+    """
+    counts = {p["sid"]: p["citations"] for p in pubs if p.get("sid") and "citations" in p}
+    if not counts:
+        return
+    # Record-on-change: skip if identical to the most recent snapshot. ISO-dated
+    # filenames sort chronologically, so the last one is the latest observation.
+    # Keeps the series to one file per actual movement instead of one per run.
+    if SNAPSHOTS_DIR.exists():
+        prior = sorted(SNAPSHOTS_DIR.glob("*.json"))
+        if prior:
+            try:
+                last = json.loads(prior[-1].read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                last = {}
+            if last.get("citations") == counts:
+                print(f"  citation counts unchanged since {last.get('date')}; no snapshot")
+                return
+    SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+    snap = {
+        "date": date.today().isoformat(),
+        "source": "Semantic Scholar graph/v1 citationCount",
+        "citations": counts,
+    }
+    path = SNAPSHOTS_DIR / f"{snap['date']}.json"
+    path.write_text(json.dumps(snap, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"  wrote citation snapshot {path.relative_to(ROOT)} ({len(counts)} entries)")
 
 
 # ─── marker replacement ───────────────────────────────────────────────────

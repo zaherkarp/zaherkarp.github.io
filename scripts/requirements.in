@@ -1,0 +1,13 @@
+# Loose, human-edited dependency constraints (the source of truth).
+# Compile to the fully-pinned scripts/requirements.txt with:
+#   uv pip compile --universal --python-version 3.12 \
+#       scripts/requirements.in -o scripts/requirements.txt
+# CI installs the pinned .txt; edit this .in, recompile, commit both.
+markdown-it-py>=3.0.0
+mdit-py-plugins>=0.4.2
+python-frontmatter>=1.1.0
+Jinja2>=3.1.4
+weasyprint>=64.0
+pyyaml>=6.0
+typer>=0.12.0
+rich>=13.0

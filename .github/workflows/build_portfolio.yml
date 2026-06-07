@@ -52,10 +52,13 @@ jobs:
 
       - name: Commit changes (if any)
         run: |
-          if ! git diff --quiet index.html; then
+          git add index.html
+          # Dated citation snapshots accrete a longitudinal series the YAML
+          # cache discards (record-on-change, so most runs add nothing).
+          if [ -d data/snapshots ]; then git add data/snapshots; fi
+          if ! git diff --cached --quiet; then
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add index.html
             git commit -m "build: regenerate activity grid, writing list, citations"
             # Rebase onto any commits build_blog.yml may have pushed in parallel
             # for the same source-blog push; retry the push a few times in case
