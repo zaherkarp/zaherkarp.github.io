@@ -1854,44 +1854,45 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities. The platform spans Part C and Part D Star Ratings measures, drawing on claims, eligibility, and pharmacy data.
     </p>
 
-    <p>
-      CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
-    </p>
-
-    <!-- ==========================================================
-         HUBER PSI FORMULA
-         Inline math block illustrating the "robust" in robust
-         exponential smoothing. Huber's psi-function is the
-         derivative of his loss function: linear for small
-         residuals, clipped at threshold k for large ones.
-         Effect: outliers stop dominating the gradient updates
-         that calibrate the smoothing parameters, so COVID shocks
-         don't permanently bias the trend forecast.
-
-         Visible by default rather than in the BHA "More detail"
-         fold. Framed as a proof of concept the author tested, not
-         a deployed component: the shipped Stars cutpoint pipeline
-         used robust M-estimators, but this Huber psi variant was a
-         separate proposal, so the caption says so plainly rather
-         than implying production customer-analytics use.
-
-         Pure HTML/CSS math styling, no MathJax dependency.
-         ========================================================== -->
-    <div class="formula-block">
-      <div class="formula">
-        &psi;<sub><i>k</i></sub>(<i>r</i>) =
-        <span class="cases">
-          <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
-          <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
-        </span>
-      </div>
-      <div class="formula-caption">
-        Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
-      </div>
-    </div>
-
     <details class="fold">
       <summary>More detail</summary>
+      <p>
+        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cutpoint regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
+      </p>
+
+      <!-- ==========================================================
+           HUBER PSI FORMULA
+           Inline math block illustrating the "robust" in robust
+           exponential smoothing. Huber's psi-function is the
+           derivative of his loss function: linear for small
+           residuals, clipped at threshold k for large ones.
+           Effect: outliers stop dominating the gradient updates
+           that calibrate the smoothing parameters, so COVID shocks
+           don't permanently bias the trend forecast.
+
+           Sits inside the BHA "More detail" fold so only the lead
+           paragraph stays visible by default. Framed as a proof of
+           concept the author tested, not a deployed component: the
+           shipped Stars cutpoint pipeline used robust M-estimators,
+           but this Huber psi variant was a separate proposal, so the
+           caption says so plainly rather than implying production
+           customer-analytics use.
+
+           Pure HTML/CSS math styling, no MathJax dependency.
+           ========================================================== -->
+      <div class="formula-block">
+        <div class="formula">
+          &psi;<sub><i>k</i></sub>(<i>r</i>) =
+          <span class="cases">
+            <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
+            <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
+          </span>
+        </div>
+        <div class="formula-caption">
+          Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
+        </div>
+      </div>
+
       <p>
         HEDIS hybrid measures like Transitions of Care, and the Part D medication adherence triplet (MAH, MAC, MAD), add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
       </p>
@@ -1911,16 +1912,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also moved infrastructure from AWS to Azure and Databricks, rebuilding the analytics layer without interrupting service for existing clients.
     </p>
 
-    <p>
-      Across five years I led cross-functional teams to implement analytics, build measurement for clinical and operational work, and deliver sales analytics, often the only engineer working alongside analysts and clinical and commercial partners.
-    </p>
-
-    <p>
-      Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
-    </p>
-
     <details class="fold">
       <summary>More detail</summary>
+      <p>
+        Across five years I led cross-functional teams to implement analytics, build measurement for clinical and operational work, and deliver sales analytics, often the only engineer working alongside analysts and clinical and commercial partners.
+      </p>
+      <p>
+        Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
+      </p>
       <p>
         Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm. The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
       </p>
