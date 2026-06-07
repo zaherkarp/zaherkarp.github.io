@@ -119,22 +119,23 @@
   --ink:   #111;      /* body text, near-black                      */
   --muted: #6a6a6a;   /* sidenote body, de-emphasised metadata      */
   --rule:  #d0d0c8;   /* horizontal rules, table separators         */
-  --accent:#7a0000;   /* deep oxford red, used once or twice max    */
+  --accent:#0a5c54;   /* deep petrol teal, used once or twice max   */
 }
 
-/* Dark mode. Ports the council-tuned palette from the prior site:
-   warm near-black paper, bright cream ink (so 21px body reads),
-   AAA-contrast warm muted, and the dark accent #e05e3e (held at
-   AA 4.75:1 because oxford red #7a0000 fails contrast against
-   #f5ecd7). The dark accent stays redshifted but more saturated;
-   the hue lineage to light is intentional. */
+/* Dark mode. Cool neutral slate (de-warmed from the prior warm-brown
+   paper / cream ink), with a petrol-teal accent #3fb0a0 held above
+   AA on the slate paper. Light mode keeps the Tufte cream; only the
+   dark side is cooled, so the two modes differ slightly in warmth
+   but share the constant teal accent. NOTE: the figure SVGs still
+   hardcode #7a0000 as the accent *sentinel* (remapped to var(--accent)
+   by the attribute selectors below); it renders teal, not red. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #201b14;
-    --ink:   #f5ecd7;
-    --muted: #c2b8a0;
-    --rule:  #3a3024;
-    --accent:#e05e3e;
+    --paper: #16191d;
+    --ink:   #e6e8ea;
+    --muted: #b4bac2;
+    --rule:  #2a2f36;
+    --accent:#3fb0a0;
   }
 }
 
@@ -1205,7 +1206,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     --ink:   #1a1a1a;
     --muted: #555;
     --rule:  #c8c8c8;
-    --accent:#7a0000;
+    --accent:#0a5c54;
   }
   @page { size: auto; margin: 0.75in; }
   html, body {

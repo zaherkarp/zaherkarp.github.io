@@ -113,22 +113,26 @@ what's locked.
 
 ### Palette
 
-Tufte cream paper, near-black ink, oxford red accent. Mode-symmetric
-warmth lineage. The accent retunes for dark-mode AA contrast.
+Tufte cream paper (light mode), cool neutral slate (dark mode), petrol-teal
+accent. Light mode keeps the canonical warm Tufte cream; only the dark mode
+is cooled to a neutral slate (de-warmed away from the prior warm-brown paper).
+The accent is a constant teal hue across both modes, lightened for dark-mode
+AA contrast. The two modes therefore differ slightly in warmth by design,
+bridged by the shared teal accent.
 
-Light mode:
+Light mode (neutrals unchanged from the prior pass; only the accent moved):
   --paper:  #fffff8    /* Tufte cream */
   --ink:    #111       /* Near-black body */
   --muted:  #6a6a6a    /* Neutral gray: dates, metadata, stack lines, sidenote bodies */
   --rule:   #d0d0c8    /* Hairline rule */
-  --accent: #7a0000    /* Deep oxford red. Used 1-2x per chart maximum, never decoratively */
+  --accent: #0a5c54    /* Deep petrol teal. Used 1-2x per chart maximum, never decoratively. ~7.8:1 on cream */
 
 Dark mode (`@media (prefers-color-scheme: dark)`):
-  --paper:  #201b14    /* Warm near-black, ported from prior pass */
-  --ink:    #f5ecd7    /* Bright cream so body reads at 21px */
-  --muted:  #c2b8a0    /* AAA contrast warm mid-tone */
-  --rule:   #3a3024    /* Faint warm hairline */
-  --accent: #e05e3e    /* Council-tuned dark accent (AA 4.75:1). Holds over from prior pass — do not swap to #7a0000, which fails contrast against #f5ecd7 */
+  --paper:  #16191d    /* Cool neutral slate */
+  --ink:    #e6e8ea    /* Cool off-white so body reads at 21px (~14:1 on slate) */
+  --muted:  #b4bac2    /* Cool mid-tone (~8.4:1 on slate, clears AA) */
+  --rule:   #2a2f36    /* Faint cool hairline */
+  --accent: #3fb0a0    /* Petrol teal lightened for dark mode (~6.7:1 on slate, clears AA) */
 
 **Accent discipline.** The Tufte rule is one or two accent uses per chart,
 never decoratively. On the homepage that's roughly: the 2020 acquisition
@@ -146,6 +150,15 @@ block override these to var(--ink), var(--muted), var(--accent),
 var(--rule) — so the same SVG markup adapts to light/dark without
 per-element edits. Do not rewrite SVGs to use CSS classes; the attribute-
 selector approach is the locked contract.
+
+Note: `#7a0000` is now a **historical accent sentinel** only. The rendered
+accent moved to petrol teal (see Palette above), but the SVG presentation
+attributes and the attribute selectors still key on the literal `#7a0000`
+string, which CSS remaps to `var(--accent)` (teal). This was deliberate: it
+keeps the SVG markup, the attribute selectors, and the pre-push accent grep
+(`grep -cE -- '--accent|#7a0000' index.html`, cap 20) untouched. So a red
+sentinel renders teal on the page — do not "fix" the sentinel hex to match
+the teal, and do not interpret `#7a0000` in an SVG as an oxford-red color.
 
 ### Typography
 
@@ -943,7 +956,8 @@ Checks:
 - `grep -c '—' index.html` returns 0 (em-dash-clean chrome)
 - `grep -cE -- '--accent|#7a0000' index.html` ≤ 20 (accent discipline:
   counts both CSS variable refs and SVG literal callouts, since the
-  SVG palette adapter expects #7a0000 as a presentation attribute.
+  SVG palette adapter expects #7a0000 as the accent *sentinel* presentation
+  attribute (it now renders petrol teal via var(--accent); see §Palette).
   Bump the cap only after discussion; ratchet it down when removing
   uses.)
 - `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns

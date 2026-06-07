@@ -8,7 +8,7 @@
   --text: #111;
   --text-sec: #4a4238;
   --muted: #6a6a6a;
-  --accent: #7a0000;
+  --accent: #0a5c54;
   --font-body: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --font-head: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-mono: 'Courier New', ui-monospace, monospace;
@@ -16,13 +16,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #201b14;
-    --surface: #2b2418;
-    --rule: #3a3024;
-    --text: #f5ecd7;
-    --text-sec: #d4c7a9;
-    --muted: #c2b8a0;
-    --accent: #e05e3e;
+    --bg: #16191d;
+    --surface: #20242a;
+    --rule: #2a2f36;
+    --text: #e6e8ea;
+    --text-sec: #c4cad2;
+    --muted: #b4bac2;
+    --accent: #3fb0a0;
   }
 }
 
