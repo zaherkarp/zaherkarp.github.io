@@ -493,17 +493,19 @@ figure.timeline:has(svg.tl-horizontal) {
   margin-inline: auto;
 }
 
-/* Career arc: horizontal/vertical SVG swap at 760px.
-   Horizontal version is the desktop default; vertical version
-   is a native redesign for narrow viewports (NOT a rotated copy
-   of the horizontal).
+/* Career arc: horizontal/compact SVG swap at 760px.
+   Horizontal version is the desktop default; compact version
+   is a single-frame redesign for narrow viewports that fits in
+   roughly one phone screen (NOT the tall vertical reflow it
+   replaced; see the .tl-compact note in the markup), conforming
+   to the same-frame rule the dot plot below already follows.
    Note: selectors are compound (.timeline svg.tl-...) to beat
    the specificity of the .timeline svg rule above, which
    otherwise forced display:block on every SVG in the figure. */
 .timeline svg.tl-horizontal { display: block; overflow: visible; }
-.timeline svg.tl-vertical {
+.timeline svg.tl-compact {
   display: none;
-  max-width: 440px;   /* prevent overgrowth on tablets */
+  max-width: 480px;   /* prevent overgrowth on tablets */
   margin: 0 auto;     /* center within the figure */
 }
 
@@ -522,7 +524,7 @@ figure.timeline:has(svg.tl-horizontal) {
 
 @media (max-width: 760px) {
   .timeline svg.tl-horizontal { display: none; }
-  .timeline svg.tl-vertical   { display: block; }
+  .timeline svg.tl-compact    { display: block; }
   .timeline svg.dp-wide       { display: none; }
   .timeline svg.dp-mobile     { display: block; }
 }
@@ -1368,109 +1370,69 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     </svg>
 
     <!-- ==========================================================
-         VERTICAL CAREER ARC (mobile)
-         Shown only at viewport widths <= 760px (via .tl-vertical
-         display rule). Not a rotated copy of the horizontal; it's
-         a native redesign because rotating text makes it illegible.
+         COMPACT CAREER ARC (mobile)
+         Shown only at viewport widths <= 760px (via .tl-compact
+         display rule). NOT the tall vertical reflow it replaced:
+         this is a single-frame horizontal redesign that fits in
+         roughly one phone screen (~270px tall at 375px width vs
+         ~950px for the old vertical), conforming to the same-frame
+         rule the sibling dot plot already follows (see the
+         .dp-mobile note in the stylesheet). Same three rows as the
+         desktop arc, recomputed for a 600x430 viewBox so the type
+         reads larger relative to the frame than a scaled-down copy
+         of the 1200-wide desktop SVG would.
 
-         Structure:
-           - Year axis vertical, left side, x=65
-           - Year labels right-aligned at x=55
-           - Column 1 (Editorial):    bar at x=100,  2007 to 2014
-           - Column 2 (Research UW):  bar at x=180,  2009 to 2018
-           - Column 3 (Data eng):     bar at x=275,  2017 to now
-             (three abutting segments: healthfinch / HC / BHA)
-           - Red acquisition callout: horizontal dashed line at
-             y(2020), small red italic "acquired" label under
-             the 2020 year label
-           - Era annotations (news-wire, MPH) deliberately dropped
-             for this narrower layout to avoid cross-column clutter
+         Linear year scale: x(year) = 40 + (year - 2007) * 28.5
+           2007->40, 2009->97, 2014->240, 2017->325, 2020->410,
+           2025->553, now (2026)->582
+         Rows: Editorial y=80, Research y=160, Data eng y=240,
+         year axis y=330. Era annotations (news-wire, MPH) are
+         dropped as on the prior mobile design; the single 2020
+         acquisition callout is kept as the one accent use. -->
+    <svg class="tl-compact" viewBox="0 0 600 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-c-desc">
+      <desc id="tl-c-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
 
-         Coordinate math:
-           - y(year) = 80 + (year - 2007) * 50
-           - year 2007 -> y=80, 2009 -> y=180, 2014 -> y=430,
-             2017 -> y=580, 2020 -> y=730, 2025 -> y=980,
-             "now" (2026) -> y=1030
-           ========================================================== -->
-    <svg class="tl-vertical" viewBox="0 0 440 1120" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-v-desc">
-      <desc id="tl-v-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+      <!-- ROW 1: Editorial and writing, 2007 to 2014. -->
+      <text x="40" y="58" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Editorial and writing</text>
+      <line x1="40" y1="80" x2="240" y2="80" stroke="#111" stroke-width="11" stroke-linecap="butt"/>
 
-      <!-- Year axis vertical rule, spans 2007 (y=80) to 2026 (y=1080) -->
-      <line x1="65" y1="80" x2="65" y2="1080" stroke="#111" stroke-width="1"/>
+      <!-- ROW 2: Research, UW-Madison, 2009 to 2018. -->
+      <text x="97" y="138" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Research, UW&ndash;Madison</text>
+      <line x1="97" y1="160" x2="354" y2="160" stroke="#111" stroke-width="11"/>
 
-      <!-- YEAR LABELS AND TICKS
-           Same set of years as horizontal: 2007, 2009, 2014, 2017,
-           2020, 2025, now. Each has a tick through the axis rule
-           and a right-aligned label to the left of the tick. 2020
-           year label is red to signal the pivot; others are muted. -->
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="18">
-        <text x="55" y="85"   text-anchor="end" fill="#6a6a6a">2007</text>
-        <line x1="60" y1="80"  x2="70" y2="80"  stroke="#6a6a6a"/>
+      <!-- ROW 3: Data engineering, 2017 to now. Three abutting
+           segments; labels centered over each at a smaller size so
+           they clear their neighbors in the narrow frame. -->
+      <text x="367" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text>
+      <line x1="325" y1="240" x2="410" y2="240" stroke="#111" stroke-width="11"/>
 
-        <text x="55" y="185"  text-anchor="end" fill="#6a6a6a">2009</text>
-        <line x1="60" y1="180" x2="70" y2="180" stroke="#6a6a6a"/>
+      <text x="481" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text>
+      <line x1="410" y1="240" x2="553" y2="240" stroke="#111" stroke-width="11"/>
 
-        <text x="55" y="435"  text-anchor="end" fill="#6a6a6a">2014</text>
-        <line x1="60" y1="430" x2="70" y2="430" stroke="#6a6a6a"/>
+      <text x="567" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">BHA</text>
+      <line x1="553" y1="240" x2="582" y2="240" stroke="#111" stroke-width="11"/>
 
-        <text x="55" y="585"  text-anchor="end" fill="#6a6a6a">2017</text>
-        <line x1="60" y1="580" x2="70" y2="580" stroke="#6a6a6a"/>
-
-        <!-- 2020: red year label with a secondary "acquired" caption
-             in smaller italic directly below. The caption text
-             identifies the inflection independent of color, so no
-             separate marker is needed. Replaces the horizontal
-             version's below-axis text annotation. -->
-        <text x="55" y="735"  text-anchor="end" fill="#7a0000">2020</text>
-        <line x1="60" y1="730" x2="70" y2="730" stroke="#6a6a6a"/>
-        <text x="55" y="753"  text-anchor="end" font-size="14" font-style="italic" fill="#7a0000">acquired by</text>
-        <text x="55" y="767"  text-anchor="end" font-size="14" font-style="italic" fill="#7a0000">Health Catalyst</text>
-
-        <text x="55" y="985"  text-anchor="end" fill="#6a6a6a">2025</text>
-        <line x1="60" y1="980" x2="70" y2="980" stroke="#6a6a6a"/>
-
-        <text x="55" y="1035" text-anchor="end" fill="#6a6a6a">now</text>
-        <line x1="60" y1="1030" x2="70" y2="1030" stroke="#6a6a6a"/>
+      <!-- YEAR AXIS at y=330. Two-digit year labels (matching the
+           dot plot's mobile axis) so the right-hand years do not
+           crowd in the narrow frame. -->
+      <line x1="30" y1="330" x2="590" y2="330" stroke="#111" stroke-width="1.2"/>
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="40"  y1="324" x2="40"  y2="336" stroke="#6a6a6a"/><text x="40"  y="355">'07</text></g>
+        <g><line x1="97"  y1="324" x2="97"  y2="336" stroke="#6a6a6a"/><text x="97"  y="355">'09</text></g>
+        <g><line x1="240" y1="324" x2="240" y2="336" stroke="#6a6a6a"/><text x="240" y="355">'14</text></g>
+        <g><line x1="325" y1="324" x2="325" y2="336" stroke="#6a6a6a"/><text x="325" y="355">'17</text></g>
+        <g><line x1="410" y1="324" x2="410" y2="336" stroke="#6a6a6a"/><text x="410" y="355">'20</text></g>
+        <g><line x1="553" y1="324" x2="553" y2="336" stroke="#6a6a6a"/><text x="553" y="355">'25</text></g>
+        <g><line x1="582" y1="324" x2="582" y2="336" stroke="#6a6a6a"/><text x="582" y="355">now</text></g>
       </g>
 
-      <!-- COLUMN 1: Editorial and writing, 2007 to 2014.
-           Vertical bar at x=100, label to the right at top. -->
-      <line x1="100" y1="80" x2="100" y2="430" stroke="#111" stroke-width="10" stroke-linecap="butt"/>
-      <text x="115" y="92" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">Editorial and writing</text>
-
-      <!-- COLUMN 2: Research, UW-Madison, 2009 to 2018.
-           Shifted right so it doesn't collide with Column 1 when
-           their ranges overlap (they do, 2009-2014). -->
-      <line x1="180" y1="180" x2="180" y2="630" stroke="#111" stroke-width="10"/>
-      <text x="195" y="192" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">Research, UW&ndash;Madison</text>
-
-      <!-- COLUMN 3: Data engineering sequence, 2017 to now.
-           Three contiguous segments on one vertical axis, abutting
-           at year boundaries. Labels to the right of each segment,
-           positioned at the segment's starting year. -->
-
-      <!-- healthfinch 2017-2020 -->
-      <line x1="275" y1="580" x2="275" y2="730" stroke="#111" stroke-width="10"/>
-      <text x="290" y="592" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">healthfinch</text>
-
-      <!-- Health Catalyst 2020-2025 -->
-      <line x1="275" y1="730" x2="275" y2="980" stroke="#111" stroke-width="10"/>
-      <text x="290" y="752" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">Health Catalyst</text>
-
-      <!-- BHA 2025-now -->
-      <line x1="275" y1="980" x2="275" y2="1030" stroke="#111" stroke-width="10"/>
-      <text x="290" y="992" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">BHA</text>
-
-      <!-- RED ACQUISITION CALLOUT at 2020.
-           Horizontal dashed red line from near the year tick to
-           the Column 3 bar, plus a filled red circle on the bar
-           at y(2020). The "acquired by Health Catalyst" text sits
-           under the 2020 year label (rendered above in the year
-           group). Visual effect: the red year label, the dashed
-           line, and the red circle together mark 2020 as THE
-           pivot event on the chart. -->
-      <line x1="70" y1="730" x2="275" y2="730" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="275" cy="730" r="6" fill="#7a0000"/>
+      <!-- INFLECTION: acquisition 2020. Red dashed line drops from
+           the Row 3 band (410, 240) to the axis (410, 330), filled
+           circle on the band, red italic caption below the axis.
+           The single accent use on this figure. -->
+      <line x1="410" y1="240" x2="410" y2="330" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <circle cx="410" cy="240" r="5" fill="#7a0000"/>
+      <text x="410" y="392" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
     </svg>
   </figure>
 
