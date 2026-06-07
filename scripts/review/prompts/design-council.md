@@ -206,10 +206,11 @@ council as a saturation study:
 From `CLAUDE.md` §Design decisions and §What NOT to do. Proposals that
 violate these are out of bounds unless I explicitly reopen the decision:
 
-- Palette: Tufte cream / near-black ink / oxford-red accent; dark-mode
-  accent stays `#e05e3e` (do not swap to `#7a0000`, which fails AA on cream
-  ink). **Accent discipline: ~1–2 uses per chart, never decorative;** the
-  pre-push grep caps `--accent`/`#7a0000` in index.html at 20.
+- Palette: Tufte cream paper (light) / cool neutral slate (dark) / petrol-teal
+  accent. Light accent `#0a5c54`, dark accent `#3fb0a0` (lightened for AA on the
+  slate paper). `#7a0000` survives only as the SVG accent *sentinel* (remapped to
+  `var(--accent)`, renders teal). **Accent discipline: ~1–2 uses per chart, never
+  decorative;** the pre-push grep caps `--accent`/`#7a0000` in index.html at 20.
 - Layout: 1400px article, 60% body column + 40% sidenote margin. No 640px
   regression. Do not remove the sidenote system; it needs the margin.
 - Type: ETBook, two weights only (roman + italic, **no bold body**). Italic

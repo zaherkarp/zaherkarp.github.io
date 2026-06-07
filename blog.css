@@ -4,12 +4,12 @@
 */
 
 :root {
-  /* Tufte palette, cream paper, charcoal ink, rust accent */
+  /* Tufte palette, cream paper, charcoal ink, petrol-teal accent */
   --bg:       #fffff8;
   --rule:     #d0d0c8;
   --text:     #111;
   --muted:    #6a6a6a;
-  --accent:   #7a0000;
+  --accent:   #0a5c54;
 
   --size-caption: 0.78rem;
   --size-body:    1.15rem;
@@ -37,12 +37,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Tufte dark variant A, warm near-black, bright cream, saturated rust */
-    --bg:       #201b14;
-    --rule:     #3a3024;
-    --text:     #f5ecd7;
-    --muted:    #c2b8a0;
-    --accent:   #e05e3e;
+    /* Tufte dark variant, cool neutral slate, cool off-white ink, petrol-teal accent */
+    --bg:       #16191d;
+    --rule:     #2a2f36;
+    --text:     #e6e8ea;
+    --muted:    #b4bac2;
+    --accent:   #3fb0a0;
 
     /* Solarized base tones flipped to dark; the eight hues above
        stay the same. */
