@@ -1476,11 +1476,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.
-    </p>
-
-    <p>
-      Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span>
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span>
     </p>
   </section>
 
@@ -1785,9 +1781,9 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
        between the writing-index markers; do not hand-edit between them.
        Uses .writing-tile (NOT .project-tile) so the project CSS counter
        stays untouched, and keys each tile by date rather than a number. -->
+  <details class="fold">
+    <summary>More writing</summary>
   <div class="writing-index">
-    <p class="index-label">More writing</p>
-
     <!-- writing-index:start -->
     <div class="writing-tile">
       <span class="date">2026-05-19</span>
@@ -1828,6 +1824,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
     <p><a href="/blog/">View all writing</a></p>
   </div>
+  </details>
 
   <hr>
 
@@ -2010,10 +2007,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
-          I built this because the Stars cliff is the hardest thing to explain to anyone outside the work: a tenth of a point, statistical noise on most measures, can swing $50 million. What surprised me was how tightly contracts pile up just under 4.0, close enough that the cutoff runs through the densest part of the distribution.
-        </p>
-        <p>
-          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP threshold, a tenth of a star is worth $50 million. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser. Drag the weights and watch how little it takes to cross.
+          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP threshold, a tenth of a star is worth $50 million. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser. No data leaves the user's machine.
         </p>
 
         <!-- ==========================================================
@@ -2136,9 +2130,6 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <span class="num"></span>
       <div class="body">
         <h3>Healthcare Workforce Transition Platform</h3>
-        <p>
-          I built this because workforce planning in healthcare still treats clinical and administrative staff as fungible headcount, when the real question is which adjacent role a person is already most of the way qualified for. What surprised me was how short most of those hops are: a lot of "reskilling" turns out to be one or two skill domains, not a wholesale retrain.
-        </p>
         <p>
           Estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data provides the feature structure; logistic regression produces Ready Now, Trainable, and Long-Term Reskill recommendations with skill-domain gap analysis.
         </p>
@@ -2287,14 +2278,15 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
        architecture example, with the compliance-as-architecture
        blog post as the public methodology surface.
        ========================================================== -->
+  <details class="fold">
+    <summary>More projects</summary>
   <div class="projects-index">
-    <p class="index-label">More projects</p>
 
     <div class="project-tile">
       <span class="num"></span>
       <h3>Medicare Advantage Insight Engine</h3>
       <p class="tile-summary">
-        I kept missing Medicare Advantage news in the noise, so this scores public items for relevance and posts structured alerts to a Teams webhook.
+        Scores public Medicare Advantage news for analytic relevance using keyword and domain heuristics, then posts structured alerts to a Teams webhook.
       </p>
       <p class="tile-links">
         <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub repository: Medicare Advantage Insight Engine">GitHub</a>
@@ -2307,7 +2299,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <span class="num"></span>
       <h3>ECDS Shock Index</h3>
       <p class="tile-summary">
-        I wanted to see how far ECDS would move HEDIS rates before it did. Models the shift from claims-based ED coding and the Stars cutpoint effect at the plan level.
+        Models how HEDIS measure rates shift when ECDS replaces claims-based ED coding, and estimates the Stars cutpoint effect at the plan level.
       </p>
       <p class="tile-links">
         <a href="https://github.com/zaherkarp/ecds-shock-index" data-goatcounter-click="project-ecds-shock-github" data-goatcounter-title="ECDS Shock Index GitHub" aria-label="GitHub repository: ECDS Shock Index">GitHub</a>
@@ -2320,7 +2312,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <span class="num"></span>
       <h3>Care Delivery Workflow Changes</h3>
       <p class="tile-summary">
-        I needed to know whether a care redesign worked or just rode background drift. Interrupted time series with multi-site segmented regression separates the two.
+        Interrupted time series with multi-site segmented regression on clinic panel data, separating redesign effect from background drift.
       </p>
       <p class="tile-links">
         <a href="/blog/interrupted-time-series-care-redesign/" data-goatcounter-click="project-its-care-redesign-post" data-goatcounter-title="ITS care redesign post" aria-label="Blog post: Interrupted time series care redesign">post</a>
@@ -2332,7 +2324,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <span class="num"></span>
       <h3>Practice Automation Analytics, healthfinch Charlie</h3>
       <p class="tile-summary">
-        I wanted a real number on what automation saves. This multi-clinic study of healthfinch Charlie at OCHIN used linear regression for time saved per refill and refills per FTE-hour.
+        Multi-clinic case study of healthfinch Charlie at OCHIN. Linear regression on workflow data quantified time saved per refill and refills per FTE-hour.
       </p>
       <p class="tile-links">
         <a href="/blog/practice-automation-workflow-roi/" data-goatcounter-click="project-charlie-roi-post" data-goatcounter-title="Practice automation workflow ROI post" aria-label="Blog post: Practice automation workflow ROI">post</a>
@@ -2340,6 +2332,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       <p class="stack">linear regression &middot; Sisense &middot; Epic Clarity &middot; SQL</p>
     </div>
   </div>
+  </details>
 
   <hr>
 
