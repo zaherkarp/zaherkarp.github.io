@@ -970,7 +970,10 @@ Checks:
 - `python scripts/lint_facts.py` clean (cross-surface fact drift between
   resume.md, index.html h3+meta, and JSON-LD; playbook for failures
   at scripts/lint_facts.md)
-- `grep -c '—' index.html` returns 0 (em-dash-clean chrome)
+- `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
+  life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
+  blog "thoughts" are stripped at the source, this guards hand-authored
+  milestones)
 - `grep -cE -- '--accent|#7a0000' index.html` ≤ 20 (accent discipline:
   counts both CSS variable refs and SVG literal callouts, since the
   SVG palette adapter expects #7a0000 as the accent *sentinel* presentation

@@ -85,14 +85,16 @@ if [ "$CLI_LINTED" = "false" ]; then
   fi
 fi
 
-# 4. Em-dash chrome cleanliness — index.html, resume.md, and cv.md
-#    must be em-dash-clean. Blog markdown is exempt (preserves historical
-#    voice); resume + CV render to PDFs handed to recruiters, so they
-#    share the chrome register with the homepage.
+# 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
+#    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
+#    (preserves historical voice); resume + CV render to PDFs handed to
+#    recruiters, and life-in-weeks is generated/hand-authored chrome, so all
+#    share the chrome register with the homepage. (Generated blog "thoughts"
+#    are em-dash-stripped at the source; this guards hand-authored milestones.)
 em_total=0
 em_report=""
 em_surfaces=0
-for f in index.html src/content/resume.md src/content/cv.md; do
+for f in index.html src/content/resume.md src/content/cv.md life-in-weeks/index.html; do
   if [ -f "$f" ]; then
     em_surfaces=$((em_surfaces + 1))
     n=$(grep -c '—' "$f" || true)
