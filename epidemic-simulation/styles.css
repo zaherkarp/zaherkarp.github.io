@@ -142,7 +142,7 @@ button#run:disabled { opacity: 0.55; cursor: wait; }
   color: var(--text-sec);
   margin: 0.5rem 0 1rem;
 }
-.selection b { color: var(--accent); font-weight: 600; }
+.selection b { color: var(--accent); font-weight: 500; }
 
 /* Fixed heights match the values passed to Plotly's layout.height. Without
    them, Plotly's responsive: true reads the container's intrinsic height
