@@ -60,7 +60,16 @@ install_git_hooks()
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
+LIFE_WEEKS = ROOT / "life-in-weeks" / "index.html"
 POSTS_DIR = ROOT / "src" / "content" / "blog"
+# Acronyms that should render uppercase when a blog "thought" topic is derived
+# from a tag slug (the lowercase tag "aws" -> "AWS"). A per-post
+# `lifeweek_topic:` frontmatter field overrides the derived topic entirely.
+TOPIC_ACRONYMS = {
+    "aws", "sql", "ci", "cd", "etl", "elt", "roi", "hedis", "cms", "ma",
+    "ecds", "mph", "ml", "ai", "llm", "api", "pdf", "csv", "id", "kpi",
+    "hcc", "hipaa", "hitrust", "qbp", "cahps", "dbt", "ux",
+}
 # Dated citation snapshots: one file per build day that actually fetched fresh
 # counts. The YAML cache only ever holds the latest count; these snapshots
 # accrete the longitudinal series the cache discards. Append-only by date,
@@ -96,7 +105,9 @@ def _esc(s: str) -> str:
 
 def load_posts() -> list[dict]:
     posts: list[dict] = []
-    for p in POSTS_DIR.glob("*.md"):
+    # Sort the glob so same-date posts tie-break on filename deterministically;
+    # an unordered glob lets the auto-committed outputs reorder run-to-run.
+    for p in sorted(POSTS_DIR.glob("*.md")):
         if p.stem.startswith("_"):
             continue
         fm = frontmatter.load(p)
@@ -118,6 +129,7 @@ def load_posts() -> list[dict]:
             "slug": p.stem,
             "marginnote": fm.metadata.get("homepageMarginnote", ""),
             "tags": tags,
+            "lifeweek_topic": str(fm.metadata.get("lifeweek_topic", "")).strip(),
         })
     return posts
 
@@ -418,6 +430,56 @@ def build_updated_footer() -> str:
     return f"    Updated {today.year:04d}-{today.month:02d}."
 
 
+# ─── life-in-weeks blog "thoughts" ────────────────────────────────────────
+
+def prettify_topic(slug: str) -> str:
+    """Turn a tag slug into display text: 'healthcare-data' -> 'healthcare data',
+    'aws' -> 'AWS'. Known acronyms uppercase; everything else stays lowercase."""
+    words = slug.replace("_", "-").replace("-", " ").split()
+    return " ".join(w.upper() if w in TOPIC_ACRONYMS else w for w in words)
+
+
+def resolve_topic(post: dict) -> str:
+    """The blog 'thought' topic for a post: explicit lifeweek_topic frontmatter
+    wins; otherwise the prettified first tag. Empty if the post has neither."""
+    override = post.get("lifeweek_topic", "")
+    if override:
+        return _strip_em_dashes(override)
+    tags = post.get("tags") or []
+    return prettify_topic(tags[0]) if tags else ""
+
+
+def build_life_thoughts(posts: list[dict]) -> str:
+    """Render the generated EVENTS entries for the life-in-weeks grid: one
+    `{ date, topic, kind: 'thought' }` per non-draft post that resolves a topic,
+    oldest first. The grid's JS merges same-week thoughts into one dot."""
+    lines = []
+    for post in sorted(posts, key=lambda p: p["date"]):
+        topic = resolve_topic(post)
+        if not topic:
+            continue
+        # Single-quoted JS string literals; escape backslash and quote.
+        safe = topic.replace("\\", "\\\\").replace("'", "\\'")
+        lines.append(
+            f"    {{ date: '{post['date'].isoformat()}', topic: '{safe}', kind: 'thought' }},"
+        )
+    return "\n".join(lines)
+
+
+def replace_between_js(text: str, marker: str, payload: str) -> str:
+    """Marker replace for `// marker:start` / `// marker:end` JS comments
+    (the HTML-comment replace_between can't reach inside a <script> array)."""
+    pat = re.compile(
+        rf'(//\s*{re.escape(marker)}:start[^\n]*)(.*?)(\n[ \t]*//\s*{re.escape(marker)}:end)',
+        re.DOTALL,
+    )
+    if not pat.search(text):
+        print(f"  WARN: JS marker {marker}:start/end not found; skipping", file=sys.stderr)
+        return text
+    body = f"\n{payload}" if payload else ""
+    return pat.sub(lambda m: f"{m.group(1)}{body}{m.group(3)}", text)
+
+
 def replace_between(text: str, marker: str, payload: str, end_indent: str = "    ") -> str:
     pat = re.compile(
         rf'(<!--\s*{re.escape(marker)}:start\s*-->)(.*?)(<!--\s*{re.escape(marker)}:end\s*-->)',
@@ -468,6 +530,21 @@ def main() -> int:
         print("index.html updated")
     else:
         print("no changes")
+
+    # Life-in-weeks: drop a "💭 Thought about X" onto the grid for every post.
+    if LIFE_WEEKS.exists():
+        lw_original = LIFE_WEEKS.read_text()
+        thoughts = build_life_thoughts(posts)
+        lw_text = replace_between_js(lw_original, "blog-thoughts", thoughts)
+        if lw_text != lw_original:
+            LIFE_WEEKS.write_text(lw_text)
+            n = thoughts.count("\n") + 1 if thoughts else 0
+            print(f"life-in-weeks thoughts injected ({n} posts)")
+        else:
+            print("life-in-weeks: no changes")
+    else:
+        print(f"  WARN: {LIFE_WEEKS} not found; skipping life-in-weeks", file=sys.stderr)
+
     return 0
 
 

@@ -53,6 +53,8 @@ jobs:
       - name: Commit changes (if any)
         run: |
           git add index.html
+          # Blog "thoughts" injected into the life-in-weeks grid.
+          git add life-in-weeks/index.html
           # Dated citation snapshots accrete a longitudinal series the YAML
           # cache discards (record-on-change, so most runs add nothing).
           if [ -d data/snapshots ]; then git add data/snapshots; fi
