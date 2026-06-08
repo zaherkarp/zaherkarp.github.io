@@ -1,0 +1,55 @@
+name: Site review (check items)
+
+on:
+  workflow_dispatch:
+    inputs:
+      items:
+        description: 'Items to flip: 1-based indices and/or label substrings, comma- or newline-separated (e.g. "1, weekly load latency").'
+        required: true
+        type: string
+      issue:
+        description: 'Issue number to edit. Defaults to the latest open site-review issue.'
+        required: false
+        type: string
+      state:
+        description: 'Target state for the matched boxes.'
+        required: false
+        default: checked
+        type: choice
+        options:
+          - checked
+          - unchecked
+      dry_run:
+        description: 'Preview matches in the job log without editing the issue.'
+        required: false
+        default: false
+        type: boolean
+      comment:
+        description: 'Post an audit comment listing what was flipped.'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Flip checklist items
+        uses: actions/github-script@v7
+        env:
+          ITEMS: ${{ inputs.items }}
+          ISSUE: ${{ inputs.issue }}
+          STATE: ${{ inputs.state }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          COMMENT: ${{ inputs.comment }}
+        with:
+          script: |
+            const check = require('./scripts/review/check-items.cjs');
+            await check.run({ github, context, core });

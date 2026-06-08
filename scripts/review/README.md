@@ -142,6 +142,52 @@ updates the existing issue in place rather than opening a duplicate.
   issue is open; the lifecycle script does not overwrite an existing
   issue unless you re-dispatch the workflow for the same date.
 
+## Checking items off programmatically
+
+`.github/workflows/site-review-check.yml` (backed by
+`scripts/review/check-items.cjs`) flips checklist boxes on a tracking
+issue without opening the web UI. Same no-secrets surface as the publish
+workflow: it edits the issue body via the Actions `GITHUB_TOKEN`.
+
+```bash
+# Check the Tier 1 anchor item (by 1-based index) on the latest open issue
+gh workflow run site-review-check.yml -f items=1
+
+# Mix indices and label substrings; target a specific issue
+gh workflow run site-review-check.yml \
+  -f issue=43 \
+  -f items="1, weekly load latency, subtitle rewrite"
+
+# Preview without writing, then untick instead of tick
+gh workflow run site-review-check.yml -f items=2 -f dry_run=true
+gh workflow run site-review-check.yml -f items=2 -f state=unchecked
+```
+
+Inputs:
+
+- `items` (**required**) — comma- or newline-separated selectors. A pure
+  integer matches by **1-based index** over every `- [ ]`/`- [x]` line in
+  the body (in document order, across all tiers and the carried-forward
+  block). Anything else is a **case-insensitive substring** matched
+  against the item label; one selector may flip several lines.
+- `issue` — issue number. Defaults to the latest open `site-review` issue.
+- `state` — `checked` (default) or `unchecked`.
+- `dry_run` — `true` previews the matches in the job log and writes
+  nothing.
+- `comment` — `true` (default) posts an audit comment listing what flipped
+  and which selectors matched nothing.
+
+Selectors that match no box are reported as warnings, not failures; the
+run only fails if **none** of the selectors match anything (a typo guard).
+
+**Durability caveat.** This edits the issue body in place. The publish
+workflow (`issue-lifecycle.cjs`) regenerates the body from
+`reviews/<date>-synthesis.md` whenever it re-runs for the **same date**,
+re-emitting every item as `- [ ]` and wiping checks made here. Across
+review batches a `- [x]` *is* durable (carry-forward only repeats
+unchecked items), but if you need a check to survive a same-date
+republish, resolve the item in the synthesis source too.
+
 ## Generating the four reports
 
 The pipeline does not generate reports. You produce them however you
