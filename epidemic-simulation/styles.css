@@ -41,6 +41,14 @@ nav.back { font-size: 0.85rem; margin-bottom: 2rem; }
 nav.back a { color: var(--muted); text-decoration: none; }
 nav.back a:hover { color: var(--accent); }
 
+/* Standardized site footer (shared structure across the site) */
+.site-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 1.2rem; font-size: 0.9rem; color: var(--muted); }
+.footer-nav a { font-variant: small-caps; letter-spacing: 0.06em; color: var(--muted); text-decoration: none; border-bottom: none; }
+.footer-nav a:hover { border-bottom: 1px solid var(--muted); }
+.footer-nav .sep { margin: 0 0.55rem; color: var(--rule); }
+.footer-meta { margin-top: 0.5rem; font-size: 0.82rem; color: var(--muted); font-variant-numeric: oldstyle-nums; line-height: 1.6; }
+.footer-meta a { color: var(--muted); border-bottom: 1px dotted var(--rule); }
+
 h1, h2, h3 {
   font-family: var(--font-head);
   font-weight: 600;

@@ -383,45 +383,25 @@ nav {
 }
 .blog-body .footnotes ol { margin-left: 1.2rem; }
 
-/* FOOTER */
-footer { border-top: 1px solid var(--rule); padding: 2.5rem 0 2rem; margin-top: 3rem; }
-.footer-contact { margin-bottom: 1.5rem; }
-.footer-contact p {
-  font-size: var(--size-caption);
-  color: var(--muted);
-  line-height: 1.85;
-}
-.footer-contact a { color: var(--muted); border-bottom: none; }
-.footer-contact a:hover { border-bottom-color: var(--muted); }
-.footer-contact .contact-label {
+/* FOOTER — standardized site footer (shared structure across all page types) */
+.site-footer { border-top: 1px solid var(--rule); padding-top: 1.2rem; margin-top: 3rem; font-size: 0.9rem; color: var(--muted); }
+.footer-nav a {
   font-variant: small-caps;
   letter-spacing: 0.06em;
   color: var(--muted);
-  margin-right: 0.35rem;
+  text-decoration: none;
+  border-bottom: none;
 }
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.4rem;
-  list-style: none;
-  margin-bottom: 1.25rem;
-}
-.footer-links a {
-  font-size: var(--size-caption);
-  font-variant: small-caps;
-  letter-spacing: 0.08em;
+.footer-nav a:hover { border-bottom: 1px solid var(--muted); }
+.footer-nav .sep { margin: 0 0.55rem; color: var(--rule); }
+.footer-meta {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
   color: var(--muted);
+  font-variant-numeric: oldstyle-nums;
 }
-.footer-links a:hover { color: var(--muted); }
-.footer-copy { font-size: calc(var(--size-caption) * 0.88); color: var(--muted); }
-.footer-build {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: calc(var(--size-caption) * 0.82);
-  color: var(--muted);
-  margin-top: 0.25rem;
-}
-.footer-build a { color: inherit; border-bottom: 1px dotted var(--rule); }
-.footer-build a:hover { color: var(--text); border-bottom-color: var(--muted); }
+.footer-meta a { color: var(--muted); border-bottom: 1px dotted var(--rule); }
+.footer-meta a:hover { border-bottom-color: var(--muted); }
 
 /* ============================================================
    PRISM SYNTAX HIGHLIGHTING — SOLARIZED

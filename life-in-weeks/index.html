@@ -39,6 +39,14 @@ body { font-family: var(--font-body); line-height: 1.7; padding: 2rem 0 4rem; }
 nav { font-size: 0.78rem; margin-bottom: 2rem; }
 nav a { color: var(--muted); text-decoration: none; }
 nav a:hover { color: var(--accent); }
+
+/* Standardized site footer (shared structure across the site) */
+.site-footer { border-top: 1px solid var(--rule); margin-top: 3rem; padding-top: 1.2rem; font-size: 0.9rem; color: var(--muted); }
+.footer-nav a { font-variant: small-caps; letter-spacing: 0.06em; color: var(--muted); text-decoration: none; border-bottom: none; }
+.footer-nav a:hover { border-bottom: 1px solid var(--muted); }
+.footer-nav .sep { margin: 0 0.55rem; color: var(--rule); }
+.footer-meta { margin-top: 0.5rem; font-size: 0.82rem; color: var(--muted); font-variant-numeric: oldstyle-nums; }
+.footer-meta a { color: var(--muted); }
 h1 { font-size: 1.7rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.25; }
 .lede { color: var(--text-sec); margin-bottom: 1.5rem; max-width: 34em; }
 a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
@@ -142,8 +150,17 @@ footer p { font-style: italic; }
   <ol id="text-alt-list"></ol>
 </details>
 
-<footer>
-  <p>Birth year: 1985. Exact date withheld intentionally.</p>
+<footer class="site-footer">
+  <nav class="footer-nav" aria-label="Site footer">
+    <a href="/">Home</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href="/blog/">Blog</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href="/resume.html">Resume</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href="/#contact">Contact</a>
+  </nav>
+  <p class="footer-meta">Birth year: 1985. Exact date withheld intentionally.</p>
 </footer>
 
 </div>

@@ -1145,17 +1145,33 @@ hr {
    so it tracks the actual last-touched month of the file rather
    than a hardcoded value that would drift.
    ============================================================ */
-.page-footer {
+/* Standardized site footer (shared structure across homepage, blog, subpages, 404) */
+.site-footer {
   width: 60%;
   margin-top: 3rem;
   padding-top: 1.2rem;
   border-top: 1px solid var(--rule);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.footer-nav a {
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: none;
+}
+.footer-nav a:hover { border-bottom: 1px solid var(--muted); }
+.footer-nav .sep { margin: 0 0.55rem; color: var(--rule); }
+.footer-meta {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
   color: var(--muted);
   font-variant-numeric: oldstyle-nums;
 }
+.footer-meta a { color: var(--muted); border-bottom: 1px dotted var(--rule); }
 @media (max-width: 760px) {
-  .page-footer { width: 100%; }
+  .site-footer { width: 100%; }
 }
 
 /* ============================================================
@@ -2810,10 +2826,21 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
        Date is regenerated on every CI run by build_portfolio.py;
        do not hand-edit between the markers.
        ========================================================== -->
-  <footer class="page-footer">
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="#contact">Contact</a>
+    </nav>
+    <p class="footer-meta">
     <!-- updated:start -->
     Updated 2026-06.
   <!-- updated:end -->
+    </p>
   </footer>
 
 </main>
