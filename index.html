@@ -259,7 +259,7 @@ a:link, a:visited {
   color: inherit;
   text-decoration: underline;
   text-decoration-thickness: 1px;
-  text-decoration-color: var(--rule);
+  text-decoration-color: var(--muted);
   text-underline-offset: 0.18em;
 }
 a:hover {
@@ -1347,16 +1347,16 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <g><line x1="1140" y1="314" x2="1140" y2="326" stroke="#6a6a6a"/><text x="1140" y="355">now</text></g>
       </g>
 
-      <!-- INFLECTION: acquisition 2020.
-           Red dashed line drops from the Row 3 band at (800, 260)
-           to the axis at (800, 320). Deliberately does NOT cross
-           the year label; the year "2020" sits between the dashed
-           line and the annotation text, acting as the visual pivot
-           that ties the red-above to the red-below.
-           Larger red circle (r=6) at the band to anchor the eye. -->
-      <line x1="800" y1="260" x2="800" y2="320" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="800" cy="260" r="6" fill="#7a0000"/>
-      <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
+      <!-- INFLECTION: acquisition 2020 (calmed).
+           Formerly a loud red dashed callout; demoted to a quiet
+           muted annotation in the same style as the news-wire and
+           MPH era notes (thin solid connector, muted italic, no
+           accent, no circle). The 2020 acquisition is still marked
+           as the inflection but no longer shouts, and the caption
+           drops "Catalyst" so the only Catalyst mention on the
+           chart is the band label above. -->
+      <line x1="800" y1="260" x2="800" y2="314" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
 
       <!-- ERA ANNOTATIONS (quiet)
            One per pre-data-engineering era, positioned at the year
@@ -1442,13 +1442,12 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         <g><line x1="582" y1="324" x2="582" y2="336" stroke="#6a6a6a"/><text x="582" y="355">now</text></g>
       </g>
 
-      <!-- INFLECTION: acquisition 2020. Red dashed line drops from
-           the Row 3 band (410, 240) to the axis (410, 330), filled
-           circle on the band, red italic caption below the axis.
-           The single accent use on this figure. -->
-      <line x1="410" y1="240" x2="410" y2="330" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <circle cx="410" cy="240" r="5" fill="#7a0000"/>
-      <text x="410" y="392" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#7a0000" text-anchor="middle">acquired by Health Catalyst</text>
+      <!-- INFLECTION: acquisition 2020 (calmed). Demoted from the
+           loud red callout to a quiet muted annotation matching the
+           desktop arc: thin solid connector, muted italic caption,
+           no accent, no circle. Caption drops "Catalyst". -->
+      <line x1="410" y1="240" x2="410" y2="324" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="410" y="392" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
     </svg>
   </figure>
 
@@ -1929,7 +1928,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
     <hr>
 
-    <h3>Researcher, Five Roles Over Nine Years</h3>
+    <h3>Researcher</h3>
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>

@@ -232,16 +232,22 @@ Two SVGs swap at 760px:
   - Horizontal `viewBox="0 0 1200 440"` for desktop. Three rows: editorial
     & writing 2007-2014, research UW-Madison 2009-2018, data engineering
     sequence 2017-now (healthfinch / HC / BHA on a single row, abutting).
-    One loud callout: red dashed line + filled circle + red text at 2020
-    marking the Health Catalyst acquisition. Two quiet annotations
-    (news-wire syndication 2008, MPH Biostatistics 2014).
-  - Vertical `viewBox="0 0 440 1120"` for mobile (native redesign, NOT a
-    rotated copy). Same data, same callout, but the era annotations are
-    dropped because they crowd the narrower layout.
+    Three quiet annotations, all in the same muted style (thin solid
+    connector, muted italic, no accent, no circle): the 2020 acquisition
+    inflection (caption reads "acquisition", not "Health Catalyst" — the
+    band label is the only Catalyst mention on the chart), news-wire
+    syndication 2008, and MPH Biostatistics 2014.
+  - Compact `viewBox="0 0 600 430"` for mobile (native single-frame
+    redesign, NOT a rotated copy). Same data, same calmed acquisition
+    annotation, but the news-wire/MPH era notes are dropped because they
+    crowd the narrower layout.
 
-Bars use `--muted` (resolved via the SVG palette adaptation rule); the
-single accent callout is the 2020 dashed line. Do not change SVG
-coordinates without recalculating from scratch — they're tested.
+The 2020 callout was demoted from a loud red dashed+circle+caption accent
+to the quiet muted annotation above (2026-06-07): the user wanted chart
+uniformity and fewer Catalyst call-outs, and painting all bars accent would
+have violated accent discipline. The career arc now uses NO accent at all —
+its one former accent use is gone. Do not change SVG coordinates without
+recalculating from scratch — they're tested.
 
 The prior site had a single 800×320 SVG that scrolled horizontally on
 mobile. The rebuild dropped that pattern (and its scroll-to-right inline
