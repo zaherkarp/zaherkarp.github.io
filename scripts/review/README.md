@@ -23,6 +23,14 @@ do not produce site changes by themselves.
   lanes, emit a consensus-graded synthesis table, then iterate with you on
   fixes one row at a time. Invoke: "Run
   scripts/review/prompts/design-council.md on `<target>`, goal: `<goal>`."
+- `assess-items.md` — the **item assessor**: reads the open action items on
+  a site-review tracking issue, inspects the current committed site, and
+  renders a per-item verdict (met / not met-open / not met-locked /
+  deferred / unsure) with file:line evidence. Interactive and
+  propose-then-confirm: it never checks a box on its own. On confirmation it
+  drives the check-off actuator (below) and drafts `wontfix:`/`defer:`
+  comments. Invoke: "Run scripts/review/prompts/assess-items.md on
+  `#<issue>`."
 
 ---
 
@@ -137,6 +145,15 @@ updates the existing issue in place rather than opening a duplicate.
   The next review run captures these and re-surfaces them so they do
   not get forgotten. Comments without these prefixes are not parsed —
   they remain in the issue history but do not affect the next run.
+
+  A `wontfix:` note additionally **drops its matching item from
+  carry-forward** on the next batch, so a won't-do stops reappearing as
+  an open checkbox. The match is token-overlap (`suppressWontfixed` in
+  `issue-lifecycle.cjs`): at least 80% of the item's significant words
+  must appear in the reason, so lead the rationale with the item name. A
+  non-match fails safe — the item simply carries forward as before.
+  `defer:` notes are intentionally **not** suppressed: deferral means
+  revisit later, so the box keeps surfacing with its reason attached.
 
 - **Edit the body** freely. The action checklist is yours once the
   issue is open; the lifecycle script does not overwrite an existing

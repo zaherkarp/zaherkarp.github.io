@@ -79,6 +79,64 @@ function parseChecklist(markdown) {
   return items;
 }
 
+// Reduce a string to lowercase alphanumeric tokens separated by single
+// spaces, for tolerant comparison between a checklist label and a
+// free-text wontfix reason.
+function normalizeText(s) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+const MATCH_STOPWORDS = new Set([
+  'and', 'the', 'for', 'with', 'via', 'per', 'its', 'into', 'onto', 'from',
+  'that', 'this', 'are', 'was', 'not',
+]);
+
+// Significant (non-stopword, length > 2) tokens of a string.
+function significantTokens(s) {
+  return normalizeText(s)
+    .split(' ')
+    .filter(t => t.length > 2 && !MATCH_STOPWORDS.has(t));
+}
+
+// Derive a comparable "lead key" from a checklist label: the item name in
+// its first clause (before an em/en dash, semicolon, sentence break, or
+// " - "), with inline parentheticals (line refs) and a trailing
+// `*(Tier N)*` carry-forward suffix stripped. This is what a `wontfix:`
+// reason is matched against, so trailing camp commentary on the item line
+// does not dilute the match.
+function itemMatchKey(label) {
+  return (label || '')
+    .replace(/\s*\*\([^)]*\)\*\s*$/, '') // trailing *(Tier N)* suffix
+    .split(/[—–;]|\.\s|\s-\s/)[0]        // first clause: the item name
+    .replace(/\([^)]*\)/g, '');          // inline parentheticals, e.g. (line 1253)
+}
+
+// Drop carried-forward items whose lead key is named by a `wontfix:`
+// comment, so a won't-do stops reappearing as an open box. Matching is
+// token-overlap: at least 80% of the item's significant tokens must be
+// present in the reason. `defer:` notes are intentionally NOT suppressed
+// (deferral means revisit later, so the box should keep surfacing). A
+// non-match is the safe failure: the item simply carries forward as
+// before. Returns the filtered list; logs one info line per drop.
+function suppressWontfixed(carried, deferrals, core) {
+  const reasonTokenSets = deferrals
+    .filter(d => d.kind === 'wontfix')
+    .map(d => new Set(normalizeText(d.reason).split(' ')));
+  if (reasonTokenSets.length === 0) return carried;
+  return carried.filter(item => {
+    const tokens = significantTokens(itemMatchKey(item.label));
+    if (tokens.length < 2) return true; // too little signal to match safely
+    const matched = reasonTokenSets.some(set => {
+      const hits = tokens.filter(t => set.has(t)).length;
+      return hits / tokens.length >= 0.8;
+    });
+    if (matched && core) {
+      core.info(`Suppressing wontfix'd item from carry-forward: ${item.label}`);
+    }
+    return !matched;
+  });
+}
+
 // Comment lines beginning with `defer:` or `wontfix:` are treated as
 // per-item lifecycle annotations. The reason is the rest of the line.
 async function scanComments({ github, context, issueNumber }) {
@@ -283,14 +341,17 @@ async function run({ github, context, core }) {
   let deferrals = [];
   if (priorIssue) {
     core.info(`Prior open issue: #${priorIssue.number} (${priorIssue.title}).`);
-    carriedForward = parseChecklist(priorIssue.body || '');
+    const allUnchecked = parseChecklist(priorIssue.body || '');
     deferrals = await scanComments({
       github,
       context,
       issueNumber: priorIssue.number,
     });
+    carriedForward = suppressWontfixed(allUnchecked, deferrals, core);
+    const dropped = allUnchecked.length - carriedForward.length;
     core.info(
-      `Prior issue contains ${carriedForward.length} unchecked item(s) and ${deferrals.length} deferral note(s).`
+      `Prior issue contains ${allUnchecked.length} unchecked item(s) and ${deferrals.length} deferral note(s); ` +
+        `carrying ${carriedForward.length} forward (${dropped} suppressed by wontfix).`
     );
   } else {
     core.info('No prior open site-review issue.');
@@ -376,4 +437,8 @@ module.exports = {
   reportPaths,
   buildIssueBody,
   todayISO,
+  normalizeText,
+  significantTokens,
+  itemMatchKey,
+  suppressWontfixed,
 };
