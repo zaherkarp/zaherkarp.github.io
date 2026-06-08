@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found, Zaher Karp</title>
+<meta name="description" content="That page does not exist.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+
+<style>
+:root {
+  --bg: #fffff8; --rule: #d0d0c8;
+  --text: #111; --text-sec: #4a4238; --muted: #6a6a6a; --accent: #0a5c54;
+  --font-body: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-mono: 'Courier New', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16191d; --rule: #2a2f36;
+    --text: #e6e8ea; --text-sec: #c4cad2; --muted: #b4bac2; --accent: #3fb0a0;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 21px; background: var(--bg); color: var(--text); }
+body { font-family: var(--font-body); line-height: 1.7; padding: 2rem 0 4rem; }
+.page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+nav { font-size: 0.78rem; margin-bottom: 3rem; }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover { color: var(--accent); }
+.code { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.75rem; }
+h1 { font-size: 1.9rem; font-weight: 600; margin-bottom: 1rem; line-height: 1.25; }
+p { color: var(--text-sec); margin-bottom: 1.5rem; max-width: 34em; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+a:hover { border-bottom-color: var(--accent); }
+.links { font-family: var(--font-mono); font-size: 0.82rem; }
+.links a { margin-right: 1.25rem; }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav><a href="/">zaherkarp.com</a></nav>
+  <p class="code">404</p>
+  <h1>Page not found</h1>
+  <p>That page does not exist, or it moved. The address bar still shows
+     what you asked for, so a typo or a stale link is the usual cause.</p>
+  <p class="links">
+    <a href="/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a href="/resume.html">Resume</a>
+  </p>
+</div>
+
+<!-- GoatCounter, privacy-respecting page-view counter. Site code: zaher-karp.
+     The path callback prefixes the recorded hit with "404" so every broken
+     URL clusters under one group in the dashboard while preserving the path
+     the visitor actually requested. -->
+<script>
+  window.goatcounter = { path: function (p) { return '404' + p; } };
+</script>
+<script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

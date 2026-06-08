@@ -310,6 +310,52 @@ Settings that must be set manually:
 
 Canonical URLs point at `https://zaherkarp.com/`.
 
+## Analytics (GoatCounter)
+
+GoatCounter (site code `zaher-karp`) is on every page, plus a custom
+`404.html` whose recorded hits are prefixed `404` so broken URLs cluster
+under one group in the dashboard (the requested path is preserved after the
+prefix, so you can see exactly what people and crawlers failed to find).
+
+### Exclude yourself
+
+GoatCounter has no IP exclusion (it stores no IPs by design). The supported
+way to drop your own visits is a per-browser `localStorage` flag that
+`count.js` checks before sending. It is **per browser, per device** — you
+have to set it once in every browser you use to view the live site.
+
+**Desktop (console):**
+
+1. Open `https://zaherkarp.com/` in the browser (the flag is scoped to that
+   origin, so you must be on the site).
+2. Open DevTools → Console (`Cmd+Opt+J` Chrome / `Cmd+Opt+C` Safari after
+   enabling the Develop menu / `F12` elsewhere).
+3. Run:
+   ```js
+   localStorage.setItem('skipgc', 't')
+   ```
+4. Confirm: `localStorage.getItem('skipgc')` returns `"t"`. Reload and check
+   the Network tab — there should be no request to `gc.zgo.at/count`.
+
+To re-enable counting on that browser: `localStorage.removeItem('skipgc')`.
+
+**Non-desktop (phones, tablets):** mobile browsers have no console, so use a
+bookmarklet that runs the same command. One-time setup per device:
+
+1. Bookmark any page (e.g. `https://zaherkarp.com/`).
+2. Edit the bookmark and replace its URL with:
+   ```
+   javascript:(function(){localStorage.setItem('skipgc','t');alert('GoatCounter: this browser is now excluded.');})()
+   ```
+   Name it e.g. "skip gc".
+3. Navigate to `https://zaherkarp.com/`, then open that bookmark. The alert
+   confirms it ran. (iOS Safari: tap it from the bookmarks list while on the
+   site. Android Chrome: type the bookmark name in the address bar and pick
+   it — Chrome runs the `javascript:` payload in the current tab.)
+
+The flag lives in site-data `localStorage`, so it survives until you clear
+this site's data for that browser; clearing data means redoing the step.
+
 ## Before pushing
 
 Two passes: static checks (terminal) and a browser walk-through.
