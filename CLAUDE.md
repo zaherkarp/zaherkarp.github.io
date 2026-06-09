@@ -351,22 +351,43 @@ stroke-dashoffset animates so there is no LCP cost on the h1/subtitle above.
 Rationale: the scroll-driven figures below are Chromium-only today, so Safari
 readers would otherwise see no motion at all; the hero load-draw guarantees
 everyone gets the effect at least once. The bands draw in a deliberate
-sequence (editorial, research, then the data-engineering trio) via a shared
-`--seq` cascade index set by DOM order (`:nth-of-type` on the first five
-direct-child lines/texts; line six is the axis), and each role LABEL fades in
-~0.45s after its band begins (`label-fade`), so the name lands as the bar
-arrives.
+sequence (editorial, research, then the data-engineering trio): each band's
+label+line is wrapped in a per-role link (see "Clickable bands" below) that
+carries its cascade index inline as `style="--seq:N"`, and the band line
+carries its own length inline as `style="--arc-len:L"`. `--seq` inherits from
+the link to both the line (band draw delay = `--seq * 0.5s`) and the label
+`<text>` (`label-fade`, +0.45s), so the name lands as the bar arrives. No
+`:nth-of-type` addressing; the per-band values live on the markup.
 
-Hover detail-on-demand (CSS section "18.3"): titled data marks reveal their
-specifics via a native SVG `<title>` tooltip (all-browser, screen-reader
-exposed) with a help cursor and slight on-hover emphasis. Carried by: the five
-career-arc bands (role + span), the four Experience outcome bars (before/after
-values), and the six academic dot-plot publication dots (full paper title +
-journal/year, sourced from `publications.yaml`; the dots also enlarge on
-hover, as do the presentation dots). Presentation dots are intentionally left
-without individual titles (de-emphasized by design). Adding titles edits the
-SVG markup (child `<title>`), which does not affect the palette attribute
-selectors or the `:nth-of-type` band/label addressing.
+Clickable bands (added 2026-06-09): each career-arc band, in BOTH
+`tl-horizontal` and `tl-compact`, is wrapped in `<a href="#exp-...">` that
+jumps to its role in Experience: `#exp-bha`, `#exp-catalyst`,
+`#exp-healthfinch`, `#exp-uw`, `#exp-sustainable`. Those ids sit on empty
+`.role-anchor` spans placed just before each role `<h3>`, NOT on the `<h3>`
+itself (an id on the heading breaks `lint_facts`'s `<h3>` regex). The links
+are keyboard-focusable, so the focus-plus-context hover below fires on
+`:focus` too; pointer cursor is the affordance.
+
+Hover / focus, focus-plus-context + typeset reveal (CSS section "18.3"):
+a Design Council pass replaced the dead native-tooltip *feel* with the chart
+reacting. The native `<title>` stays on every titled mark (all-browser,
+screen-reader exposed) as the accessible layer and universal fallback; on top
+of it, CSS-only `:hover`/`:focus` adds, via `:has()` (Safari 15.4+):
+  - **Focus-plus-context:** engaging one mark dims its siblings
+    (`figure:has(mark:hover) mark:not(:hover) { opacity }`) and leads the eye
+    with no popup. Applied to the career-arc bands, the Experience outcome
+    bar pair, and the dot-plot dot field.
+  - **Self-emphasis:** arc bands thicken; dots enlarge (`transform: scale`,
+    `transform-box: fill-box`).
+  - **Typeset label (dot plot only):** each of the six publication dots
+    carries a hidden `.dp-label` `<text>` (journal + year, `fill="#111"` so it
+    adapts via the palette selectors) that fades in on hover/focus as the
+    VISUAL layer; the full paper title (sourced from `publications.yaml`)
+    stays in `<title>`.
+Triggered on `:hover` AND `:focus` (the publication dots are `<a>` links, so
+keyboard users get the reveal; the title text covers the non-focusable marks).
+Presentation dots stay unlabeled (de-emphasized) but share the dim/scale.
+Only opacity/transform/stroke-width change, neutralised by the reduce block.
 
 Scroll-animated figures (Chromium-only enhancement): the two Experience
 outcome bars, the Projects cliff curve (stroke traces, area fill fades), and
@@ -380,6 +401,28 @@ entry to drive it; animating it would jank first paint) and the academic dot
 plot (its dot field would need per-dot staggering, a motion vocabulary this
 set avoids). Keep the vocabulary to these three primitives; do not add a
 fourth easing/transform style without discussion (Massimo's coherence rule).
+
+### Wall-of-text / typographic rhythm (2026-06-09)
+
+A recurring "visually boring / wall of text" critique drove the figure and
+motion work above, plus a final typographic pass. Two things a fresh session
+should know:
+  - **Inline sparklines were tried and REMOVED.** A presentations-per-year
+    sparkline in the Speaking lead and a publications-per-year sparkline in a
+    Publications lead read as confusing noise at that size and were rolled
+    back. Do not re-add small inline charts to break up prose; they look like
+    clutter here, not signal.
+  - **The wall is treated as a typography problem, not a missing-chart
+    problem** (Design Council consensus; the page already carries ~10
+    figures). The applied fixes: the long About paragraph was split into two
+    (a rest point between the career-arc bio and the methodology thread);
+    `.newthought` small-caps openers were added to the Speaking and
+    Publications leads, and a plain one-line lead was added to Publications
+    (which previously jumped from `<h2>` straight to the entry list).
+    `.newthought` now appears on four section leads (About, Experience,
+    Speaking, Publications) — selective, not every section, per the small-caps
+    policy. Parallax was considered and rejected (needs JS / Chromium-only
+    motion, vestibular + perf cost, does not actually break up text).
 
 ### Print overrides
 

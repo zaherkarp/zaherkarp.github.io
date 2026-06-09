@@ -319,6 +319,12 @@ a:hover {
    object, not a continuation of the note above. */
 .marginnote:has(.stat-num) { margin-top: 1.9rem; }
 
+/* Invisible jump targets for the clickable career-arc bands: each
+   lands just above its role heading. The id sits on this span, not
+   the heading element, so the facts linter's heading regex is
+   unaffected. scroll-margin-top keeps the landing off the top edge. */
+.role-anchor { display: block; height: 0; scroll-margin-top: 2rem; }
+
 /* Sidenote numbering: CSS counter increments on each .sidenote-number
    label, then both the inline superscript and the note prefix display
    the same value, so they stay in sync even if you reorder notes. */
@@ -1336,85 +1342,93 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   @keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
   @keyframes label-fade { from { opacity: 0; } }
 
-  /* Shared cascade index (--seq) for band k AND its label k, by
-     DOM order: the first five direct-child <line>s are the bands
-     and the first five direct-child <text>s are their labels.
-     No markup edit, no class on the SVG shapes. */
-  figure.timeline svg.tl-horizontal > line:nth-of-type(1), figure.timeline svg.tl-horizontal > text:nth-of-type(1),
-  figure.timeline svg.tl-compact   > line:nth-of-type(1), figure.timeline svg.tl-compact   > text:nth-of-type(1) { --seq: 0; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(2), figure.timeline svg.tl-horizontal > text:nth-of-type(2),
-  figure.timeline svg.tl-compact   > line:nth-of-type(2), figure.timeline svg.tl-compact   > text:nth-of-type(2) { --seq: 1; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(3), figure.timeline svg.tl-horizontal > text:nth-of-type(3),
-  figure.timeline svg.tl-compact   > line:nth-of-type(3), figure.timeline svg.tl-compact   > text:nth-of-type(3) { --seq: 2; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(4), figure.timeline svg.tl-horizontal > text:nth-of-type(4),
-  figure.timeline svg.tl-compact   > line:nth-of-type(4), figure.timeline svg.tl-compact   > text:nth-of-type(4) { --seq: 2.3; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(5), figure.timeline svg.tl-horizontal > text:nth-of-type(5),
-  figure.timeline svg.tl-compact   > line:nth-of-type(5), figure.timeline svg.tl-compact   > text:nth-of-type(5) { --seq: 2.6; }
-
-  /* Per-band exact draw length (lines only). */
-  figure.timeline svg.tl-horizontal > line:nth-of-type(1) { --arc-len: 400; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(2) { --arc-len: 510; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(3) { --arc-len: 170; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(4) { --arc-len: 285; }
-  figure.timeline svg.tl-horizontal > line:nth-of-type(5) { --arc-len: 55;  }
-  figure.timeline svg.tl-compact   > line:nth-of-type(1) { --arc-len: 200; }
-  figure.timeline svg.tl-compact   > line:nth-of-type(2) { --arc-len: 257; }
-  figure.timeline svg.tl-compact   > line:nth-of-type(3) { --arc-len: 85;  }
-  figure.timeline svg.tl-compact   > line:nth-of-type(4) { --arc-len: 143; }
-  figure.timeline svg.tl-compact   > line:nth-of-type(5) { --arc-len: 29;  }
-
-  /* Bands trace over their own length, staggered by --seq, so the
-     arc unfolds as a story: editorial, then research, then the
-     data-engineering trio in quick succession. */
-  figure.timeline svg.tl-horizontal > line[stroke-width="10"],
-  figure.timeline svg.tl-compact   > line[stroke-width="11"] {
+  /* Each band is wrapped in a link (clickable, see markup) that
+     carries its cascade index inline as style="--seq:N"; the band
+     line carries its own length inline as style="--arc-len:L".
+     --seq inherits from the link to the line and the label text, so
+     the band traces and its label fades on the same staggered beat,
+     with no per-band selectors. The arc unfolds as a story:
+     editorial, then research, then the data-engineering trio. */
+  figure.timeline svg.tl-horizontal > a line[stroke-width="10"],
+  figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
     stroke-dasharray: var(--arc-len, 540);
     animation: arc-draw 0.85s ease-out both;
     animation-delay: calc(var(--seq, 0) * 0.5s);
   }
-
-  /* Each role label fades in just after its band has begun drawing
-     (band delay + 0.45s), so the name lands as its bar arrives. */
-  figure.timeline svg.tl-horizontal > text:nth-of-type(-n+5),
-  figure.timeline svg.tl-compact   > text:nth-of-type(-n+5) {
+  /* Each role label fades in just after its band begins (delay + 0.45s). */
+  figure.timeline svg.tl-horizontal > a text,
+  figure.timeline svg.tl-compact   > a text {
     animation: label-fade 0.5s ease-out both;
     animation-delay: calc(var(--seq, 0) * 0.5s + 0.45s);
   }
 }
 
 /* ============================================================
-   18.3. HOVER DETAIL-ON-DEMAND
-   Titled data marks (career-arc bands, Experience outcome bars)
-   reveal their specifics via a native SVG title tooltip, which is
-   all-browser and exposed to screen readers. The help cursor and
-   slight on-hover emphasis signal that a mark is explorable. This
-   is Tufte's detail-on-demand: invisible until sought, no clutter
-   added to the resting figure. Hover works regardless of motion
-   preference; the existing reduce block neutralizes the
-   transition for motion-sensitive readers.
+   18.3. HOVER / FOCUS: FOCUS-PLUS-CONTEXT + TYPESET REVEAL
+   Engaging the figures without leaving CSS or losing access.
+   Design Council call: the native <title> tooltip was the dead,
+   OS-rendered "boring" layer, so this makes the CHART react
+   instead. Triggered on :hover AND :focus (the publication dots
+   are links, so keyboard users get the same reveal); the native
+   <title> stays underneath for screen readers and as the
+   universal fallback. Three behaviours:
+     1. Focus-plus-context: engaging one mark dims its siblings
+        (:has on the figure; :not() spares the engaged mark) so
+        the eye is led without any popup.
+     2. The engaged mark emphasises itself: arc bands thicken,
+        dots enlarge.
+     3. Dot plot only: a typeset ETBook label (journal + year)
+        fades in by the engaged publication dot as the VISUAL
+        layer; the full paper title stays in <title> for AT and
+        on the dot's linked entry.
+   Only opacity / transform / stroke-width change, and the reduce
+   block neutralises the transitions, so motion-sensitive readers
+   still get the static figure plus the titles. :has() is already
+   relied on elsewhere in this stylesheet (Safari 15.4+).
    ============================================================ */
-figure.timeline svg line[stroke-width="10"],
-figure.timeline svg line[stroke-width="11"],
-figure.outcome-figure rect {
-  cursor: help;
-  transition: stroke-width 0.15s ease, opacity 0.15s ease;
-}
-figure.timeline svg line[stroke-width="10"]:hover { stroke-width: 13; }
-figure.timeline svg line[stroke-width="11"]:hover { stroke-width: 14; }
-figure.outcome-figure rect:hover { opacity: 0.78; }
 
-/* Academic dot plot: every dot enlarges on hover so the field
-   reads as explorable; the six publication dots additionally
-   reveal their paper via a native title tooltip (added in markup).
-   transform-box: fill-box scales each dot about its own centre. */
+/* Affordances + transitions on engageable marks. */
+figure.timeline svg.tl-horizontal > a,
+figure.timeline svg.tl-compact   > a { cursor: pointer; transition: opacity 0.15s ease; }
+figure.timeline svg.tl-horizontal > a line,
+figure.timeline svg.tl-compact   > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
+figure.outcome-figure rect { cursor: help; transition: opacity 0.15s ease; }
 figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, opacity 0.15s ease;
 }
+
+/* Career arc: each band is a link to its role. Engaging one (hover
+   or keyboard focus) dims the other role groups and thickens the
+   engaged band; clicking jumps to that role in Experience. */
+figure.timeline svg.tl-horizontal:has(a:hover) a:not(:hover),
+figure.timeline svg.tl-compact:has(a:hover)   a:not(:hover),
+figure.timeline svg.tl-horizontal:has(a:focus) a:not(:focus),
+figure.timeline svg.tl-compact:has(a:focus)   a:not(:focus) { opacity: 0.3; }
+figure.timeline svg.tl-horizontal a:hover line, figure.timeline svg.tl-horizontal a:focus line { stroke-width: 13; }
+figure.timeline svg.tl-compact   a:hover line, figure.timeline svg.tl-compact   a:focus line { stroke-width: 14; }
+
+/* Experience outcome bars: dim the sibling bar. */
+figure.outcome-figure:has(rect:hover) rect:not(:hover) { opacity: 0.35; }
+
+/* Academic dot plot: dim the field, enlarge the engaged dot. */
+figure.timeline svg.dp-wide:has(circle:hover) circle:not(:hover) { opacity: 0.22; }
 figure.timeline svg.dp-wide circle:hover,
-figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
+figure.timeline svg.dp-mobile circle:hover,
+figure.timeline svg.dp-wide a:focus circle { transform: scale(1.8); }
+
+/* Dot plot typeset label: hidden until its dot is hovered or its
+   link focused. fill="#111" on the text element adapts via palette
+   selectors; this rule only toggles visibility. */
+figure.timeline svg.dp-wide .dp-label {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+figure.timeline svg.dp-wide a:hover .dp-label,
+figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 
 /* ============================================================
    18.5. REDUCED MOTION
@@ -1533,28 +1547,23 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
       <!-- ROW 1: Editorial and writing, 2007 to 2014.
            Left-anchored label at (60, 55), band immediately below
            at y=80 spanning x=60 to x=460. -->
-      <text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Editorial and writing</text>
-      <line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt"><title>Editorial and writing, 2007 to 2014</title></line>
+      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt" style="--arc-len:400"><title>Editorial and writing, 2007 to 2014</title></line></a>
 
       <!-- ROW 2: Research, UW-Madison, 2009 to 2018.
            65 units below Row 1 to leave a clear gap. Label starts
            at the band's left edge (x=175). En-dash, not em-dash. -->
-      <text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Research, UW&ndash;Madison</text>
-      <line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10"><title>Research, UW-Madison, 2009 to 2018</title></line>
+      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10" style="--arc-len:510"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
 
       <!-- ROW 3: Data engineering, 2017 to now.
            Three abutting segments on a single row because the role
            transitions were continuous in time. Labels centered
            over each segment (text-anchor="middle"). BHA segment
            is short so its label uses a smaller size to fit. -->
-      <text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text>
-      <line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10"><title>healthfinch, 2017 to 2020</title></line>
+      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10" style="--arc-len:170"><title>healthfinch, 2017 to 2020</title></line></a>
 
-      <text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text>
-      <line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10"><title>Health Catalyst, 2020 to 2025</title></line>
+      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10" style="--arc-len:285"><title>Health Catalyst, 2020 to 2025</title></line></a>
 
-      <text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">BHA</text>
-      <line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10"><title>Baltimore Health Analytics, 2025 to present</title></line>
+      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10" style="--arc-len:55"><title>Baltimore Health Analytics, 2025 to present</title></line></a>
 
       <!-- YEAR AXIS at y=320. Axis rule slightly heavier (1.5pt)
            than the earlier draft (1pt) so it reads at a distance
@@ -1633,24 +1642,19 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
       <desc id="tl-c-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
 
       <!-- ROW 1: Editorial and writing, 2007 to 2014. -->
-      <text x="40" y="58" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Editorial and writing</text>
-      <line x1="40" y1="80" x2="240" y2="80" stroke="#111" stroke-width="11" stroke-linecap="butt"/>
+      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><text x="40" y="58" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Editorial and writing</text><line x1="40" y1="80" x2="240" y2="80" stroke="#111" stroke-width="11" stroke-linecap="butt" style="--arc-len:200"/></a>
 
       <!-- ROW 2: Research, UW-Madison, 2009 to 2018. -->
-      <text x="97" y="138" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Research, UW&ndash;Madison</text>
-      <line x1="97" y1="160" x2="354" y2="160" stroke="#111" stroke-width="11"/>
+      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><text x="97" y="138" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="97" y1="160" x2="354" y2="160" stroke="#111" stroke-width="11" style="--arc-len:257"/></a>
 
       <!-- ROW 3: Data engineering, 2017 to now. Three abutting
            segments; labels centered over each at a smaller size so
            they clear their neighbors in the narrow frame. -->
-      <text x="367" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text>
-      <line x1="325" y1="240" x2="410" y2="240" stroke="#111" stroke-width="11"/>
+      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><text x="367" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="325" y1="240" x2="410" y2="240" stroke="#111" stroke-width="11" style="--arc-len:85"/></a>
 
-      <text x="481" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text>
-      <line x1="410" y1="240" x2="553" y2="240" stroke="#111" stroke-width="11"/>
+      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><text x="481" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="410" y1="240" x2="553" y2="240" stroke="#111" stroke-width="11" style="--arc-len:143"/></a>
 
-      <text x="567" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">BHA</text>
-      <line x1="553" y1="240" x2="582" y2="240" stroke="#111" stroke-width="11"/>
+      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><text x="567" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="553" y1="240" x2="582" y2="240" stroke="#111" stroke-width="11" style="--arc-len:29"/></a>
 
       <!-- YEAR AXIS at y=330. Two-digit year labels (matching the
            dot plot's mobile axis) so the right-hand years do not
@@ -1678,7 +1682,9 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span>
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
+
+    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI. Managing US-based data science and engineering with work spanning analytics methodology, code review, and CMS-to-roadmap translation.</span>
     </p>
   </section>
 
@@ -1728,21 +1734,21 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle></a>
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
 
       <!-- 2014: Pandhi et al JIHI, 23 citations (most-cited) -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle></a>
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">JIHI 2014</text></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle></a>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle></a>
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
 
       <!-- 2019a: Karp et al HERD, 11 citations -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle></a>
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1138" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">HERD 2019</text></a>
       <!-- 2019b: Pandhi et al Acad Med, 4 citations (slight x offset) -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle></a>
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
 
       <!-- PRESENTATIONS (below the axis).
            Each dot is a presentation, stacked vertically when a
@@ -2049,6 +2055,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
   <section id="experience" class="experience">
     <h2>Experience</h2>
 
+    <span class="role-anchor" id="exp-bha"></span>
     <h3>Manager, Data Science and Engineering</h3>
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
@@ -2107,6 +2114,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
 
     <hr>
 
+    <span class="role-anchor" id="exp-catalyst"></span>
     <h3>Healthcare Analytics Manager, Embedded Refills and Care Gaps</h3>
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
@@ -2161,6 +2169,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
 
     <hr>
 
+    <span class="role-anchor" id="exp-healthfinch"></span>
     <h3>Healthcare Analytics Manager, Specialist</h3>
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
@@ -2204,6 +2213,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
 
     <hr>
 
+    <span class="role-anchor" id="exp-uw"></span>
     <h3>Researcher</h3>
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
@@ -2228,6 +2238,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
 
     <hr>
 
+    <span class="role-anchor" id="exp-sustainable"></span>
     <h3>Principal</h3>
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
@@ -2599,6 +2610,10 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
   <section id="publications">
     <h2>Publications</h2>
 
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
+      <span class="newthought">Six peer-reviewed papers</span> in health services research, 2012 to 2019, the most-cited on primary care teams and electronic health records.
+    </p>
+
     <!-- pub-list:start -->
     <div class="entry pub-entry" id="pub-herd" data-sid="PMID:30913920">
       <p style="margin-bottom: 0.3rem;">
@@ -2718,7 +2733,7 @@ figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
   <section id="speaking">
     <h2>Speaking</h2>
     <p>
-      Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on Patient Choice Award 2015 recognition" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
+      <span class="newthought">Seventeen podium presentations</span>, workshops, and posters at national and regional venues between 2010 and 2017, in healthcare services research and primary care systems engineering.<label for="mn-patient-choice" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on Patient Choice Award 2015 recognition" id="mn-patient-choice" class="margin-toggle"/><span class="marginnote">A co-authored poster received the Patient Choice Award (2 of 45) at the North American Primary Care Research Group Conference, 2015.</span>
     </p>
 
     <details class="speaking-list">
