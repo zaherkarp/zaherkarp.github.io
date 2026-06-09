@@ -38,6 +38,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history (not the default depth-1 shallow clone) so the
+          # rebase-on-race step below always has the merge base. A shallow
+          # clone makes `git rebase origin/main` fail when origin has moved,
+          # which silently exhausted the old retry loop.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -52,25 +58,43 @@ jobs:
 
       - name: Commit changes (if any)
         run: |
+          set -euo pipefail
           git add index.html
           # Blog "thoughts" injected into the life-in-weeks grid.
           git add life-in-weeks/index.html
           # Dated citation snapshots accrete a longitudinal series the YAML
           # cache discards (record-on-change, so most runs add nothing).
           if [ -d data/snapshots ]; then git add data/snapshots; fi
-          if ! git diff --cached --quiet; then
-            git config user.name  "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "build: regenerate activity grid, writing list, citations"
-            # Rebase onto any commits build_blog.yml may have pushed in parallel
-            # for the same source-blog push; retry the push a few times in case
-            # the race repeats.
-            for i in 1 2 3; do
-              git pull --rebase origin main && git push && exit 0
-              echo "push attempt $i failed, retrying..."
-              sleep 5
-            done
-            exit 1
-          else
-            echo "No changes to index.html."
+          # Refreshed citation counts are written back into the YAML cache.
+          if [ -f src/content/publications.yaml ]; then git add src/content/publications.yaml; fi
+
+          if git diff --cached --quiet; then
+            echo "No regenerated changes to commit."
+            exit 0
           fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "build: regenerate activity grid, writing list, citations"
+
+          # Push, retrying on a non-fast-forward. build_blog.yml /
+          # build_resume.yml can land a commit on main while we build, so on
+          # a rejected push we rebase onto the fresh origin/main and try
+          # again. We push FIRST (no rebase when there is no race) and only
+          # fetch+rebase on rejection; a failed rebase is aborted so the next
+          # attempt starts clean instead of wedging on a half-applied state.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "push attempt ${attempt} rejected; rebasing onto origin/main"
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "rebase failed on attempt ${attempt}; will retry after backoff"
+            fi
+            sleep $((attempt * 3))
+          done
+          echo "::error::could not push regenerated content after 5 attempts"
+          exit 1
