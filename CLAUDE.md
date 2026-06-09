@@ -42,6 +42,9 @@ design lives at archive/redesign/zaherkarp-tufte-rationale.md.
       outside blog-post conditional loads.
   Sidenote toggling on the homepage uses the CSS checkbox-hack
   pattern; no JavaScript involved. See §Sidenote system below.
+  Scroll-drawn figures (the draw-in motion on select charts) use
+  CSS scroll-driven animation (`animation-timeline: view()`), which
+  is also NOT JavaScript. See §Scroll-drawn figures below.
   Do not add JS anywhere else without discussion.
 - ETBook self-hosted under /fonts/et-book/. License: MIT. Two weights
   (roman + italic, no bold). Subpages, blog, and resume share
@@ -314,6 +317,70 @@ Code blocks have a 1px `var(--rule)` border, 0.55rem 0.85rem padding,
 (~16px at root 21px). No accent-color left-border (that's chart-callout
 territory).
 
+### Scroll-drawn figures (motion)
+
+Added 2026-06-09, after a "visually boring / wall of text" critique. This is
+a deliberate, discussed departure from the page's previously static
+presentation. The ethos is unchanged in spirit: motion is allowed ONLY as a
+restrained, data-tracing progressive enhancement, never as decorative chrome.
+
+Mechanism (CSS section "18. SCROLL-DRAWN FIGURES" in `index.html`):
+  - Pure CSS scroll-driven animation via `animation-timeline: view()`. NO
+    JavaScript, so the homepage no-JS contract is intact (see §Stack).
+  - Lines trace via `stroke-dashoffset` (keyframe `fig-draw`); bars grow
+    from their left edge via `scaleX` + `transform-box: fill-box`
+    (`fig-grow-x`); squares/area fills fade (`fig-fade`). Keyframes declare
+    only the `from` state; `animation-fill-mode: both` holds the natural
+    drawn/full value as `to`, so a figure scrolled past renders complete.
+  - Double-gated: wrapped in BOTH `@media (prefers-reduced-motion:
+    no-preference)` AND `@supports (animation-timeline: view())`. Reduced-
+    motion readers and browsers without scroll-driven animation (older
+    Safari/Firefox) get the static figure. No JS fallback needed.
+  - Only `transform`/`opacity`/`stroke-dashoffset` animate (compositor-
+    friendly, no layout cost, no LCP hit).
+
+Hero exception, draw-on-load (CSS section "18.2"): the hero career arc is
+the one figure that draws for EVERY browser, including Safari/Firefox, because
+it uses a plain time-based CSS animation (`animation-duration`), not the
+scroll timeline. Its bands (`line[stroke-width="10"]` desktop /
+`[stroke-width="11"]` compact) trace via `stroke-dashoffset` on page load, ~1.5s
+ease-out, one dasharray sized just past the longest band per viewport (540 /
+270) so longer bands start earlier and the arc settles together. This is the
+deliberate first-impression "tantalize." Same reduced-motion gate; only
+stroke-dashoffset animates so there is no LCP cost on the h1/subtitle above.
+Rationale: the scroll-driven figures below are Chromium-only today, so Safari
+readers would otherwise see no motion at all; the hero load-draw guarantees
+everyone gets the effect at least once. The bands draw in a deliberate
+sequence (editorial, research, then the data-engineering trio) via a shared
+`--seq` cascade index set by DOM order (`:nth-of-type` on the first five
+direct-child lines/texts; line six is the axis), and each role LABEL fades in
+~0.45s after its band begins (`label-fade`), so the name lands as the bar
+arrives.
+
+Hover detail-on-demand (CSS section "18.3"): titled data marks reveal their
+specifics via a native SVG `<title>` tooltip (all-browser, screen-reader
+exposed) with a help cursor and slight on-hover emphasis. Carried by: the five
+career-arc bands (role + span), the four Experience outcome bars (before/after
+values), and the six academic dot-plot publication dots (full paper title +
+journal/year, sourced from `publications.yaml`; the dots also enlarge on
+hover, as do the presentation dots). Presentation dots are intentionally left
+without individual titles (de-emphasized by design). Adding titles edits the
+SVG markup (child `<title>`), which does not affect the palette attribute
+selectors or the `:nth-of-type` band/label addressing.
+
+Scroll-animated figures (Chromium-only enhancement): the two Experience
+outcome bars, the Projects cliff curve (stroke traces, area fill fades), and
+the Education/Service Gantt (date-range `line[stroke-width="4"]` bars trace,
+single-year `rect` squares fade). Their `animation-range` ends at `entry 100%`
+so a figure is fully drawn by the time it is entirely on screen; an earlier
+`cover`-based end once left figures stuck mid-draw (blank) when jumped to via
+an in-page anchor.
+Deliberately NOT animated: the hero career arc (above the fold, no scroll-
+entry to drive it; animating it would jank first paint) and the academic dot
+plot (its dot field would need per-dot staggering, a motion vocabulary this
+set avoids). Keep the vocabulary to these three primitives; do not add a
+fourth easing/transform style without discussion (Massimo's coherence rule).
+
 ### Print overrides
 
 `@media print` block in `index.html`:
@@ -423,6 +490,28 @@ disclosure markers are suppressed.
 
 The Huber psi-function formula sits inside the BHA fold as pure HTML/CSS
 math (no MathJax/KaTeX dependency for one short formula).
+
+**Outcome figures (added 2026-06-09).** Two roles carry a small inline
+`figure.outcome-figure` (before/after bar pair) between the lead paragraph
+and the fold, so the densest section shows data by default instead of pure
+prose: Health Catalyst (refill turnaround 72h to 12h, the section's single
+accent use) and healthfinch (1x to 7x dashboard adoption, monochrome). They
+reuse the `.cliff-figure`/`.sankey-figure` sizing idiom and the `#7a0000`
+accent-sentinel palette-adapter contract; a single viewBox scales each on
+mobile (no SVG swap). Numbers must match the role prose exactly. BHA gets no
+figure on purpose: it is a scope role too new for a headline outcome, and a
+fabricated metric would break the data-honesty rule. This was the fix for a
+"wall of text" critique of the Experience section.
+
+**Margin stats (added 2026-06-09).** Two buried headline numbers are
+surfaced as `.marginnote .stat-num` callouts (large oldstyle numeral + one
+caption line) beside their role: Health Catalyst (373,000 care gaps in six
+months, Community Health Network) and UW (10,000-adult, 50-year Wisconsin
+Longitudinal Study cohort). They reuse the `.marginnote` float/toggle
+machinery wholesale (visible in the margin on desktop, ⊕ tap toggle on
+mobile); only the numeral size is new CSS. The numeral honors the
+inline-only marginnote rule. Add more only where a genuinely buried number
+exists; do not invent stats to fill margin.
 
 ### Project numbering and layout
 

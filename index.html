@@ -299,6 +299,26 @@ a:hover {
   position: relative;
 }
 
+/* Margin stat: a large oldstyle numeral leading a margin note,
+   used to surface a single buried headline figure beside a role
+   in the Experience section. Reuses the .marginnote float/toggle
+   machinery wholesale; only the numeral styling is new, so the
+   stat is visible in the margin on desktop and folds to a tap
+   toggle on mobile like every other margin note. */
+.marginnote .stat-num {
+  display: block;
+  font-size: 2.1rem;
+  line-height: 1;
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink);
+  margin-bottom: 0.15rem;
+}
+/* Give a stat note clear air above it: when a role already has a
+   sidenote in the margin, the stat would otherwise stack right up
+   against it. Push it down so the big numeral reads as its own
+   object, not a continuation of the note above. */
+.marginnote:has(.stat-num) { margin-top: 1.9rem; }
+
 /* Sidenote numbering: CSS counter increments on each .sidenote-number
    label, then both the inline superscript and the note prefix display
    the same value, so they stay in sync even if you reorder notes. */
@@ -900,6 +920,31 @@ figure.sankey-figure figcaption {
 }
 
 /* ============================================================
+   OUTCOME FIGURES (Experience section)
+   Small before/after bar figures that surface the quantitative
+   outcomes otherwise buried in the role prose. Same sizing
+   idiom as cliff-figure / sankey-figure, but narrower, since
+   they sit inline in the 60% body column beside a role lead.
+   Pure SVG; the hex presentation attributes adapt to light/dark
+   via the palette selectors lower in this stylesheet, and the
+   viewBox lets a single copy scale on mobile (no SVG swap). */
+figure.outcome-figure {
+  margin: 1.1rem 0 1.4rem 0;
+  max-width: 440px;
+}
+figure.outcome-figure svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+figure.outcome-figure figcaption {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================================
    FORMULA BLOCK
    Inline math display for short equations like Huber's
    psi-function. Pure CSS, no MathJax; works because the
@@ -1193,6 +1238,185 @@ svg [fill="#d0d0c8"]   { fill: var(--rule); }
 svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* ============================================================
+   18. SCROLL-DRAWN FIGURES (progressive enhancement)
+   Selected data figures draw themselves as they scroll into
+   view: stroked lines trace via stroke-dashoffset, bars grow
+   from their left edge via scaleX. This is pure CSS scroll-
+   driven animation (animation-timeline: view()), NO JavaScript,
+   so it stays inside the homepage no-JS contract. Double-gated:
+     - @supports: browsers without scroll-driven animations
+       (older Safari / Firefox) render the final static figure.
+       Zero-cost graceful degradation, no fallback needed.
+     - prefers-reduced-motion: no-preference: motion-sensitive
+       readers never see it; figures render static.
+   Only transform / opacity / stroke-dashoffset animate, all
+   compositor-friendly with no layout cost. The hero career arc
+   and the academic dot plot are deliberately excluded: the hero
+   sits above the fold (no scroll-entry to drive it) and the dot
+   field would need per-dot staggering this vocabulary avoids.
+   The keyframes only declare the `from` state; animation-fill-
+   mode: both holds the element's natural value (drawn / full) as
+   the `to`, so a figure already scrolled past renders complete.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+
+    @keyframes fig-grow-x { from { transform: scaleX(0); } }
+    @keyframes fig-draw   { from { stroke-dashoffset: var(--draw-len, 600); } }
+    @keyframes fig-fade   { from { opacity: 0; } }
+
+    /* Outcome bars (Experience): grow along their own length.
+       fill-box makes transform-origin resolve against each
+       bar's box, so every bar scales from its own left edge. */
+    figure.outcome-figure rect {
+      transform-box: fill-box;
+      transform-origin: left center;
+      animation: fig-grow-x linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 100%;
+    }
+
+    /* Cliff density curve (Projects): trace the stroked line and
+       fade the area fill beneath it in step. */
+    figure.cliff-figure path[fill="none"] {
+      --draw-len: 619;       /* measured curve length ~607, +2% margin */
+      stroke-dasharray: 619;
+      animation: fig-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    figure.cliff-figure path[fill="#111"] {
+      animation: fig-fade linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    /* Education + service Gantt: date-range bars (thick lines)
+       trace along the year axis; single-year squares fade in
+       slightly later so the ranges lead. */
+    figure.gantt-figure line[stroke-width="4"] {
+      --draw-len: 137;       /* longest bar is 133 units; shorter bars
+                                finish their draw earlier, a gentle stagger */
+      stroke-dasharray: 137;
+      animation: fig-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 100%;
+    }
+    figure.gantt-figure rect {
+      animation: fig-fade linear both;
+      animation-timeline: view();
+      animation-range: entry 40% entry 100%;
+    }
+  }
+}
+
+/* ============================================================
+   18.2. HERO CAREER ARC: DRAW-ON-LOAD
+   The one motion every visitor sees, regardless of browser. The
+   scroll-driven figures above need animation-timeline: view()
+   (Chromium-only today), so Safari/Firefox readers miss them.
+   This uses a plain TIME-BASED CSS animation (animation-duration),
+   which every modern browser including Safari runs, so the hero
+   timeline draws itself in on page load: the bands trace left to
+   right as if being laid down. Bands are thick <line>s; we trace
+   them via stroke-dashoffset over a single dasharray sized just
+   past the longest band per viewport, so longer bands begin
+   earlier and the whole arc settles together (a gentle cascade,
+   no per-band classes needed).
+
+   This is the figure's tantalize: a viewer arrives to the arc
+   assembling rather than sitting finished.
+
+   Gated to prefers-reduced-motion: no-preference, so motion-
+   sensitive readers (and the existing reduce block) get the
+   static, fully-drawn arc with no dash gap. Only stroke-dashoffset
+   animates: no layout, no LCP cost on the h1/subtitle above it.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
+  @keyframes label-fade { from { opacity: 0; } }
+
+  /* Shared cascade index (--seq) for band k AND its label k, by
+     DOM order: the first five direct-child <line>s are the bands
+     and the first five direct-child <text>s are their labels.
+     No markup edit, no class on the SVG shapes. */
+  figure.timeline svg.tl-horizontal > line:nth-of-type(1), figure.timeline svg.tl-horizontal > text:nth-of-type(1),
+  figure.timeline svg.tl-compact   > line:nth-of-type(1), figure.timeline svg.tl-compact   > text:nth-of-type(1) { --seq: 0; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(2), figure.timeline svg.tl-horizontal > text:nth-of-type(2),
+  figure.timeline svg.tl-compact   > line:nth-of-type(2), figure.timeline svg.tl-compact   > text:nth-of-type(2) { --seq: 1; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(3), figure.timeline svg.tl-horizontal > text:nth-of-type(3),
+  figure.timeline svg.tl-compact   > line:nth-of-type(3), figure.timeline svg.tl-compact   > text:nth-of-type(3) { --seq: 2; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(4), figure.timeline svg.tl-horizontal > text:nth-of-type(4),
+  figure.timeline svg.tl-compact   > line:nth-of-type(4), figure.timeline svg.tl-compact   > text:nth-of-type(4) { --seq: 2.3; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(5), figure.timeline svg.tl-horizontal > text:nth-of-type(5),
+  figure.timeline svg.tl-compact   > line:nth-of-type(5), figure.timeline svg.tl-compact   > text:nth-of-type(5) { --seq: 2.6; }
+
+  /* Per-band exact draw length (lines only). */
+  figure.timeline svg.tl-horizontal > line:nth-of-type(1) { --arc-len: 400; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(2) { --arc-len: 510; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(3) { --arc-len: 170; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(4) { --arc-len: 285; }
+  figure.timeline svg.tl-horizontal > line:nth-of-type(5) { --arc-len: 55;  }
+  figure.timeline svg.tl-compact   > line:nth-of-type(1) { --arc-len: 200; }
+  figure.timeline svg.tl-compact   > line:nth-of-type(2) { --arc-len: 257; }
+  figure.timeline svg.tl-compact   > line:nth-of-type(3) { --arc-len: 85;  }
+  figure.timeline svg.tl-compact   > line:nth-of-type(4) { --arc-len: 143; }
+  figure.timeline svg.tl-compact   > line:nth-of-type(5) { --arc-len: 29;  }
+
+  /* Bands trace over their own length, staggered by --seq, so the
+     arc unfolds as a story: editorial, then research, then the
+     data-engineering trio in quick succession. */
+  figure.timeline svg.tl-horizontal > line[stroke-width="10"],
+  figure.timeline svg.tl-compact   > line[stroke-width="11"] {
+    stroke-dasharray: var(--arc-len, 540);
+    animation: arc-draw 0.85s ease-out both;
+    animation-delay: calc(var(--seq, 0) * 0.5s);
+  }
+
+  /* Each role label fades in just after its band has begun drawing
+     (band delay + 0.45s), so the name lands as its bar arrives. */
+  figure.timeline svg.tl-horizontal > text:nth-of-type(-n+5),
+  figure.timeline svg.tl-compact   > text:nth-of-type(-n+5) {
+    animation: label-fade 0.5s ease-out both;
+    animation-delay: calc(var(--seq, 0) * 0.5s + 0.45s);
+  }
+}
+
+/* ============================================================
+   18.3. HOVER DETAIL-ON-DEMAND
+   Titled data marks (career-arc bands, Experience outcome bars)
+   reveal their specifics via a native SVG title tooltip, which is
+   all-browser and exposed to screen readers. The help cursor and
+   slight on-hover emphasis signal that a mark is explorable. This
+   is Tufte's detail-on-demand: invisible until sought, no clutter
+   added to the resting figure. Hover works regardless of motion
+   preference; the existing reduce block neutralizes the
+   transition for motion-sensitive readers.
+   ============================================================ */
+figure.timeline svg line[stroke-width="10"],
+figure.timeline svg line[stroke-width="11"],
+figure.outcome-figure rect {
+  cursor: help;
+  transition: stroke-width 0.15s ease, opacity 0.15s ease;
+}
+figure.timeline svg line[stroke-width="10"]:hover { stroke-width: 13; }
+figure.timeline svg line[stroke-width="11"]:hover { stroke-width: 14; }
+figure.outcome-figure rect:hover { opacity: 0.78; }
+
+/* Academic dot plot: every dot enlarges on hover so the field
+   reads as explorable; the six publication dots additionally
+   reveal their paper via a native title tooltip (added in markup).
+   transform-box: fill-box scales each dot about its own centre. */
+figure.timeline svg.dp-wide circle,
+figure.timeline svg.dp-mobile circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.12s ease;
+}
+figure.timeline svg.dp-wide circle:hover,
+figure.timeline svg.dp-mobile circle:hover { transform: scale(1.8); }
+
+/* ============================================================
    18.5. REDUCED MOTION
    Vestibular-sensitive readers signal prefers-reduced-motion in
    their OS. The page doesn't animate anything explicitly today,
@@ -1310,13 +1534,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            Left-anchored label at (60, 55), band immediately below
            at y=80 spanning x=60 to x=460. -->
       <text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Editorial and writing</text>
-      <line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt"/>
+      <line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt"><title>Editorial and writing, 2007 to 2014</title></line>
 
       <!-- ROW 2: Research, UW-Madison, 2009 to 2018.
            65 units below Row 1 to leave a clear gap. Label starts
            at the band's left edge (x=175). En-dash, not em-dash. -->
       <text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Research, UW&ndash;Madison</text>
-      <line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10"/>
+      <line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10"><title>Research, UW-Madison, 2009 to 2018</title></line>
 
       <!-- ROW 3: Data engineering, 2017 to now.
            Three abutting segments on a single row because the role
@@ -1324,13 +1548,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            over each segment (text-anchor="middle"). BHA segment
            is short so its label uses a smaller size to fit. -->
       <text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text>
-      <line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10"/>
+      <line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10"><title>healthfinch, 2017 to 2020</title></line>
 
       <text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text>
-      <line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10"/>
+      <line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10"><title>Health Catalyst, 2020 to 2025</title></line>
 
       <text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">BHA</text>
-      <line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10"/>
+      <line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10"><title>Baltimore Health Analytics, 2025 to present</title></line>
 
       <!-- YEAR AXIS at y=320. Axis rule slightly heavier (1.5pt)
            than the earlier draft (1pt) so it reads at a distance
@@ -1504,21 +1728,21 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"/></a>
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle></a>
 
       <!-- 2014: Pandhi et al JIHI, 23 citations (most-cited) -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"/></a>
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"/></a>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"/></a>
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle></a>
 
       <!-- 2019a: Karp et al HERD, 11 citations -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"/></a>
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle></a>
       <!-- 2019b: Pandhi et al Acad Med, 4 citations (slight x offset) -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"/></a>
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle></a>
 
       <!-- PRESENTATIONS (below the axis).
            Each dot is a presentation, stacked vertically when a
@@ -1829,7 +2053,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      I lead the data engineering and analytics methodology function for a Medicare Advantage quality platform: direct management, code review, data science and QA coordination across two geographies, the product roadmap, and translation between CMS requirements and organizational priorities. The platform spans Part C and Part D Star Ratings measures, drawing on claims, eligibility, and pharmacy data.
+      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures built on claims, eligibility, and pharmacy data. My remit is the methodology and engineering function behind it, from direct management and code review to data science and QA coordination across two geographies, the product roadmap, and translation from CMS requirements into organizational priorities.
     </p>
 
     <details class="fold">
@@ -1887,8 +2111,35 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      In 2020 Health Catalyst acquired healthfinch, and I migrated with the product. The three-person analytics function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%. The acquisition also moved infrastructure from AWS to Azure and Databricks, rebuilding the analytics layer without interrupting service for existing clients.
+      When Health Catalyst acquired healthfinch in 2020, the product, and the analytics work behind it, moved with me. A three-person function became a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%, and the migration rebuilt the analytics layer from AWS onto Azure and Databricks without interrupting service for existing clients.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
+
+    <!-- ==========================================================
+         OUTCOME FIGURE: refill turnaround
+         Surfaces the St. Joseph Heritage Healthcare result (one of
+         three published success stories listed inside the fold
+         below) as a before/after bar pair so the Experience lead
+         carries a visible figure, not pure prose. The "after" bar
+         is the section's single accent use (the accent sentinel
+         renders petrol teal via the palette selectors); the "before"
+         bar is muted grey. "6x faster" is the direct label (72/12).
+         Numbers match the fold prose exactly; no SVG swap, the
+         viewBox scales the lone copy on mobile.
+         ========================================================== -->
+    <figure class="outcome-figure">
+      <figcaption>
+        Refill turnaround at St. Joseph Heritage Healthcare, before the platform and after, as monthly volume scaled to 37,000 requests.
+      </figcaption>
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: refill turnaround fell from 72 hours before the platform to 12 hours after, roughly six times faster, at St. Joseph Heritage Healthcare.">
+        <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
+        <rect x="95" y="28" width="425" height="22" fill="#6a6a6a"><title>Refill turnaround before the platform: 72 hours</title></rect>
+        <text x="528" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">72 hrs</text>
+        <text x="85" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">after</text>
+        <rect x="95" y="78" width="71" height="22" fill="#7a0000"><title>After the platform: 12 hours, about 6x faster</title></rect>
+        <text x="176" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">12 hrs</text>
+        <text x="240" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a">6x faster</text>
+      </svg>
+    </figure>
 
     <details class="fold">
       <summary>More detail</summary>
@@ -1917,10 +2168,35 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
       First analytics hire meant the infrastructure did not exist. I built it on AWS to HIPAA and HITRUST controls, which meant that every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
     </p>
 
+    <!-- ==========================================================
+         OUTCOME FIGURE: internal dashboard adoption
+         Two-bar before/after of the sevenfold adoption growth.
+         Monochrome (both bars muted grey, no accent) so the
+         section keeps to its single accent use in the Health
+         Catalyst figure above. The $1M recurring revenue and the
+         400 retired reporting hours ride in the caption. Only the
+         two endpoints I actually have are drawn; no fabricated
+         growth trajectory between them. viewBox scales the lone
+         copy on mobile (no SVG swap).
+         ========================================================== -->
+    <figure class="outcome-figure">
+      <figcaption>
+        Internal dashboard adoption grew sevenfold over the role, retiring roughly 400 hours of annual manual reporting. The analytics supported over $1M in recurring revenue.
+      </figcaption>
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: internal dashboard adoption grew sevenfold over the role, from a baseline of one to seven.">
+        <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
+        <rect x="95" y="28" width="61" height="22" fill="#6a6a6a"><title>Internal dashboard adoption: baseline</title></rect>
+        <text x="164" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">1x</text>
+        <text x="85" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">after</text>
+        <rect x="95" y="78" width="425" height="22" fill="#6a6a6a"><title>Internal dashboard adoption: about 7x, after</title></rect>
+        <text x="528" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">7x</text>
+      </svg>
+    </figure>
+
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported over a million dollars in recurring revenue. Built dashboards that drove sevenfold growth in internal user adoption and eliminated four hundred hours of annual manual reporting preparation.
+        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported contract renewals. The same dashboards replaced a standing manual reporting cycle that had recurred every quarter.
       </p>
     </details>
 
@@ -1932,7 +2208,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      Nine years embedded in federally-funded primary care research, advancing through five positions from research specialist to assistant researcher. I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
+      Nine years embedded in federally-funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
     </p>
 
     <details class="fold">
