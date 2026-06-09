@@ -1389,10 +1389,14 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
 /* Affordances + transitions on engageable marks. */
 figure.timeline svg.tl-horizontal > a,
-figure.timeline svg.tl-compact   > a { cursor: pointer; transition: opacity 0.15s ease; }
+figure.timeline svg.tl-compact   > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
+/* The band labels are <a> links to their role, but the global link
+   underline reads as chartjunk on a chart axis. The pointer cursor and
+   the hover dim/thicken are the affordance; no underline on the type. */
+figure.timeline svg.tl-horizontal > a text,
+figure.timeline svg.tl-compact   > a text { text-decoration: none; }
 figure.timeline svg.tl-horizontal > a line,
 figure.timeline svg.tl-compact   > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
-figure.outcome-figure rect { cursor: help; transition: opacity 0.15s ease; }
 figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
   transform-box: fill-box;
@@ -1410,8 +1414,11 @@ figure.timeline svg.tl-compact:has(a:focus)   a:not(:focus) { opacity: 0.3; }
 figure.timeline svg.tl-horizontal a:hover line, figure.timeline svg.tl-horizontal a:focus line { stroke-width: 13; }
 figure.timeline svg.tl-compact   a:hover line, figure.timeline svg.tl-compact   a:focus line { stroke-width: 14; }
 
-/* Experience outcome bars: dim the sibling bar. */
-figure.outcome-figure:has(rect:hover) rect:not(:hover) { opacity: 0.35; }
+/* Experience outcome bars carry no hover reaction: the before/after
+   pair is read at a glance, and the native <title> on each bar stays
+   for screen readers. A dim-the-sibling rollover read as noise here
+   (it added motion to a two-bar figure that needs none), so it was
+   removed. */
 
 /* Academic dot plot: dim the field, enlarge the engaged dot. */
 figure.timeline svg.dp-wide:has(circle:hover) circle:not(:hover) { opacity: 0.22; }
