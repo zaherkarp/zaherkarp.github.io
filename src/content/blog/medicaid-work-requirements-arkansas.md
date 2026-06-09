@@ -5,7 +5,7 @@ publishDate: 2026-06-09
 tags: ["medicaid", "health-policy", "work-requirements", "meta-analysis", "difference-in-differences", "causal-inference"]
 lifeweek_topic: "Medicaid work requirements"
 homepageMarginnote: "Arkansas was the first state to attach work requirements to Medicaid. In six months it disenrolled about 18,000 adults and moved employment by a statistically indistinguishable-from-zero amount."
-draft: false
+draft: true
 ---
 
 <style>
