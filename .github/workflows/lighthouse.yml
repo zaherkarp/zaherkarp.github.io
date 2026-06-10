@@ -30,8 +30,18 @@ jobs:
 
       - name: Serve site
         run: |
-          python -m http.server 8000 &
-          sleep 2
+          # Stock `python -m http.server` is single-threaded: Lighthouse opens
+          # many parallel connections per page and they serialize behind one
+          # another, inflating load time so badly that server-response-time,
+          # bootup-time, main-thread-work, and even axe accessibility audits
+          # intermittently collapse to a 0 score. ThreadingHTTPServer handles
+          # the parallel requests concurrently and keeps the scores stable.
+          python -c "from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler; ThreadingHTTPServer(('', 8000), SimpleHTTPRequestHandler).serve_forever()" &
+          # Poll until the server accepts connections instead of a fixed sleep.
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/ >/dev/null 2>&1; then echo "server up"; break; fi
+            sleep 0.5
+          done
 
       - name: Lighthouse audit
         uses: treosh/lighthouse-ci-action@v11

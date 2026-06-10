@@ -6,8 +6,23 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 Jun 2026 03:31:21 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 10 Jun 2026 00:57:05 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</title>
+      <link>https://zaherkarp.com/blog/medicaid-work-requirements-arkansas/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/medicaid-work-requirements-arkansas/</guid>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <description>Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work.</description>
+      <category>medicaid</category>
+      <category>health-policy</category>
+      <category>work-requirements</category>
+      <category>meta-analysis</category>
+      <category>difference-in-differences</category>
+      <category>causal-inference</category>
+      
+    </item>
     
     <item>
       <title>CI/CD for SQL Developers: Watching It Land, and a Project to Practice On</title>
@@ -412,21 +427,6 @@
       <description>A brief description of your blog post (1-2 sentences)</description>
       <category>data governance</category>
       <category>security</category>
-      
-    </item>
-    
-    <item>
-      <title>Why CMS Never Let Star Ratings Touch Meaningful Use</title>
-      <link>https://zaherkarp.com/blog/cms-star-ratings-meaningful-use/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/cms-star-ratings-meaningful-use/</guid>
-      <pubDate>Sun, 18 Jan 2026 00:00:00 +0000</pubDate>
-      <description>On the surface, it looks like an omission - but CMS understood that capability and outcomes cannot be governed the same way, even when one enables the other. The deliberate separation was probably the right call.</description>
-      <category>healthcare</category>
-      <category>policy</category>
-      <category>cms</category>
-      <category>meaningful-use</category>
-      <category>star-ratings</category>
-      <category>ehr</category>
       
     </item>
     
