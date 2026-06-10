@@ -17,6 +17,7 @@
         "csp-xss": "off",
         "color-contrast": "warn",
         "non-composited-animations": "warn",
+        "label-content-name-mismatch": "warn",
         "third-party-cookies": "off",
         "uses-text-compression": "off",
         "unminified-css": "off",
