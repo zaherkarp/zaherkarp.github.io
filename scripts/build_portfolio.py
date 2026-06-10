@@ -52,7 +52,6 @@ import frontmatter
 from _common import install_git_hooks
 from _publications import (
     load_publications,
-    render_citations_figure,
     render_homepage_entries,
     save_citation_counts,
 )
@@ -346,16 +345,16 @@ def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
     return None
 
 
-def build_publications() -> tuple[str, str, int, int]:
+def build_publications() -> tuple[str, int, int]:
     """Refresh citation counts and render the homepage Publications markup.
 
     Loads publications.yaml (the source of truth shared with the CV build),
     fetches a fresh Semantic Scholar count for each entry with a `sid`,
     writes the refreshed counts back into the YAML cache, and returns
-    (homepage_entries_html, citations_figure_html, successes, failures), both
-    rendered from the same refreshed list. Entries without a `sid`, or whose
-    fetch fails, keep their cached count (graceful degradation). A 1s pause
-    between live requests stays under the public-tier rate limit.
+    (homepage_entries_html, successes, failures) rendered from the refreshed
+    list. Entries without a `sid`, or whose fetch fails, keep their cached
+    count (graceful degradation). A 1s pause between live requests stays
+    under the public-tier rate limit.
     """
     pubs = load_publications()
     successes = 0
@@ -380,7 +379,6 @@ def build_publications() -> tuple[str, str, int, int]:
         write_citation_snapshot(pubs)
     return (
         render_homepage_entries(pubs),
-        render_citations_figure(pubs),
         successes,
         failures,
     )
@@ -524,8 +522,7 @@ def main() -> int:
     n_tiles = max(0, min(len(posts) - WRITING_FEATURED, WRITING_TILES))
     print(f"writing index injected ({n_tiles} tiles)")
 
-    pub_html, fig_html, ok, fail = build_publications()
-    text = replace_between(text, "pub-figure", fig_html)
+    pub_html, ok, fail = build_publications()
     text = replace_between(text, "pub-list", pub_html)
     print(f"publications injected (citation counts: {ok} updated, {fail} skipped)")
 
