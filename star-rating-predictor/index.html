@@ -327,6 +327,7 @@ nav {
   background: linear-gradient(to right, var(--muted) 0%, var(--rule) 35%, var(--accent) 100%);
   border-radius: 9999px;
   opacity: 0.85;
+  container-type: inline-size;
 }
 .threshold-marker {
   position: absolute; top: -2px; bottom: -2px;
@@ -363,7 +364,8 @@ nav {
   background: var(--accent);
   border: 2px solid var(--bg);
   border-radius: 3px;
-  transition: left 0.4s ease;
+  left: 0;
+  transition: transform 0.4s ease;
   z-index: 2;
 }
 .z-label {
@@ -755,7 +757,7 @@ footer a:hover { color: var(--accent); }
     var zLab = document.getElementById("z-label");
     if (zInd && zLab) {
       var zPct = ((z - zMin) / zRange) * 100;
-      zInd.style.left = Math.max(0, Math.min(100, zPct)) + "%";
+      zInd.style.transform = "translateX(" + Math.max(0, Math.min(100, zPct)) + "cqw)";
       zLab.textContent = "z=" + z.toFixed(1);
     }
   }
