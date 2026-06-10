@@ -16,6 +16,7 @@
         "categories:seo": ["error", { "minScore": 0.9 }],
         "csp-xss": "off",
         "color-contrast": "warn",
+        "non-composited-animations": "warn",
         "third-party-cookies": "off",
         "uses-text-compression": "off",
         "unminified-css": "off",
