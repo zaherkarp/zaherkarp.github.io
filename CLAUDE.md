@@ -400,7 +400,8 @@ Deliberately NOT animated: the hero career arc (above the fold, no scroll-
 entry to drive it; animating it would jank first paint) and the academic dot
 plot (its dot field would need per-dot staggering, a motion vocabulary this
 set avoids). Keep the vocabulary to these three primitives; do not add a
-fourth easing/transform style without discussion (Massimo's coherence rule).
+fourth easing/transform style without discussion (Val's coherence rule;
+lane transferred from Massimo when Val was seated, 2026-06-10).
 
 ### Wall-of-text / typographic rhythm (2026-06-09)
 
@@ -1221,8 +1222,12 @@ panelists (hiring managers, peers, recruiters, UX reviewers, named
 archetypes like "Director of Quality Analytics at a regional MA
 plan"). One round must include antagonists: senior healthcare-data-
 engineering practitioners who pressure-test claims, denominators,
-and positioning. Output a synthesis table with consensus strength
-(unanimous / majority / single voice).
+and positioning. One round should include an emotional-register
+reader (e.g., "a recruiter who reads forty portfolios a week and
+remembers two"): warmth, memorability, and the recurring
+"visually boring" critique are reception questions, and they live
+here, not in a Design Council seat. Output a synthesis table with
+consensus strength (unanimous / majority / single voice).
 
 **Design Council** — design-decision taste calls. Personas as
 caricatures of schools of thought:
@@ -1237,6 +1242,26 @@ caricatures of schools of thought:
     the existing blog-experiment lane, proposes new work for it)
   - Jess — editorial (concision, voice, brand coherence)
   - Alan — web performance (Lighthouse, LCP, bundle size, font economy)
+  - Val — motion design (purposeful animation, scroll-driven
+    choreography, timing and easing vocabulary). Owns the
+    §Scroll-drawn figures lane, including the three-primitive
+    coherence rule. Convene for motion vocabulary, timing, or
+    choreography changes; NOT for static figure changes.
+  - Luke — mobile-first and touch ergonomics (no-hover media, thumb
+    reach, felt experience at the 760px collapse). Haben keeps WCAG
+    compliance, including target size, and the sole veto; Luke owns
+    what compliance cannot see (e.g., hover-only reveals that leave
+    sighted touch users with less information than AT users).
+    Convene for breakpoint or touch-surface changes; NOT for
+    desktop-only CSS.
+
+Val and Luke were seated 2026-06-10 after antagonistic audition
+rounds. An emotional-design persona (Aarron) was auditioned in the
+same pass and deliberately NOT seated: under antagonism his lane
+reduced to relitigating locked tokens or to reader reception, which
+belongs to the Focus Group (see the emotional-register archetype
+above). Do not re-add an emotional-design council seat without a new
+audition.
 
 Single-persona for in-lane calls; 2-3 for cross-lane decisions;
 full council rare. Convene for: design-token changes, new subpage
