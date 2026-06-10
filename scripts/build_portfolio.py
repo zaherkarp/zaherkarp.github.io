@@ -52,6 +52,7 @@ import frontmatter
 from _common import install_git_hooks
 from _publications import (
     load_publications,
+    render_citations_figure,
     render_homepage_entries,
     save_citation_counts,
 )
@@ -345,13 +346,14 @@ def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
     return None
 
 
-def build_publications() -> tuple[str, int, int]:
-    """Refresh citation counts and render the homepage Publications block.
+def build_publications() -> tuple[str, str, int, int]:
+    """Refresh citation counts and render the homepage Publications markup.
 
     Loads publications.yaml (the source of truth shared with the CV build),
     fetches a fresh Semantic Scholar count for each entry with a `sid`,
     writes the refreshed counts back into the YAML cache, and returns
-    (homepage_html, successes, failures). Entries without a `sid`, or whose
+    (homepage_entries_html, citations_figure_html, successes, failures), both
+    rendered from the same refreshed list. Entries without a `sid`, or whose
     fetch fails, keep their cached count (graceful degradation). A 1s pause
     between live requests stays under the public-tier rate limit.
     """
@@ -376,7 +378,12 @@ def build_publications() -> tuple[str, int, int]:
     save_citation_counts(pubs)
     if successes:
         write_citation_snapshot(pubs)
-    return render_homepage_entries(pubs), successes, failures
+    return (
+        render_homepage_entries(pubs),
+        render_citations_figure(pubs),
+        successes,
+        failures,
+    )
 
 
 def write_citation_snapshot(pubs: list[dict]) -> None:
@@ -517,7 +524,8 @@ def main() -> int:
     n_tiles = max(0, min(len(posts) - WRITING_FEATURED, WRITING_TILES))
     print(f"writing index injected ({n_tiles} tiles)")
 
-    pub_html, ok, fail = build_publications()
+    pub_html, fig_html, ok, fail = build_publications()
+    text = replace_between(text, "pub-figure", fig_html)
     text = replace_between(text, "pub-list", pub_html)
     print(f"publications injected (citation counts: {ok} updated, {fail} skipped)")
 

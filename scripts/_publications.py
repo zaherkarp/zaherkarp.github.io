@@ -46,39 +46,6 @@ def _citation_label(n: int) -> str:
     return "citation" if n == 1 else "citations"
 
 
-# Inline citation-magnitude tick-bar. The bar length encodes one paper's
-# citation count relative to the most-cited entry in the set; the faint
-# full-width track marks that maximum. Monochrome only: #111 maps to
-# var(--ink) and #d0d0c8 to var(--rule) via the locked SVG palette-adapter
-# attribute selectors in index.html, so the glyph adapts to light/dark with
-# no per-element edits. It must never use the #7a0000 accent sentinel (that
-# renders teal and counts against the accent cap; a data glyph spends no
-# accent). Width here matches the svg.cite-bar rule in index.html.
-CITE_BAR_W = 52  # px
-
-
-def _citation_glyph(count: int, max_count: int) -> str:
-    """Inline SVG tick-bar for one publication's citation count.
-
-    Width is proportional to count / max_count (min 2px so a low but nonzero
-    count still shows). Additive only: the numeric count also stays as visible
-    margin-note text, so no information lives solely inside the SVG. The
-    <title> is the accessible layer, matching the dot-plot's title pattern.
-    """
-    if not max_count:
-        return ""
-    w = max(2, round(CITE_BAR_W * count / max_count))
-    label = f"{count} {_citation_label(count)}"
-    return (
-        f'<svg class="cite-bar" viewBox="0 0 {CITE_BAR_W} 7" '
-        f'role="img" aria-label="{label}">'
-        f'<title>{label}</title>'
-        f'<rect x="0" y="2.5" width="{CITE_BAR_W}" height="2" fill="#d0d0c8"/>'
-        f'<rect x="0" y="0.5" width="{w}" height="6" fill="#111"/>'
-        f'</svg>'
-    )
-
-
 # ─── homepage renderer ─────────────────────────────────────────────────────
 
 def _homepage_marginnote(pub: dict) -> str:
@@ -114,12 +81,8 @@ def _homepage_marginnote(pub: dict) -> str:
     return f'<span class="marginnote">{inner}</span>'
 
 
-def render_homepage_entry(pub: dict, max_count: int = 0) -> str:
-    """Render one homepage publication <div>, 4-space base indent.
-
-    `max_count` is the largest citation count across the set, used to scale
-    the inline citation tick-bar. Entries with no cached count get no glyph.
-    """
+def render_homepage_entry(pub: dict) -> str:
+    """Render one homepage publication <div>, 4-space base indent."""
     pid = pub["id"]
     has_sid = bool(pub.get("sid"))
     cls = "entry pub-entry" if has_sid else "entry"
@@ -130,19 +93,11 @@ def render_homepage_entry(pub: dict, max_count: int = 0) -> str:
 
     marginnote = _homepage_marginnote(pub)
 
-    count = pub.get("citations")
-    glyph_line = (
-        f'        {_citation_glyph(count, max_count)}\n'
-        if count is not None and max_count
-        else ""
-    )
-
     return (
         f'    <div class="{cls}" id="pub-{pid}"{data_sid}>\n'
         f'      <p style="margin-bottom: 0.3rem;">\n'
         f'        <span class="date">{pub["year"]}</span>\n'
         f'        <em>{_esc(pub["title"])}</em>\n'
-        f'{glyph_line}'
         f'        <label for="mn-{pid}" class="margin-toggle">&#8853;</label>\n'
         f'        <input type="checkbox" aria-label="{pub["toggle_aria"]}" '
         f'id="mn-{pid}" class="margin-toggle"/>\n'
@@ -158,9 +113,92 @@ def render_homepage_entry(pub: dict, max_count: int = 0) -> str:
 
 def render_homepage_entries(pubs: list[dict]) -> str:
     """Render all homepage entries, blank-line separated (matches prior markup)."""
-    counts = [p["citations"] for p in pubs if p.get("citations") is not None]
-    max_count = max(counts) if counts else 0
-    return "\n\n".join(render_homepage_entry(p, max_count) for p in pubs)
+    return "\n\n".join(render_homepage_entry(p) for p in pubs)
+
+
+# ─── homepage citations figure ─────────────────────────────────────────────
+
+# Consolidated citations figure: one horizontal bar per cited paper, sitting
+# under the Publications lead. Replaces the per-entry inline tick-bars with a
+# single comparable chart. Build-generated so the bars track the live counts
+# (a hand-authored SVG would drift the moment a count is refreshed).
+# Monochrome only: #111 -> var(--ink), #6a6a6a -> var(--muted), #d0d0c8 ->
+# var(--rule) via the locked SVG palette-adapter attribute selectors in
+# index.html, so it adapts to light/dark with no per-element edits. #7a0000
+# (the accent sentinel) is deliberately NOT used, so the figure spends zero
+# accent. Reuses figure.outcome-figure sizing + its fig-grow-x scroll-draw
+# primitive (no new CSS, no 4th motion style). The exact counts also remain
+# as text in each entry's margin note, so nothing lives solely in the SVG.
+CITE_FIG_X0    = 95     # bar left edge
+CITE_FIG_W     = 380    # usable bar field width (leaves room for the count)
+CITE_FIG_PITCH = 52     # vertical row pitch
+CITE_FIG_TOP   = 30     # first row label baseline
+
+# Short, direct journal labels keyed by pub id (kept here so the figure is
+# self-contained). Falls back to the full venue if an id is missing.
+_CITE_FIG_LABELS = {
+    "jihi":    "Health Informatics, 2014",
+    "herd":    "HERD, 2019",
+    "acadmed": "Academic Medicine, 2019",
+}
+
+
+def render_citations_figure(pubs: list[dict]) -> str:
+    """Render ONE figure.outcome-figure: a citations-by-paper bar chart.
+
+    Only entries with a cached `citations` count are plotted, sorted
+    descending for a clean staircase. Returns '' if no entry carries a
+    count (graceful: the marker pair then renders empty and the page falls
+    back to prose plus the per-entry margin-note counts). 4-space base
+    indent to match the surrounding markers in index.html.
+    """
+    cited = sorted(
+        (p for p in pubs if p.get("citations") is not None),
+        key=lambda p: p["citations"], reverse=True,
+    )
+    if not cited:
+        return ""
+    max_count = cited[0]["citations"]
+    last_bar_y = CITE_FIG_TOP + (len(cited) - 1) * CITE_FIG_PITCH + 8
+    height = last_bar_y + 16 + 14  # last bar height + bottom padding
+
+    rows = []
+    for i, p in enumerate(cited):
+        c = p["citations"]
+        label = _CITE_FIG_LABELS.get(p["id"], _esc(p["venue"]))
+        count_txt = f"{c} {_citation_label(c)}"
+        label_y = CITE_FIG_TOP + i * CITE_FIG_PITCH
+        bar_y = label_y + 8
+        bar_w = max(2, round(CITE_FIG_W * c / max_count))
+        count_x = CITE_FIG_X0 + bar_w + 8
+        rows.append(
+            f'        <text x="{CITE_FIG_X0}" y="{label_y}" '
+            f'font-family="et-book, Palatino, Georgia, serif" font-size="15" '
+            f'font-style="italic" fill="#6a6a6a">{label}</text>\n'
+            f'        <rect x="{CITE_FIG_X0}" y="{bar_y}" width="{CITE_FIG_W}" '
+            f'height="16" fill="#d0d0c8"/>\n'
+            f'        <rect x="{CITE_FIG_X0}" y="{bar_y}" width="{bar_w}" '
+            f'height="16" fill="#111"><title>{_esc(label)}: {count_txt}</title></rect>\n'
+            f'        <text x="{count_x}" y="{bar_y + 12}" '
+            f'font-family="et-book, Palatino, Georgia, serif" font-size="14" '
+            f'fill="#111">{count_txt}</text>'
+        )
+    body = "\n".join(rows)
+    aria = "Bar chart of citations per paper, most cited first: " + "; ".join(
+        f'{_CITE_FIG_LABELS.get(p["id"], p["venue"])}, '
+        f'{p["citations"]} {_citation_label(p["citations"])}'
+        for p in cited
+    )
+    return (
+        f'    <figure class="outcome-figure">\n'
+        f'      <figcaption>Citation counts, most cited first. Three of the six '
+        f'papers carry tracked counts.</figcaption>\n'
+        f'      <svg viewBox="0 0 600 {height}" xmlns="http://www.w3.org/2000/svg" '
+        f'role="img" aria-label="{_esc(aria)}">\n'
+        f'{body}\n'
+        f'      </svg>\n'
+        f'    </figure>'
+    )
 
 
 # ─── CV renderer ───────────────────────────────────────────────────────────
