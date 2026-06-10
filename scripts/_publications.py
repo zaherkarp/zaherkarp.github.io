@@ -46,6 +46,39 @@ def _citation_label(n: int) -> str:
     return "citation" if n == 1 else "citations"
 
 
+# Inline citation-magnitude tick-bar. The bar length encodes one paper's
+# citation count relative to the most-cited entry in the set; the faint
+# full-width track marks that maximum. Monochrome only: #111 maps to
+# var(--ink) and #d0d0c8 to var(--rule) via the locked SVG palette-adapter
+# attribute selectors in index.html, so the glyph adapts to light/dark with
+# no per-element edits. It must never use the #7a0000 accent sentinel (that
+# renders teal and counts against the accent cap; a data glyph spends no
+# accent). Width here matches the svg.cite-bar rule in index.html.
+CITE_BAR_W = 52  # px
+
+
+def _citation_glyph(count: int, max_count: int) -> str:
+    """Inline SVG tick-bar for one publication's citation count.
+
+    Width is proportional to count / max_count (min 2px so a low but nonzero
+    count still shows). Additive only: the numeric count also stays as visible
+    margin-note text, so no information lives solely inside the SVG. The
+    <title> is the accessible layer, matching the dot-plot's title pattern.
+    """
+    if not max_count:
+        return ""
+    w = max(2, round(CITE_BAR_W * count / max_count))
+    label = f"{count} {_citation_label(count)}"
+    return (
+        f'<svg class="cite-bar" viewBox="0 0 {CITE_BAR_W} 7" '
+        f'role="img" aria-label="{label}">'
+        f'<title>{label}</title>'
+        f'<rect x="0" y="2.5" width="{CITE_BAR_W}" height="2" fill="#d0d0c8"/>'
+        f'<rect x="0" y="0.5" width="{w}" height="6" fill="#111"/>'
+        f'</svg>'
+    )
+
+
 # ─── homepage renderer ─────────────────────────────────────────────────────
 
 def _homepage_marginnote(pub: dict) -> str:
@@ -81,8 +114,12 @@ def _homepage_marginnote(pub: dict) -> str:
     return f'<span class="marginnote">{inner}</span>'
 
 
-def render_homepage_entry(pub: dict) -> str:
-    """Render one homepage publication <div>, 4-space base indent."""
+def render_homepage_entry(pub: dict, max_count: int = 0) -> str:
+    """Render one homepage publication <div>, 4-space base indent.
+
+    `max_count` is the largest citation count across the set, used to scale
+    the inline citation tick-bar. Entries with no cached count get no glyph.
+    """
     pid = pub["id"]
     has_sid = bool(pub.get("sid"))
     cls = "entry pub-entry" if has_sid else "entry"
@@ -93,11 +130,19 @@ def render_homepage_entry(pub: dict) -> str:
 
     marginnote = _homepage_marginnote(pub)
 
+    count = pub.get("citations")
+    glyph_line = (
+        f'        {_citation_glyph(count, max_count)}\n'
+        if count is not None and max_count
+        else ""
+    )
+
     return (
         f'    <div class="{cls}" id="pub-{pid}"{data_sid}>\n'
         f'      <p style="margin-bottom: 0.3rem;">\n'
         f'        <span class="date">{pub["year"]}</span>\n'
         f'        <em>{_esc(pub["title"])}</em>\n'
+        f'{glyph_line}'
         f'        <label for="mn-{pid}" class="margin-toggle">&#8853;</label>\n'
         f'        <input type="checkbox" aria-label="{pub["toggle_aria"]}" '
         f'id="mn-{pid}" class="margin-toggle"/>\n'
@@ -113,7 +158,9 @@ def render_homepage_entry(pub: dict) -> str:
 
 def render_homepage_entries(pubs: list[dict]) -> str:
     """Render all homepage entries, blank-line separated (matches prior markup)."""
-    return "\n\n".join(render_homepage_entry(p) for p in pubs)
+    counts = [p["citations"] for p in pubs if p.get("citations") is not None]
+    max_count = max(counts) if counts else 0
+    return "\n\n".join(render_homepage_entry(p, max_count) for p in pubs)
 
 
 # ─── CV renderer ───────────────────────────────────────────────────────────
