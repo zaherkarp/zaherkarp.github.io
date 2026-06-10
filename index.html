@@ -1133,13 +1133,25 @@ details.speaking-list[open] summary::before {
 }
 details.speaking-list ol {
   margin-top: 1rem;
-  padding-left: 2.2rem;
+  /* No list markers: 17 ascending numbers next to a descending
+     year column read as two numeral systems disagreeing. The
+     summary already carries the count; <ol> semantics keep the
+     item count/position for screen readers. */
+  list-style: none;
+  padding-left: 0;
   font-size: 1.05rem;
   line-height: 1.6;
   color: var(--ink);
 }
 details.speaking-list ol li {
   margin-bottom: 0.4rem;
+  /* Hanging indent (the CV's year-gutter treatment): the year
+     hangs in a true column and wrapped venue lines align under
+     the venue instead of flowing back beneath the years. 2.9rem
+     = the .year block (2.5rem) plus its 0.4rem margin, so the
+     first-line venue start and wrapped lines align exactly. */
+  padding-left: 2.9rem;
+  text-indent: -2.9rem;
 }
 details.speaking-list ol li .year {
   font-variant-numeric: oldstyle-nums;
