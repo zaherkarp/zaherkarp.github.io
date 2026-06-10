@@ -343,9 +343,12 @@ Hero exception, draw-on-load (CSS section "18.2"): the hero career arc is
 the one figure that draws for EVERY browser, including Safari/Firefox, because
 it uses a plain time-based CSS animation (`animation-duration`), not the
 scroll timeline. Its bands (`line[stroke-width="10"]` desktop /
-`[stroke-width="11"]` compact) trace via `stroke-dashoffset` on page load, ~1.5s
-ease-out, one dasharray sized just past the longest band per viewport (540 /
-270) so longer bands start earlier and the arc settles together. This is the
+`[stroke-width="11"]` compact) trace via `stroke-dashoffset` on page load:
+0.85s ease-out per band, staggered 0.5s per `--seq` cascade step (0, 1, 2,
+2.3, 2.6), so the full arc settles at ~2.2s with the last label landing at
+~2.25s. Each band's dasharray is sized to its own length via inline
+`--arc-len`. (A retime to a ~1.76s settle, 0.35s step, was proposed by Val
+on 2026-06-10 and left open.) This is the
 deliberate first-impression "tantalize." Same reduced-motion gate; only
 stroke-dashoffset animates so there is no LCP cost on the h1/subtitle above.
 Rationale: the scroll-driven figures below are Chromium-only today, so Safari
@@ -366,7 +369,15 @@ jumps to its role in Experience: `#exp-bha`, `#exp-catalyst`,
 `.role-anchor` spans placed just before each role `<h3>`, NOT on the `<h3>`
 itself (an id on the heading breaks `lint_facts`'s `<h3>` regex). The links
 are keyboard-focusable, so the focus-plus-context hover below fires on
-`:focus` too; pointer cursor is the affordance.
+`:focus` too; pointer cursor is the affordance. Touch hit areas
+(2026-06-10, Luke/Haben): each band `<a>` carries a transparent `<rect>`
+overlay sized to ~24px+ rendered height, and the publication-dot links get
+a transparent 40-unit CSS stroke, so the targets clear WCAG 2.2 §2.5.8 on
+touch without changing a visible pixel or any tested coordinate. Keep the
+overlays when editing band markup. Known limit: the two adjacent 2019
+dots overlap hit areas (centers 8 units apart on mobile); the spacing
+exception covers them, and moving dots is off the table (locked
+coordinates).
 
 Hover / focus, focus-plus-context + typeset reveal (CSS section "18.3"):
 a Design Council pass replaced the dead native-tooltip *feel* with the chart
@@ -516,7 +527,9 @@ same CI run that publishes them.
 
 ### Testimonials
 
-Two testimonials, both from Health Catalyst. Italic blockquote pullquote
+Three testimonials: two from Health Catalyst directors (recent technical
+work) and one from a direct report at Sustainable Clarity, 2013 (the
+management craft cited in that role's entry). Italic blockquote pullquote
 with thin left border (1px var(--rule)), attribution flush-right below
 the quote, full version behind a `<details class="fold">`.
 Attribution alignment: `text-align: right` per Tufte tradition. The
@@ -539,7 +552,9 @@ math (no MathJax/KaTeX dependency for one short formula).
 `figure.outcome-figure` (before/after bar pair) between the lead paragraph
 and the fold, so the densest section shows data by default instead of pure
 prose: Health Catalyst (refill turnaround 72h to 12h, the section's single
-accent use) and healthfinch (1x to 7x dashboard adoption, monochrome). They
+accent use) and healthfinch (dashboard adoption, roughly 10 users to 100+,
+monochrome; exact client numbers are not public, so both endpoints are
+drawn and labeled as approximations). They
 reuse the `.cliff-figure`/`.sankey-figure` sizing idiom and the `#7a0000`
 accent-sentinel palette-adapter contract; a single viewBox scales each on
 mobile (no SVG swap). Numbers must match the role prose exactly. BHA gets no
@@ -547,11 +562,12 @@ figure on purpose: it is a scope role too new for a headline outcome, and a
 fabricated metric would break the data-honesty rule. This was the fix for a
 "wall of text" critique of the Experience section.
 
-**Margin stats (added 2026-06-09).** Two buried headline numbers are
+**Margin stats (added 2026-06-09).** Three buried headline numbers are
 surfaced as `.marginnote .stat-num` callouts (large oldstyle numeral + one
-caption line) beside their role: Health Catalyst (373,000 care gaps in six
-months, Community Health Network) and UW (10,000-adult, 50-year Wisconsin
-Longitudinal Study cohort). They reuse the `.marginnote` float/toggle
+caption line) beside their section: Health Catalyst (373,000 care gaps in
+six months, Community Health Network), UW (10,000-adult, 50-year Wisconsin
+Longitudinal Study cohort), and Speaking (7 talks in 2015, the peak year,
+with the Patient Choice Award). They reuse the `.marginnote` float/toggle
 machinery wholesale (visible in the margin on desktop, ⊕ tap toggle on
 mobile); only the numeral size is new CSS. The numeral honors the
 inline-only marginnote rule. Add more only where a genuinely buried number
@@ -631,6 +647,21 @@ breaks), or rephrased entirely. En-dashes preserved in compound proper
 nouns (UW-Madison, AWS-to-Azure). This is a personal preference, not a
 Tufte requirement. Blog post markdown sources are NOT swept (preserves
 historical voice); only chrome and the homepage are em-dash-clean.
+
+**Calibrated claims (do not punch up):** The 2026-06-10 Focus Group's
+antagonist round (VP of Stars, principal payer-analytics engineer, former
+CMS measure developer, health-system CIO) unanimously identified the
+page's precision-scoped claims as its strongest asset with expert
+readers. Canonical examples: the Huber formula caption ("a tested
+proposal, not a deployed customer-analytics component"), the BHA meta
+line ("team of two data scientists"), and the platform-outcome
+attribution on the 373,000 care-gaps margin stat ("one of the platform's
+published outcomes"). The rule: scope every claim to what is verifiable,
+attribute platform/customer outcomes to the platform, and name the
+metric and denominator behind any ratio (no bare "7x"; client-private
+numbers are stated as labeled approximations, e.g. "~10 / 100+ users").
+Do not edit these markers toward bigger or vaguer numbers, and hold new
+figures and stats to the same standard.
 
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
