@@ -344,11 +344,12 @@ the one figure that draws for EVERY browser, including Safari/Firefox, because
 it uses a plain time-based CSS animation (`animation-duration`), not the
 scroll timeline. Its bands (`line[stroke-width="10"]` desktop /
 `[stroke-width="11"]` compact) trace via `stroke-dashoffset` on page load:
-0.85s ease-out per band, staggered 0.5s per `--seq` cascade step (0, 1, 2,
-2.3, 2.6), so the full arc settles at ~2.2s with the last label landing at
-~2.25s. Each band's dasharray is sized to its own length via inline
-`--arc-len`. (A retime to a ~1.76s settle, 0.35s step, was proposed by Val
-on 2026-06-10 and left open.) This is the
+0.85s ease-out per band, staggered 0.35s per `--seq` cascade step (0, 1, 2,
+2.3, 2.6), so the full arc settles at ~1.76s with the last label landing at
+~1.86s. Each band's dasharray is sized to its own length via inline
+`--arc-len`. (Retimed 2026-06-10 from a 0.5s step / ~2.2s settle, Val's
+proposal: the data-engineering trio must finish inside the first-scroll
+patience window.) This is the
 deliberate first-impression "tantalize." Same reduced-motion gate; only
 stroke-dashoffset animates so there is no LCP cost on the h1/subtitle above.
 Rationale: the scroll-driven figures below are Chromium-only today, so Safari
@@ -358,7 +359,7 @@ sequence (editorial, research, then the data-engineering trio): each band's
 label+line is wrapped in a per-role link (see "Clickable bands" below) that
 carries its cascade index inline as `style="--seq:N"`, and the band line
 carries its own length inline as `style="--arc-len:L"`. `--seq` inherits from
-the link to both the line (band draw delay = `--seq * 0.5s`) and the label
+the link to both the line (band draw delay = `--seq * 0.35s`) and the label
 `<text>` (`label-fade`, +0.45s), so the name lands as the bar arrives. No
 `:nth-of-type` addressing; the per-band values live on the markup.
 
@@ -399,6 +400,14 @@ Triggered on `:hover` AND `:focus` (the publication dots are `<a>` links, so
 keyboard users get the reveal; the title text covers the non-focusable marks).
 Presentation dots stay unlabeled (de-emphasized) but share the dim/scale.
 Only opacity/transform/stroke-width change, neutralised by the reduce block.
+
+Arrival cue (CSS section "18.4", added 2026-06-10): a band click jumps to
+its role anchor, and `.role-anchor:target + h3` plays a one-shot 1.6s
+ink-wash fade (7% ink, `role-arrive` keyframe) so the landing acknowledges
+the click. Fade family only, no accent, no persistent state; sanctioned by
+Val as an application of the existing fade primitive to text (the page's
+one background-color animation; do not extend the pattern elsewhere
+without convening her). Same global reduce gating.
 
 Scroll-animated figures (Chromium-only enhancement): the two Experience
 outcome bars, the Projects cliff curve (stroke traces, area fill fades), and

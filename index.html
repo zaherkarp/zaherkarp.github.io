@@ -1353,13 +1353,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
   figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
     stroke-dasharray: var(--arc-len, 540);
     animation: arc-draw 0.85s ease-out both;
-    animation-delay: calc(var(--seq, 0) * 0.5s);
+    animation-delay: calc(var(--seq, 0) * 0.35s);
   }
   /* Each role label fades in just after its band begins (delay + 0.45s). */
   figure.timeline svg.tl-horizontal > a text,
   figure.timeline svg.tl-compact   > a text {
     animation: label-fade 0.5s ease-out both;
-    animation-delay: calc(var(--seq, 0) * 0.5s + 0.45s);
+    animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
   }
 }
 
@@ -1401,7 +1401,7 @@ figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.12s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 /* Touch hit areas (Luke/Haben, 2026-06-10): the publication dots are
    links drawn at 3-10 SVG units, far under the 24px WCAG 2.2 target
@@ -1448,6 +1448,26 @@ figure.timeline svg.dp-wide .dp-label {
 }
 figure.timeline svg.dp-wide a:hover .dp-label,
 figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
+
+/* ============================================================
+   18.4. ARRIVAL CUE
+   Clicking a career-arc band jumps to its role in Experience;
+   without acknowledgment the reader loses a beat re-orienting.
+   A one-shot ink wash on the destination role heading fades to
+   nothing: fade family only (the page's existing motion
+   vocabulary; sanctioned 2026-06-10), no accent, no persistent
+   state (a static :target style would leave the heading
+   permanently highlighted). The global reduce block collapses
+   the animation, so reduced-motion readers get the plain jump.
+   :target fires on hash change only, so re-clicking the same
+   band yields one cue, not two. Acceptable.
+   ============================================================ */
+@keyframes role-arrive {
+  from { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+}
+.role-anchor:target + h3 {
+  animation: role-arrive 1.6s ease-out 1 both;
+}
 
 /* ============================================================
    18.5. REDUCED MOTION
