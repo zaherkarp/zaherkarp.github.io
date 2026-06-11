@@ -2173,7 +2173,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      When Health Catalyst acquired healthfinch in 2020, I moved with the product and the analytics work behind it. A three-person function became the analytics arm of a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviours, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%, and the migration rebuilt the analytics layer from AWS onto Azure and Databricks without interrupting service for existing clients.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      When Health Catalyst acquired healthfinch in 2020, I moved with the product and the analytics work behind it. A three-person function became the analytics arm of a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviors, and different interpretations of the same clinical concept. A medication adherence rate is not portable across these systems until someone sits down and defines it in a source-specific way.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%, and the migration rebuilt the analytics layer from AWS onto Azure and Databricks without interrupting service for existing clients.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2212,7 +2212,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
         Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
       </p>
       <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm? The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one, though it still cut weekly load latency by 24+ hours.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Vendor-specific logic parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
+        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm? The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one, though it still cut weekly load latency by 24+ hours.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test. Same-day runtime was a side effect of the design, not the goal.</span> Vendor-specific logic was parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
       </p>
       <p>
         HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
@@ -2228,7 +2228,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      First analytics hire meant the infrastructure did not exist. I built it on AWS to HIPAA and HITRUST controls. Every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. Promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
+      The infrastructure did not exist when I arrived as the first analytics hire. I built it on AWS to HIPAA and HITRUST controls. Every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. I was promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
     </p>
 
     <!-- ==========================================================
@@ -2275,7 +2275,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      Nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
+      I spent nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
     </p>
 
     <details class="fold">
@@ -2300,7 +2300,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
     <p>
-      Editorial services practice specializing in environmental, health, and policy content. Managed up to eight copy editors, graphic designers, and photographers. Wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire. Edited and indexed a variety of client material: books, peer-reviewed journal articles, grant proposals, and dissertations.
+      An editorial services practice specializing in environmental, health, and policy content. I managed up to eight copy editors, graphic designers, and photographers, wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire, and edited and indexed a variety of client material: books, peer-reviewed journal articles, grant proposals, and dissertations.
     </p>
   </section>
 
@@ -2452,7 +2452,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
       <div class="body">
         <h3>Healthcare Workforce Transition Platform</h3>
         <p>
-          Estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data provides the feature structure; logistic regression produces Ready Now, Trainable, and Long-Term Reskill recommendations with skill-domain gap analysis.
+          The platform estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data provides the feature structure; logistic regression produces Ready Now, Trainable, and Long-Term Reskill recommendations with skill-domain gap analysis.
         </p>
 
         <!-- ==========================================================
