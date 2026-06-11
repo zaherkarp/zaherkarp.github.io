@@ -25,7 +25,9 @@
 #   links       list of {label, url, aria}. Rendered in the margin note (home)
 #               and inline (CV). Mutually exclusive with `note`.
 #   note        raw HTML margin-note prose (used instead of links). Only the
-#               ACOs entry uses this today.
+#               ACOs entry uses this today. Must NOT repeat the entry's
+#               venue or year; both already render in the visible citation
+#               line, and scripts/lint_notes.py fails the push on overlap.
 #
 # Em-dash policy (CLAUDE.md): keep this file em-dash-clean so the generated
 # homepage chrome stays compliant with the pre-push grep.
@@ -68,7 +70,7 @@
   venue: "International Journal of Healthcare Management"
   detail: ""
   toggle_aria: "Show note on Medicare Shared Savings Programs analysis, IJHM 2018"
-  note: "Published in the <em>International Journal of Healthcare Management</em>, 2018. First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts."
+  note: "First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts."
 
 - id: implsci
   year: 2016
