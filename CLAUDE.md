@@ -293,6 +293,18 @@ this — it's a homepage-only rule; check via grep on content changes.
 Sidenotes are homepage-only. Blog posts use KaTeX/Mermaid/Prism for
 technical depth, not sidenotes.
 
+Additivity rule (2026-06-11, editorial council): a sidenote or margin
+note must not restate facts, numbers, or claims already present
+anywhere in the page's prose, measured against the FULL text including
+closed folds, not just the default view (engaged readers expand folds
+and hit the repeat). Sole exception: `.stat-num` margin stats (see
+§Margin stats), which deliberately surface numbers buried inside
+closed folds. A note must also be about the sentence it anchors to; an
+off-topic note is removed or re-anchored, not kept for the fact's
+sake. Enforced (numbers + verbatim-run overlap; semantic restatement
+remains an editorial judgment) by `scripts/lint_notes.py`, see
+§Pre-push checks.
+
 ### Solarized code blocks (blog posts)
 
 Blog post code blocks use the Solarized palette via CSS variables in
@@ -527,6 +539,13 @@ pulls a frontmatter title/description/marginnote into the homepage, it
 strips em-dashes back to commas. The blog post page at
 `/blog/<slug>/` keeps its em-dashes — only the homepage chrome is
 sanitized.
+
+`homepageMarginnote` additivity: the field must be additive to the
+post's title and description (no shared numbers, no restated claims),
+because the build pulls all three onto the same homepage entry, where
+overlap renders as visible redundancy. Enforced source-side by
+`scripts/lint_notes.py` (see §Pre-push checks and the §Sidenote system
+additivity rule).
 
 This pipeline replaced a hand-maintained list that drifted twice
 (missed the most recent post, linked to a draft slug with no `/blog/`
@@ -1040,6 +1059,10 @@ workflow regenerates the homepage block and the next CV build picks it up.
 Do not hand-edit the Publications block between the pub-list markers, the
 next CI run overwrites it.
 
+The `note` field must not repeat the entry's venue or year; both
+already render in the visible citation line directly below the margin
+note. Enforced by `scripts/lint_notes.py` (see §Pre-push checks).
+
 ---
 
 ## Site review workflow
@@ -1149,6 +1172,12 @@ Checks:
 - `python scripts/lint_facts.py` clean (cross-surface fact drift between
   resume.md, index.html h3+meta, and JSON-LD; playbook for failures
   at scripts/lint_facts.md)
+- `python scripts/lint_notes.py` clean (note additivity: no significant-
+  number or five-word-run overlap between a homepage sidenote/margin
+  note and the page prose outside it, `homepageMarginnote` additive to
+  its post's title+description, publications.yaml `note` free of
+  venue/year repeats. `.stat-num` margin stats and the generated marker
+  regions are exempt by design; see §Sidenote system additivity rule)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored

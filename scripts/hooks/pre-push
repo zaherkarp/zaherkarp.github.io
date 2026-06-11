@@ -85,6 +85,20 @@ if [ "$CLI_LINTED" = "false" ]; then
   fi
 fi
 
+# 3b. Note additivity lint (sidenote/margin-note redundancy against
+#     page prose, homepageMarginnote vs title/description, and
+#     publications.yaml note vs venue/year). Runs outside the CLI
+#     short-circuit above because the blog CLI's lint set does not
+#     include it. See CLAUDE.md §Sidenote system (additivity rule).
+if [ -f scripts/lint_notes.py ]; then
+  if output=$(python scripts/lint_notes.py 2>&1); then
+    ok "lint_notes clean"
+  else
+    echo "$output" >&2
+    fail "lint_notes"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to
