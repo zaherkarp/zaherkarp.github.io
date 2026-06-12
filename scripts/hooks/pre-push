@@ -99,6 +99,22 @@ if [ -f scripts/lint_notes.py ]; then
   fi
 fi
 
+# 3c. Recognition alignment lint (homepage #service Service and
+#     Recognition entries must each have a counterpart in cv.md's
+#     Awards / Fellowships / Service record). The gate blocks a push
+#     when the two hand-authored surfaces drift; the (non-failing)
+#     coverage report of CV-only items is shown on a manual
+#     `python scripts/lint_recognition.py` run. See CLAUDE.md
+#     §Recognition alignment lint.
+if [ -f scripts/lint_recognition.py ] && [ -f src/content/cv.md ]; then
+  if output=$(python scripts/lint_recognition.py 2>&1); then
+    ok "lint_recognition clean"
+  else
+    echo "$output" >&2
+    fail "lint_recognition"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to
