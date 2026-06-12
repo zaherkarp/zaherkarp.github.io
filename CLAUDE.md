@@ -428,6 +428,30 @@ single-year `rect` squares fade). Their `animation-range` ends at `entry 100%`
 so a figure is fully drawn by the time it is entirely on screen; an earlier
 `cover`-based end once left figures stuck mid-draw (blank) when jumped to via
 an in-page anchor.
+
+Gantt staggered cascade + cross-browser fallback (2026-06-12, CSS sections
+"18" / "18.1"): the Education/Service Gantt was given the career arc's
+choreographed feel. Each data mark carries an inline `style="--seq:N"` keyed
+to its START YEAR (BA 2003 = seq 0 ... Spirit of Charlie 2021 = seq 8; marks
+sharing a start year share a seq), so the figure draws as a left-to-right
+temporal cascade rather than all at once. Because scroll timelines ignore
+`animation-delay`, the scroll path staggers via `animation-range-start`
+(`entry calc(5% + var(--seq) * 6%)` for bars, `35% + var(--seq) * 5%` for
+squares). A sibling `@supports not (animation-timeline: view())` block (18.1)
+adds a TIME-BASED load-draw so Safari/Firefox animate too, reusing the same
+`fig-draw` / `fig-fade` keyframes (hoisted up to the shared `@media
+(prefers-reduced-motion: no-preference)` scope so the fallback can see them)
+and the same `--seq` cascade via `animation-delay`. Honest caveat: the Gantt
+sits below the fold, so on those browsers the fallback fires on page load
+while off-screen and is usually settled before it is scrolled to (the weaker,
+fold-limited cousin of the hero's all-browser draw). A real on-scroll reveal
+there would need JS, which the no-JS contract forbids, so this is the
+contract-respecting "everyone gets some motion once" gesture. No new motion
+primitive was introduced (only the existing trace + fade, plus the existing
+`--seq` staggering pattern), so the three-primitive coherence rule holds. The
+`style="--seq:N"` attribute is inert to `lint_gantt.py` (it reads only the
+coordinate attrs and the `fill="#111"` / `stroke-width="4"` filters).
+
 Deliberately NOT animated: the hero career arc (above the fold, no scroll-
 entry to drive it; animating it would jank first paint) and the academic dot
 plot (its dot field would need per-dot staggering, a motion vocabulary this

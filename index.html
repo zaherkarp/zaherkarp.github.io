@@ -1277,11 +1277,16 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    the `to`, so a figure already scrolled past renders complete.
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
 
-    @keyframes fig-grow-x { from { transform: scaleX(0); } }
-    @keyframes fig-draw   { from { stroke-dashoffset: var(--draw-len, 600); } }
-    @keyframes fig-fade   { from { opacity: 0; } }
+  /* Hoisted out of the @supports block below so the no-scroll-timeline
+     fallback (18.1, Safari/Firefox) can reference fig-draw / fig-fade too.
+     Keyframes declared inside a positive @supports are invisible to a
+     sibling @supports not (...) block. */
+  @keyframes fig-grow-x { from { transform: scaleX(0); } }
+  @keyframes fig-draw   { from { stroke-dashoffset: var(--draw-len, 600); } }
+  @keyframes fig-fade   { from { opacity: 0; } }
+
+  @supports (animation-timeline: view()) {
 
     /* Outcome bars (Experience): grow along their own length.
        fill-box makes transform-origin resolve against each
@@ -1311,19 +1316,49 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
     /* Education + service Gantt: date-range bars (thick lines)
        trace along the year axis; single-year squares fade in
-       slightly later so the ranges lead. */
+       slightly later so the ranges lead. Each mark carries an inline
+       style="--seq:N" keyed to its start year, so the figure draws as a
+       left-to-right temporal cascade (BA 2003 first, Spirit of Charlie
+       2021 last), echoing the career arc's staggered band reveal. Scroll
+       timelines ignore animation-delay, so the stagger is applied to
+       animation-range-start instead. */
     figure.gantt-figure line[stroke-width="4"] {
       --draw-len: 137;       /* longest bar is 133 units; shorter bars
                                 finish their draw earlier, a gentle stagger */
       stroke-dasharray: 137;
       animation: fig-draw linear both;
       animation-timeline: view();
-      animation-range: entry 5% entry 100%;
+      animation-range: entry calc(5% + var(--seq, 0) * 6%) entry 100%;
     }
     figure.gantt-figure rect {
       animation: fig-fade linear both;
       animation-timeline: view();
-      animation-range: entry 40% entry 100%;
+      animation-range: entry calc(35% + var(--seq, 0) * 5%) entry 100%;
+    }
+  }
+
+  /* ----------------------------------------------------------------
+     18.1. GANTT CROSS-BROWSER FALLBACK (Safari / Firefox)
+     Those browsers have no scroll timeline, so the scroll-driven Gantt
+     above renders static for them. This time-based load-draw gives them
+     the motion too, reusing fig-draw / fig-fade and the same --seq
+     cascade. Caveat: the figure sits below the fold, so here it draws on
+     page load while off-screen and is usually settled by the time it is
+     scrolled to, a weaker, fold-limited cousin of the hero career arc's
+     all-browser draw. A genuine on-scroll reveal on these browsers would
+     need JavaScript, which the homepage no-JS contract forbids, so this
+     is the contract-respecting "everyone gets some motion once" gesture.
+     ---------------------------------------------------------------- */
+  @supports not (animation-timeline: view()) {
+    figure.gantt-figure line[stroke-width="4"] {
+      --draw-len: 137;
+      stroke-dasharray: 137;
+      animation: fig-draw 0.7s ease-out both;
+      animation-delay: calc(var(--seq, 0) * 0.12s);
+    }
+    figure.gantt-figure rect {
+      animation: fig-fade 0.5s ease-out both;
+      animation-delay: calc(var(--seq, 0) * 0.12s + 0.2s);
     }
   }
 }
@@ -2951,27 +2986,27 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 
       <!-- BA English Literature, 2003-2007.
            x: 90 to 90 + (2007-2003)*19 = 90 to 166 -->
-      <line x1="90" y1="30" x2="166" y2="30" stroke="#111" stroke-width="4"/>
+      <line x1="90" y1="30" x2="166" y2="30" stroke="#111" stroke-width="4" style="--seq:0"/>
       <text x="170" y="34" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">BA, English Literature</text>
 
       <!-- MPH Biostatistics, 2013-2015.
            x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="280" y1="50" x2="318" y2="50" stroke="#111" stroke-width="4"/>
+      <line x1="280" y1="50" x2="318" y2="50" stroke="#111" stroke-width="4" style="--seq:2"/>
       <text x="322" y="54" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">MPH, Biostatistics</text>
 
       <!-- Graduate Cert Patient Safety, 2014-2015.
            x: 90 + (2014-2003)*19 = 299 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="299" y1="70" x2="318" y2="70" stroke="#111" stroke-width="4"/>
+      <line x1="299" y1="70" x2="318" y2="70" stroke="#111" stroke-width="4" style="--seq:3"/>
       <text x="322" y="74" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Grad Cert, Patient Safety</text>
 
       <!-- Oxford qualitative methods, 2014 (single year).
            Square centered at x = 90 + (2014-2003)*19 = 299, y=90 -->
-      <rect x="296" y="87" width="6" height="6" fill="#111"/>
+      <rect x="296" y="87" width="6" height="6" fill="#111" style="--seq:3"/>
       <text x="306" y="94" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Oxford, qualitative methods</text>
 
       <!-- Entrepreneurial Boot Camp, 2015 (single year).
            Square centered at x = 90 + (2015-2003)*19 = 318, y=110 -->
-      <rect x="315" y="107" width="6" height="6" fill="#111"/>
+      <rect x="315" y="107" width="6" height="6" fill="#111" style="--seq:4"/>
       <text x="325" y="114" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Entrepreneurial Boot Camp</text>
 
       <!-- ============================================================
@@ -2981,49 +3016,49 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 
       <!-- International IPM Excellence Award, 2009 (single year).
            Square at x = 90 + (2009-2003)*19 = 204, y=160 -->
-      <rect x="201" y="157" width="6" height="6" fill="#111"/>
+      <rect x="201" y="157" width="6" height="6" fill="#111" style="--seq:1"/>
       <text x="211" y="164" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">International IPM Excellence Award</text>
 
       <!-- WORT board chair, 2013-2015.
            x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="280" y1="180" x2="318" y2="180" stroke="#111" stroke-width="4"/>
+      <line x1="280" y1="180" x2="318" y2="180" stroke="#111" stroke-width="4" style="--seq:2"/>
       <text x="322" y="184" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">WORT board chair</text>
 
       <!-- UG research mentor, 2014-2017.
            x: 90 + (2014-2003)*19 = 299 to 90 + (2017-2003)*19 = 356 -->
-      <line x1="299" y1="200" x2="356" y2="200" stroke="#111" stroke-width="4"/>
+      <line x1="299" y1="200" x2="356" y2="200" stroke="#111" stroke-width="4" style="--seq:3"/>
       <text x="360" y="204" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">UG research mentor</text>
 
       <!-- Six Sigma, 2015 (single year).
            Square at x = 90 + (2015-2003)*19 = 318, y=220 -->
-      <rect x="315" y="217" width="6" height="6" fill="#111"/>
+      <rect x="315" y="217" width="6" height="6" fill="#111" style="--seq:4"/>
       <text x="325" y="224" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Six Sigma certification</text>
 
       <!-- Digital Fellow, 2016 (single year).
            Square at x = 90 + (2016-2003)*19 = 337, y=240 -->
-      <rect x="334" y="237" width="6" height="6" fill="#111"/>
+      <rect x="334" y="237" width="6" height="6" fill="#111" style="--seq:5"/>
       <text x="344" y="244" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Digital Fellow</text>
 
       <!-- Road Home board, 2016-2020.
            x: 90 + (2016-2003)*19 = 337 to 90 + (2020-2003)*19 = 413 -->
-      <line x1="337" y1="260" x2="413" y2="260" stroke="#111" stroke-width="4"/>
+      <line x1="337" y1="260" x2="413" y2="260" stroke="#111" stroke-width="4" style="--seq:5"/>
       <text x="417" y="264" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Road Home board</text>
 
       <!-- Alumni Hall Service Award, 2017 (single).
            Square at x = 90 + (2017-2003)*19 = 356, y=280 -->
-      <rect x="353" y="277" width="6" height="6" fill="#111"/>
+      <rect x="353" y="277" width="6" height="6" fill="#111" style="--seq:6"/>
       <text x="363" y="284" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Alumni Hall Service Award</text>
 
       <!-- Peer reviewer, 2019 to now.
            x: 90 + (2019-2003)*19 = 394 to 90 + (2026-2003)*19 = 527.
            Label is right-anchored to the left of the bar so it clears
            the Spirit of Charlie square on the row below. -->
-      <line x1="394" y1="300" x2="527" y2="300" stroke="#111" stroke-width="4"/>
+      <line x1="394" y1="300" x2="527" y2="300" stroke="#111" stroke-width="4" style="--seq:7"/>
       <text x="390" y="304" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" font-style="italic" text-anchor="end">peer reviewer (ongoing)</text>
 
       <!-- Spirit of Charlie Award, 2021 (single year).
            Square at x = 90 + (2021-2003)*19 = 432, y=320 -->
-      <rect x="429" y="317" width="6" height="6" fill="#111"/>
+      <rect x="429" y="317" width="6" height="6" fill="#111" style="--seq:8"/>
       <text x="439" y="324" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Spirit of Charlie Award</text>
 
       <!-- ============================================================
