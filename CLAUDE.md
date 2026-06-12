@@ -1227,7 +1227,9 @@ Two outputs:
 
 **Certifications are out of scope (2026-06-12):** homepage
 `<section id="certifications">` (a deliberately small h2 + one
-`details.fold`, after #service) pairs with cv.md `## Certifications`.
+newest-first semicolon-separated prose line, after #service; a
+details.fold version was tried and replaced the same day on Design
+Council feedback) pairs with cv.md `## Certifications`.
 Neither linter covers the pair; keep the two lists in sync BY HAND
 (currently four entries: Databricks 2024, Sumo Logic x2 2020, Six Sigma
 Yellow Belt 2015). Six Sigma moved here out of #service and the CV's
