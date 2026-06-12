@@ -1158,6 +1158,50 @@ remove.
 
 ---
 
+## Recognition alignment lint
+
+`scripts/lint_recognition.py` keeps the homepage "Service and Recognition"
+section (`index.html` `<section id="service">`, the `.row-entry` blocks)
+aligned with the comprehensive record in `src/content/cv.md` — awards,
+fellowships, and service — WITHOUT a shared data file. Both surfaces stay
+hand-authored pure HTML/Markdown; the linter parses each and compares.
+This is the deliberate "pipeline, not YAML" answer to the homepage/CV drift
+that let the Spirit of Charlie award, Digital Fellow, and IPM award sit on
+the CV but never reach the homepage.
+
+Two CV sections plus one Education subsection are reconciled: `## Awards and
+Honors`, `### Fellowships and Training`, and `## Service and Professional
+Activities` (all `###` subsections).
+
+Matching is intentionally NOT the strict equality `lint_facts.py` uses
+(those job surfaces are authored in lockstep; these recognition surfaces are
+phrased independently). An entry matches a CV entry when they share at least
+one **year** AND at least **two significant tokens** (a small stopword list
+drops generic institutional words like "university"/"medicine"/"health" and
+bare years). This tolerates "Undergraduate Research Mentor" vs CV
+"Undergraduate Research Scholar Mentor", or "IISE ..." vs CV "Institute of
+Industrial and Systems Engineers ...", with no hand-maintained synonym
+table. If a future entry genuinely needs help, widen `STOP` or raise
+`MIN_SHARED_TOKENS` — do not add a per-entry alias map (that's the
+maintenance burden this design avoids).
+
+Two outputs:
+  - **Subset gate (hard fail, blocks push):** every homepage `#service`
+    entry must have a CV counterpart. The homepage is a curated highlight
+    reel, so it may show *fewer* items than the CV (homepage ⊆ CV); a
+    failure means something is shown publicly with no CV record, or a rename
+    broke the match. Wire-up: §Pre-push checks step 3c.
+  - **Coverage report (informational, never fails):** CV recognition entries
+    with no homepage counterpart, printed on a manual
+    `python scripts/lint_recognition.py` run (the hook swallows stdout on
+    success, like the other lints). Most CV-only items — training short
+    courses, individual mentees, minor service — are *expected* to stay
+    CV-only; the list is an advisory scan, not a to-do. This is the
+    direction that surfaces a genuine gap when a new CV award hasn't been
+    promoted to the homepage.
+
+---
+
 ## Pre-push checks (agent-runnable)
 
 These run automatically via `scripts/hooks/pre-push`, installed by
@@ -1178,6 +1222,17 @@ Checks:
   its post's title+description, publications.yaml `note` free of
   venue/year repeats. `.stat-num` margin stats and the generated marker
   regions are exempt by design; see §Sidenote system additivity rule)
+- `python scripts/lint_recognition.py` clean (recognition alignment: every
+  homepage `#service` "Service and Recognition" entry must have a
+  counterpart in cv.md's Awards / Fellowships / Service record. Both
+  surfaces stay hand-authored, no shared YAML; the linter parses both and
+  matches on year + significant-token overlap, so wording differences
+  ("Undergraduate Research Mentor" vs CV "Undergraduate Research Scholar
+  Mentor") don't trip it. The gate is one-directional (homepage ⊆ CV: the
+  homepage is a curated highlight reel and may show fewer items), so a
+  failure means something is shown publicly with no CV record. The
+  reverse-direction coverage report of CV-only items is informational
+  (never fails) and prints on a manual run. See §Recognition alignment lint)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
