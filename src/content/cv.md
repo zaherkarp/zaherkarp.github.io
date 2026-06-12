@@ -84,8 +84,14 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 - **2021** Spirit of Charlie Award. Health Catalyst.
 - **2017** Alumni Hall Service Award. Department of Family Medicine and Community Health, University of Wisconsin School of Medicine and Public Health.
 - **2015** Patient Choice Award (awarded to Pandhi et al.). North American Primary Care Research Group Meeting.
-- **2015** Certified Six Sigma Yellow Belt. American Society for Quality.
 - **2009** International IPM Excellence Award. IPM Institute of North America.
+
+## Certifications
+
+- **2024** Academy Accreditation, Databricks Fundamentals. Databricks.
+- **2020** Search Mastery Certification. Sumo Logic.
+- **2020** Fundamentals Certification. Sumo Logic.
+- **2015** Certified Six Sigma Yellow Belt. American Society for Quality.
 
 ## Service and Professional Activities
 

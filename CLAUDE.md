@@ -948,7 +948,8 @@ Build script: scripts/build_resume.py
   Sourced from the real academic CV. A brief "Research Interests" replaces
   the resume's Summary, then: Education, Appointments, Past Research
   Positions, Publications (numbered citation list), Presentations, Posters,
-  Grants and Funding, Awards and Honors, Service and Professional Activities.
+  Grants and Funding, Awards and Honors, Certifications, Service and
+  Professional Activities.
   Appointments holds the two industry roles (BHA, Healthfinch/HC); the older
   UW academic roles live under Past Research Positions. Some sections carry
   `###` subsections (Education: Undergraduate / Graduate / Fellowships;
@@ -1224,6 +1225,17 @@ Two outputs:
     direction that surfaces a genuine gap when a new CV award hasn't been
     promoted to the homepage.
 
+**Certifications are out of scope (2026-06-12):** homepage
+`<section id="certifications">` (a deliberately small h2 + one
+`details.fold`, after #service) pairs with cv.md `## Certifications`.
+Neither linter covers the pair; keep the two lists in sync BY HAND
+(currently four entries: Databricks 2024, Sumo Logic x2 2020, Six Sigma
+Yellow Belt 2015). Six Sigma moved here out of #service and the CV's
+Awards and Honors; the IPM award became CV-only in the same pass; the
+Gantt carries neither. DataCamp course completions are deliberately
+omitted as entry-level. The section has no figure, no margin notes, and
+no nav entry by design.
+
 ---
 
 ## Gantt figure alignment lint
@@ -1253,8 +1265,8 @@ and never fails. The lint uses its OWN minimal stoplist — unlike
 still match — so do not share the two stoplists.
 
 **Editing the figure:** the SVG is hand-coordinated. The service lane is
-9 rows at `y = 160..320` step 20, the axis sits at `y = 350`, viewBox is
-`0 0 600 380`. To add an entry, compute its x from the transform above,
+7 rows at `y = 160..280` step 20, the axis sits at `y = 310`, viewBox is
+`0 0 600 340`. To add an entry, compute its x from the transform above,
 add the square/bar + label, extend the lane and axis if the rows run out,
 and run `python scripts/lint_gantt.py`. New squares (`<rect fill="#111">`)
 and bars (`<line stroke-width="4">`) inherit the scroll-draw animation
