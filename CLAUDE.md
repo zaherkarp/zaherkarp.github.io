@@ -1202,6 +1202,43 @@ Two outputs:
 
 ---
 
+## Gantt figure alignment lint
+
+`scripts/lint_gantt.py` keeps the homepage Education + Service Gantt
+(`index.html` `figure.gantt-figure`) in lockstep with the two prose
+sections it summarizes, WITHOUT a shared data file. The figure has two
+lanes — education (`y < 135`) mirrors `<section id="education">`, service
+(`y > 135`) mirrors `<section id="service">` (#service). Each data mark
+encodes its year(s) positionally through the chart's own transform
+`x(year) = 90 + (year - 2003) * 19`: a single-year square's year is read
+back from its centre x, a multi-year bar's start/end from x1/x2. Each
+mark is paired with the `<text>` label that follows it in source.
+
+This exists because the figure fell out of date: three recognition items
+(Spirit of Charlie, Digital Fellow, IPM award) were added to `#service`
+without a corresponding square/bar, and nothing caught it.
+
+**Gate (hard fail, blocks push):** every `#education` entry must have a
+matching mark in the education lane, every `#service` entry a matching
+mark in the service lane. Matching = share ≥1 year AND ≥2 significant
+tokens between the section entry (title + org) and the terse figure label
+("UG research mentor" matches "Undergraduate Research Mentor"). A reverse
+coverage note (figure marks with no section entry) prints on a manual run
+and never fails. The lint uses its OWN minimal stoplist — unlike
+`lint_recognition.py` it must keep "research" so the abbreviated labels
+still match — so do not share the two stoplists.
+
+**Editing the figure:** the SVG is hand-coordinated. The service lane is
+9 rows at `y = 160..320` step 20, the axis sits at `y = 350`, viewBox is
+`0 0 600 380`. To add an entry, compute its x from the transform above,
+add the square/bar + label, extend the lane and axis if the rows run out,
+and run `python scripts/lint_gantt.py`. New squares (`<rect fill="#111">`)
+and bars (`<line stroke-width="4">`) inherit the scroll-draw animation
+automatically (blanket selectors, no per-element staggering; see
+§Scroll-drawn figures).
+
+---
+
 ## Pre-push checks (agent-runnable)
 
 These run automatically via `scripts/hooks/pre-push`, installed by
@@ -1233,6 +1270,13 @@ Checks:
   failure means something is shown publicly with no CV record. The
   reverse-direction coverage report of CV-only items is informational
   (never fails) and prints on a manual run. See §Recognition alignment lint)
+- `python scripts/lint_gantt.py` clean (Gantt figure alignment: the
+  homepage Education + Service Gantt (`figure.gantt-figure`) must carry a
+  mark for every `#education` and `#service` entry. The figure is a
+  hand-coded SVG; the linter reads each entry's year back from its mark's
+  x-coordinate via the chart transform and matches against the section
+  entries on year + token overlap, so the figure can't silently fall out
+  of date when a section grows. See §Gantt figure alignment lint)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
