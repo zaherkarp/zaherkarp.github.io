@@ -115,6 +115,19 @@ if [ -f scripts/lint_recognition.py ] && [ -f src/content/cv.md ]; then
   fi
 fi
 
+# 3d. Gantt figure alignment lint (the homepage Education + Service
+#     Gantt figure must carry a mark for every #education and #service
+#     entry). Guards the figure against falling out of date when a
+#     section grows. See CLAUDE.md §Gantt figure alignment lint.
+if [ -f scripts/lint_gantt.py ] && [ -f index.html ]; then
+  if output=$(python scripts/lint_gantt.py 2>&1); then
+    ok "lint_gantt clean"
+  else
+    echo "$output" >&2
+    fail "lint_gantt"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to
