@@ -9,17 +9,15 @@ draft: false
 ---
 
 <style>
-@media (prefers-reduced-motion: no-preference) {
-  .mwr-grow    { transform: scaleY(0); transform-origin: bottom; transform-box: fill-box; animation: mwr-grow 0.9s cubic-bezier(0.2,0.7,0.3,1) forwards; }
-  .mwr-whisker { transform: scaleX(0); transform-origin: center; transform-box: fill-box; animation: mwr-whisker 0.7s ease-out forwards; }
-  .mwr-pt      { opacity: 0; animation: mwr-fade 0.5s ease-out forwards; }
-  .mwr-diamond { opacity: 0; transform: scale(0.4); transform-origin: center; transform-box: fill-box; animation: mwr-pop 0.6s ease-out forwards; }
-  .mwr-draw    { opacity: 0; animation: mwr-fade 0.6s ease-out forwards; }
-  @keyframes mwr-grow    { to { transform: scaleY(1); } }
-  @keyframes mwr-whisker { to { transform: scaleX(1); } }
-  @keyframes mwr-fade    { to { opacity: 1; } }
-  @keyframes mwr-pop     { to { opacity: 1; transform: scale(1); } }
-}
+.mwr-grow    { transform: scaleY(0); transform-origin: bottom; transform-box: fill-box; animation: mwr-grow 0.9s cubic-bezier(0.2,0.7,0.3,1) forwards; }
+.mwr-whisker { transform: scaleX(0); transform-origin: center; transform-box: fill-box; animation: mwr-whisker 0.7s ease-out forwards; }
+.mwr-pt      { opacity: 0; animation: mwr-fade 0.5s ease-out forwards; }
+.mwr-diamond { opacity: 0; transform: scale(0.4); transform-origin: center; transform-box: fill-box; animation: mwr-pop 0.6s ease-out forwards; }
+.mwr-draw    { opacity: 0; animation: mwr-fade 0.6s ease-out forwards; }
+@keyframes mwr-grow    { to { transform: scaleY(1); } }
+@keyframes mwr-whisker { to { transform: scaleX(1); } }
+@keyframes mwr-fade    { to { opacity: 1; } }
+@keyframes mwr-pop     { to { opacity: 1; transform: scale(1); } }
 </style>
 
 The argument for attaching work requirements to Medicaid is intuitive enough that it rarely gets examined: people are on Medicaid because they don't work, so condition the benefit on work and you nudge them into jobs, shrink the rolls, and save money. It is a clean theory of change. It has the structure of a syllogism. And in June 2018, Arkansas ran the first real-world test of it, which means we no longer have to argue about the theory in the abstract. We have data.

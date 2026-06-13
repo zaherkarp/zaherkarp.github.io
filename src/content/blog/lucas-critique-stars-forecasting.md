@@ -35,14 +35,12 @@ Cut points, the score thresholds that convert a measure rate into a measure star
 The recent history of the methodology is a catalog of reasons it does not. Cut point guardrails, capping year-over-year movement at five percentage points for most measures, were finalized, delayed a year, and then took effect with the 2023 Star Ratings. Tukey outer-fence outlier deletion, which removes extreme low scores before cut points are computed, arrived with the 2024 Star Ratings and pulled the bottom thresholds up sharply. Each change redefined what the historical series even measures.
 
 <style>
-@media (prefers-reduced-motion: no-preference) {
-  .lcf-trace { stroke-dasharray: var(--lcf-len); stroke-dashoffset: var(--lcf-len); animation: lcf-draw 1.4s ease-out forwards; }
-  .lcf-grow  { transform: scaleX(0); transform-origin: left; transform-box: fill-box; animation: lcf-grow 0.7s cubic-bezier(0.2,0.7,0.3,1) forwards; }
-  .lcf-pt    { opacity: 0; animation: lcf-fade 0.5s ease-out forwards; }
-  @keyframes lcf-draw { to { stroke-dashoffset: 0; } }
-  @keyframes lcf-grow { to { transform: scaleX(1); } }
-  @keyframes lcf-fade { to { opacity: 1; } }
-}
+.lcf-trace { stroke-dasharray: var(--lcf-len); stroke-dashoffset: var(--lcf-len); animation: lcf-draw 1.4s ease-out forwards; }
+.lcf-grow  { transform: scaleX(0); transform-origin: left; transform-box: fill-box; animation: lcf-grow 0.7s cubic-bezier(0.2,0.7,0.3,1) forwards; }
+.lcf-pt    { opacity: 0; animation: lcf-fade 0.5s ease-out forwards; }
+@keyframes lcf-draw { to { stroke-dashoffset: 0; } }
+@keyframes lcf-grow { to { transform: scaleX(1); } }
+@keyframes lcf-fade { to { opacity: 1; } }
 </style>
 
 <figure>

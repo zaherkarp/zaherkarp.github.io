@@ -934,9 +934,15 @@ Blog figure conventions (inline SVG + load-draw motion):
       lives in the post markdown with a per-post class prefix
       (mwr-, lcf-, ...) so posts never collide; no blank lines inside
       the `<style>` block either.
-    - Everything is wrapped in `@media (prefers-reduced-motion:
-      no-preference)`, including the initial hidden states, so
-      reduced-motion readers get the complete static figure.
+    - NOT reduced-motion gated (owner decision, 2026-06-13): post
+      figure animations are short one-shot load-draws (under ~3s,
+      well inside WCAG 2.2.2's five-second line), so they run for
+      every reader. The Arkansas post originally shipped with a
+      `prefers-reduced-motion` gate; it was removed in the same pass
+      that codified this block. Do not re-add the gate to post
+      figures without discussion. (The homepage's scroll-drawn
+      figures keep their own gating; see §Scroll-drawn figures.
+      This decision is blog-post-scoped.)
     - Primitives mirror the homepage vocabulary, nothing else: trace
       (stroke-dashoffset, with the path length passed as an inline
       `--<prefix>-len` custom property), grow (scaleX/scaleY with
