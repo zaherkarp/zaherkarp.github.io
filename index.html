@@ -1261,12 +1261,13 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    view: stroked lines trace via stroke-dashoffset, bars grow
    from their left edge via scaleX. This is pure CSS scroll-
    driven animation (animation-timeline: view()), NO JavaScript,
-   so it stays inside the homepage no-JS contract. Double-gated:
-     - @supports: browsers without scroll-driven animations
-       (older Safari / Firefox) render the final static figure.
-       Zero-cost graceful degradation, no fallback needed.
-     - prefers-reduced-motion: no-preference: motion-sensitive
-       readers never see it; figures render static.
+   so it stays inside the homepage no-JS contract. Gated by
+   @supports only: browsers without scroll-driven animations
+   (older Safari / Firefox) render the final static figure.
+   Zero-cost graceful degradation, no fallback needed. (A
+   prefers-reduced-motion gate wrapped all of section 18 until
+   2026-06-13; removed site-wide by owner decision. All motion
+   here is short, one-shot, and data-tracing.)
    Only transform / opacity / stroke-dashoffset animate, all
    compositor-friendly with no layout cost. The hero career arc
    and the academic dot plot are deliberately excluded: the hero
@@ -1276,90 +1277,87 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    mode: both holds the element's natural value (drawn / full) as
    the `to`, so a figure already scrolled past renders complete.
    ============================================================ */
-@media (prefers-reduced-motion: no-preference) {
+/* Hoisted out of the @supports block below so the no-scroll-timeline
+   fallback (18.1, Safari/Firefox) can reference fig-draw / fig-fade too.
+   Keyframes declared inside a positive @supports are invisible to a
+   sibling @supports not (...) block. */
+@keyframes fig-grow-x { from { transform: scaleX(0); } }
+@keyframes fig-draw   { from { stroke-dashoffset: var(--draw-len, 600); } }
+@keyframes fig-fade   { from { opacity: 0; } }
 
-  /* Hoisted out of the @supports block below so the no-scroll-timeline
-     fallback (18.1, Safari/Firefox) can reference fig-draw / fig-fade too.
-     Keyframes declared inside a positive @supports are invisible to a
-     sibling @supports not (...) block. */
-  @keyframes fig-grow-x { from { transform: scaleX(0); } }
-  @keyframes fig-draw   { from { stroke-dashoffset: var(--draw-len, 600); } }
-  @keyframes fig-fade   { from { opacity: 0; } }
+@supports (animation-timeline: view()) {
 
-  @supports (animation-timeline: view()) {
-
-    /* Outcome bars (Experience): grow along their own length.
-       fill-box makes transform-origin resolve against each
-       bar's box, so every bar scales from its own left edge. */
-    figure.outcome-figure rect {
-      transform-box: fill-box;
-      transform-origin: left center;
-      animation: fig-grow-x linear both;
-      animation-timeline: view();
-      animation-range: entry 10% entry 100%;
-    }
-
-    /* Cliff density curve (Projects): trace the stroked line and
-       fade the area fill beneath it in step. */
-    figure.cliff-figure path[fill="none"] {
-      --draw-len: 619;       /* measured curve length ~607, +2% margin */
-      stroke-dasharray: 619;
-      animation: fig-draw linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 100%;
-    }
-    figure.cliff-figure path[fill="#111"] {
-      animation: fig-fade linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 100%;
-    }
-
-    /* Education + service Gantt: date-range bars (thick lines)
-       trace along the year axis; single-year squares fade in
-       slightly later so the ranges lead. Each mark carries an inline
-       style="--seq:N" keyed to its start year, so the figure draws as a
-       left-to-right temporal cascade (BA 2003 first, Spirit of Charlie
-       2021 last), echoing the career arc's staggered band reveal. Scroll
-       timelines ignore animation-delay, so the stagger is applied to
-       animation-range-start instead. */
-    figure.gantt-figure line[stroke-width="4"] {
-      --draw-len: 137;       /* longest bar is 133 units; shorter bars
-                                finish their draw earlier, a gentle stagger */
-      stroke-dasharray: 137;
-      animation: fig-draw linear both;
-      animation-timeline: view();
-      animation-range: entry calc(5% + var(--seq, 0) * 6%) entry 100%;
-    }
-    figure.gantt-figure rect {
-      animation: fig-fade linear both;
-      animation-timeline: view();
-      animation-range: entry calc(35% + var(--seq, 0) * 5%) entry 100%;
-    }
+  /* Outcome bars (Experience): grow along their own length.
+     fill-box makes transform-origin resolve against each
+     bar's box, so every bar scales from its own left edge. */
+  figure.outcome-figure rect {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: fig-grow-x linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 100%;
   }
 
-  /* ----------------------------------------------------------------
-     18.1. GANTT CROSS-BROWSER FALLBACK (Safari / Firefox)
-     Those browsers have no scroll timeline, so the scroll-driven Gantt
-     above renders static for them. This time-based load-draw gives them
-     the motion too, reusing fig-draw / fig-fade and the same --seq
-     cascade. Caveat: the figure sits below the fold, so here it draws on
-     page load while off-screen and is usually settled by the time it is
-     scrolled to, a weaker, fold-limited cousin of the hero career arc's
-     all-browser draw. A genuine on-scroll reveal on these browsers would
-     need JavaScript, which the homepage no-JS contract forbids, so this
-     is the contract-respecting "everyone gets some motion once" gesture.
-     ---------------------------------------------------------------- */
-  @supports not (animation-timeline: view()) {
-    figure.gantt-figure line[stroke-width="4"] {
-      --draw-len: 137;
-      stroke-dasharray: 137;
-      animation: fig-draw 0.7s ease-out both;
-      animation-delay: calc(var(--seq, 0) * 0.12s);
-    }
-    figure.gantt-figure rect {
-      animation: fig-fade 0.5s ease-out both;
-      animation-delay: calc(var(--seq, 0) * 0.12s + 0.2s);
-    }
+  /* Cliff density curve (Projects): trace the stroked line and
+     fade the area fill beneath it in step. */
+  figure.cliff-figure path[fill="none"] {
+    --draw-len: 619;       /* measured curve length ~607, +2% margin */
+    stroke-dasharray: 619;
+    animation: fig-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+  figure.cliff-figure path[fill="#111"] {
+    animation: fig-fade linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+
+  /* Education + service Gantt: date-range bars (thick lines)
+     trace along the year axis; single-year squares fade in
+     slightly later so the ranges lead. Each mark carries an inline
+     style="--seq:N" keyed to its start year, so the figure draws as a
+     left-to-right temporal cascade (BA 2003 first, Spirit of Charlie
+     2021 last), echoing the career arc's staggered band reveal. Scroll
+     timelines ignore animation-delay, so the stagger is applied to
+     animation-range-start instead. */
+  figure.gantt-figure line[stroke-width="4"] {
+    --draw-len: 137;       /* longest bar is 133 units; shorter bars
+                              finish their draw earlier, a gentle stagger */
+    stroke-dasharray: 137;
+    animation: fig-draw linear both;
+    animation-timeline: view();
+    animation-range: entry calc(5% + var(--seq, 0) * 6%) entry 100%;
+  }
+  figure.gantt-figure rect {
+    animation: fig-fade linear both;
+    animation-timeline: view();
+    animation-range: entry calc(35% + var(--seq, 0) * 5%) entry 100%;
+  }
+}
+
+/* ----------------------------------------------------------------
+   18.1. GANTT CROSS-BROWSER FALLBACK (Safari / Firefox)
+   Those browsers have no scroll timeline, so the scroll-driven Gantt
+   above renders static for them. This time-based load-draw gives them
+   the motion too, reusing fig-draw / fig-fade and the same --seq
+   cascade. Caveat: the figure sits below the fold, so here it draws on
+   page load while off-screen and is usually settled by the time it is
+   scrolled to, a weaker, fold-limited cousin of the hero career arc's
+   all-browser draw. A genuine on-scroll reveal on these browsers would
+   need JavaScript, which the homepage no-JS contract forbids, so this
+   is the contract-respecting "everyone gets some motion once" gesture.
+   ---------------------------------------------------------------- */
+@supports not (animation-timeline: view()) {
+  figure.gantt-figure line[stroke-width="4"] {
+    --draw-len: 137;
+    stroke-dasharray: 137;
+    animation: fig-draw 0.7s ease-out both;
+    animation-delay: calc(var(--seq, 0) * 0.12s);
+  }
+  figure.gantt-figure rect {
+    animation: fig-fade 0.5s ease-out both;
+    animation-delay: calc(var(--seq, 0) * 0.12s + 0.2s);
   }
 }
 
@@ -1380,34 +1378,31 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    This is the figure's tantalize: a viewer arrives to the arc
    assembling rather than sitting finished.
 
-   Gated to prefers-reduced-motion: no-preference, so motion-
-   sensitive readers (and the existing reduce block) get the
-   static, fully-drawn arc with no dash gap. Only stroke-dashoffset
+   Runs for every reader (the prefers-reduced-motion gate was
+   removed 2026-06-13, owner decision). Only stroke-dashoffset
    animates: no layout, no LCP cost on the h1/subtitle above it.
    ============================================================ */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
-  @keyframes label-fade { from { opacity: 0; } }
+@keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
+@keyframes label-fade { from { opacity: 0; } }
 
-  /* Each band is wrapped in a link (clickable, see markup) that
-     carries its cascade index inline as style="--seq:N"; the band
-     line carries its own length inline as style="--arc-len:L".
-     --seq inherits from the link to the line and the label text, so
-     the band traces and its label fades on the same staggered beat,
-     with no per-band selectors. The arc unfolds as a story:
-     editorial, then research, then the data-engineering trio. */
-  figure.timeline svg.tl-horizontal > a line[stroke-width="10"],
-  figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
-    stroke-dasharray: var(--arc-len, 540);
-    animation: arc-draw 0.85s ease-out both;
-    animation-delay: calc(var(--seq, 0) * 0.35s);
-  }
-  /* Each role label fades in just after its band begins (delay + 0.45s). */
-  figure.timeline svg.tl-horizontal > a text,
-  figure.timeline svg.tl-compact   > a text {
-    animation: label-fade 0.5s ease-out both;
-    animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
-  }
+/* Each band is wrapped in a link (clickable, see markup) that
+   carries its cascade index inline as style="--seq:N"; the band
+   line carries its own length inline as style="--arc-len:L".
+   --seq inherits from the link to the line and the label text, so
+   the band traces and its label fades on the same staggered beat,
+   with no per-band selectors. The arc unfolds as a story:
+   editorial, then research, then the data-engineering trio. */
+figure.timeline svg.tl-horizontal > a line[stroke-width="10"],
+figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
+  stroke-dasharray: var(--arc-len, 540);
+  animation: arc-draw 0.85s ease-out both;
+  animation-delay: calc(var(--seq, 0) * 0.35s);
+}
+/* Each role label fades in just after its band begins (delay + 0.45s). */
+figure.timeline svg.tl-horizontal > a text,
+figure.timeline svg.tl-compact   > a text {
+  animation: label-fade 0.5s ease-out both;
+  animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
 }
 
 /* ============================================================
@@ -1428,10 +1423,8 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
         fades in by the engaged publication dot as the VISUAL
         layer; the full paper title stays in <title> for AT and
         on the dot's linked entry.
-   Only opacity / transform / stroke-width change, and the reduce
-   block neutralises the transitions, so motion-sensitive readers
-   still get the static figure plus the titles. :has() is already
-   relied on elsewhere in this stylesheet (Safari 15.4+).
+   Only opacity / transform / stroke-width change. :has() is
+   already relied on elsewhere in this stylesheet (Safari 15.4+).
    ============================================================ */
 
 /* Affordances + transitions on engageable marks. */
@@ -1504,35 +1497,15 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    nothing: fade family only (the page's existing motion
    vocabulary; sanctioned 2026-06-10), no accent, no persistent
    state (a static :target style would leave the heading
-   permanently highlighted). The global reduce block collapses
-   the animation, so reduced-motion readers get the plain jump.
-   :target fires on hash change only, so re-clicking the same
-   band yields one cue, not two. Acceptable.
+   permanently highlighted). :target fires on hash change only,
+   so re-clicking the same band yields one cue, not two.
+   Acceptable.
    ============================================================ */
 @keyframes role-arrive {
   from { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 }
 .role-anchor:target + h3 {
   animation: role-arrive 1.6s ease-out 1 both;
-}
-
-/* ============================================================
-   18.5. REDUCED MOTION
-   Vestibular-sensitive readers signal prefers-reduced-motion in
-   their OS. This block is the global neutralizer for every motion
-   system above: the scroll-drawn figures (18), the hero
-   draw-on-load (18.2), and the hover/focus transitions (18.3).
-   Durations collapse to 0.01ms and animation-fill-mode: both
-   holds each figure's final drawn state, so reduced-motion
-   readers get the complete static page.
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }
 
 /* ============================================================

@@ -344,10 +344,14 @@ Mechanism (CSS section "18. SCROLL-DRAWN FIGURES" in `index.html`):
     (`fig-grow-x`); squares/area fills fade (`fig-fade`). Keyframes declare
     only the `from` state; `animation-fill-mode: both` holds the natural
     drawn/full value as `to`, so a figure scrolled past renders complete.
-  - Double-gated: wrapped in BOTH `@media (prefers-reduced-motion:
-    no-preference)` AND `@supports (animation-timeline: view())`. Reduced-
-    motion readers and browsers without scroll-driven animation (older
-    Safari/Firefox) get the static figure. No JS fallback needed.
+  - Gated by `@supports (animation-timeline: view())` only: browsers
+    without scroll-driven animation (older Safari/Firefox) get the
+    static figure. No JS fallback needed. NOT reduced-motion gated:
+    the `prefers-reduced-motion` wrapper (and the 18.5 global reduce
+    neutralizer block) were removed SITE-WIDE 2026-06-13 by owner
+    decision; all site motion is short, one-shot, data-tracing, and
+    runs for every reader. Do not re-add motion gates anywhere
+    without discussion.
   - Only `transform`/`opacity`/`stroke-dashoffset` animate (compositor-
     friendly, no layout cost, no LCP hit).
 
@@ -362,7 +366,8 @@ scroll timeline. Its bands (`line[stroke-width="10"]` desktop /
 `--arc-len`. (Retimed 2026-06-10 from a 0.5s step / ~2.2s settle, Val's
 proposal: the data-engineering trio must finish inside the first-scroll
 patience window.) This is the
-deliberate first-impression "tantalize." Same reduced-motion gate; only
+deliberate first-impression "tantalize." Ungated (runs for every reader,
+per the 2026-06-13 no-motion-gates decision); only
 stroke-dashoffset animates so there is no LCP cost on the h1/subtitle above.
 Rationale: the scroll-driven figures below are Chromium-only today, so Safari
 readers would otherwise see no motion at all; the hero load-draw guarantees
@@ -411,7 +416,7 @@ of it, CSS-only `:hover`/`:focus` adds, via `:has()` (Safari 15.4+):
 Triggered on `:hover` AND `:focus` (the publication dots are `<a>` links, so
 keyboard users get the reveal; the title text covers the non-focusable marks).
 Presentation dots stay unlabeled (de-emphasized) but share the dim/scale.
-Only opacity/transform/stroke-width change, neutralised by the reduce block.
+Only opacity/transform/stroke-width change.
 
 Arrival cue (CSS section "18.4", added 2026-06-10): a band click jumps to
 its role anchor, and `.role-anchor:target + h3` plays a one-shot 1.6s
@@ -419,7 +424,7 @@ ink-wash fade (7% ink, `role-arrive` keyframe) so the landing acknowledges
 the click. Fade family only, no accent, no persistent state; sanctioned by
 Val as an application of the existing fade primitive to text (the page's
 one background-color animation; do not extend the pattern elsewhere
-without convening her). Same global reduce gating.
+without convening her). Ungated, like all site motion since 2026-06-13.
 
 Scroll-animated figures (Chromium-only enhancement): the two Experience
 outcome bars, the Projects cliff curve (stroke traces, area fill fades), and
@@ -439,9 +444,10 @@ temporal cascade rather than all at once. Because scroll timelines ignore
 (`entry calc(5% + var(--seq) * 6%)` for bars, `35% + var(--seq) * 5%` for
 squares). A sibling `@supports not (animation-timeline: view())` block (18.1)
 adds a TIME-BASED load-draw so Safari/Firefox animate too, reusing the same
-`fig-draw` / `fig-fade` keyframes (hoisted up to the shared `@media
-(prefers-reduced-motion: no-preference)` scope so the fallback can see them)
-and the same `--seq` cascade via `animation-delay`. Honest caveat: the Gantt
+`fig-draw` / `fig-fade` keyframes (hoisted above both `@supports` blocks so
+the negative branch can see them; keyframes declared inside a positive
+`@supports` are invisible to its sibling) and the same `--seq` cascade via
+`animation-delay`. Honest caveat: the Gantt
 sits below the fold, so on those browsers the fallback fires on page load
 while off-screen and is usually settled before it is scrolled to (the weaker,
 fold-limited cousin of the hero's all-browser draw). A real on-scroll reveal
@@ -934,15 +940,16 @@ Blog figure conventions (inline SVG + load-draw motion):
       lives in the post markdown with a per-post class prefix
       (mwr-, lcf-, ...) so posts never collide; no blank lines inside
       the `<style>` block either.
-    - NOT reduced-motion gated (owner decision, 2026-06-13): post
+    - NOT reduced-motion gated (owner decision, 2026-06-13, applies
+      SITE-WIDE including the homepage; see §Scroll-drawn figures):
       figure animations are short one-shot load-draws (under ~3s,
       well inside WCAG 2.2.2's five-second line), so they run for
       every reader. The Arkansas post originally shipped with a
       `prefers-reduced-motion` gate; it was removed in the same pass
-      that codified this block. Do not re-add the gate to post
-      figures without discussion. (The homepage's scroll-drawn
-      figures keep their own gating; see §Scroll-drawn figures.
-      This decision is blog-post-scoped.)
+      that codified this block, and the homepage's gates (sections
+      18/18.2 wrappers and the 18.5 global reduce neutralizer) were
+      removed in the follow-up pass. Do not re-add motion gates
+      anywhere without discussion.
     - Primitives mirror the homepage vocabulary, nothing else: trace
       (stroke-dashoffset, with the path length passed as an inline
       `--<prefix>-len` custom property), grow (scaleX/scaleY with
