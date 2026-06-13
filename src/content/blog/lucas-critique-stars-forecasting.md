@@ -34,25 +34,34 @@ Cut points, the score thresholds that convert a measure rate into a measure star
 
 The recent history of the methodology is a catalog of reasons it does not. Cut point guardrails, capping year-over-year movement at five percentage points for most measures, were finalized, delayed a year, and then took effect with the 2023 Star Ratings. Tukey outer-fence outlier deletion, which removes extreme low scores before cut points are computed, arrived with the 2024 Star Ratings and pulled the bottom thresholds up sharply. Each change redefined what the historical series even measures.
 
+<style>
+.lcf-trace { stroke-dasharray: var(--lcf-len); stroke-dashoffset: var(--lcf-len); animation: lcf-draw 1.4s ease-out forwards; }
+.lcf-grow  { transform: scaleX(0); transform-origin: left; transform-box: fill-box; animation: lcf-grow 0.7s cubic-bezier(0.2,0.7,0.3,1) forwards; }
+.lcf-pt    { opacity: 0; animation: lcf-fade 0.5s ease-out forwards; }
+@keyframes lcf-draw { to { stroke-dashoffset: 0; } }
+@keyframes lcf-grow { to { transform: scaleX(1); } }
+@keyframes lcf-fade { to { opacity: 1; } }
+</style>
+
 <figure>
 <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of the published cut points for the Breast Cancer Screening measure, 2019 through 2026 Star Ratings. Four lines show the thresholds to earn 2, 3, 4, and 5 stars. The lines are stable through 2021, drop sharply at the 2022 Star Ratings when pandemic-era data and relief rules entered, and climb after the 2024 Star Ratings introduced Tukey outlier deletion. The 2-star threshold falls from 50 to 42 percent in 2022, then jumps from 43 to 52 percent in 2024 and reaches 58 percent by 2026. The 4-star threshold falls from 76 to 69 percent in 2022 and returns to 76 percent by 2026." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
   <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">BREAST CANCER SCREENING (C01): PUBLISHED CUT POINTS, 2019-2026 STAR RATINGS</text>
-  <text x="341" y="44" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="end">2022: pandemic-era data enters</text>
-  <text x="525" y="44" font-size="11" font-style="italic" fill="#7a0000">2024: Tukey outlier deletion</text>
-  <polyline points="90.0,101.5 175.7,96.3 261.4,96.3 347.1,132.7 432.9,127.5 518.6,117.1 604.3,101.5 690.0,91.2" fill="none" stroke="#111" stroke-width="1.6"/>
-  <text x="700" y="95.2" font-size="11" fill="#111">5&#9733; at 84%</text>
+  <text class="lcf-pt" style="animation-delay:1.6s" x="341" y="44" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="end">2022: pandemic-era data enters</text>
+  <text class="lcf-pt" style="animation-delay:2s" x="525" y="44" font-size="11" font-style="italic" fill="#7a0000">2024: Tukey outlier deletion</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0s" points="90.0,101.5 175.7,96.3 261.4,96.3 347.1,132.7 432.9,127.5 518.6,117.1 604.3,101.5 690.0,91.2" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.4s" x="700" y="95.2" font-size="11" fill="#111">5&#9733; at 84%</text>
   <text x="80" y="105.5" font-size="10" fill="#6a6a6a" text-anchor="end">82</text>
-  <polyline points="90.0,132.7 175.7,132.7 261.4,132.7 347.1,169.0 432.9,163.8 518.6,158.7 604.3,137.9 690.0,132.7" fill="none" stroke="#111" stroke-width="1.6"/>
-  <text x="700" y="136.7" font-size="11" fill="#111">4&#9733; at 76%</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0.1s" points="90.0,132.7 175.7,132.7 261.4,132.7 347.1,169.0 432.9,163.8 518.6,158.7 604.3,137.9 690.0,132.7" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.5s" x="700" y="136.7" font-size="11" fill="#111">4&#9733; at 76%</text>
   <text x="80" y="136.7" font-size="10" fill="#6a6a6a" text-anchor="end">76</text>
-  <polyline points="90.0,174.2 175.7,184.6 261.4,184.6 347.1,210.6 432.9,205.4 518.6,200.2 604.3,179.4 690.0,158.7" fill="none" stroke="#111" stroke-width="1.6"/>
-  <text x="700" y="162.7" font-size="11" fill="#111">3&#9733; at 71%</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0.2s" points="90.0,174.2 175.7,184.6 261.4,184.6 347.1,210.6 432.9,205.4 518.6,200.2 604.3,179.4 690.0,158.7" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.6s" x="700" y="162.7" font-size="11" fill="#111">3&#9733; at 71%</text>
   <text x="80" y="178.2" font-size="10" fill="#6a6a6a" text-anchor="end">68</text>
-  <polyline points="90.0,283.3 175.7,267.7 261.4,267.7 347.1,309.2 432.9,304.0 518.6,257.3 604.3,252.1 690.0,226.2" fill="none" stroke="#111" stroke-width="1.6"/>
-  <text x="700" y="230.2" font-size="11" fill="#111">2&#9733; at 58%</text>
+  <polyline class="lcf-trace" style="--lcf-len:630;animation-delay:0.3s" points="90.0,283.3 175.7,267.7 261.4,267.7 347.1,309.2 432.9,304.0 518.6,257.3 604.3,252.1 690.0,226.2" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.7s" x="700" y="230.2" font-size="11" fill="#111">2&#9733; at 58%</text>
   <text x="80" y="287.3" font-size="10" fill="#6a6a6a" text-anchor="end">47</text>
-  <line x1="347.1" y1="50" x2="347.1" y2="330" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,4"/>
-  <line x1="518.6" y1="50" x2="518.6" y2="330" stroke="#7a0000" stroke-width="1" stroke-dasharray="3,4"/>
+  <line class="lcf-pt" style="animation-delay:1.5s" x1="347.1" y1="50" x2="347.1" y2="330" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,4"/>
+  <line class="lcf-pt" style="animation-delay:1.9s" x1="518.6" y1="50" x2="518.6" y2="330" stroke="#7a0000" stroke-width="1" stroke-dasharray="3,4"/>
   <line x1="90" y1="330" x2="690" y2="330" stroke="#d0d0c8" stroke-width="1"/>
   <text x="90.0" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2019</text>
   <text x="175.7" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2020</text>
@@ -85,23 +94,23 @@ The error is easy to demonstrate without any proprietary data at all. I built a 
   <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">A SYNTHETIC TOURNAMENT: THE THRESHOLD MOVES WITH THE FIELD</text>
   <text x="20" y="44" font-size="11" font-style="italic" fill="#6a6a6a">weight on measure B rises; every contract re-allocates toward it</text>
   <text x="20" y="96" font-size="13" fill="#111">Average contract, measure-B score</text>
-  <line x1="328.2" y1="120" x2="416.4" y2="120" stroke="#111" stroke-width="2.2"/>
-  <circle cx="328.2" cy="120" r="4" fill="none" stroke="#111" stroke-width="1.6"/>
-  <circle cx="416.4" cy="120" r="4.5" fill="#111"/>
-  <text x="328.2" y="110" font-size="11" fill="#6a6a6a" text-anchor="middle">70.3</text>
-  <text x="430.4" y="124" font-size="11" fill="#111" text-anchor="start">72.6 (+2.3)</text>
+  <line class="lcf-grow" style="animation-delay:0s" x1="328.2" y1="120" x2="416.4" y2="120" stroke="#111" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0s" cx="328.2" cy="120" r="4" fill="none" stroke="#111" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:0.5s" cx="416.4" cy="120" r="4.5" fill="#111"/>
+  <text class="lcf-pt" style="animation-delay:0s" x="328.2" y="110" font-size="11" fill="#6a6a6a" text-anchor="middle">70.3</text>
+  <text class="lcf-pt" style="animation-delay:0.6s" x="430.4" y="124" font-size="11" fill="#111" text-anchor="start">72.6 (+2.3)</text>
   <text x="20" y="166" font-size="13" fill="#111">4-star threshold, mechanical recomputation</text>
-  <line x1="443.1" y1="190" x2="450.8" y2="190" stroke="#6a6a6a" stroke-width="2.2"/>
-  <circle cx="443.1" cy="190" r="4" fill="none" stroke="#6a6a6a" stroke-width="1.6"/>
-  <circle cx="450.8" cy="190" r="4.5" fill="#6a6a6a"/>
-  <text x="443.1" y="180" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
-  <text x="464.8" y="194" font-size="11" fill="#6a6a6a" text-anchor="start">73.5 (+0.3)</text>
+  <line class="lcf-grow" style="animation-delay:0.45s" x1="443.1" y1="190" x2="450.8" y2="190" stroke="#6a6a6a" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0.45s" cx="443.1" cy="190" r="4" fill="none" stroke="#6a6a6a" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:0.95s" cx="450.8" cy="190" r="4.5" fill="#6a6a6a"/>
+  <text class="lcf-pt" style="animation-delay:0.45s" x="443.1" y="180" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
+  <text class="lcf-pt" style="animation-delay:1.05s" x="464.8" y="194" font-size="11" fill="#6a6a6a" text-anchor="start">73.5 (+0.3)</text>
   <text x="20" y="236" font-size="13" fill="#111">4-star threshold, equilibrium</text>
-  <line x1="443.1" y1="260" x2="631.0" y2="260" stroke="#7a0000" stroke-width="2.2"/>
-  <circle cx="443.1" cy="260" r="4" fill="none" stroke="#7a0000" stroke-width="1.6"/>
-  <circle cx="631.0" cy="260" r="4.5" fill="#7a0000"/>
-  <text x="443.1" y="250" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
-  <text x="645.0" y="264" font-size="11" fill="#7a0000" text-anchor="start">78.2 (+4.9)</text>
+  <line class="lcf-grow" style="animation-delay:0.9s" x1="443.1" y1="260" x2="631.0" y2="260" stroke="#7a0000" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0.9s" cx="443.1" cy="260" r="4" fill="none" stroke="#7a0000" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:1.4s" cx="631.0" cy="260" r="4.5" fill="#7a0000"/>
+  <text class="lcf-pt" style="animation-delay:0.9s" x="443.1" y="250" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
+  <text class="lcf-pt" style="animation-delay:1.5s" x="645.0" y="264" font-size="11" fill="#7a0000" text-anchor="start">78.2 (+4.9)</text>
   <line x1="240" y1="300" x2="700" y2="300" stroke="#d0d0c8" stroke-width="1"/>
   <text x="240.0" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">68</text>
   <text x="316.7" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">70</text>
@@ -111,8 +120,8 @@ The error is easy to demonstrate without any proprietary data at all. I built a 
   <text x="623.3" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">78</text>
   <text x="700.0" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">80</text>
   <text x="470" y="344" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="middle">measure-B score (synthetic units)</text>
-  <text x="20" y="344" font-size="11" font-style="italic" fill="#6a6a6a">47 of 120 contracts project a</text>
-  <text x="20" y="360" font-size="11" font-style="italic" fill="#6a6a6a">measure-star gain; 19 realize it.</text>
+  <text class="lcf-pt" style="animation-delay:1.9s" x="20" y="344" font-size="11" font-style="italic" fill="#6a6a6a">47 of 120 contracts project a</text>
+  <text class="lcf-pt" style="animation-delay:1.9s" x="20" y="360" font-size="11" font-style="italic" fill="#6a6a6a">measure-star gain; 19 realize it.</text>
 </svg>
 <figcaption>A two-measure tournament with percentile cut points and best-responding contracts, all synthetic. Each contract improves its own score on the re-weighted measure, and the mechanical projection (competitors frozen) says the threshold barely moves. In equilibrium the threshold rises faster than the average contract improves, because every contract made the same move. Of the 47 contracts whose frozen-field projection shows a measure-star gain, 19 keep it. The field's average realized rating change is zero, exactly, because relative scoring is zero-sum. Generated by a seeded, stdlib-only script in this site's repo.</figcaption>
 </figure>
