@@ -81,8 +81,9 @@ no-op.
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ lint_blog + lint_vocab
-                                              + lint_facts
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 6 linters + grep guards
+                                              (blog, vocab, facts, notes,
+                                               recognition, gantt)
                  (self-installed via _common.install_git_hooks)
 ```
 
@@ -141,9 +142,11 @@ Three insertions land between marker comments in `index.html`:
 
 - `<!-- activity-grid:start --> ... :end -->` — a 24-week Tufte-style
   dot sparkline showing recent posting cadence. No external requests.
-- `<!-- writing-list:start --> ... :end -->` — the six most recent
-  non-draft posts. Em-dashes are stripped on import; homepage chrome
-  stays em-dash-clean even when source markdown isn't.
+- `<!-- writing-list:start --> ... :end -->` — the two most recent
+  non-draft posts as full featured entries, and
+  `<!-- writing-index:start --> ... :end -->` — the next six as compact
+  tiles. Em-dashes are stripped on import; homepage chrome stays
+  em-dash-clean even when source markdown isn't.
 - `<span class="pub-citations">` inside each `<div class="pub-entry"
   data-sid="...">` — Semantic Scholar citation count. The public tier
   rate-limits aggressively (HTTP 429); the script retries with
@@ -158,26 +161,40 @@ race with `build_blog.yml`.
 ### Pre-push lints (`scripts/hooks/pre-push`)
 
 - **Source:** `src/content/blog/*.md`, `src/content/resume.md`,
-  `index.html`
+  `src/content/cv.md`, `index.html`
 - **Output:** no files — the push proceeds or aborts with stderr from
-  the failed lint
+  the failed check
 - **Trigger:** every `git push`
 
 Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs three linters:
+no-ops. The hook runs six linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
   inside `<svg>`.
 - `lint_vocab.py` — canonical CMS program-name capitalization (Star
-  Ratings, Medicare Advantage, HEDIS, etc.) across blog, resume, and
-  homepage.
+  Ratings, Medicare Advantage, HEDIS, etc.) across blog, resume, CV,
+  and homepage.
 - `lint_facts.py` — cross-surface fact drift between `resume.md`,
   `index.html` h3+meta, and the JSON-LD block. Failure playbook at
   [scripts/lint_facts.md](./scripts/lint_facts.md).
+- `lint_notes.py` — sidenote/margin-note additivity (a note may not
+  restate a number or phrase already in the page prose).
+- `lint_recognition.py` — the homepage "Service and Recognition"
+  section must stay a subset of the comprehensive record in `cv.md`.
+- `lint_gantt.py` — the homepage Education + Service Gantt figure must
+  carry a mark for every `#education` and `#service` entry.
+
+Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
+`resume.md`, `cv.md`, life-in-weeks), accent discipline in
+`index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
+critique-pipeline independence contract. Note the scope difference from
+the CLI: `blog lint` / `blog publish` pre-flight run the **three**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **six**
+above plus the guards run in the pre-push hook on every `git push`.
 
 Both the pre-push hook and `build_blog.yml` can short-circuit via a
 `Blog-CLI-Linted:` commit trailer written by `scripts/blog publish`.
@@ -227,11 +244,13 @@ DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib \
   .venv/bin/python scripts/build_resume.py   # regenerates /resume.pdf
 ```
 
-`lint_blog.py` catches three storage-level mistakes before they ship: HTML
+`lint_blog.py` catches four storage-level mistakes before they ship: HTML
 comments in a non-draft post (leak as visible `&lt;!-- --&gt;` text), fenced
 code blocks nested inside an HTML comment (break the tail of the document),
-and blockquote-as-diagram (`> flowchart LR` — Mermaid never sees it). It runs
-before `build_blog.py` in CI and blocks the build on violations. See
+blockquote-as-diagram (`> flowchart LR` — Mermaid never sees it), and a blank
+line inside an `<svg>` (markdown-it ends the HTML block and `<p>`-wraps the
+rest of the chart). It runs before `build_blog.py` in CI and blocks the build
+on violations. See
 [CLAUDE.md](./CLAUDE.md) §Blog pipeline for the rule text.
 
 Drafts (`draft: true`) and files whose names start with `_` are skipped by the
@@ -276,13 +295,52 @@ cd ~/git/zaherkarp.github.io
 source .venv/bin/activate
 ```
 
-**Day-to-day:**
+**From draft to live — the happy path is four commands:**
+
+```bash
+./scripts/blog new "My Post Title"        # 1. scaffold a draft (draft: true), open in $EDITOR
+./scripts/blog preview my-post            # 2. render to a browser tab (no rebuild, no flag change)
+./scripts/blog publish my-post --dry-run  # 3. show exactly what publish will do, change nothing
+./scripts/blog publish my-post            # 4. lint, flip draft, commit, push to main
+```
+
+`blog new` bakes in `draft: true` and slugifies the title into the
+filename. Write the body, `preview` as you go (slug fragments work, e.g.
+`blog preview my-po`), then `publish` when it's ready.
+
+**What `blog publish` does, in order:**
+
+1. **Branch guard.** Refuses to run from a non-`main` branch unless you
+   pass `--force-branch`, and even then only pushes when the publish
+   commit is the single thing ahead of `origin/main` — so it can't sweep
+   unrelated commits onto production. The simple path is to publish from
+   `main`.
+2. **Pre-flight lint.** Runs the three content linters (`lint_blog`,
+   `lint_vocab`, `lint_facts`). Any failure aborts before anything
+   changes on disk.
+3. **Commit.** Flips `draft: true` → `false`, `git add`s the post, and
+   commits with a `Blog-CLI-Linted:` trailer (the provenance token that
+   lets later lint stages skip redundant work).
+4. **Push to `main`.** This fires the **pre-push hook** (the six linters
+   plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
+   above), then hands off to CI.
+
+After the push, two GitHub Actions runs finish the job with no further
+action from you: `build_blog.yml` renders the post into
+`blog/<slug>/index.html` and regenerates the listing, sitemap, and feed;
+`build_portfolio.yml` regenerates the homepage sparkline and writing
+list so the post appears on the front page on the same run. Both commit
+their output back to `main`. (Because two workflows commit to `main`
+from one push, `build_portfolio.yml` rebases-and-retries if its push
+loses the race — you don't have to do anything.)
+
+**Full command reference:**
 
 ```bash
 ./scripts/blog new "My Post Title"     # scaffold draft, open in $EDITOR
 ./scripts/blog list --drafts           # see what's in flight
 ./scripts/blog edit my-post            # reopen a draft (slug fragment works)
-./scripts/blog lint my-post            # scoped lint, no subprocess
+./scripts/blog lint my-post            # scoped lint (lint_blog + lint_vocab + lint_facts)
 ./scripts/blog preview my-post         # browser preview (no KaTeX/Mermaid/Prism — see §2d)
 ./scripts/blog publish my-post --dry-run   # show the plan, change nothing
 ./scripts/blog publish my-post             # lint, flip draft, commit, push to main
