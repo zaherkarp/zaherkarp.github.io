@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cut Point Forecast Has a Lucas Critique Problem — Zaher Karp</title>
+<meta name="description" content="Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.">
+<link rel="canonical" href="https://zaherkarp.com/blog/lucas-critique-stars-forecasting/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="Your Cut Point Forecast Has a Lucas Critique Problem — Zaher Karp">
+<meta property="og:description" content="Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.">
+<meta property="og:url" content="https://zaherkarp.com/blog/lucas-critique-stars-forecasting/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Your Cut Point Forecast Has a Lucas Critique Problem — Zaher Karp">
+<meta name="twitter:description" content="Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Your Cut Point Forecast Has a Lucas Critique Problem", "description": "Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.", "url": "https://zaherkarp.com/blog/lucas-critique-stars-forecasting/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/lucas-critique-stars-forecasting/"}, "datePublished": "2026-06-12T00:00:00Z", "dateModified": "2026-06-12T23:50:21-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 3708, "timeRequired": "PT15M", "inLanguage": "en-US", "keywords": "medicare-advantage, stars, forecasting, methodology"}
+</script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Your Cut Point Forecast Has a Lucas Critique Problem</h1>
+    <div class="blog-meta">
+      <time datetime="2026-06-12" class="blog-date">June 12, 2026</time>
+      
+      <span class="blog-readtime">15 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li>medicare-advantage</li><li>stars</li><li>forecasting</li><li>methodology</li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <h2>The forecast that breaks on schedule</h2>
+<p>Every Medicare Advantage (MA) quality team maintains some version of the same artifact: a projection of next year's Star Ratings, built from historical cut points, historical measure scores, and historical relationships between investment and improvement. And every team that has maintained one for more than a few years has watched it fail in the same pattern. The forecast holds up tolerably in years when the Centers for Medicare &amp; Medicaid Services (CMS) leaves the methodology alone, then misses badly in years when the methodology changes. Which is to say: it misses in exactly the years when leadership most wants a number.</p>
+<p>That pattern is not bad luck, and it is not a data problem you can fix with a better model of the same kind. It is a structural property of what these forecasts are. An economist named it fifty years ago.</p>
+<h2>A 1976 paper about inflation</h2>
+<p>In 1976, Robert Lucas published <a href="https://doi.org/10.1016/S0167-2231(76)80003-6">a critique of econometric policy evaluation</a> that reshaped macroeconomics. You need no macroeconomics to use it. The argument runs as follows: when you estimate a statistical relationship from historical data, the parameters you recover are not laws of nature. They are summaries of how people behaved under the rules that prevailed while the data was generated. People choose their behavior in response to the rules. Change the rules and people re-decide, which means the parameters you estimated are no longer descriptions of anything. In Lucas's words, &quot;any change in policy will systematically alter the structure of econometric models.&quot;</p>
+<p>The canonical casualty was the Phillips curve, a robust historical correlation between inflation and unemployment. Policymakers read the correlation as a menu: accept a little more inflation, buy a little less unemployment. When they tried to order from the menu, the correlation collapsed, because firms and workers adjusted their expectations to the new policy and the old tradeoff was a creature of the old expectations.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Lucas_critique">Wikipedia article</a> carries a thought experiment that makes the logic vivid. Fort Knox has never been robbed. A naive statistical reading of that history says the guards accomplish nothing and can be cut. The error is obvious once stated: the zero-robbery record was generated by would-be robbers deciding, under the prevailing security regime, that robbery does not pay. Remove the guards and the decision changes. The historical parameter, robberies per year, was never a fact about Fort Knox. It was a fact about behavior under a regime.</p>
+<p>Lucas's prescription was to model the things that survive a regime change, the deep parameters: preferences, constraints, capabilities. Predict behavior by re-deriving it under the new rules, rather than extrapolating the surface correlations the old rules produced. Readers who know <a href="https://en.wikipedia.org/wiki/Goodhart%27s_law">Goodhart's law</a>, or Campbell's law, will recognize the family resemblance: those are the measurement world's versions of the same insight, that a measured relationship degrades once you build policy on top of it.</p>
+<h2>Stars is a policy regime, and plans are the agents</h2>
+<p>The mapping onto Star Ratings is unusually clean. The CMS rule set, the measures, their weights, the cut point methodology, the relative scoring, is the policy regime. Plan behavior, where to spend improvement dollars, which measures to staff, which members to outreach, is the decision rule, and plans optimize it against the regime with considerable sophistication and several billion dollars of quality bonus payment (QBP) at stake. Any model trained on historical Stars data, whether a trend line or a gradient-boosted ensemble, is what economists call reduced-form: it captures the joint outcome of the rules and the behavior the rules induced, without separating the two.</p>
+<p>That works fine while the regime holds. It is precisely the wrong tool the day the regime moves. Four exhibits, all public-knowledge policy facts.</p>
+<h2>Exhibit one: cut points are equilibria, not trends</h2>
+<p>Cut points, the score thresholds that convert a measure rate into a measure star, are not set by CMS in advance. They are computed from the distribution of all plans' scores. They are, in other words, emergent properties of collective plan behavior under a given rule set, and plans target the thresholds they can see. A cut point series is therefore a series of equilibrium outcomes, and extrapolating it forward embeds the assumption that the behavior generating the equilibrium stays put.</p>
+<p>The recent history of the methodology is a catalog of reasons it does not. Cut point guardrails, capping year-over-year movement at five percentage points for most measures, were finalized, delayed a year, and then took effect with the 2023 Star Ratings. Tukey outer-fence outlier deletion, which removes extreme low scores before cut points are computed, arrived with the 2024 Star Ratings and pulled the bottom thresholds up sharply. Each change redefined what the historical series even measures.</p>
+<style>
+.lcf-trace { stroke-dasharray: var(--lcf-len); stroke-dashoffset: var(--lcf-len); animation: lcf-draw 1.4s ease-out forwards; }
+.lcf-grow  { transform: scaleX(0); transform-origin: left; transform-box: fill-box; animation: lcf-grow 0.7s cubic-bezier(0.2,0.7,0.3,1) forwards; }
+.lcf-pt    { opacity: 0; animation: lcf-fade 0.5s ease-out forwards; }
+@keyframes lcf-draw { to { stroke-dashoffset: 0; } }
+@keyframes lcf-grow { to { transform: scaleX(1); } }
+@keyframes lcf-fade { to { opacity: 1; } }
+</style>
+<figure>
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of the published cut points for the Breast Cancer Screening measure, 2019 through 2026 Star Ratings. Four lines show the thresholds to earn 2, 3, 4, and 5 stars. The lines are stable through 2021, drop sharply at the 2022 Star Ratings when pandemic-era data and relief rules entered, and climb after the 2024 Star Ratings introduced Tukey outlier deletion. The 2-star threshold falls from 50 to 42 percent in 2022, then jumps from 43 to 52 percent in 2024 and reaches 58 percent by 2026. The 4-star threshold falls from 76 to 69 percent in 2022 and returns to 76 percent by 2026." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">BREAST CANCER SCREENING (C01): PUBLISHED CUT POINTS, 2019-2026 STAR RATINGS</text>
+  <text class="lcf-pt" style="animation-delay:1.6s" x="341" y="44" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="end">2022: pandemic-era data enters</text>
+  <text class="lcf-pt" style="animation-delay:2s" x="525" y="44" font-size="11" font-style="italic" fill="#7a0000">2024: Tukey outlier deletion</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0s" points="90.0,101.5 175.7,96.3 261.4,96.3 347.1,132.7 432.9,127.5 518.6,117.1 604.3,101.5 690.0,91.2" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.4s" x="700" y="95.2" font-size="11" fill="#111">5&#9733; at 84%</text>
+  <text x="80" y="105.5" font-size="10" fill="#6a6a6a" text-anchor="end">82</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0.1s" points="90.0,132.7 175.7,132.7 261.4,132.7 347.1,169.0 432.9,163.8 518.6,158.7 604.3,137.9 690.0,132.7" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.5s" x="700" y="136.7" font-size="11" fill="#111">4&#9733; at 76%</text>
+  <text x="80" y="136.7" font-size="10" fill="#6a6a6a" text-anchor="end">76</text>
+  <polyline class="lcf-trace" style="--lcf-len:615;animation-delay:0.2s" points="90.0,174.2 175.7,184.6 261.4,184.6 347.1,210.6 432.9,205.4 518.6,200.2 604.3,179.4 690.0,158.7" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.6s" x="700" y="162.7" font-size="11" fill="#111">3&#9733; at 71%</text>
+  <text x="80" y="178.2" font-size="10" fill="#6a6a6a" text-anchor="end">68</text>
+  <polyline class="lcf-trace" style="--lcf-len:630;animation-delay:0.3s" points="90.0,283.3 175.7,267.7 261.4,267.7 347.1,309.2 432.9,304.0 518.6,257.3 604.3,252.1 690.0,226.2" fill="none" stroke="#111" stroke-width="1.6"/>
+  <text class="lcf-pt" style="animation-delay:1.7s" x="700" y="230.2" font-size="11" fill="#111">2&#9733; at 58%</text>
+  <text x="80" y="287.3" font-size="10" fill="#6a6a6a" text-anchor="end">47</text>
+  <line class="lcf-pt" style="animation-delay:1.5s" x1="347.1" y1="50" x2="347.1" y2="330" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3,4"/>
+  <line class="lcf-pt" style="animation-delay:1.9s" x1="518.6" y1="50" x2="518.6" y2="330" stroke="#7a0000" stroke-width="1" stroke-dasharray="3,4"/>
+  <line x1="90" y1="330" x2="690" y2="330" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="90.0" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2019</text>
+  <text x="175.7" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2020</text>
+  <text x="261.4" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2021</text>
+  <text x="347.1" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2022</text>
+  <text x="432.9" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2023</text>
+  <text x="518.6" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2024</text>
+  <text x="604.3" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2025</text>
+  <text x="690.0" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">2026</text>
+</svg>
+<figcaption>Thresholds (lower bound of each star band, percent of eligible members screened) for one Healthcare Effectiveness Data and Information Set (HEDIS) measure, transcribed from the CMS Cut Point Trend reports and Star Ratings data tables. The 2021 values repeat 2020 because CMS carried forward earlier values for HEDIS measures during the public health emergency. Minor specification changes over the period are ignored here; the structural breaks are the point.</figcaption>
+</figure>
+<p>Look at this series the way a forecaster in late 2021 would have. Three years of near-perfect stability said the 4-star threshold lives at 76 percent. It then fell seven points in one year. Re-fit in 2023 and the bottom of the ladder said 42 to 43 percent; it then jumped nine points when Tukey deletion removed the low outliers that had been holding it down. Both moves were announced rule changes, not noise, and both were unforecastable from the series itself, because the series is downstream of the rules. A trend model fit across this history is averaging over three different games.</p>
+<h2>Exhibit two: the 4x experiment</h2>
+<p>CMS raised the weight of the patient experience, complaints, and access measures, including the Consumer Assessment of Healthcare Providers and Systems (CAHPS) survey, from 2x to 4x beginning with the 2023 Star Ratings, then reduced them back to 2x beginning with the 2026 Star Ratings. Set aside whether either weighting was wise. Consider what the round trip does to any return-on-investment model for member experience programs.</p>
+<p>A model calibrated during the 4x era learned a relationship between CAHPS investment and overall rating movement that was partly mechanical (the weights themselves) and partly behavioral (every plan reallocating toward the newly valuable measures, which shifts the relative-scoring landscape those measures are graded on). Both components were creatures of the regime. Under 2x, the mechanical component is half what the model learned, and the behavioral component is whatever the field's new allocation makes it. The historical coefficient is not conservative or optimistic; it is about a different world. The same logic runs prospectively: sociodemographic risk adjustment arrives on the Part D medication adherence measures with the 2026 measurement year, and their reduced interim weight changes the payoff structure for adherence work before a single new data point exists to model.</p>
+<h2>Exhibit three: the tournament problem</h2>
+<p>Stars is graded on a curve. Cut points come from the distribution of competitors' scores, so your rating depends not on your performance but on your performance relative to a field that is also optimizing. This makes the most common projection exercise in the industry, &quot;simulate our improvement plan against current cut points,&quot; a mechanical first-order estimate rather than a forecast. It answers: what happens if we alone respond to the rule change and every other plan stands still?</p>
+<p>The error is easy to demonstrate without any proprietary data at all. I built a deliberately cartoonish tournament: 120 synthetic contracts, two generic measures, a fixed effort budget per contract with diminishing returns, star thresholds at fixed percentiles of the field recomputed each round, and contracts that best-respond to last year's thresholds. Then I raised the weight on the second measure and computed each contract's projection two ways. The mechanical way re-optimizes that contract alone, freezes all competitors, and recomputes the thresholds. The equilibrium way lets every contract re-optimize at once, because they can all read the Federal Register.</p>
+<figure>
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dumbbell chart from a synthetic tournament of 120 contracts. After a weight increase on measure B, the average contract improves its measure-B score from 70.3 to 72.6. The 4-star threshold barely moves under mechanical recomputation with competitors frozen, from 73.3 to 73.5, but rises from 73.3 to 78.2 in equilibrium when every contract re-optimizes. The threshold outruns the average improvement." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">A SYNTHETIC TOURNAMENT: THE THRESHOLD MOVES WITH THE FIELD</text>
+  <text x="20" y="44" font-size="11" font-style="italic" fill="#6a6a6a">weight on measure B rises; every contract re-allocates toward it</text>
+  <text x="20" y="96" font-size="13" fill="#111">Average contract, measure-B score</text>
+  <line class="lcf-grow" style="animation-delay:0s" x1="328.2" y1="120" x2="416.4" y2="120" stroke="#111" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0s" cx="328.2" cy="120" r="4" fill="none" stroke="#111" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:0.5s" cx="416.4" cy="120" r="4.5" fill="#111"/>
+  <text class="lcf-pt" style="animation-delay:0s" x="328.2" y="110" font-size="11" fill="#6a6a6a" text-anchor="middle">70.3</text>
+  <text class="lcf-pt" style="animation-delay:0.6s" x="430.4" y="124" font-size="11" fill="#111" text-anchor="start">72.6 (+2.3)</text>
+  <text x="20" y="166" font-size="13" fill="#111">4-star threshold, mechanical recomputation</text>
+  <line class="lcf-grow" style="animation-delay:0.45s" x1="443.1" y1="190" x2="450.8" y2="190" stroke="#6a6a6a" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0.45s" cx="443.1" cy="190" r="4" fill="none" stroke="#6a6a6a" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:0.95s" cx="450.8" cy="190" r="4.5" fill="#6a6a6a"/>
+  <text class="lcf-pt" style="animation-delay:0.45s" x="443.1" y="180" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
+  <text class="lcf-pt" style="animation-delay:1.05s" x="464.8" y="194" font-size="11" fill="#6a6a6a" text-anchor="start">73.5 (+0.3)</text>
+  <text x="20" y="236" font-size="13" fill="#111">4-star threshold, equilibrium</text>
+  <line class="lcf-grow" style="animation-delay:0.9s" x1="443.1" y1="260" x2="631.0" y2="260" stroke="#7a0000" stroke-width="2.2"/>
+  <circle class="lcf-pt" style="animation-delay:0.9s" cx="443.1" cy="260" r="4" fill="none" stroke="#7a0000" stroke-width="1.6"/>
+  <circle class="lcf-pt" style="animation-delay:1.4s" cx="631.0" cy="260" r="4.5" fill="#7a0000"/>
+  <text class="lcf-pt" style="animation-delay:0.9s" x="443.1" y="250" font-size="11" fill="#6a6a6a" text-anchor="middle">73.3</text>
+  <text class="lcf-pt" style="animation-delay:1.5s" x="645.0" y="264" font-size="11" fill="#7a0000" text-anchor="start">78.2 (+4.9)</text>
+  <line x1="240" y1="300" x2="700" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="240.0" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">68</text>
+  <text x="316.7" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">70</text>
+  <text x="393.3" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">72</text>
+  <text x="470.0" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">74</text>
+  <text x="546.7" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">76</text>
+  <text x="623.3" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">78</text>
+  <text x="700.0" y="318" font-size="10" fill="#6a6a6a" text-anchor="middle">80</text>
+  <text x="470" y="344" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="middle">measure-B score (synthetic units)</text>
+  <text class="lcf-pt" style="animation-delay:1.9s" x="20" y="344" font-size="11" font-style="italic" fill="#6a6a6a">47 of 120 contracts project a</text>
+  <text class="lcf-pt" style="animation-delay:1.9s" x="20" y="360" font-size="11" font-style="italic" fill="#6a6a6a">measure-star gain; 19 realize it.</text>
+</svg>
+<figcaption>A two-measure tournament with percentile cut points and best-responding contracts, all synthetic. Each contract improves its own score on the re-weighted measure, and the mechanical projection (competitors frozen) says the threshold barely moves. In equilibrium the threshold rises faster than the average contract improves, because every contract made the same move. Of the 47 contracts whose frozen-field projection shows a measure-star gain, 19 keep it. The field's average realized rating change is zero, exactly, because relative scoring is zero-sum. Generated by a seeded, stdlib-only script in this site's repo.</figcaption>
+</figure>
+<p>The numbers are synthetic; the mechanic is not. Relative scoring means the field's response is not a refinement of your projection. It is most of the answer. A projection that freezes competitors is not a cautious version of the truth, it is a different quantity, and it should be labeled as one.</p>
+<h2>Exhibit four: the pandemic years are a different regime</h2>
+<p>For the 2021 and 2022 Star Ratings, CMS applied extreme and uncontrollable circumstances provisions, including a &quot;higher of&quot; rule that let most measures revert to the prior year's rating if performance fell. The result is visible in the published distributions: roughly 49 percent of MA contracts with prescription drug coverage earned 4 or more stars in the 2021 Star Ratings, then about 68 percent in 2022, falling back to about 51 percent in 2023 and roughly 44 and 41 percent in the two years after, as the provisions expired and Tukey arrived. CMS itself attributed the 2022 bulge to nearly all contracts qualifying for the adjustments.</p>
+<p>A robust-statistics instinct says: downweight 2022 as an outlier year. The Lucas framing is sharper and more useful. Those ratings were not the usual process plus a shock. They were generated by different rules, and by plan behavior optimized for those rules, with relief provisions changing what was worth measuring and managing. An outlier is a draw from your model's tails. A regime change is a draw from someone else's model. Robust estimators shrink the first kind of contamination; only explicit handling, exclusion, re-derivation, or modeling the rule directly, addresses the second.</p>
+<h2>What to do differently</h2>
+<p>None of this says quantitative Stars work is futile. It says the honest unit of work is different from the one most forecasts ship with. Concretely:</p>
+<ul>
+<li>Label every projection as either mechanical recomputation (new rules applied to frozen behavior, including your own) or behavioral forecast (new rules plus a model of the response, yours and the field's), and attach the much wider uncertainty the second deserves. Most deliverables silently blend the two.</li>
+<li>When a projection crosses a rule boundary, prefer member-level structural simulation, recomputing measures from eligibility and event data under the new specification, over contract-level trend extrapolation. The member-level data generating process survives rule changes; the contract-level correlations do not.</li>
+<li>Treat announced methodology changes as structural breaks. Do not train across them without explicit handling, and in the first year after a change, present scenario ranges rather than point estimates, because the field's behavioral response is not yet in any data you have.</li>
+<li>Watch for the internal version of Goodhart's law: any operational dashboard or KPI pinned to a Stars measure will, over time, distort what that measure tells you about underlying care, for exactly the reasons above, with your own organization as the optimizing agent.</li>
+</ul>
+<h2>Model the deep parameters</h2>
+<p>Lucas's positive prescription translates directly. The things that survive a CMS rule change are the deep parameters of your plan: the member population and its clinical reality, the provider network, the operational capacity to close gaps, the cost of moving each measure by a point. Last year's cut point trend is not on the list, and neither is the historical correlation between any investment and any star. Model the capabilities, re-derive the behavior under the new rules, and recompute the outcome. That is what separating mechanical recomputation from behavioral forecasting means, and it is the difference between a forecast that degrades politely and one that fails, on schedule, the day the Federal Register changes the game everyone is playing.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/#contact">Contact</a>
+    </nav>
+    
+    <p class="footer-meta">Built 2026-06-13 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/d1a2b55">d1a2b55</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>

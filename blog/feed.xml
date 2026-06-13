@@ -6,8 +6,21 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 13 Jun 2026 04:34:52 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 04:50:37 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Your Cut Point Forecast Has a Lucas Critique Problem</title>
+      <link>https://zaherkarp.com/blog/lucas-critique-stars-forecasting/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/lucas-critique-stars-forecasting/</guid>
+      <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+      <description>Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.</description>
+      <category>medicare-advantage</category>
+      <category>stars</category>
+      <category>forecasting</category>
+      <category>methodology</category>
+      
+    </item>
     
     <item>
       <title>Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</title>
@@ -416,17 +429,6 @@
       <category>architecture</category>
       <category>systems-design</category>
       <category>ai</category>
-      
-    </item>
-    
-    <item>
-      <title>Security Starts With the Problem You’re Trying to Solve  </title>
-      <link>https://zaherkarp.com/blog/cloud-security/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/cloud-security/</guid>
-      <pubDate>Sun, 25 Jan 2026 00:00:00 +0000</pubDate>
-      <description>A brief description of your blog post (1-2 sentences)</description>
-      <category>data governance</category>
-      <category>security</category>
       
     </item>
     
