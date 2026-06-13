@@ -3,7 +3,8 @@ title: "Your Cut Point Forecast Has a Lucas Critique Problem"
 description: "Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most."
 publishDate: 2026-06-12
 tags: ["medicare-advantage", "stars", "forecasting", "methodology"]
-draft: true
+vocab_exempt: ["STAR RATINGS"]
+draft: false
 ---
 
 ## The forecast that breaks on schedule
