@@ -37,7 +37,6 @@ from __future__ import annotations
 
 import html as html_lib
 import json
-import json
 import re
 import sys
 import time
