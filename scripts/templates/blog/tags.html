@@ -1,0 +1,20 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+<section id="writing" class="blog-index">
+  <span class="section-label">{{ section_label | default("Tags") }}</span>
+  <p class="blog-index-intro">{{ intro }}</p>
+
+  <ul class="tag-cloud">
+    {% for tag in tags %}
+    <li><a href="/blog/tags/{{ tag.slug }}/">{{ tag.label }}</a> <span class="tag-count">{{ tag.count }}</span></li>
+    {% endfor %}
+  </ul>
+
+  {% if back_link %}
+  <p class="blog-archive-link" style="margin-top: 2rem;">
+    <a href="{{ back_link.url }}" class="writing-title">{{ back_link.label }}</a>
+  </p>
+  {% endif %}
+</section>
+{% endblock %}

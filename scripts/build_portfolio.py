@@ -37,7 +37,6 @@ from __future__ import annotations
 
 import html as html_lib
 import json
-import json
 import re
 import sys
 import time
@@ -49,7 +48,7 @@ from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks
+from _common import install_git_hooks, slugify_tag
 from _publications import (
     load_publications,
     render_homepage_entries,
@@ -146,7 +145,11 @@ def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
     appearing in ≥ CADENCE_TAG_MIN_COUNT posts, and falls back to the
     top CADENCE_TAGS_MIN_FLOOR by count if too few qualify. Sorted by
     count desc, then alphabetic. Rendered as compact `tag (n)` pairs
-    separated by middle dots.
+    separated by middle dots, each tag linking to its /blog/tags/<slug>/
+    archive page (the slug rule is shared with build_blog.py via
+    _common.slugify_tag, so the homepage link and the generated page can
+    never disagree). Links inherit the muted marginnote color and the
+    site's standard underline treatment; no accent, per accent discipline.
     """
     counter: Counter[str] = Counter()
     for p in cadence_posts:
@@ -160,7 +163,10 @@ def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
         qualifying = counter.most_common(CADENCE_TAGS_MIN_FLOOR)
     qualifying.sort(key=lambda kv: (-kv[1], kv[0]))
 
-    pairs = " · ".join(f"{_esc(tag)} ({n})" for tag, n in qualifying)
+    pairs = " · ".join(
+        f'<a href="/blog/tags/{slugify_tag(tag)}/">{_esc(tag)}</a> ({n})'
+        for tag, n in qualifying
+    )
     return pairs
 
 

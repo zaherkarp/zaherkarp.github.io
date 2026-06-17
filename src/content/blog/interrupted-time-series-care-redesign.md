@@ -17,7 +17,7 @@ The pre-versus-post comparison treats the world as if it stood still before the 
 
 Interrupted time series is the design that takes the prior trajectory seriously. It does not eliminate the inference problem, but it changes its shape. Instead of "was the post-mean higher than the pre-mean," the question becomes "did the trajectory shift at the intervention point in a way that is not explainable by the trajectory's prior trend." That is a harder question. It is also a more honest one.
 
-This post is a retrospective on the methodology side of a multi-year health services research engagement at UW-Madison, where I worked on the analytics for an organization-wide care redesign initiative across a primary care network. The clinical and operational findings were published with collaborators (an accompanying environmental-design paper on team interactions came out in 2019). The methodological story, the part about why ITS was the right tool and what we learned about how to use it, is the part this post is about.
+This post is a retrospective on the methodology side of a multi-year health services research engagement at UW-Madison, where I worked on the analytics for an organization-wide care redesign initiative across a primary care network. The methodological story, the part about why ITS was the right tool and what we learned about how to use it, is the part this post is about.
 
 ---
 
@@ -81,7 +81,7 @@ The intervention produced a measurable level shift on most operational metrics, 
 
 The mixed result was the right result. An intervention designed to change clinic operations across multiple dimensions should not produce identical effects across those dimensions. The honest reporting is per-metric, with the levels and slopes named, not a summary indicator that elides the heterogeneity.
 
-The published health services findings reported the per-metric structure. What I would emphasize in retrospect is how unusual it was, in the academic and operational literature on care redesign, to see the heterogeneity reported. Many published evaluations either roll up to a single composite outcome (which destroys the per-metric signal) or report many univariate pre-versus-post comparisons (which inflate the false-positive rate while underestimating the within-cluster correlation). The segmented regression with per-clinic fixed effects gave us a defensible framework for reporting both the size and the structure of the effect, with the kinds of confidence intervals the design can actually support.
+What I would emphasize in retrospect is how unusual it is, in the academic and operational literature on care redesign, to see the per-metric heterogeneity reported at all. Many published evaluations either roll up to a single composite outcome (which destroys the per-metric signal) or report many univariate pre-versus-post comparisons (which inflate the false-positive rate while underestimating the within-cluster correlation). The segmented regression with per-clinic fixed effects gave us a defensible framework for reporting both the size and the structure of the effect, with the kinds of confidence intervals the design can actually support.
 
 ---
 

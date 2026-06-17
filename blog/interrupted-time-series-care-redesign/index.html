@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Interrupted Time Series for Organization-Wide Change Measurement", "description": "Pre-versus-post comparisons are the wrong tool for evaluating organization-wide care redesign. Interrupted time series is closer to the right one. A retrospective on why, and on what the design can and cannot tell you.", "url": "https://zaherkarp.com/blog/interrupted-time-series-care-redesign/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/interrupted-time-series-care-redesign/"}, "datePublished": "2026-05-02T00:00:00Z", "dateModified": "2026-05-21T22:46:39-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2739, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "health-services-research, interrupted-time-series, methodology, stata, care-redesign"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Interrupted Time Series for Organization-Wide Change Measurement", "description": "Pre-versus-post comparisons are the wrong tool for evaluating organization-wide care redesign. Interrupted time series is closer to the right one. A retrospective on why, and on what the design can and cannot tell you.", "url": "https://zaherkarp.com/blog/interrupted-time-series-care-redesign/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/interrupted-time-series-care-redesign/"}, "datePublished": "2026-05-02T00:00:00Z", "dateModified": "2026-06-07T21:50:11-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2712, "timeRequired": "PT11M", "inLanguage": "en-US", "keywords": "health-services-research, interrupted-time-series, methodology, stata, care-redesign"}
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -86,7 +86,7 @@
       
       
       <ul class="blog-tags">
-        <li>health-services-research</li><li>interrupted-time-series</li><li>methodology</li><li>stata</li><li>care-redesign</li>
+        <li><a href="/blog/tags/health-services-research/">health-services-research</a></li><li><a href="/blog/tags/interrupted-time-series/">interrupted-time-series</a></li><li><a href="/blog/tags/methodology/">methodology</a></li><li><a href="/blog/tags/stata/">stata</a></li><li><a href="/blog/tags/care-redesign/">care-redesign</a></li>
       </ul>
       
     </div>
@@ -98,7 +98,7 @@
 <p>It will be wrong because the metric was already changing before the redesign. Practice patterns drift. Patient mix shifts. Local labor markets do things that affect staffing patterns. National payer policies introduce new measurement frameworks. The metric a year before the redesign is not the counterfactual for the metric a year after. It is, at best, a starting point for asking what the trajectory looked like, and how the redesign perturbed that trajectory.</p>
 <p>The pre-versus-post comparison treats the world as if it stood still before the intervention and stood still after, with the intervention as the only event in between. The world does not stand still. The world keeps changing whether you intervene in it or not.</p>
 <p>Interrupted time series is the design that takes the prior trajectory seriously. It does not eliminate the inference problem, but it changes its shape. Instead of &quot;was the post-mean higher than the pre-mean,&quot; the question becomes &quot;did the trajectory shift at the intervention point in a way that is not explainable by the trajectory's prior trend.&quot; That is a harder question. It is also a more honest one.</p>
-<p>This post is a retrospective on the methodology side of a multi-year health services research engagement at UW-Madison, where I worked on the analytics for an organization-wide care redesign initiative across a primary care network. The clinical and operational findings were published with collaborators (an accompanying environmental-design paper on team interactions came out in 2019). The methodological story, the part about why ITS was the right tool and what we learned about how to use it, is the part this post is about.</p>
+<p>This post is a retrospective on the methodology side of a multi-year health services research engagement at UW-Madison, where I worked on the analytics for an organization-wide care redesign initiative across a primary care network. The methodological story, the part about why ITS was the right tool and what we learned about how to use it, is the part this post is about.</p>
 <hr />
 <h2>What ITS does mathematically</h2>
 <p>The simplest version of an interrupted time series is a segmented regression with three terms. Pick a metric measured at regular intervals, weekly or monthly, over a window that spans both before and after the intervention point. The regression is:</p>
@@ -131,7 +131,7 @@
 <h2>What the design surfaced</h2>
 <p>The intervention produced a measurable level shift on most operational metrics, with mixed slope changes. On the access metric we were most interested in, the level shift was positive at the intervention point and the slope change was modestly negative, which is the pattern of a one-time improvement that does not continue to accumulate. On a different metric tied to documentation patterns, the level shift was effectively zero and the slope change was positive, the pattern of an intervention that takes effect over time rather than instantly. On a third, both were near zero, which is the pattern of an intervention that did not move the metric at all.</p>
 <p>The mixed result was the right result. An intervention designed to change clinic operations across multiple dimensions should not produce identical effects across those dimensions. The honest reporting is per-metric, with the levels and slopes named, not a summary indicator that elides the heterogeneity.</p>
-<p>The published health services findings reported the per-metric structure. What I would emphasize in retrospect is how unusual it was, in the academic and operational literature on care redesign, to see the heterogeneity reported. Many published evaluations either roll up to a single composite outcome (which destroys the per-metric signal) or report many univariate pre-versus-post comparisons (which inflate the false-positive rate while underestimating the within-cluster correlation). The segmented regression with per-clinic fixed effects gave us a defensible framework for reporting both the size and the structure of the effect, with the kinds of confidence intervals the design can actually support.</p>
+<p>What I would emphasize in retrospect is how unusual it is, in the academic and operational literature on care redesign, to see the per-metric heterogeneity reported at all. Many published evaluations either roll up to a single composite outcome (which destroys the per-metric signal) or report many univariate pre-versus-post comparisons (which inflate the false-positive rate while underestimating the within-cluster correlation). The segmented regression with per-clinic fixed effects gave us a defensible framework for reporting both the size and the structure of the effect, with the kinds of confidence intervals the design can actually support.</p>
 <hr />
 <h2>What the design cannot tell you</h2>
 <p>It cannot tell you which mechanism produced the change. ITS attributes the change at the intervention point to the intervention, conditional on the prior trajectory and the seasonal terms. It does not attribute the change to any specific component of the intervention. A care redesign has many components: workflow changes, training, staffing reorganization, environmental design changes, payer-policy changes that happened to coincide. The model cannot decompose the level shift into &quot;x% from the workflow changes and y% from the training.&quot; For that decomposition you would need a different design, typically a factorial trial that varies the components independently.</p>
@@ -169,7 +169,7 @@
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-06-13 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/8fb461d">8fb461d</a>.</p>
+    <p class="footer-meta">Built 2026-06-17 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/0638ad1">0638ad1</a>.</p>
     
   </footer>
 

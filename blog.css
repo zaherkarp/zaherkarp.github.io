@@ -223,6 +223,51 @@ nav {
   border-radius: 2px;
 }
 
+/* The chip outline is the affordance; the inner link drops the default
+   underline and fills the chip so the whole pill is the target. Hover
+   darkens the border and ink, matching the site's quiet link treatment. */
+.blog-tags li a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  margin: -0.08rem -0.5rem;
+  padding: 0.08rem 0.5rem;
+}
+.blog-tags li:hover {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+/* Tags index (/blog/tags/): a count-ordered list of every tag, each a
+   chip-styled link mirroring the per-post tags. */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.7rem;
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+}
+.tag-cloud li {
+  font-size: calc(var(--size-caption) * 0.92);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.12rem 0.55rem;
+}
+.tag-cloud li a {
+  color: inherit;
+  text-decoration: none;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+}
+.tag-cloud li:hover { border-color: var(--muted); }
+.tag-cloud .tag-count {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.82em;
+  color: var(--muted);
+  margin-left: 0.25rem;
+}
+
 /* PROSE */
 .blog-body { color: var(--text); }
 
