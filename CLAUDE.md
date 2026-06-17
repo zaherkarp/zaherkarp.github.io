@@ -870,6 +870,23 @@ Local build:
   python scripts/lint_blog.py   # source-side lint (see below)
   python scripts/build_blog.py
 
+Blog authoring — scripts/edit_blog.py:
+  A small stdlib-curses TUI for creating/editing src/content/blog/*.md: a
+  frontmatter form (title, date, draft, tags, description) over a scrollable
+  plain-text body pane. Run:
+    python scripts/edit_blog.py                 # picker: New post + existing
+    python scripts/edit_blog.py --new           # blank new-post editor
+    python scripts/edit_blog.py --edit <slug>   # open <slug>.md (slug == positional)
+  Saves through python-frontmatter (canonical key order, title first). It is a
+  plain text editor by design: no markdown/mermaid/KaTeX render, no preview, no
+  syntax highlighting/undo/search. Stdlib `curses` + python-frontmatter only, no
+  new deps. Dev-only: needs a real TTY, so it never runs in CI (pipe/no-tty
+  exits 2). New posts default to `draft: true` (lint_blog skips drafts). Slug is
+  derived from the title; editing an existing post's title does NOT rename the
+  file (that would orphan /blog/<slug>/ URLs and the homepage writing list).
+  Optional frontmatter keys not exposed as fields (homepageMarginnote,
+  lifeweek_topic, vocab_exempt) are preserved across an edit, not dropped.
+
 GitHub Action: .github/workflows/build_blog.yml
   Triggers on push under src/content/blog/ or scripts/ or the workflow
   itself, plus manual workflow_dispatch.
