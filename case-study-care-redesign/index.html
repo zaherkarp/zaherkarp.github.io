@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case study: measuring organization-wide care redesign, Zaher Karp</title>
+<meta name="description" content="A visual walk through interrupted time series: why a pre-versus-post comparison gets organization-wide care redesign wrong, and how a segmented regression recovers the effect the naive comparison hides. Figures are illustrative.">
+<link rel="canonical" href="https://zaherkarp.com/case-study-care-redesign/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta property="og:title" content="Case study: measuring organization-wide care redesign">
+<meta property="og:description" content="A visual walk through interrupted time series and why pre-versus-post comparisons mislead.">
+<meta property="og:url" content="https://zaherkarp.com/case-study-care-redesign/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Case study: measuring organization-wide care redesign">
+<meta name="twitter:description" content="A visual walk through interrupted time series and why pre-versus-post comparisons mislead.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+<style>
+  /* Case-study-scoped layout and motion. Palette, type, and the SVG
+     palette adapter come from blog.css. Inline because this is a one-off
+     subpage, per the blog-experiment subpage convention. The figures are
+     CSS-only and reveal on scroll; there is no JavaScript on this page
+     beyond the shared GoatCounter tag. */
+
+  .cs-hero { padding: 2.5rem 0 1rem; }
+  .cs-kicker {
+    font-variant: small-caps; letter-spacing: 0.08em; color: var(--muted);
+    font-size: var(--size-caption); display: block; margin-bottom: 0.6rem;
+  }
+  .cs-hero h1 { font-size: 2.1rem; line-height: 1.2; font-weight: 500; color: var(--text); max-width: 18em; }
+  .cs-hero .cs-sub { color: var(--muted); font-size: var(--size-body); max-width: 32em; margin-top: 0.8rem; }
+
+  .cs-note {
+    border: 1px solid var(--rule); border-left-width: 3px;
+    padding: 0.7rem 0.9rem; margin: 1.4rem 0 0; max-width: 34em;
+    color: var(--muted); font-size: calc(var(--size-body) * 0.86); font-style: italic;
+  }
+
+  .cs-step { padding: 2.4rem 0 0.6rem; }
+  .cs-step h2 { font-size: 1.5rem; font-weight: 500; color: var(--text); margin-bottom: 0.6rem; max-width: 22em; }
+  .cs-step p { color: var(--text); font-size: var(--size-body); max-width: 34em; margin-bottom: 1rem; line-height: 1.5; }
+  .cs-step p .em { font-style: italic; }
+
+  figure.cs-figure { margin: 1.4rem 0 0.6rem; }
+  .cs-svg { display: block; width: 100%; max-width: 680px; height: auto; margin: 0 auto; }
+  .cs-svg text { font-family: 'et-book', Palatino, "Palatino Linotype", Georgia, serif; }
+
+  /* SVG palette adapter, scoped to this page's figures. blog.css ships
+     the same map but scopes it to `.blog-body svg`, and these figures
+     live under .cs-figure, not .blog-body. Replicated here so the
+     hardcoded presentation hexes remap to the theme variables and the
+     charts render correctly in dark mode. #7a0000 is the accent
+     sentinel (renders petrol teal), per the locked palette contract. */
+  .cs-svg [fill="#111"]      { fill: var(--text); }
+  .cs-svg [stroke="#111"]    { stroke: var(--text); }
+  .cs-svg [fill="#6a6a6a"]   { fill: var(--muted); }
+  .cs-svg [stroke="#6a6a6a"] { stroke: var(--muted); }
+  .cs-svg [fill="#7a0000"]   { fill: var(--accent); }
+  .cs-svg [stroke="#7a0000"] { stroke: var(--accent); }
+  .cs-svg [fill="#d0d0c8"]   { fill: var(--rule); }
+  .cs-svg [stroke="#d0d0c8"] { stroke: var(--rule); }
+  figure.cs-figure figcaption {
+    font-style: italic; color: var(--muted); font-size: var(--size-caption);
+    text-align: center; max-width: 34em; margin: 0.5rem auto 0;
+  }
+
+  .cs-close { padding: 2.4rem 0 1rem; border-top: 1px solid var(--rule); margin-top: 2.4rem; }
+  .cs-close p { color: var(--text); font-size: var(--size-body); max-width: 34em; margin-bottom: 1rem; }
+  .cs-links { font-size: calc(var(--size-body) * 0.9); }
+  .cs-links a { margin-right: 1.2rem; }
+
+  /* Motion vocabulary, mirroring the homepage scroll-drawn figures
+     (CSS section 18): trace via stroke-dashoffset, fade via opacity.
+     Only compositor-friendly properties animate. Base state is the
+     fully drawn figure, so browsers without scroll-timeline support
+     (current Safari/Firefox) render the complete figure with no JS
+     fallback needed. Ungated for reduced-motion, consistent with the
+     site-wide 2026-06-13 decision: every reveal is a short, one-shot,
+     data-tracing draw. */
+  @keyframes cs-trace { from { stroke-dashoffset: var(--cs-len); } }
+  @keyframes cs-fade  { from { opacity: 0; } }
+  @keyframes cs-rise  { from { opacity: 0; transform: translateY(5px); } }
+
+  .cs-trace { stroke-dasharray: var(--cs-len); }
+
+  @supports (animation-timeline: view()) {
+    .cs-trace, .cs-fade, .cs-rise { opacity: 1; }
+    .cs-trace {
+      stroke-dashoffset: 0;
+      animation: cs-trace 1.1s ease-out both;
+      animation-timeline: view();
+      animation-range: entry 12% cover 45%;
+    }
+    .cs-fade {
+      animation: cs-fade 0.9s ease-out both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 55%;
+    }
+    .cs-rise {
+      animation: cs-rise 0.9s ease-out both;
+      animation-timeline: view();
+      animation-range: entry 38% cover 60%;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  <article class="blog-article">
+    <a href="/#projects" class="back-link">&larr; Back to projects</a>
+
+    <header class="cs-hero">
+      <span class="cs-kicker">Case study &middot; health services research</span>
+      <h1>Did the care redesign work?</h1>
+      <p class="cs-sub">A primary care network rolled out a care-delivery redesign
+      across thirty-some clinics. Eighteen months later, the question arrives. The
+      way you answer it decides whether you get a real number or a flattering one.</p>
+      <p class="cs-note">The curves below are stylized to show how the method
+      behaves, not real clinic data. The actual operational findings from this
+      UW-Madison engagement were published with collaborators. This page is about
+      the measurement design, not the results.</p>
+    </header>
+
+    <section class="cs-step">
+      <h2>The tempting answer</h2>
+      <p>Take the metric, average it for the year before the redesign, average it for
+      the year after, and report the difference. The numbers exist. They tell a story.
+      Here the post-period average sits well above the pre-period average, so the
+      naive read is a large, clean win.</p>
+      <figure class="cs-figure">
+        <svg class="cs-svg" viewBox="0 0 640 340" role="img"
+             aria-label="A metric over time. The pre-period mean and the post-period mean are drawn as two horizontal levels with a large gap between them, labeled the naive pre versus post jump.">
+          <!-- axes -->
+          <line x1="70" y1="40" x2="70" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <line x1="70" y1="300" x2="610" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <text x="70" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 0</text>
+          <text x="335" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">go-live</text>
+          <text x="600" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 48</text>
+          <text x="38" y="170" text-anchor="middle" font-size="11" fill="#6a6a6a" transform="rotate(-90 38 170)">access metric (illustrative)</text>
+          <!-- go-live marker -->
+          <line x1="335" y1="40" x2="335" y2="300" stroke="#6a6a6a" stroke-width="0.8" stroke-dasharray="3 3"/>
+          <!-- faint observed points -->
+          <g fill="#6a6a6a" opacity="0.55">
+            <circle cx="70" cy="267.5" r="2.4"/><circle cx="136" cy="251" r="2.4"/><circle cx="202" cy="228.5" r="2.4"/><circle cx="269" cy="212" r="2.4"/><circle cx="335" cy="189.5" r="2.4"/>
+            <circle cx="335" cy="111.5" r="2.4"/><circle cx="401" cy="101.75" r="2.4"/><circle cx="467" cy="95.25" r="2.4"/><circle cx="534" cy="85.5" r="2.4"/><circle cx="600" cy="79" r="2.4"/>
+          </g>
+          <!-- pre mean and post mean -->
+          <line class="cs-trace" style="--cs-len:266" x1="70" y1="235" x2="335" y2="235" stroke="#111" stroke-width="2"/>
+          <line class="cs-trace" style="--cs-len:266" x1="335" y1="95" x2="600" y2="95" stroke="#111" stroke-width="2"/>
+          <text class="cs-fade" x="200" y="225" text-anchor="middle" font-size="11.5" fill="#6a6a6a" font-style="italic">pre mean</text>
+          <text class="cs-fade" x="470" y="85" text-anchor="middle" font-size="11.5" fill="#6a6a6a" font-style="italic">post mean</text>
+          <!-- naive jump arrow -->
+          <g class="cs-fade">
+            <line x1="335" y1="235" x2="335" y2="100" stroke="#111" stroke-width="1.2"/>
+            <polygon points="330,108 335,96 340,108" fill="#111"/>
+            <text x="348" y="170" font-size="12" fill="#111" font-style="italic">naive "effect"</text>
+          </g>
+        </svg>
+        <figcaption>Pre mean versus post mean. The implied effect is the whole gap
+        between the two levels.</figcaption>
+      </figure>
+    </section>
+
+    <section class="cs-step">
+      <h2>But the metric was already moving</h2>
+      <p>The pre-versus-post comparison assumes the world stood still until the
+      intervention. It did not. Fit a line to the pre-period and the metric is
+      already drifting upward on its own: practice patterns change, patient mix
+      shifts, payers introduce new measurement frameworks. That prior slope is the
+      part the naive comparison silently attributes to the redesign.</p>
+      <figure class="cs-figure">
+        <svg class="cs-svg" viewBox="0 0 640 340" role="img"
+             aria-label="The same metric, with a rising trend line fitted to the pre-period points, showing the metric was already increasing before the intervention.">
+          <line x1="70" y1="40" x2="70" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <line x1="70" y1="300" x2="610" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <text x="70" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 0</text>
+          <text x="335" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">go-live</text>
+          <text x="600" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 48</text>
+          <line x1="335" y1="40" x2="335" y2="300" stroke="#6a6a6a" stroke-width="0.8" stroke-dasharray="3 3"/>
+          <!-- pre observed points -->
+          <g fill="#6a6a6a">
+            <circle cx="70" cy="267.5" r="2.6"/><circle cx="136" cy="251" r="2.6"/><circle cx="202" cy="228.5" r="2.6"/><circle cx="269" cy="212" r="2.6"/><circle cx="335" cy="189.5" r="2.6"/>
+          </g>
+          <!-- faint post points -->
+          <g fill="#6a6a6a" opacity="0.4">
+            <circle cx="335" cy="111.5" r="2.4"/><circle cx="401" cy="101.75" r="2.4"/><circle cx="467" cy="95.25" r="2.4"/><circle cx="534" cy="85.5" r="2.4"/><circle cx="600" cy="79" r="2.4"/>
+          </g>
+          <!-- fitted pre-trend -->
+          <line class="cs-trace" style="--cs-len:280" x1="70" y1="267.5" x2="335" y2="189.5" stroke="#111" stroke-width="2"/>
+          <text class="cs-fade" x="150" y="248" font-size="12" fill="#111" font-style="italic">prior trend (&#946;&#8321;)</text>
+        </svg>
+        <figcaption>A line fitted to the pre-period. The upward drift is real and it
+        predates the redesign.</figcaption>
+      </figure>
+    </section>
+
+    <section class="cs-step">
+      <h2>Interrupted time series takes the prior trend seriously</h2>
+      <p>Project the prior trend forward as the counterfactual: what the metric would
+      likely have done with no intervention. The real effect is not the gap from the
+      pre mean. It is the gap between what actually happened and that projection. A
+      segmented regression splits it into two named pieces, the <span class="em">level
+      shift</span> the day the redesign goes live (&#946;&#8322;) and the
+      <span class="em">slope change</span> afterward (&#946;&#8323;).</p>
+      <figure class="cs-figure">
+        <svg class="cs-svg" viewBox="0 0 640 340" role="img"
+             aria-label="The full interrupted time series. The prior trend continues as a dashed counterfactual. The actual post-intervention line jumps up at go-live and rises more slowly. The shaded area between actual and counterfactual is the estimated effect.">
+          <line x1="70" y1="40" x2="70" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <line x1="70" y1="300" x2="610" y2="300" stroke="#d0d0c8" stroke-width="1"/>
+          <text x="70" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 0</text>
+          <text x="335" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">go-live</text>
+          <text x="600" y="326" text-anchor="middle" font-size="11" fill="#6a6a6a">month 48</text>
+          <line x1="335" y1="40" x2="335" y2="300" stroke="#6a6a6a" stroke-width="0.8" stroke-dasharray="3 3"/>
+          <!-- estimated-effect shaded region between actual-post and counterfactual; accent (the one chart emphasis) -->
+          <polygon class="cs-fade" points="335,111.5 600,79 600,111.5 335,189.5" fill="#7a0000" opacity="0.13"/>
+          <!-- counterfactual (projected prior trend) -->
+          <line class="cs-trace" style="--cs-len:280" x1="335" y1="189.5" x2="600" y2="111.5" stroke="#6a6a6a" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <!-- pre-trend solid -->
+          <line class="cs-trace" style="--cs-len:280" x1="70" y1="267.5" x2="335" y2="189.5" stroke="#111" stroke-width="2"/>
+          <!-- level shift (vertical jump at go-live) -->
+          <line class="cs-fade" x1="335" y1="189.5" x2="335" y2="111.5" stroke="#111" stroke-width="2"/>
+          <!-- post-intervention actual -->
+          <line class="cs-trace" style="--cs-len:268" x1="335" y1="111.5" x2="600" y2="79" stroke="#111" stroke-width="2"/>
+          <!-- observed post points -->
+          <g class="cs-fade" fill="#111">
+            <circle cx="401" cy="101.75" r="2.6"/><circle cx="467" cy="95.25" r="2.6"/><circle cx="534" cy="85.5" r="2.6"/><circle cx="600" cy="79" r="2.6"/>
+          </g>
+          <!-- annotations -->
+          <g class="cs-rise">
+            <text x="300" y="155" text-anchor="end" font-size="12" fill="#111" font-style="italic">level shift</text>
+            <text x="300" y="170" text-anchor="end" font-size="12" fill="#111" font-style="italic">(&#946;&#8322;)</text>
+            <text x="470" y="150" font-size="12" fill="#6a6a6a" font-style="italic">counterfactual</text>
+            <text x="455" y="58" font-size="12" fill="#7a0000" font-style="italic">estimated effect</text>
+            <line x1="452" y1="62" x2="500" y2="96" stroke="#7a0000" stroke-width="0.8"/>
+          </g>
+        </svg>
+        <figcaption>The estimated effect is the shaded gap between the observed
+        post-period and the projected prior trend, decomposed into a level shift and
+        a slope change.</figcaption>
+      </figure>
+    </section>
+
+    <section class="cs-step">
+      <h2>The honest result is per metric, not one number</h2>
+      <p>An intervention that changes clinic operations across several dimensions
+      should not move every metric the same way, and this one did not. Reported
+      honestly, the effect is a small grid: a one-time jump that then flattens on
+      access, a slow build on documentation, and no movement at all on a third.
+      Rolling these into a single composite would have destroyed exactly the signal
+      the operational leads wanted to see.</p>
+      <figure class="cs-figure">
+        <svg class="cs-svg" viewBox="0 0 640 220" role="img"
+             aria-label="Three small panels. Access shows a level jump then flattening. Documentation shows no jump but a rising slope. The third shows a flat line with no change.">
+          <!-- panel 1: access, level up then flat -->
+          <g class="cs-rise">
+            <text x="110" y="24" text-anchor="middle" font-size="12.5" fill="#111" font-style="italic">access</text>
+            <line x1="30" y1="170" x2="190" y2="170" stroke="#d0d0c8" stroke-width="1"/>
+            <line x1="110" y1="40" x2="110" y2="170" stroke="#6a6a6a" stroke-width="0.7" stroke-dasharray="3 3"/>
+          </g>
+          <line class="cs-trace" style="--cs-len:90" x1="30" y1="150" x2="110" y2="120" stroke="#111" stroke-width="1.8"/>
+          <line class="cs-fade" x1="110" y1="120" x2="110" y2="78" stroke="#111" stroke-width="1.8"/>
+          <line class="cs-trace" style="--cs-len:84" x1="110" y1="78" x2="190" y2="68" stroke="#111" stroke-width="1.8"/>
+          <text class="cs-fade" x="110" y="198" text-anchor="middle" font-size="10.5" fill="#6a6a6a">level up, slope flattens</text>
+
+          <!-- panel 2: documentation, no jump, rising slope -->
+          <g class="cs-rise">
+            <text x="320" y="24" text-anchor="middle" font-size="12.5" fill="#111" font-style="italic">documentation</text>
+            <line x1="240" y1="170" x2="400" y2="170" stroke="#d0d0c8" stroke-width="1"/>
+            <line x1="320" y1="40" x2="320" y2="170" stroke="#6a6a6a" stroke-width="0.7" stroke-dasharray="3 3"/>
+          </g>
+          <line class="cs-trace" style="--cs-len:84" x1="240" y1="138" x2="320" y2="128" stroke="#111" stroke-width="1.8"/>
+          <line class="cs-trace" style="--cs-len:96" x1="320" y1="128" x2="400" y2="70" stroke="#111" stroke-width="1.8"/>
+          <text class="cs-fade" x="320" y="198" text-anchor="middle" font-size="10.5" fill="#6a6a6a">no jump, slope rises</text>
+
+          <!-- panel 3: no effect -->
+          <g class="cs-rise">
+            <text x="530" y="24" text-anchor="middle" font-size="12.5" fill="#111" font-style="italic">third metric</text>
+            <line x1="450" y1="170" x2="610" y2="170" stroke="#d0d0c8" stroke-width="1"/>
+            <line x1="530" y1="40" x2="530" y2="170" stroke="#6a6a6a" stroke-width="0.7" stroke-dasharray="3 3"/>
+          </g>
+          <line class="cs-trace" style="--cs-len:160" x1="450" y1="120" x2="610" y2="116" stroke="#111" stroke-width="1.8"/>
+          <text class="cs-fade" x="530" y="198" text-anchor="middle" font-size="10.5" fill="#6a6a6a">level and slope near zero</text>
+        </svg>
+        <figcaption>Three metrics, three different patterns. The heterogeneity is the
+        finding, not noise to be averaged away.</figcaption>
+      </figure>
+    </section>
+
+    <section class="cs-close">
+      <h2 style="font-size:1.5rem;font-weight:500;margin-bottom:0.6rem;">What the design cannot tell you</h2>
+      <p>Interrupted time series attributes the change at the intervention point to
+      the intervention, conditional on the prior trend and seasonality. It cannot say
+      which component of the redesign caused it, cannot fully separate the effect from
+      a national event that happened to land at the same time, and cannot rescue a
+      poorly defined metric. Knowing those limits is part of using the design well.
+      The discipline that separates a credible attribution from a story dressed up in
+      coefficients is the prior trend, the staggered-clinic structure, standard errors
+      clustered at the clinic, and the autocorrelation check.</p>
+      <p class="cs-links">
+        <a href="/blog/interrupted-time-series-care-redesign/">Read the full methodology write-up &rarr;</a>
+        <a href="/#projects">See other projects</a>
+      </p>
+    </section>
+  </article>
+
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/colophon/">Colophon</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/#contact">Contact</a>
+    </nav>
+  </footer>
+
+  </main>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events (same pattern
+  // as the blog chrome). Same-host links are ignored.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>

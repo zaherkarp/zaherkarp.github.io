@@ -321,6 +321,7 @@ SUBPAGES = [
     "/life-in-weeks/",
     "/epidemic-simulation/",
     "/colophon/",
+    "/case-study-care-redesign/",
 ]
 
 
