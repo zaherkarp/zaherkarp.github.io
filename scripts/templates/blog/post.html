@@ -42,7 +42,7 @@
       {% endif %}
       {% if tags %}
       <ul class="blog-tags">
-        {% for tag in tags %}<li>{{ tag }}</li>{% endfor %}
+        {% for tag in tags %}<li><a href="/blog/tags/{{ tag | tag_slug }}/">{{ tag }}</a></li>{% endfor %}
       </ul>
       {% endif %}
     </div>

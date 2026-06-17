@@ -26,6 +26,7 @@ import re
 import shutil
 import subprocess
 import sys
+from collections import Counter
 from datetime import date, datetime, time, timezone
 from pathlib import Path
 
@@ -35,7 +36,7 @@ from markdown_it import MarkdownIt
 from mdit_py_plugins.footnote import footnote_plugin
 from mdit_py_plugins.deflist import deflist_plugin
 
-from _common import install_git_hooks
+from _common import install_git_hooks, slugify_tag
 
 install_git_hooks()
 
@@ -338,6 +339,7 @@ def render_current_index(env: Environment, posts: list[dict], archive_count: int
         intro="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and the places where CMS Technical Notes and production reality diverge.",
         posts=posts,
         archive_link=archive_link,
+        tags_link="/blog/tags/",
         experiments=EXPERIMENTS,
         current_year=current_year,
         build_info=build_info,
@@ -360,6 +362,74 @@ def render_archive_index(env: Environment, posts: list[dict], current_year: int,
     )
 
 
+def build_tag_index(posts: list[dict]) -> list[dict]:
+    """Group non-draft posts by tag slug for the /blog/tags/ pages.
+
+    Returns a list of {slug, label, posts, count} sorted by count desc then
+    slug. `label` is the most common verbatim tag spelling among the grouped
+    posts (ties broken alphabetically), so "HEDIS" stays uppercase and
+    "Medicare Advantage" keeps its casing even though the slug is lowercased.
+    `posts` is newest-first. A post that lists two spellings of the same slug
+    ("data engineering" and "data-engineering") is counted once for that slug.
+    """
+    groups: dict[str, dict] = {}
+    for post in posts:
+        seen: set[str] = set()
+        for raw in post["tags"]:
+            slug = slugify_tag(raw)
+            if not slug or slug in seen:
+                continue
+            seen.add(slug)
+            g = groups.setdefault(slug, {"posts": [], "labels": Counter()})
+            g["posts"].append(post)
+            g["labels"][str(raw).strip()] += 1
+    tags: list[dict] = []
+    for slug, g in groups.items():
+        # sorted() makes the tie-break alphabetical; max() then takes the
+        # most frequent spelling, first-encountered on a count tie.
+        label = max(sorted(g["labels"]), key=lambda lbl: g["labels"][lbl])
+        g["posts"].sort(key=lambda p: p["publish_date"], reverse=True)
+        tags.append({
+            "slug": slug,
+            "label": label,
+            "posts": g["posts"],
+            "count": len(g["posts"]),
+        })
+    tags.sort(key=lambda t: (-t["count"], t["slug"]))
+    return tags
+
+
+def render_tag_page(env: Environment, tag: dict, current_year: int, build_info: dict) -> str:
+    template = env.get_template("blog/list.html")
+    plural = "s" if tag["count"] != 1 else ""
+    return template.render(
+        page_title=f"{tag['label']} — Writing — Zaher Karp",
+        page_description=f"Writing tagged {tag['label']}.",
+        canonical_url=f"{SITE_URL}/blog/tags/{tag['slug']}/",
+        section_label=f"Tagged {tag['label']}",
+        intro=f"{tag['count']} post{plural} tagged “{tag['label']}”.",
+        posts=tag["posts"],
+        back_link={"url": "/blog/tags/", "label": "← All tags"},
+        current_year=current_year,
+        build_info=build_info,
+    )
+
+
+def render_tags_index(env: Environment, tags: list[dict], current_year: int, build_info: dict) -> str:
+    template = env.get_template("blog/tags.html")
+    return template.render(
+        page_title="Tags — Zaher Karp",
+        page_description="Browse writing by tag.",
+        canonical_url=f"{SITE_URL}/blog/tags/",
+        section_label="Tags",
+        intro=f"Browse writing by topic. {len(tags)} tags across the blog.",
+        tags=tags,
+        back_link={"url": "/blog/", "label": "← Current writing"},
+        current_year=current_year,
+        build_info=build_info,
+    )
+
+
 def render_feed(env: Environment, posts: list[dict], build_info: dict) -> str:
     template = env.get_template("blog/feed.xml.j2")
     return template.render(
@@ -376,7 +446,12 @@ def _subpage_lastmod(subpage_path: str) -> str | None:
     return git_iso_lastmod(candidate)
 
 
-def write_sitemap(current_posts: list[dict], archive_posts: list[dict]) -> None:
+def _newest_modified(posts: list[dict]) -> str | None:
+    """Latest modified_iso across posts (ISO strings sort lexically), or None."""
+    return max((p["modified_iso"] for p in posts), default=None)
+
+
+def write_sitemap(current_posts: list[dict], archive_posts: list[dict], tags: list[dict]) -> None:
     homepage_lastmod = git_iso_lastmod(ROOT / "index.html")
     newest_post_iso = (
         f"{current_posts[0]['publish_date_iso']}T00:00:00Z" if current_posts else None
@@ -400,6 +475,13 @@ def write_sitemap(current_posts: list[dict], archive_posts: list[dict]) -> None:
             urls.append({
                 "loc": f"{SITE_URL}/blog/{p['slug']}/",
                 "lastmod": p["modified_iso"],
+            })
+    if tags:
+        urls.append({"loc": f"{SITE_URL}/blog/tags/", "lastmod": _newest_modified(current_posts + archive_posts)})
+        for t in tags:
+            urls.append({
+                "loc": f"{SITE_URL}/blog/tags/{t['slug']}/",
+                "lastmod": _newest_modified(t["posts"]),
             })
 
     lines = [
@@ -437,6 +519,9 @@ def main() -> int:
         trim_blocks=False,
         lstrip_blocks=False,
     )
+    # Lets the post template build /blog/tags/<slug>/ hrefs from a raw tag
+    # using the same slug rule the tag pages are written under.
+    env.filters["tag_slug"] = slugify_tag
 
     md = make_markdown()
     now_utc = datetime.now(timezone.utc)
@@ -501,14 +586,33 @@ def main() -> int:
         )
         print(f"wrote blog/archive/index.html ({len(archive_posts)} posts)")
 
+    # Tag pages cross-cut both current and archive posts: a reader clicking
+    # "interview" should reach every post so tagged, regardless of where the
+    # archive cutoff places it in the main listing.
+    tags = build_tag_index(posts)
+    if tags:
+        tags_dir = OUT_DIR / "tags"
+        tags_dir.mkdir(parents=True, exist_ok=True)
+        (tags_dir / "index.html").write_text(
+            render_tags_index(env, tags, current_year, build_info), encoding="utf-8"
+        )
+        for tag in tags:
+            tag_dir = tags_dir / tag["slug"]
+            tag_dir.mkdir(parents=True, exist_ok=True)
+            (tag_dir / "index.html").write_text(
+                render_tag_page(env, tag, current_year, build_info), encoding="utf-8"
+            )
+        print(f"wrote blog/tags/ index + {len(tags)} tag pages")
+
     (OUT_DIR / "feed.xml").write_text(
         render_feed(env, current_posts, build_info), encoding="utf-8"
     )
     print(f"wrote blog/feed.xml ({min(len(current_posts), FEED_MAX_ITEMS)} items)")
 
-    write_sitemap(current_posts, archive_posts)
+    write_sitemap(current_posts, archive_posts, tags)
     archive_url_count = (1 + len(archive_posts)) if archive_posts else 0
-    total_urls = 2 + len(SUBPAGES) + len(current_posts) + archive_url_count
+    tag_url_count = (1 + len(tags)) if tags else 0
+    total_urls = 2 + len(SUBPAGES) + len(current_posts) + archive_url_count + tag_url_count
     print(f"wrote sitemap.xml ({total_urls} urls)")
     return 0
 
