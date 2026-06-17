@@ -320,6 +320,7 @@ SUBPAGES = [
     "/star-rating-predictor/",
     "/life-in-weeks/",
     "/epidemic-simulation/",
+    "/colophon/",
 ]
 
 

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colophon, Zaher Karp</title>
+<meta name="description" content="How this site is engineered: a pure HTML and CSS portfolio with no framework, built by five Python pipelines, guarded by six linters and a pre-push hook, and treated as an engineering artifact in its own right.">
+<link rel="canonical" href="https://zaherkarp.com/colophon/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta property="og:title" content="Colophon, Zaher Karp">
+<meta property="og:description" content="How this site is engineered: no framework, five build pipelines, six linters, a self-installing pre-push hook.">
+<meta property="og:url" content="https://zaherkarp.com/colophon/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Colophon, Zaher Karp">
+<meta name="twitter:description" content="How this site is engineered: no framework, five build pipelines, six linters, a self-installing pre-push hook.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+<style>
+  /* Colophon-scoped layout only; palette, type, and the SVG palette
+     adapter all come from blog.css. Inline because this is a one-off
+     subpage, per the blog-experiment subpage convention. */
+  .colophon-lead { font-size: var(--size-body); color: var(--text); max-width: 34em; margin-bottom: 1.5rem; }
+
+  .colophon-fig { display: block; width: 100%; max-width: 680px; height: auto; margin: 1.75rem auto 0.6rem; }
+  .colophon-fig text { font-family: 'et-book', Palatino, "Palatino Linotype", Georgia, serif; }
+  figure.colophon-figure { margin: 2rem 0 2.5rem; }
+  figure.colophon-figure figcaption {
+    font-style: italic; color: var(--muted);
+    font-size: var(--size-caption); text-align: center; max-width: 34em; margin: 0 auto;
+  }
+
+  /* Spec rows: a mono identifier in a hanging left column, prose to its
+     right. Collapses to stacked on narrow viewports. */
+  .spec { margin: 0 0 1.5rem; }
+  .spec > div {
+    display: grid; grid-template-columns: 13.5rem 1fr; gap: 0.4rem 1.4rem;
+    padding: 0.7rem 0; border-top: 1px solid var(--rule); align-items: baseline;
+  }
+  .spec > div:last-child { border-bottom: 1px solid var(--rule); }
+  .spec .k {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: calc(var(--size-caption) * 0.95); color: var(--text); line-height: 1.5;
+  }
+  .spec .v { color: var(--muted); font-size: calc(var(--size-body) * 0.92); line-height: 1.45; }
+  .spec .v strong { color: var(--text); font-weight: 500; }
+  @media (max-width: 620px) {
+    .spec > div { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+
+  /* One-shot load-draw on the pipeline figure, mirroring the blog
+     post-figure motion vocabulary (time-based, compositor-only,
+     ungated, well under three seconds). Boxes fade in left to right;
+     arrows trace; the quality gate lands last as the punchline. */
+  @keyframes col-fade { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes col-draw { from { stroke-dashoffset: var(--col-len); } }
+  .col-node { animation: col-fade 0.7s ease-out both; }
+  .col-arrow { stroke-dasharray: var(--col-len); animation: col-draw 0.6s ease-out both; }
+  .col-gate { animation: col-fade 0.8s ease-out both; }
+  .col-d0 { animation-delay: 0s; }
+  .col-d1 { animation-delay: 0.45s; }
+  .col-d2 { animation-delay: 0.9s; }
+  .col-d3 { animation-delay: 1.35s; }
+  .col-d4 { animation-delay: 1.8s; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  <article class="blog-article">
+    <a href="/" class="back-link">&larr; Back home</a>
+    <header class="blog-header">
+      <h1 class="blog-title">Colophon</h1>
+    </header>
+    <div class="blog-body">
+      <p class="colophon-lead">This site has no framework, no bundler, and no
+      build tool that hides a decision from me. It is hand-written HTML and CSS,
+      published on GitHub Pages. That does not mean there is no build system. It
+      means the build system is small, legible, and mine. What follows is how the
+      site is actually made, because the way a thing is engineered is itself a
+      portfolio piece.</p>
+
+      <figure class="colophon-figure">
+        <svg class="colophon-fig" viewBox="0 0 700 230" role="img"
+             aria-label="Pipeline diagram: sources flow through five build scripts, past a gate of six linters and a pre-push hook, into the published outputs.">
+          <!-- Sources -->
+          <g class="col-node col-d0">
+            <rect x="14" y="64" width="184" height="92" rx="3" fill="none" stroke="#111" stroke-width="1.2"/>
+            <text x="106" y="86" text-anchor="middle" font-size="15" fill="#111" font-style="italic">Sources</text>
+            <text x="106" y="111" text-anchor="middle" font-size="12.5" fill="#6a6a6a">markdown + frontmatter</text>
+            <text x="106" y="129" text-anchor="middle" font-size="12.5" fill="#6a6a6a">publications.yaml</text>
+            <text x="106" y="147" text-anchor="middle" font-size="12.5" fill="#6a6a6a">CMS Stars distribution</text>
+          </g>
+          <!-- arrow 1 -->
+          <line class="col-arrow col-d1" style="--col-len:58" x1="200" y1="110" x2="256" y2="110" stroke="#111" stroke-width="1.4"/>
+          <polygon class="col-node col-d1" points="256,105 266,110 256,115" fill="#111"/>
+          <!-- Build -->
+          <g class="col-node col-d2">
+            <rect x="268" y="64" width="164" height="92" rx="3" fill="none" stroke="#111" stroke-width="1.2"/>
+            <text x="350" y="86" text-anchor="middle" font-size="15" fill="#111" font-style="italic">Build</text>
+            <text x="350" y="111" text-anchor="middle" font-size="12.5" fill="#6a6a6a">5 Python scripts</text>
+            <text x="350" y="129" text-anchor="middle" font-size="12.5" fill="#6a6a6a">markdown-it, Jinja2,</text>
+            <text x="350" y="147" text-anchor="middle" font-size="12.5" fill="#6a6a6a">WeasyPrint</text>
+          </g>
+          <!-- arrow 2 -->
+          <line class="col-arrow col-d3" style="--col-len:58" x1="434" y1="110" x2="490" y2="110" stroke="#111" stroke-width="1.4"/>
+          <polygon class="col-node col-d3" points="490,105 500,110 490,115" fill="#111"/>
+          <!-- Outputs -->
+          <g class="col-node col-d3">
+            <rect x="502" y="64" width="184" height="92" rx="3" fill="none" stroke="#111" stroke-width="1.2"/>
+            <text x="594" y="86" text-anchor="middle" font-size="15" fill="#111" font-style="italic">Published</text>
+            <text x="594" y="111" text-anchor="middle" font-size="12.5" fill="#6a6a6a">blog + homepage</text>
+            <text x="594" y="129" text-anchor="middle" font-size="12.5" fill="#6a6a6a">resume + CV PDFs</text>
+            <text x="594" y="147" text-anchor="middle" font-size="12.5" fill="#6a6a6a">sitemap, OG card</text>
+          </g>
+          <!-- quality gate, the punchline, drawn in accent last -->
+          <g class="col-gate col-d4">
+            <line x1="350" y1="156" x2="350" y2="184" stroke="#7a0000" stroke-width="1.2"/>
+            <text x="350" y="203" text-anchor="middle" font-size="12.5" fill="#7a0000" font-style="italic">6 linters + pre-push hook</text>
+            <text x="350" y="220" text-anchor="middle" font-size="11" fill="#6a6a6a">nothing ships that fails a gate</text>
+          </g>
+        </svg>
+        <figcaption>Source files in, published artifacts out. Every push runs the
+        gates first; a failing check blocks the push, locally and in CI.</figcaption>
+      </figure>
+
+      <h2>The constraint</h2>
+      <p>The homepage and subpages are pure HTML and CSS. No framework, no
+      preprocessor, no bundler, no Google Fonts. The body face is ETBook, the
+      MIT-licensed revival of the type Tufte used in print, self-hosted in two
+      weights. JavaScript appears in exactly four narrow places: a
+      privacy-respecting page-view counter, and three URL-scoped interactive
+      subpages where static markup genuinely cannot express the idea (a Star
+      Ratings cliff simulator, a 4,680-week life grid, and a stochastic epidemic
+      model that runs Python in the browser). Everywhere else, including this
+      page, the rule is HTML and CSS or nothing.</p>
+
+      <h2>Build pipelines</h2>
+      <p>Five Python scripts turn source files into the published site. Each is
+      idempotent: running it twice with the same inputs produces the same output.
+      Generated files are committed by CI on the same run that triggers them, so
+      the repository is always a faithful snapshot of what is live.</p>
+      <div class="spec">
+        <div><span class="k">build_blog.py</span><span class="v"><strong>Posts, listings, tags, feed.</strong> Renders each markdown post to a pretty URL, splits current from archive writing, generates the per-tag archive pages, the RSS feed, and the sitemap. KaTeX, Mermaid, and a syntax tokenizer load from a CDN only on posts that actually use them.</span></div>
+        <div><span class="k">build_portfolio.py</span><span class="v"><strong>Homepage insertions.</strong> Injects the writing-cadence sparkline, the featured-and-tiles writing list, and the Publications block. Citation counts come from Semantic Scholar, cached back into the source YAML so a rate limit never wipes a number.</span></div>
+        <div><span class="k">build_resume.py</span><span class="v"><strong>Resume and CV.</strong> One source per document, two outputs each: a print-ready PDF via WeasyPrint and a web page. Publications are rendered from the same YAML the homepage uses, so the count is consistent across all three surfaces.</span></div>
+        <div><span class="k">build_cliff.py</span><span class="v"><strong>The Stars cliff curve.</strong> Renders the Medicare Advantage Star Ratings density curve on the homepage directly from the canonical CMS distribution, rather than a hand-drawn approximation. Re-run when CMS publishes the new ratings.</span></div>
+        <div><span class="k">build_og.py</span><span class="v"><strong>Social card.</strong> Renders the Open Graph preview image from a small composition rule, using the same locked palette tokens as the rest of the site.</span></div>
+      </div>
+
+      <h2>Quality gates</h2>
+      <p>The thing I am most deliberate about is that the site cannot quietly
+      drift. Six linters run on every push, installed automatically the first
+      time any project script runs, so a fresh clone wires up its own pre-push
+      hook with no manual setup. They enforce consistency a human reviewer would
+      eventually miss.</p>
+      <div class="spec">
+        <div><span class="k">lint_facts.py</span><span class="v">Cross-checks employer, title, and dates across the resume, the homepage, and the structured JSON-LD metadata. The same fact stated in three places must agree.</span></div>
+        <div><span class="k">lint_recognition.py</span><span class="v">Every award or service entry shown on the homepage must have a counterpart in the comprehensive CV record. The public highlight reel is a strict subset of the full one.</span></div>
+        <div><span class="k">lint_gantt.py</span><span class="v">The hand-coded Education and Service timeline figure must carry a mark for every entry in the prose sections it summarizes, read back from the chart's own coordinate transform.</span></div>
+        <div><span class="k">lint_notes.py</span><span class="v">A margin note may not restate a number or a phrase already in the page's prose, so the asides stay additive rather than redundant.</span></div>
+        <div><span class="k">lint_vocab.py</span><span class="v">Program names from CMS, like Star Ratings and Medicare Advantage, render in their canonical capitalization across every post and page.</span></div>
+        <div><span class="k">lint_blog.py</span><span class="v">Catches the source-side markdown mistakes that render as garbage: leaked HTML comments, blank lines inside an inline SVG, a diagram written as a blockquote.</span></div>
+      </div>
+      <p>Alongside the linters, the pre-push hook also checks that the site
+      chrome stays free of em dashes, that the accent color stays within its
+      strict use budget, and that the design-critique pipeline keeps no
+      dependency on any one model vendor. A separate, scheduled pipeline runs a
+      structured multi-camp design critique of the site against its own taste
+      rules.</p>
+
+      <h2>Why it is built this way</h2>
+      <p>None of this is necessary for a personal website. I built it this way on
+      purpose, because the habits are the same ones that matter in a production
+      data system: one source of truth for every fact, generated artifacts that
+      are reproducible from that source, automated checks that fail loudly before
+      anything ships, and graceful degradation when an external dependency
+      misbehaves. A portfolio that claims those habits should be able to show
+      them. This page, and the repository behind it, are the evidence.</p>
+      <p>If you want the longer story of how the site got here, across three
+      rebuilds and a great deal of doing things the slow way, it is
+      <a href="/blog/building-my-site/">written up on the blog</a>.</p>
+    </div>
+  </article>
+
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <a href="/#contact">Contact</a>
+    </nav>
+  </footer>
+
+  </main>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events (same pattern
+  // as the blog chrome). Same-host links are ignored.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
