@@ -1,0 +1,255 @@
+# skills.yaml: single source of truth for Zaher Karp's skills.
+#
+# The keystone of the private job-search tooling (CLAUDE.md has no public
+# surface for this yet; it is local dev tooling). Consumed by:
+#   - scripts/_skills.py render_resume_skills() -> the resume "## Skills"
+#     section. DEFERRED: written and unit-checked, but NOT wired into
+#     build_resume.py until explicitly turned on. The skill list below is a
+#     byte-exact port of the three current resume.md Skills lines so that the
+#     first regeneration is a no-op diff.
+#   - scripts/_skills.py render_jobfit_matrix() -> the private job-fit matrix
+#     (jobsearch/out/jobfit-matrix.md; gitignored, never committed).
+#   - scripts/lint_jobfit.py -> the evidence-gap report: any skill whose
+#     `evidence` refs resolve to no public artifact prints as a work-search
+#     item (a thing to write/ship before leaning on the claim).
+#   - scripts/build_jobsearch.py packet -> matches a target job description's
+#     wants against these skills (publicly-proven ones count toward coverage).
+#
+# Field notes (per skill entry):
+#   id          slug; stable handle used by the lint/matrix and by the
+#               outreach.yaml `motivating_skill` foreign key.
+#   name        canonical display string, used VERBATIM in the resume line and
+#               the matrix. Keep CMS program names in canonical casing and keep
+#               the whole file em-dash-clean (it joins the chrome register the
+#               moment render_resume_skills is wired in).
+#   category    one of `categories_order` below; groups the resume line. First
+#               appearance order within a category sets the order on the line.
+#   aliases     optional alternate spellings the matcher also accepts when
+#               comparing a skill against a job description's wants (e.g.
+#               "Star Ratings" for "CMS Medicare Stars").
+#   level       optional self-rating (core | working | familiar); matrix only.
+#   evidence    list of public-proof refs, each {kind, ref}:
+#                 kind: post    -> ref is a blog slug under src/content/blog/
+#                 kind: project -> ref matches a project card title in index.html
+#                 kind: role    -> ref matches an employer in resume.md
+#               Empty or omitted => the skill is unproven (a work-search item).
+#               The lint checks the artifact EXISTS and is public; it does not
+#               verify the skill is named inside it (that stays your judgement).
+#
+# Em-dash policy (CLAUDE.md): keep this file em-dash-clean.
+
+categories_order:
+  - "Engineering & data"
+  - "Cloud & BI"
+  - "Healthcare"
+
+# Private target archetypes: your own framing of the roles you are searching
+# for. No employer data. `wants` are matched against skill name + aliases.
+archetypes:
+  - id: stars-platform-lead
+    label: "Stars / MA quality platform lead"
+    wants: ["CMS Medicare Stars", "HEDIS", "dbt", "SQL", "Python", "team leadership"]
+  - id: healthcare-data-platform
+    label: "Healthcare data platform / analytics engineering"
+    wants: ["dbt", "Redshift", "AWS", "data modeling", "SQL", "Python"]
+
+skills:
+  # ── Engineering & data ──
+  - id: sql
+    name: "SQL (T-SQL, PostgreSQL, MySQL / MariaDB, Redshift, Oracle)"
+    category: "Engineering & data"
+    level: core
+    aliases: ["SQL", "T-SQL", "PostgreSQL", "Postgres", "MySQL", "MariaDB", "Redshift", "Oracle"]
+    evidence:
+      - { kind: post,    ref: "cicd-for-sql-developers" }
+      - { kind: post,    ref: "tcp-keepalive-postgresql" }
+      - { kind: project, ref: "Stars Cliff Simulator" }
+      - { kind: role,    ref: "Health Catalyst" }
+  - id: python
+    name: "Python (pandas, PySpark)"
+    category: "Engineering & data"
+    level: core
+    aliases: ["Python", "pandas", "PySpark"]
+    evidence:
+      - { kind: post, ref: "paper-saver-estimating-xgboost-compute-costs-on-aws" }
+      - { kind: post, ref: "jemalloc-healthcare" }
+      - { kind: role, ref: "Baltimore Health Analytics" }
+  - id: dbt
+    name: "dbt"
+    category: "Engineering & data"
+    level: core
+    evidence:
+      - { kind: role, ref: "Health Catalyst" }
+  - id: rails
+    name: "Ruby on Rails"
+    category: "Engineering & data"
+    level: working
+    aliases: ["Rails", "Ruby"]
+    evidence:
+      - { kind: role, ref: "Baltimore Health Analytics" }
+  - id: clojure
+    name: "Clojure"
+    category: "Engineering & data"
+    level: working
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: perl
+    name: "Perl"
+    category: "Engineering & data"
+    level: working
+    evidence:
+      - { kind: role, ref: "Baltimore Health Analytics" }
+  - id: sas
+    name: "SAS"
+    category: "Engineering & data"
+    level: working
+    evidence:
+      - { kind: role, ref: "University of Wisconsin" }
+  - id: stata
+    name: "Stata"
+    category: "Engineering & data"
+    level: working
+    evidence:
+      - { kind: role, ref: "University of Wisconsin" }
+  - id: r
+    name: "R"
+    category: "Engineering & data"
+    level: working
+    evidence:
+      - { kind: role, ref: "University of Wisconsin" }
+  - id: git
+    name: "git"
+    category: "Engineering & data"
+    level: core
+    evidence:
+      - { kind: post, ref: "git-cherry-for-data-engineers" }
+      - { kind: post, ref: "version-control" }
+
+  # ── Cloud & BI ──
+  - id: aws
+    name: "AWS (S3, Redshift, QuickSight)"
+    category: "Cloud & BI"
+    level: core
+    aliases: ["AWS", "Amazon Web Services", "S3", "Redshift", "QuickSight"]
+    evidence:
+      - { kind: post, ref: "paper-saver-cloud-maturity-and-lock-in" }
+      - { kind: role, ref: "Health Catalyst" }
+  - id: azure-databricks
+    name: "Azure / Databricks"
+    category: "Cloud & BI"
+    level: working
+    aliases: ["Azure", "Databricks"]
+    evidence:
+      - { kind: role, ref: "Health Catalyst" }
+  - id: okta
+    name: "Okta SSO / RBAC"
+    category: "Cloud & BI"
+    level: familiar
+    aliases: ["Okta", "SSO", "RBAC"]
+    # No public artifact yet -> surfaces as a work-search item.
+    evidence: []
+  - id: sisense
+    name: "Sisense"
+    category: "Cloud & BI"
+    level: working
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: periscope
+    name: "Periscope"
+    category: "Cloud & BI"
+    level: working
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: power-bi
+    name: "Power BI"
+    category: "Cloud & BI"
+    level: working
+    aliases: ["PowerBI"]
+    evidence:
+      - { kind: role, ref: "Health Catalyst" }
+  - id: grafana
+    name: "Grafana"
+    category: "Cloud & BI"
+    level: familiar
+    evidence: []
+  - id: datadog
+    name: "Datadog"
+    category: "Cloud & BI"
+    level: familiar
+    evidence: []
+
+  # ── Healthcare ──
+  - id: hedis
+    name: "HEDIS"
+    category: "Healthcare"
+    level: core
+    evidence:
+      - { kind: post, ref: "hedis-measure-etl-patterns" }
+      - { kind: role, ref: "Baltimore Health Analytics" }
+  - id: stars
+    name: "CMS Medicare Stars"
+    category: "Healthcare"
+    level: core
+    aliases: ["Star Ratings", "CMS Star Ratings", "Medicare Stars", "Stars"]
+    evidence:
+      - { kind: post,    ref: "gravity-of-star-ratings" }
+      - { kind: post,    ref: "lucas-critique-stars-forecasting" }
+      - { kind: project, ref: "Stars Cliff Simulator" }
+      - { kind: role,    ref: "Baltimore Health Analytics" }
+  - id: aco-mssp
+    name: "ACO / MSSP"
+    category: "Healthcare"
+    level: working
+    aliases: ["ACO", "MSSP", "Medicare Shared Savings"]
+    evidence:
+      - { kind: role, ref: "University of Wisconsin" }
+  - id: hipaa
+    name: "HIPAA"
+    category: "Healthcare"
+    level: core
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: hitrust
+    name: "HITRUST"
+    category: "Healthcare"
+    level: working
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: icd10
+    name: "ICD-10"
+    category: "Healthcare"
+    level: familiar
+    evidence: []
+  - id: rxnorm
+    name: "RxNorm"
+    category: "Healthcare"
+    level: working
+    evidence:
+      - { kind: role, ref: "Health Catalyst" }
+  - id: hl7
+    name: "HL7"
+    category: "Healthcare"
+    level: familiar
+    evidence: []
+  - id: epic
+    name: "Epic"
+    category: "Healthcare"
+    level: working
+    aliases: ["Epic Clarity"]
+    evidence:
+      - { kind: role, ref: "Healthfinch" }
+  - id: cerner
+    name: "Cerner"
+    category: "Healthcare"
+    level: familiar
+    evidence: []
+  - id: veradigm
+    name: "Veradigm"
+    category: "Healthcare"
+    level: familiar
+    evidence: []
+  - id: athenahealth
+    name: "athenahealth"
+    category: "Healthcare"
+    level: familiar
+    evidence: []
