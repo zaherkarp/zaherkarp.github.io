@@ -45,8 +45,10 @@ Sep 2009 – Jun 2018
 
 ## Skills
 
+<!-- skills:start -->
 **Engineering & data:** SQL (T-SQL, PostgreSQL, MySQL / MariaDB, Redshift, Oracle) · Python (pandas, PySpark) · dbt · Ruby on Rails · Clojure · Perl · SAS · Stata · R · git
 
 **Cloud & BI:** AWS (S3, Redshift, QuickSight) · Azure / Databricks · Okta SSO / RBAC · Sisense · Periscope · Power BI · Grafana · Datadog
 
 **Healthcare:** HEDIS · CMS Medicare Stars · ACO / MSSP · HIPAA · HITRUST · ICD-10 · RxNorm · HL7 · Epic · Cerner · Veradigm · athenahealth
+<!-- skills:end -->
