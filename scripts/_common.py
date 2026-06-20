@@ -7,6 +7,12 @@ into the URL slug used by the per-tag archive pages (blog/tags/<slug>/).
 Both build_blog.py (which emits the pages) and build_portfolio.py (which
 links to them from the homepage cadence rollup) import slugify_tag so the
 two surfaces can never disagree on a slug.
+
+Also exposes the cross-surface alignment matcher (years_of / tokens_of /
+token_overlap / alignment_match), extracted from lint_recognition.py and
+lint_gantt.py so a new alignment lint (lint_jobfit.py) can reuse it. The
+extraction is additive: those two lints keep their own local copies and
+stoplists, so their behavior is unchanged.
 """
 
 from __future__ import annotations
@@ -31,6 +37,62 @@ _TAG_SLUG_RE = re.compile(r"[^a-z0-9]+")
 def slugify_tag(tag: str) -> str:
     """Normalize a blog tag to its URL slug (lowercase, hyphen-separated)."""
     return _TAG_SLUG_RE.sub("-", str(tag).strip().lower()).strip("-")
+
+
+# ─── cross-surface alignment matcher ───────────────────────────────────────
+# Extracted from lint_recognition.py / lint_gantt.py so a new alignment lint
+# (lint_jobfit.py) can reuse the same year + token machinery. Additive: those
+# two lints keep their own local copies and STOP sets, so their behavior is
+# unchanged. The one design difference is that `stop` is a REQUIRED parameter
+# (no default), which makes the stoplist an explicit choice at every call site
+# and prevents one caller's tuning from silently shifting another's.
+
+_YEAR_RE = re.compile(r"\b(?:19|20)\d{2}\b")
+_NON_TOKEN_RE = re.compile(r"[^a-z0-9]+")
+
+
+def years_of(s: str) -> set[int]:
+    """The four-digit 19xx/20xx years mentioned in a string."""
+    return {int(m.group()) for m in _YEAR_RE.finditer(s)}
+
+
+def tokens_of(s, stop, *, min_len=3, normalize=None):
+    """Significant lowercase tokens in `s`.
+
+    Splits on non-alphanumerics, drops tokens shorter than `min_len`, pure
+    digits (years are handled by years_of), and anything in `stop`. `stop` is
+    required so each call site states its own stoplist explicitly. `normalize`
+    is an optional pre-pass (e.g. HTML-entity decoding) applied before casefold.
+    """
+    if normalize is not None:
+        s = normalize(s)
+    out: set[str] = set()
+    for t in _NON_TOKEN_RE.split(s.lower()):
+        if len(t) < min_len or t.isdigit() or t in stop:
+            continue
+        out.add(t)
+    return out
+
+
+def token_overlap(a, b, *, min_shared=2) -> bool:
+    """True if token sets `a` and `b` share at least `min_shared` members.
+
+    The year-free predicate, for surfaces that do not both carry dates (a
+    skill vs. a job description). lint_jobfit / packet matching use this; the
+    recognition/gantt lints use alignment_match below.
+    """
+    return len(a & b) >= min_shared
+
+
+def alignment_match(a_years, a_tokens, b_years, b_tokens, *, min_shared=2) -> bool:
+    """Year overlap AND >= min_shared shared tokens.
+
+    The recognition/gantt predicate, faithfully extracted for reuse. Requires
+    both sides to share a year, so it suits dated-vs-dated surfaces only.
+    """
+    if not (a_years & b_years):
+        return False
+    return token_overlap(a_tokens, b_tokens, min_shared=min_shared)
 
 
 def install_git_hooks() -> None:

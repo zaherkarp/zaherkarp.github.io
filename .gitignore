@@ -16,3 +16,8 @@ __pycache__/
 # Env
 .env
 .env.local
+
+# Job search (private, local-only). The tooling (skills.yaml + scripts +
+# templates) is tracked; the real targets, contacts, and generated packets
+# live here and must never reach this public repo.
+/jobsearch/

@@ -1,0 +1,21 @@
+# outreach.example.yaml — copy to jobsearch/outreach.yaml and fill with real,
+# PRIVATE details. jobsearch/ is gitignored; never commit real contacts.
+#
+# Each contact links back to the skill/project that motivated the reach-out
+# (motivating_skill is a skills.yaml id; motivating_project is a project-card
+# title). A contact is surfaced by `build_jobsearch.py outreach` when its
+# status is open|waiting and next_followup is today or earlier.
+contacts:
+  - id: jane-doe-example
+    name: "Jane Doe"
+    org: "Example Health"
+    role: "Director of Engineering"
+    channel: "linkedin"          # linkedin | email | referral
+    target: example-stars-lead   # optional FK -> targets/<id>.md
+    motivating_skill: stars       # FK -> a skills.yaml id
+    motivating_project: "Stars Cliff Simulator"
+    history:
+      - { date: 2026-06-01, kind: sent, note: "intro message + portfolio link" }
+      - { date: 2026-06-08, kind: reply, note: "asked about Stars pipeline scale" }
+    next_followup: 2026-06-15
+    status: waiting              # open | waiting | done | dropped
