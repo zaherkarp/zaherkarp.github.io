@@ -50,6 +50,7 @@ from weasyprint import HTML
 
 from _common import install_git_hooks
 from _publications import load_publications, render_cv_entries
+from _skills import load_skills, render_resume_skills
 
 install_git_hooks()
 
@@ -83,6 +84,15 @@ DOCS = [
 ]
 
 PUBLICATIONS_PLACEHOLDER = "<!-- publications -->"
+
+# resume.md carries its Skills lines between these markers; the build
+# regenerates them from skills.yaml (the single source of truth) and strips the
+# marker comments before rendering, so resume.html/pdf stay marker-free and
+# byte-identical to the hand-authored lines.
+SKILLS_BLOCK_RE = re.compile(
+    r"(<!-- skills:start -->\n)(.*?)(\n<!-- skills:end -->)", re.DOTALL
+)
+SKILLS_MARKER_RE = re.compile(r"[ \t]*<!-- skills:(?:start|end) -->\n?")
 
 # Matches the 3-line role header block as rendered by markdown-it with
 # linkify/html enabled and breaks=True. We run a targeted regex because
@@ -202,6 +212,30 @@ def inject_publications(body_html: str) -> str:
     return body_html.replace(PUBLICATIONS_PLACEHOLDER, entries)
 
 
+def regenerate_resume_skills() -> None:
+    """Rewrite resume.md's Skills block in place from skills.yaml so the YAML
+    is the single source of truth. No-op when already in sync (the skills.yaml
+    seed is a byte-exact port of the current lines). Mirrors the in-place
+    marker rewrite build_portfolio.py does on index.html.
+    """
+    src = CONTENT_DIR / "resume.md"
+    text = src.read_text(encoding="utf-8")
+    if "<!-- skills:start -->" not in text:
+        print(
+            "  WARN: <!-- skills:start --> not found in resume.md; "
+            "skipping skills regeneration",
+            file=sys.stderr,
+        )
+        return
+    payload = render_resume_skills(load_skills())
+    new = SKILLS_BLOCK_RE.sub(lambda m: f"{m.group(1)}{payload}{m.group(3)}", text)
+    if new != text:
+        src.write_text(new, encoding="utf-8")
+        print("regenerated resume.md Skills from skills.yaml")
+    else:
+        print("resume.md Skills already in sync with skills.yaml")
+
+
 def render(doc: dict, env: Environment) -> None:
     src = doc["src"]
     if not src.exists():
@@ -209,6 +243,7 @@ def render(doc: dict, env: Environment) -> None:
         sys.exit(1)
 
     md_text = src.read_text(encoding="utf-8")
+    md_text = SKILLS_MARKER_RE.sub("", md_text)
     md = make_markdown()
     raw_html = md.render(md_text)
 
@@ -249,6 +284,7 @@ def render(doc: dict, env: Environment) -> None:
 
 
 def main() -> None:
+    regenerate_resume_skills()
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape([]),  # body is pre-rendered HTML

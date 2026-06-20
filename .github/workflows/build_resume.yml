@@ -9,6 +9,8 @@ on:
       - 'src/content/publications.yaml'
       - 'scripts/build_resume.py'
       - 'scripts/_publications.py'
+      - 'src/content/skills.yaml'
+      - 'scripts/_skills.py'
       - 'scripts/templates/resume/**'
       - 'scripts/fonts/**'
       - 'scripts/requirements.txt'
@@ -59,7 +61,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resume.pdf resume.html cv.pdf cv.html
+          git add resume.pdf resume.html cv.pdf cv.html src/content/resume.md
           if git diff --cached --quiet; then
             echo "No resume/CV changes to commit."
             exit 0
