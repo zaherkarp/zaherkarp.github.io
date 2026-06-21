@@ -1,0 +1,124 @@
+name: Lint
+
+# Server-side backstop for the full integrity suite. The pre-push hook
+# (scripts/hooks/pre-push) runs these same checks locally, but that hook
+# only fires for contributors who push from a machine that has run a
+# project script (which installs it) -- web-UI edits, fresh clones, the
+# documented draft:false bypass, and bot commits all skip it. This
+# workflow makes the guarantee unconditional: the full suite runs on
+# every PR and every push to the default branch.
+#
+# Deliberately does NOT consult the `Blog-CLI-Linted:` redundancy
+# trailer / scripts/redundancy.py. That short-circuit is a local-dev
+# convenience; CI is the always-on gate and must never skip a check.
+#
+# Read-only: this workflow commits nothing. It only passes or fails.
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  # Weekly audit of main's current state. The build workflows commit
+  # their generated output back to main with the GITHUB_TOKEN, which by
+  # design does NOT re-trigger workflows -- so a generator that ever
+  # emitted lint-violating output would slip past the push-triggered run
+  # that linted the pre-build source. This scheduled run lints whatever
+  # is actually on main, bot commits included, closing that seam. Sundays
+  # 08:00 UTC, after the 06:00 portfolio run and the resume build it
+  # chains (via workflow_run) have settled.
+  schedule:
+    - cron: '0 8 * * 0'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Lint blog sources
+        run: python scripts/lint_blog.py
+
+      - name: Lint vocabulary (canonical CMS program names)
+        run: python scripts/lint_vocab.py
+
+      - name: Lint cross-surface facts
+        run: python scripts/lint_facts.py
+
+      - name: Lint note additivity
+        run: python scripts/lint_notes.py
+
+      - name: Lint recognition alignment (homepage subset of CV)
+        run: python scripts/lint_recognition.py
+
+      - name: Lint Gantt figure alignment
+        run: python scripts/lint_gantt.py
+
+      - name: Lint marker integrity
+        run: python scripts/lint_markers.py
+
+      - name: Lint skills consistency (resume.md vs skills.yaml)
+        run: python scripts/lint_skills.py
+
+      # Grep guards mirror scripts/hooks/pre-push blocks 4-7. Kept as
+      # explicit steps (rather than invoking the hook) so CI stays
+      # independent of the hook's redundancy short-circuit.
+      - name: Em-dash-clean chrome
+        run: |
+          total=0
+          for f in index.html src/content/resume.md src/content/cv.md life-in-weeks/index.html; do
+            [ -f "$f" ] || continue
+            n=$(grep -c '—' "$f" || true)
+            if [ "$n" -gt 0 ]; then echo "  $f: $n em-dash(es)"; total=$((total + n)); fi
+          done
+          if [ "$total" -gt 0 ]; then
+            echo "FAIL: em-dash found in chrome ($total occurrence(s))"; exit 1
+          fi
+          echo "ok: em-dash chrome clean"
+
+      - name: Accent discipline (cap 20)
+        run: |
+          n=$(grep -cE -- '--accent|#7a0000' index.html || true)
+          if [ "$n" -gt 20 ]; then
+            echo "FAIL: --accent + #7a0000 appears $n times in index.html (cap 20)"; exit 1
+          fi
+          echo "ok: accent discipline ($n uses, cap 20)"
+
+      - name: No <p>-wrapped SVG children in built blog
+        run: |
+          if [ -d blog ] && grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/; then
+            echo "FAIL: <p>-wrapped SVG children in blog/ (blank line inside <svg>)"; exit 1
+          fi
+          echo "ok: no <p>-wrapped SVG children in blog/"
+
+      - name: Critique-pipeline independence (no Anthropic SDK / API key)
+        run: |
+          # pre-push and this workflow both contain the patterns in the
+          # grep that enforces the contract; exclude them as self-refs,
+          # exactly as scripts/hooks/pre-push excludes itself.
+          hits=$(grep -rEn 'import anthropic|ANTHROPIC_API_KEY' \
+                   --exclude="pre-push" --exclude="lint.yml" scripts .github/workflows 2>/dev/null \
+                 | awk -F: '{ c=$0; sub(/^[^:]+:[0-9]+:/, "", c); if (c !~ /^[[:space:]]*#/) print }' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "FAIL: Anthropic SDK import or ANTHROPIC_API_KEY ref found (see CLAUDE.md §Critique pipeline)"; exit 1
+          fi
+          echo "ok: critique-pipeline independence"

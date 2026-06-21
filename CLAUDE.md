@@ -1004,6 +1004,16 @@ Build script: scripts/build_resume.py
   templates, its two outputs, and whether it carries a generated
   Publications section. Adding a document is a new DOCS entry.
   Uses markdown-it-py + Jinja2 + WeasyPrint.
+  Skills source of truth: src/content/skills.yaml. build_resume's
+  regenerate_resume_skills() rewrites resume.md's `<!-- skills:start --> ...
+  <!-- skills:end -->` block in place from that YAML (via
+  _skills.render_resume_skills) on every build and commits resume.md back,
+  so the YAML is canonical, not the resume line. skills.yaml ALSO feeds the
+  private job-fit tooling (build_jobsearch / lint_jobfit), so the two must
+  agree; scripts/lint_skills.py is the hard gate that the committed resume.md
+  block matches what skills.yaml renders (the resume build does not run on
+  PRs, so this lint, not the build, is what holds them in sync there). Edit
+  skills in skills.yaml and regenerate; do not hand-edit the resume block.
   Shared pipeline for both docs: make_markdown / transform_role_blocks
   (wraps `org | title / date / stack` role headers into
   <header class="role">) / wrap_sections (wraps each ## section in a
@@ -1068,12 +1078,25 @@ Local dev setup (macOS, one-time):
 
 GitHub Action: .github/workflows/build_resume.yml
   Triggers on resume.md, cv.md, publications.yaml, templates, fonts,
-  build_resume.py, or _publications.py. Plus a weekly cron (Sundays
-  07:00 UTC, one hour after build_portfolio.yml refreshes the cached
-  citation counts) so the CV picks up fresh counts; a GITHUB_TOKEN push
-  does not re-trigger workflows, so the cron is the coordination point,
-  not a PAT. Installs pango/cairo/glib, runs build_resume.py, commits
-  resume.pdf + resume.html + cv.pdf + cv.html back to the repo.
+  build_resume.py, or _publications.py. Plus a `workflow_run` edge that
+  fires when build_portfolio.yml COMPLETES, so the CV picks up the
+  citation counts that run just refreshed into publications.yaml. A
+  GITHUB_TOKEN push does not re-trigger workflows, so build_portfolio's
+  commit can't fire this build directly; chaining off the portfolio
+  workflow completing is the coordination mechanism, not a PAT and not a
+  wall-clock cron. The job-level `if` gates the chain to a SCHEDULED or
+  manually dispatched portfolio run that succeeded (`conclusion ==
+  'success'` AND `workflow_run.event` in `schedule`/`workflow_dispatch`),
+  so the frequent push-triggered portfolio rebuilds (every blog post)
+  don't churn the timestamped PDFs here; the weekly cadence rides
+  build_portfolio's own Sundays-06:00-UTC cron, and a manual portfolio
+  dispatch chains a CV rebuild on demand (the rehearsal path, since
+  `workflow_run` triggers only ever run the default-branch workflow file
+  and so can't be exercised from a PR branch).
+  (This replaced an earlier 07:00 cron that merely HOPED portfolio had
+  finished by then and silently shipped stale counts when it hadn't.)
+  Installs pango/cairo/glib, runs build_resume.py, commits resume.pdf +
+  resume.html + cv.pdf + cv.html back to the repo.
 
 Do not rebuild the PDFs by hand. Edit resume.md / cv.md / publications.yaml
 and push; CI regenerates all four artifacts. (resume.pdf is not byte-stable
@@ -1141,6 +1164,18 @@ Semantic Scholar's public tier is aggressively rate-limited (HTTP 429).
 The script retries with exponential backoff (1s between requests, 2s/4s
 on retry). If a lookup still fails, the weekly cron will pick it up.
 Do not add an API key without discussion.
+
+Failure visibility: a failed fetch always preserves the cached count
+(graceful degradation), but build_publications now distinguishes WHY it
+failed so a permanently-broken id can't hide behind the same silence as a
+transient 429. fetch_citation_count returns a status, and the build emits a
+GitHub Actions `::warning::` separating "unresolved" ids (a non-429 error or
+a 200 with no citationCount, i.e. a likely bad/dropped PMID/DOI to fix in
+publications.yaml) from "transient" failures (429/network, which the weekly
+run retries). A per-entry last-fetch DATE was deliberately NOT added: it
+would advance every successful run and force a publications.yaml commit
+weekly even when no count changed, the exact churn the build otherwise
+avoids; the data/snapshots series already holds the longitudinal record.
 
 Adding a new publication: append an entry to src/content/publications.yaml
 (see the header for the field contract; set a `sid` and `citations` to
@@ -1347,6 +1382,13 @@ automatically (blanket selectors, no per-element staggering; see
 These run automatically via `scripts/hooks/pre-push`, installed by
 `scripts/_common.install_git_hooks()` on first run of any project script
 (no manual setup; multiple machines self-bootstrap on first script run).
+The installer is polite: it points `core.hooksPath` at `scripts/hooks/`
+only when that config is UNSET, and never clobbers a contributor's
+existing `core.hooksPath` (a pre-commit framework, personal hooks); if a
+foreign value is found it prints the one-line opt-in command and leaves
+the config alone. The local hook is the fast echo; the real, unbypassable
+gate is the CI backstop below (`.github/workflows/lint.yml`), so a machine
+that declines the local hook still cannot push drift.
 
 Checks:
 - `python scripts/lint_blog.py` clean (blog source-side mistakes)
@@ -1380,6 +1422,21 @@ Checks:
   x-coordinate via the chart transform and matches against the section
   entries on year + token overlap, so the figure can't silently fall out
   of date when a section grows. See §Gantt figure alignment lint)
+- `python scripts/lint_markers.py` clean (marker integrity: the build-time
+  injection markers a generator splices into, `activity-grid`,
+  `writing-list`, `writing-index`, `cliff-path`, `pub-list`, `updated`,
+  the life-in-weeks `blog-thoughts` pair, and the cv.md `<!-- publications -->`
+  placeholder, must pair cleanly (no orphan/crossed/nested/unterminated
+  pairs) and still be present, so a stray hand edit can't corrupt a host
+  file on the next build or make a generator silently no-op. Add a new
+  region's name to `PAIR_MARKERS` in the same change that adds its markers)
+- `python scripts/lint_skills.py` clean (skills consistency: resume.md's
+  generated `<!-- skills -->` block must equal what `src/content/skills.yaml`
+  renders via `render_resume_skills`. build_resume regenerates + commits
+  resume.md on main, but NOT on PRs, so this gate keeps the public resume's
+  Skills line from drifting from its source, `skills.yaml` (which also feeds
+  the private job-fit tooling). Same lockstep contract as lint_facts. Skips
+  when skills.yaml or the markers are absent. See §Resume and CV pipeline)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1395,6 +1452,17 @@ Checks:
 - `grep -rE 'import anthropic|ANTHROPIC_API_KEY' scripts/ .github/workflows/`
   returns empty (critique-pipeline independence contract: no Anthropic
   SDK import, no API-key env var in workflows; see §Critique pipeline)
+
+**Server-side backstop (`.github/workflows/lint.yml`).** The pre-push hook
+only fires for contributors who push from a machine that has run a project
+script (which installs it). Web-UI edits, fresh clones, the `draft: false`
+bypass, and the workflows' own bot commits all skip it, and the
+`Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all eight linters
+plus the four grep guards) on every `pull_request` and every `push` to the
+default branch, unconditionally, and never consults the redundancy trailer.
+The hook is the fast local echo; `lint.yml` is the guarantee. Keep the two in
+sync: a check added to the hook belongs in `lint.yml` too (and vice versa).
 
 Not in the hook (run manually for bigger pushes):
 - `python scripts/build_blog.py` runs without warnings

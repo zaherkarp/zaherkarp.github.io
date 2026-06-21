@@ -4,9 +4,12 @@ Personal portfolio site for Zaher Karp. Pure HTML/CSS, no framework, no npm.
 The main page has no build step; blog posts, the resume PDF, and portfolio
 widgets (activity grid + citation counts) each have a Python build pipeline.
 
-See [CLAUDE.md](./CLAUDE.md) for design constraints and architectural decisions
-that should not drift. See [AGENTS.md](./AGENTS.md) for agent-style workflows
-(focus-group simulation, review personas) that live outside the constitution.
+See [docs/pipelines.md](./docs/pipelines.md) for the full architecture: the
+site's thesis, every build pipeline and linter, how the content model fits
+together, and a cookbook for adding each kind of content. See
+[CLAUDE.md](./CLAUDE.md) for design constraints and architectural decisions
+that should not drift, including the agent-style workflows (focus-group
+simulation, review personas) under §Agent panels.
 
 ## Repository shape
 
@@ -26,17 +29,33 @@ life-in-weeks/              90-year life-in-weeks grid (inline vanilla JS)
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
   resume.md                 Resume source
+  cv.md                     Comprehensive academic CV source
+  publications.yaml         Publications (one source for homepage + CV)
+  skills.yaml               Skill list (private job-search tooling)
+src/data/
+  cms-ma-pd-stars-*.csv     CMS Star Ratings distribution (cliff curve)
 
 scripts/
+  blog                      Authoring CLI (new/preview/publish; see blog.md)
   build_blog.py             Blog build pipeline
-  lint_blog.py              Source-side lint (runs before build in CI)
-  build_resume.py           Resume build pipeline (WeasyPrint)
+  build_resume.py           Resume + CV build pipeline (WeasyPrint)
   build_portfolio.py        Activity grid + writing list + citation counts
+  build_cliff.py            Star Ratings density curve (manual, annual)
+  build_og.py               Open Graph card renderer (manual)
+  build_jobsearch.py        Private, local-only job-search driver
+  lint_*.py                 Guards (blog, vocab, facts, notes, recognition,
+                            gantt, markers, skills, jobfit) — see docs/pipelines.md
+  _common / _publications / _skills.py   Shared libraries
+  hooks/pre-push            Self-installed lint gate
   requirements.txt
   fonts/et-book/            ETBook TTFs (MIT, roman + italic)
   templates/
-    blog/                   Jinja templates (base, list, post)
-    resume/                 Resume Jinja template
+    blog/                   Jinja templates (base, list, post, feed)
+    resume/                 Resume + CV Jinja templates
+
+docs/
+  pipelines.md              Full architecture + add-each-type cookbook
+  critique/                 Critique pipeline methodology + playbook
 
 .github/workflows/
   build_blog.yml            Builds blog + commits output on push
@@ -52,12 +71,15 @@ archive/                    Historical reference (not served)
 
 ## Pipelines
 
-Pure HTML/CSS at the surface, but four Python pipelines stand behind it.
-Each reads a source under `src/content/` or `index.html`, transforms it,
+Pure HTML/CSS at the surface, but several Python pipelines stand behind it.
+Each reads a source under `src/content/` (or `index.html`), transforms it,
 and commits the output back to the repo. The only network call at build
-time is Semantic Scholar for citation counts; everything else is local.
-All four are idempotent: re-running them against unchanged inputs is a
-no-op.
+time is Semantic Scholar for citation counts; everything else is local. All
+are idempotent: re-running them against unchanged inputs is a no-op. The
+three core build pipelines are sketched below; the resume **and CV** share
+one build, and the cliff curve, OG card, critique, site-review, and private
+job-search pipelines are documented in full in
+[docs/pipelines.md](./docs/pipelines.md).
 
 ```
   src/content/blog/*.md  ──▶ lint_vocab + lint_blog ──▶ build_blog
@@ -81,10 +103,13 @@ no-op.
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ 6 linters + grep guards
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 8 linters + grep guards
                                               (blog, vocab, facts, notes,
-                                               recognition, gantt)
+                                               recognition, gantt, markers,
+                                               skills)
                  (self-installed via _common.install_git_hooks)
+                 + .github/workflows/lint.yml runs the full suite in CI
+                   unconditionally (PR + push + weekly)
 ```
 
 ### Blog (`scripts/build_blog.py`)
@@ -115,7 +140,11 @@ back to the repo.
 - **CI:** [build_resume.yml](.github/workflows/build_resume.yml) on push
   to `src/content/resume.md`, `scripts/build_resume.py`,
   `scripts/templates/resume/**`, `scripts/fonts/**`, or
-  `scripts/requirements.txt`
+  `scripts/requirements.txt`. (It also builds the CV from
+  `src/content/cv.md` + `publications.yaml`, and re-runs via a
+  `workflow_run` edge after the weekly **Build portfolio** run so the CV
+  picks up freshly refreshed citation counts — see
+  [docs/pipelines.md](./docs/pipelines.md).)
 
 Markdown renders through a Jinja2 template; WeasyPrint prints the PDF.
 A regex post-pass converts the three-line role block (`**Company** |
@@ -170,7 +199,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs six linters:
+no-ops. The hook runs eight linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -187,14 +216,33 @@ no-ops. The hook runs six linters:
   section must stay a subset of the comprehensive record in `cv.md`.
 - `lint_gantt.py` — the homepage Education + Service Gantt figure must
   carry a mark for every `#education` and `#service` entry.
+- `lint_markers.py` — the build-time injection markers a generator
+  splices into (activity-grid, writing-list, pub-list, cliff-path,
+  blog-thoughts, the resume.md skills block, the cv.md publications
+  placeholder) must pair cleanly and still be present, so a stray hand
+  edit can't corrupt a host file on the next build.
+- `lint_skills.py` — resume.md's generated `<!-- skills -->` block must
+  match what `src/content/skills.yaml` (the source of truth, shared with
+  the private job-fit tooling) renders. `build_resume` regenerates it on
+  main but not on PRs, so this gate keeps them in sync.
 
 Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
 `index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
 critique-pipeline independence contract. Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **six**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **eight**
 above plus the guards run in the pre-push hook on every `git push`.
+
+**Server-side backstop.** The pre-push hook only fires for contributors
+who push from a machine that has run a project script (which installs
+it); web-UI edits, fresh clones, the `draft: false` bypass, and the
+workflows' own bot commits all skip it. So
+[lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
+eight linters + the four grep guards) on every `pull_request` and every
+`push` to the default branch, unconditionally — it never consults the
+`Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
+`lint.yml` is the guarantee.
 
 Both the pre-push hook and `build_blog.yml` can short-circuit via a
 `Blog-CLI-Linted:` commit trailer written by `scripts/blog publish`.
@@ -322,7 +370,7 @@ filename. Write the body, `preview` as you go (slug fragments work, e.g.
    commits with a `Blog-CLI-Linted:` trailer (the provenance token that
    lets later lint stages skip redundant work).
 4. **Push to `main`.** This fires the **pre-push hook** (the six linters
-   plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
+   (eight of them) plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
    above), then hands off to CI.
 
 After the push, two GitHub Actions runs finish the job with no further
@@ -430,8 +478,8 @@ grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/
 # Em-dash-clean chrome
 grep -c '—' index.html        # expect 0
 
-# Accent discipline
-grep -cE -- '--accent' index.html   # expect ≤ 8
+# Accent discipline (counts --accent var refs + the #7a0000 SVG sentinel)
+grep -cE -- '--accent|#7a0000' index.html   # expect ≤ 20
 
 # Balanced HTML tag structure
 python3 -c "from html.parser import HTMLParser; p=HTMLParser(); p.feed(open('index.html').read())"
@@ -481,8 +529,12 @@ Serve locally (`python3 -m http.server 8765`) and check:
   markers in `index.html`. To attach an editorial margin note to the homepage
   entry, add an optional `homepageMarginnote: "..."` field to the post's
   frontmatter — the build wraps it in a ⊕ toggle next to the title.
-- Add a publication: add `<div class="pub-entry" data-sid="PMID:...">` to
-  `index.html` and push. The portfolio workflow populates the citation count.
+- Add a publication: append an entry to `src/content/publications.yaml`
+  (set a `sid` to track a live citation count, or use `links` / `note` for a
+  static entry) and push. `build_portfolio.yml` regenerates the homepage
+  Publications block between the `<!-- pub-list:start --> ... :end -->`
+  markers, and the next CV build picks it up. Do not hand-edit the generated
+  `<div class="pub-entry">` markup in `index.html`.
 - Edit the resume: change `src/content/resume.md`, push. CI regenerates
   `resume.pdf`.
 - Add a life-in-weeks event: edit the `EVENTS` array in
