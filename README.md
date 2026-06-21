@@ -192,7 +192,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs six linters:
+no-ops. The hook runs seven linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -209,14 +209,29 @@ no-ops. The hook runs six linters:
   section must stay a subset of the comprehensive record in `cv.md`.
 - `lint_gantt.py` — the homepage Education + Service Gantt figure must
   carry a mark for every `#education` and `#service` entry.
+- `lint_markers.py` — the build-time injection markers a generator
+  splices into (activity-grid, writing-list, pub-list, cliff-path,
+  blog-thoughts, the cv.md publications placeholder) must pair cleanly
+  and still be present, so a stray hand edit can't corrupt a host file
+  on the next build.
 
 Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
 `index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
 critique-pipeline independence contract. Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **six**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **seven**
 above plus the guards run in the pre-push hook on every `git push`.
+
+**Server-side backstop.** The pre-push hook only fires for contributors
+who push from a machine that has run a project script (which installs
+it); web-UI edits, fresh clones, the `draft: false` bypass, and the
+workflows' own bot commits all skip it. So
+[lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
+seven linters + the four grep guards) on every `pull_request` and every
+`push` to the default branch, unconditionally — it never consults the
+`Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
+`lint.yml` is the guarantee.
 
 Both the pre-push hook and `build_blog.yml` can short-circuit via a
 `Blog-CLI-Linted:` commit trailer written by `scripts/blog publish`.
@@ -344,7 +359,7 @@ filename. Write the body, `preview` as you go (slug fragments work, e.g.
    commits with a `Blog-CLI-Linted:` trailer (the provenance token that
    lets later lint stages skip redundant work).
 4. **Push to `main`.** This fires the **pre-push hook** (the six linters
-   plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
+   (seven of them) plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
    above), then hands off to CI.
 
 After the push, two GitHub Actions runs finish the job with no further

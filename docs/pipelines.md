@@ -150,9 +150,11 @@ than by each other's commits — the crons are the coordination point.
 
   GUARDS (write nothing; fail the push / build)
   ─────────────────────────────────────────────
+  lint.yml (CI) ─▶ ALL seven linters + grep guards, on every PR + push,
+                   unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
-                   lint_recognition · lint_gantt  + grep guards
-  CI (build_blog) ─▶ lint_vocab · lint_blog   (before build)
+                   lint_recognition · lint_gantt · lint_markers + grep guards
+  CI (build_blog) ─▶ lint_vocab · lint_blog   (before build; trailer can skip)
   manual only ─▶ lint_jobfit   (informational, always exits 0)
 ```
 
@@ -325,13 +327,26 @@ run.
 | `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats |
 | `lint_recognition.py` | homepage `#service` ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML) |
 | `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry |
+| `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
 
 Plus grep guards: em-dash-clean chrome (`index.html`, `resume.md`, `cv.md`,
 life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
 index.html` ≤ 20); no `<p>`-wrapped SVG children in built `blog/`; critique
 independence (no `import anthropic` / `ANTHROPIC_API_KEY`).
 
-**CI** (`build_blog.yml`): `lint_vocab` then `lint_blog` before the build.
+**CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
+(all seven linters + the four grep guards) runs on every `pull_request` and
+every `push` to the default branch, **unconditionally** — it never consults
+the `Blog-CLI-Linted:` redundancy trailer. The pre-push hook only fires for
+contributors who push from a machine that has run a project script (which
+installs it); web-UI edits, fresh clones, the `draft: false` bypass, and the
+workflows' own bot commits all skip it. `lint.yml` is what makes the
+integrity guarantees hold regardless of how a change reaches `main`; the hook
+is the fast local echo. A check added to one belongs in the other.
+
+**CI (build)** (`build_blog.yml`): `lint_vocab` then `lint_blog` before the
+build (these two can be short-circuited by the redundancy trailer; `lint.yml`
+is the unconditional version).
 
 **Manual / informational:** `lint_jobfit.py` (evidence-gap report, always
 exits 0), `redundancy.py` (the `Blog-CLI-Linted:` trailer logic that lets
@@ -458,6 +473,15 @@ viewBox still matches the script constants.
 the monthly cron. To support a new target *type*, extend **both**
 `docs/critique/playbook.md` §Supported targets and
 `docs/critique/methodology.md` §Archetype weightings in the same change.
+
+### Add a new generated (marker-injected) region
+
+When a generator gains a new injection point, add the
+`<!-- name:start --> ... <!-- name:end -->` pair to the host file **and**
+register the name in `PAIR_MARKERS` in `scripts/lint_markers.py` in the same
+change. `lint_markers` then guarantees the pair stays balanced and present;
+forgetting to register it means the linter won't notice if the pair is later
+deleted or crossed.
 
 ### Add a skill or job-search target (private)
 

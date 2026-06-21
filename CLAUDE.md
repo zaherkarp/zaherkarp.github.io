@@ -1380,6 +1380,14 @@ Checks:
   x-coordinate via the chart transform and matches against the section
   entries on year + token overlap, so the figure can't silently fall out
   of date when a section grows. See §Gantt figure alignment lint)
+- `python scripts/lint_markers.py` clean (marker integrity: the build-time
+  injection markers a generator splices into, `activity-grid`,
+  `writing-list`, `writing-index`, `cliff-path`, `pub-list`, `updated`,
+  the life-in-weeks `blog-thoughts` pair, and the cv.md `<!-- publications -->`
+  placeholder, must pair cleanly (no orphan/crossed/nested/unterminated
+  pairs) and still be present, so a stray hand edit can't corrupt a host
+  file on the next build or make a generator silently no-op. Add a new
+  region's name to `PAIR_MARKERS` in the same change that adds its markers)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1395,6 +1403,17 @@ Checks:
 - `grep -rE 'import anthropic|ANTHROPIC_API_KEY' scripts/ .github/workflows/`
   returns empty (critique-pipeline independence contract: no Anthropic
   SDK import, no API-key env var in workflows; see §Critique pipeline)
+
+**Server-side backstop (`.github/workflows/lint.yml`).** The pre-push hook
+only fires for contributors who push from a machine that has run a project
+script (which installs it). Web-UI edits, fresh clones, the `draft: false`
+bypass, and the workflows' own bot commits all skip it, and the
+`Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all seven linters
+plus the four grep guards) on every `pull_request` and every `push` to the
+default branch, unconditionally, and never consults the redundancy trailer.
+The hook is the fast local echo; `lint.yml` is the guarantee. Keep the two in
+sync: a check added to the hook belongs in `lint.yml` too (and vice versa).
 
 Not in the hook (run manually for bigger pushes):
 - `python scripts/build_blog.py` runs without warnings
