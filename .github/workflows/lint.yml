@@ -18,6 +18,16 @@ on:
   pull_request:
   push:
     branches: [main, master]
+  # Weekly audit of main's current state. The build workflows commit
+  # their generated output back to main with the GITHUB_TOKEN, which by
+  # design does NOT re-trigger workflows -- so a generator that ever
+  # emitted lint-violating output would slip past the push-triggered run
+  # that linted the pre-build source. This scheduled run lints whatever
+  # is actually on main, bot commits included, closing that seam. Sundays
+  # 08:00 UTC, after the 06:00 portfolio run and the resume build it
+  # chains (via workflow_run) have settled.
+  schedule:
+    - cron: '0 8 * * 0'
   workflow_dispatch: {}
 
 permissions:

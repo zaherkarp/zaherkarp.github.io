@@ -120,9 +120,25 @@ work (see README §Deploy).
 A single push can trigger two workflows that both commit to `main` (a blog
 push fires both `build_blog.yml` and `build_portfolio.yml`).
 `build_portfolio.yml` therefore rebases-and-retries if it loses the race.
-A bot `GITHUB_TOKEN` push does **not** re-trigger workflows, which is why
-citation refresh and CV-count refresh are driven by `schedule:` crons rather
-than by each other's commits — the crons are the coordination point.
+
+A bot `GITHUB_TOKEN` push does **not** re-trigger workflows (GitHub's
+anti-recursion rule). Two consequences shape the rest of the design:
+
+- **The citation → CV handoff can't chain on a commit.** `build_portfolio`
+  refreshes citation counts into `publications.yaml` weekly, and the CV
+  needs those fresh counts. Since portfolio's commit can't fire
+  `build_resume`, the dependency is wired as a **`workflow_run` edge**:
+  `build_resume` runs when `build_portfolio` *completes*, gated to the
+  scheduled (weekly) portfolio run that succeeded. That makes the ordering
+  a real edge, not a wall-clock guess (the earlier design used a 07:00 cron
+  that hoped portfolio had finished by 07:00). The gate keeps the frequent
+  push-triggered portfolio runs from churning the timestamped resume/CV
+  PDFs.
+- **Bot-committed output isn't seen by the push-triggered lint.** The lint
+  that runs on your source push lints the *pre-build* tree; the generated
+  output the bot commits afterward doesn't re-trigger anything. So
+  `lint.yml` also carries a **weekly `schedule:`** that audits whatever is
+  actually on `main`, bot commits included.
 
 ### The dependency map
 
@@ -217,8 +233,9 @@ the latest count; `data/snapshots/` accretes the longitudinal series
 - **Output:** `resume.pdf`, `resume.html`, `cv.pdf`, `cv.html`
 - **CI:** `.github/workflows/build_resume.yml` — push to either markdown
   source, `publications.yaml`, the templates, the bundled fonts, the script,
-  or `_publications.py`; plus a weekly Sunday 07:00 UTC cron (one hour after
-  the portfolio citation refresh) so the CV picks up fresh counts.
+  or `_publications.py`; plus a `workflow_run` edge that fires after the
+  weekly **Build portfolio** run completes successfully, so the CV picks up
+  the citation counts that run just refreshed (see §CI choreography).
 
 One config-driven pipeline emits both documents (the `DOCS` list names each
 source, its two templates, and its two outputs). markdown-it-py + Jinja2 +
@@ -335,9 +352,11 @@ index.html` ≤ 20); no `<p>`-wrapped SVG children in built `blog/`; critique
 independence (no `import anthropic` / `ANTHROPIC_API_KEY`).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all seven linters + the four grep guards) runs on every `pull_request` and
-every `push` to the default branch, **unconditionally** — it never consults
-the `Blog-CLI-Linted:` redundancy trailer. The pre-push hook only fires for
+(all seven linters + the four grep guards) runs on every `pull_request`,
+every `push` to the default branch, and on a **weekly `schedule:`**
+(auditing whatever bot commits have landed on `main`), **unconditionally** —
+it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push
+hook only fires for
 contributors who push from a machine that has run a project script (which
 installs it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. `lint.yml` is what makes the

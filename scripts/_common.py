@@ -96,11 +96,18 @@ def alignment_match(a_years, a_tokens, b_years, b_tokens, *, min_shared=2) -> bo
 
 
 def install_git_hooks() -> None:
-    """Point git's core.hooksPath at scripts/hooks/ if not already set.
+    """Point git's core.hooksPath at scripts/hooks/ if it is unset.
 
     Idempotent. Silently no-ops outside a git work tree (tarball, CI
     sparse checkout, missing git binary). Prints a one-line notice on
     first install so the user knows hooks are now active.
+
+    Polite: if core.hooksPath is already set to a DIFFERENT value (the
+    user's own hooks, a pre-commit framework, etc.), it is NOT clobbered.
+    We print how to opt in and leave their config alone, so running a
+    build never silently hijacks a contributor's git setup. The CI
+    backstop (.github/workflows/lint.yml) is the real gate regardless,
+    so a machine that declines the local hook still cannot push drift.
     """
     hooks_dir = REPO_ROOT / HOOKS_DIR_REL
     if not hooks_dir.is_dir():
@@ -113,7 +120,16 @@ def install_git_hooks() -> None:
             text=True,
             check=False,
         )
-        if current.stdout.strip() == HOOKS_DIR_REL:
+        existing = current.stdout.strip()
+        if existing == HOOKS_DIR_REL:
+            return
+        if existing:
+            print(
+                f"hooks: core.hooksPath is already set to {existing!r}; "
+                f"leaving it as-is. To enable this project's pre-push lint "
+                f"gate, run: git config core.hooksPath {HOOKS_DIR_REL}",
+                file=sys.stderr,
+            )
             return
         result = subprocess.run(
             ["git", "config", "core.hooksPath", HOOKS_DIR_REL],

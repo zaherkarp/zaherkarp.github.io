@@ -137,7 +137,11 @@ back to the repo.
 - **CI:** [build_resume.yml](.github/workflows/build_resume.yml) on push
   to `src/content/resume.md`, `scripts/build_resume.py`,
   `scripts/templates/resume/**`, `scripts/fonts/**`, or
-  `scripts/requirements.txt`
+  `scripts/requirements.txt`. (It also builds the CV from
+  `src/content/cv.md` + `publications.yaml`, and re-runs via a
+  `workflow_run` edge after the weekly **Build portfolio** run so the CV
+  picks up freshly refreshed citation counts — see
+  [docs/pipelines.md](./docs/pipelines.md).)
 
 Markdown renders through a Jinja2 template; WeasyPrint prints the PDF.
 A regex post-pass converts the three-line role block (`**Company** |

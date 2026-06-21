@@ -1068,12 +1068,21 @@ Local dev setup (macOS, one-time):
 
 GitHub Action: .github/workflows/build_resume.yml
   Triggers on resume.md, cv.md, publications.yaml, templates, fonts,
-  build_resume.py, or _publications.py. Plus a weekly cron (Sundays
-  07:00 UTC, one hour after build_portfolio.yml refreshes the cached
-  citation counts) so the CV picks up fresh counts; a GITHUB_TOKEN push
-  does not re-trigger workflows, so the cron is the coordination point,
-  not a PAT. Installs pango/cairo/glib, runs build_resume.py, commits
-  resume.pdf + resume.html + cv.pdf + cv.html back to the repo.
+  build_resume.py, or _publications.py. Plus a `workflow_run` edge that
+  fires when build_portfolio.yml COMPLETES, so the CV picks up the
+  citation counts that run just refreshed into publications.yaml. A
+  GITHUB_TOKEN push does not re-trigger workflows, so build_portfolio's
+  commit can't fire this build directly; chaining off the portfolio
+  workflow completing is the coordination mechanism, not a PAT and not a
+  wall-clock cron. The job-level `if` gates the chain to the SCHEDULED
+  portfolio run that succeeded (`workflow_run.event == 'schedule' &&
+  conclusion == 'success'`), so the frequent push-triggered portfolio
+  rebuilds (every blog post) don't churn the timestamped PDFs here; the
+  weekly cadence rides build_portfolio's own Sundays-06:00-UTC cron.
+  (This replaced an earlier 07:00 cron that merely HOPED portfolio had
+  finished by then and silently shipped stale counts when it hadn't.)
+  Installs pango/cairo/glib, runs build_resume.py, commits resume.pdf +
+  resume.html + cv.pdf + cv.html back to the repo.
 
 Do not rebuild the PDFs by hand. Edit resume.md / cv.md / publications.yaml
 and push; CI regenerates all four artifacts. (resume.pdf is not byte-stable
@@ -1347,6 +1356,13 @@ automatically (blanket selectors, no per-element staggering; see
 These run automatically via `scripts/hooks/pre-push`, installed by
 `scripts/_common.install_git_hooks()` on first run of any project script
 (no manual setup; multiple machines self-bootstrap on first script run).
+The installer is polite: it points `core.hooksPath` at `scripts/hooks/`
+only when that config is UNSET, and never clobbers a contributor's
+existing `core.hooksPath` (a pre-commit framework, personal hooks); if a
+foreign value is found it prints the one-line opt-in command and leaves
+the config alone. The local hook is the fast echo; the real, unbypassable
+gate is the CI backstop below (`.github/workflows/lint.yml`), so a machine
+that declines the local hook still cannot push drift.
 
 Checks:
 - `python scripts/lint_blog.py` clean (blog source-side mistakes)

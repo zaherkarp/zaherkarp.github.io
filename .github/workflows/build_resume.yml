@@ -15,12 +15,19 @@ on:
       - 'scripts/fonts/**'
       - 'scripts/requirements.txt'
       - '.github/workflows/build_resume.yml'
-  # Weekly, one hour after build_portfolio.yml refreshes the cached citation
-  # counts in publications.yaml (Sundays 06:00 UTC). A GITHUB_TOKEN push does
-  # not re-trigger workflows, so this cron is how the CV picks up the freshly
-  # cached counts without a PAT.
-  schedule:
-    - cron: '0 7 * * 0'
+  # The CV's Publications section renders cached Semantic Scholar counts
+  # that build_portfolio.yml refreshes into publications.yaml on its weekly
+  # Sundays-06:00-UTC run. A GITHUB_TOKEN push does not re-trigger workflows,
+  # so build_portfolio's commit can't fire this build directly. Rather than
+  # guess at the timing with a wall-clock cron (the old approach: a 07:00
+  # cron that hoped portfolio had finished by then, and silently shipped
+  # stale counts if it hadn't), we chain off the portfolio workflow
+  # COMPLETING. The job-level `if` below gates this to the SCHEDULED portfolio
+  # run only, so the frequent push-triggered portfolio rebuilds (every blog
+  # post) don't churn the timestamped PDFs here.
+  workflow_run:
+    workflows: ["Build portfolio"]
+    types: [completed]
   workflow_dispatch: {}
 
 permissions:
@@ -33,6 +40,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # For a workflow_run trigger, only build when the upstream Build
+    # portfolio run SUCCEEDED and was the weekly SCHEDULED citation refresh
+    # (not a push/dispatch rebuild). push and workflow_dispatch triggers
+    # carry no workflow_run payload, so the first clause lets them through.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'schedule')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
