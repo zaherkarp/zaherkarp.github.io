@@ -1074,11 +1074,15 @@ GitHub Action: .github/workflows/build_resume.yml
   GITHUB_TOKEN push does not re-trigger workflows, so build_portfolio's
   commit can't fire this build directly; chaining off the portfolio
   workflow completing is the coordination mechanism, not a PAT and not a
-  wall-clock cron. The job-level `if` gates the chain to the SCHEDULED
-  portfolio run that succeeded (`workflow_run.event == 'schedule' &&
-  conclusion == 'success'`), so the frequent push-triggered portfolio
-  rebuilds (every blog post) don't churn the timestamped PDFs here; the
-  weekly cadence rides build_portfolio's own Sundays-06:00-UTC cron.
+  wall-clock cron. The job-level `if` gates the chain to a SCHEDULED or
+  manually dispatched portfolio run that succeeded (`conclusion ==
+  'success'` AND `workflow_run.event` in `schedule`/`workflow_dispatch`),
+  so the frequent push-triggered portfolio rebuilds (every blog post)
+  don't churn the timestamped PDFs here; the weekly cadence rides
+  build_portfolio's own Sundays-06:00-UTC cron, and a manual portfolio
+  dispatch chains a CV rebuild on demand (the rehearsal path, since
+  `workflow_run` triggers only ever run the default-branch workflow file
+  and so can't be exercised from a PR branch).
   (This replaced an earlier 07:00 cron that merely HOPED portfolio had
   finished by then and silently shipped stale counts when it hadn't.)
   Installs pango/cairo/glib, runs build_resume.py, commits resume.pdf +

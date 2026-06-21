@@ -22,9 +22,9 @@ on:
   # guess at the timing with a wall-clock cron (the old approach: a 07:00
   # cron that hoped portfolio had finished by then, and silently shipped
   # stale counts if it hadn't), we chain off the portfolio workflow
-  # COMPLETING. The job-level `if` below gates this to the SCHEDULED portfolio
-  # run only, so the frequent push-triggered portfolio rebuilds (every blog
-  # post) don't churn the timestamped PDFs here.
+  # COMPLETING. The job-level `if` below gates this to the SCHEDULED (or
+  # manually dispatched) portfolio run, so the frequent push-triggered
+  # portfolio rebuilds (every blog post) don't churn the timestamped PDFs.
   workflow_run:
     workflows: ["Build portfolio"]
     types: [completed]
@@ -41,13 +41,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # For a workflow_run trigger, only build when the upstream Build
-    # portfolio run SUCCEEDED and was the weekly SCHEDULED citation refresh
-    # (not a push/dispatch rebuild). push and workflow_dispatch triggers
-    # carry no workflow_run payload, so the first clause lets them through.
+    # portfolio run SUCCEEDED and was either the weekly SCHEDULED citation
+    # refresh or a MANUAL dispatch (a deliberate "refresh + rebuild"). The
+    # frequent push-triggered portfolio runs (every blog post) are excluded
+    # so they don't churn the timestamped PDFs. Allowing workflow_dispatch
+    # also makes the chain rehearsable on demand: manually run Build
+    # portfolio and this build chains off it. push and workflow_dispatch
+    # triggers of THIS workflow carry no workflow_run payload, so the first
+    # clause lets them through.
     if: >-
       github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'schedule')
+       contains(fromJSON('["schedule", "workflow_dispatch"]'), github.event.workflow_run.event))
     steps:
       - name: Checkout
         uses: actions/checkout@v4

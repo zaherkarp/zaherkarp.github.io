@@ -128,12 +128,16 @@ anti-recursion rule). Two consequences shape the rest of the design:
   refreshes citation counts into `publications.yaml` weekly, and the CV
   needs those fresh counts. Since portfolio's commit can't fire
   `build_resume`, the dependency is wired as a **`workflow_run` edge**:
-  `build_resume` runs when `build_portfolio` *completes*, gated to the
-  scheduled (weekly) portfolio run that succeeded. That makes the ordering
-  a real edge, not a wall-clock guess (the earlier design used a 07:00 cron
-  that hoped portfolio had finished by 07:00). The gate keeps the frequent
-  push-triggered portfolio runs from churning the timestamped resume/CV
-  PDFs.
+  `build_resume` runs when `build_portfolio` *completes*, gated to a
+  succeeded scheduled (weekly) **or manually dispatched** portfolio run.
+  That makes the ordering a real edge, not a wall-clock guess (the earlier
+  design used a 07:00 cron that hoped portfolio had finished by 07:00). The
+  gate excludes the frequent push-triggered portfolio runs so they don't
+  churn the timestamped resume/CV PDFs; allowing `workflow_dispatch`
+  through also makes the chain rehearsable on demand (manually run Build
+  portfolio → the CV rebuild chains off it). Note `workflow_run` triggers
+  always run the **default-branch** workflow file, so this edge can only be
+  exercised after the change is on `main`, never from a PR branch.
 - **Bot-committed output isn't seen by the push-triggered lint.** The lint
   that runs on your source push lints the *pre-build* tree; the generated
   output the bot commits afterward doesn't re-trigger anything. So
