@@ -143,6 +143,20 @@ if [ -f scripts/lint_markers.py ]; then
   fi
 fi
 
+# 3f. Skills consistency lint (resume.md's generated Skills block must
+#     match what skills.yaml -- the source of truth -- would generate via
+#     render_resume_skills). build_resume regenerates + commits resume.md
+#     on main, but not on PRs, so this gate keeps the two from drifting
+#     before the next build. See CLAUDE.md §Resume and CV pipeline.
+if [ -f scripts/lint_skills.py ] && [ -f src/content/skills.yaml ]; then
+  if output=$(python scripts/lint_skills.py 2>&1); then
+    ok "lint_skills clean"
+  else
+    echo "$output" >&2
+    fail "lint_skills"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to

@@ -75,6 +75,9 @@ jobs:
       - name: Lint marker integrity
         run: python scripts/lint_markers.py
 
+      - name: Lint skills consistency (resume.md vs skills.yaml)
+        run: python scripts/lint_skills.py
+
       # Grep guards mirror scripts/hooks/pre-push blocks 4-7. Kept as
       # explicit steps (rather than invoking the hook) so CI stays
       # independent of the hook's redundancy short-circuit.

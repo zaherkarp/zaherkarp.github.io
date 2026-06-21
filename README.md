@@ -44,7 +44,7 @@ scripts/
   build_og.py               Open Graph card renderer (manual)
   build_jobsearch.py        Private, local-only job-search driver
   lint_*.py                 Guards (blog, vocab, facts, notes, recognition,
-                            gantt, jobfit) — see docs/pipelines.md
+                            gantt, markers, skills, jobfit) — see docs/pipelines.md
   _common / _publications / _skills.py   Shared libraries
   hooks/pre-push            Self-installed lint gate
   requirements.txt
@@ -103,10 +103,13 @@ job-search pipelines are documented in full in
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ 6 linters + grep guards
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 8 linters + grep guards
                                               (blog, vocab, facts, notes,
-                                               recognition, gantt)
+                                               recognition, gantt, markers,
+                                               skills)
                  (self-installed via _common.install_git_hooks)
+                 + .github/workflows/lint.yml runs the full suite in CI
+                   unconditionally (PR + push + weekly)
 ```
 
 ### Blog (`scripts/build_blog.py`)
@@ -196,7 +199,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs seven linters:
+no-ops. The hook runs eight linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -215,16 +218,20 @@ no-ops. The hook runs seven linters:
   carry a mark for every `#education` and `#service` entry.
 - `lint_markers.py` — the build-time injection markers a generator
   splices into (activity-grid, writing-list, pub-list, cliff-path,
-  blog-thoughts, the cv.md publications placeholder) must pair cleanly
-  and still be present, so a stray hand edit can't corrupt a host file
-  on the next build.
+  blog-thoughts, the resume.md skills block, the cv.md publications
+  placeholder) must pair cleanly and still be present, so a stray hand
+  edit can't corrupt a host file on the next build.
+- `lint_skills.py` — resume.md's generated `<!-- skills -->` block must
+  match what `src/content/skills.yaml` (the source of truth, shared with
+  the private job-fit tooling) renders. `build_resume` regenerates it on
+  main but not on PRs, so this gate keeps them in sync.
 
 Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
 `index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
 critique-pipeline independence contract. Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **seven**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **eight**
 above plus the guards run in the pre-push hook on every `git push`.
 
 **Server-side backstop.** The pre-push hook only fires for contributors
@@ -232,7 +239,7 @@ who push from a machine that has run a project script (which installs
 it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. So
 [lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
-seven linters + the four grep guards) on every `pull_request` and every
+eight linters + the four grep guards) on every `pull_request` and every
 `push` to the default branch, unconditionally — it never consults the
 `Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
 `lint.yml` is the guarantee.
@@ -363,7 +370,7 @@ filename. Write the body, `preview` as you go (slug fragments work, e.g.
    commits with a `Blog-CLI-Linted:` trailer (the provenance token that
    lets later lint stages skip redundant work).
 4. **Push to `main`.** This fires the **pre-push hook** (the six linters
-   (seven of them) plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
+   (eight of them) plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
    above), then hands off to CI.
 
 After the push, two GitHub Actions runs finish the job with no further

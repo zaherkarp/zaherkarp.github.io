@@ -8,10 +8,11 @@ so the loader and renderers live in one place rather than in either consumer.
 Consumers:
   - scripts/build_jobsearch.py  -> the private job-fit matrix + packets.
   - scripts/lint_jobfit.py      -> the evidence-gap report.
-  - scripts/build_resume.py     -> the resume "## Skills" section. DEFERRED:
-                                   render_resume_skills() is written and
-                                   exercised here, but not wired into the
-                                   resume build until explicitly turned on.
+  - scripts/build_resume.py     -> the resume "## Skills" section.
+                                   regenerate_resume_skills() rewrites the
+                                   resume.md <!-- skills --> block from this
+                                   via render_resume_skills() on every build;
+                                   scripts/lint_skills.py gates the two in sync.
 
 This module is leaf-level: it imports only stdlib, yaml, and the matcher
 primitives in _common, so nothing it touches can create an import cycle.
@@ -72,16 +73,17 @@ def load_skills(path: Path = SKILLS_YAML) -> dict:
     }
 
 
-# ─── resume Skills renderer (DEFERRED wire-in) ─────────────────────────────
+# ─── resume Skills renderer ────────────────────────────────────────────────
 
 def render_resume_skills(data: dict) -> str:
     """Regenerate the resume "## Skills" body from skills.yaml.
 
     One `**Category:** a · b · c` line per category in
     `categories_order`, skills in file order within each category, blank line
-    between categories. Seeded byte-exact to the current resume.md lines, so
-    the first regeneration is a no-op diff. Em-dash-clean by construction
-    (names are em-dash-clean and the separator is a middot).
+    between categories. build_resume.regenerate_resume_skills() injects this
+    into resume.md's <!-- skills --> block, and lint_skills.py gates that the
+    committed block matches this output. Em-dash-clean by construction (names
+    are em-dash-clean and the separator is a middot).
     """
     skills = data["skills"]
     lines: list[str] = []

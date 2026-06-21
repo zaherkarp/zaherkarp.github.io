@@ -328,7 +328,24 @@ def build_writing_index(posts: list[dict]) -> str:
 
 # ─── Semantic Scholar citation counts ─────────────────────────────────────
 
-def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
+def _gha_warn(msg: str) -> None:
+    """Emit a GitHub Actions warning annotation (a plain line when run
+    locally). Used to surface citation-fetch failures in the weekly run
+    summary instead of leaving them buried in stderr."""
+    print(f"::warning::{msg}")
+
+
+def fetch_citation_count(sid: str, retries: int = 3) -> tuple[int | None, str]:
+    """Return (count, status). status is one of:
+      "ok"           count fetched.
+      "rate_limited" HTTP 429 after all retries (transient; next run retries).
+      "unresolved"   the id did not resolve to a count -- a non-429 HTTP error
+                     (e.g. 404) or a 200 with no citationCount. Likely a bad or
+                     dropped PMID/DOI worth checking, NOT a rate limit.
+      "error"        network / timeout / parse failure (transient).
+    On any non-"ok" status the caller keeps the cached count (graceful
+    degradation); the status only drives how loudly the failure is reported.
+    """
     url = S2_URL.format(sid=sid)
     req = urllib.request.Request(url, headers={"User-Agent": "zaherkarp-site-build"})
     backoff = 2
@@ -337,18 +354,20 @@ def fetch_citation_count(sid: str, retries: int = 3) -> int | None:
             with urllib.request.urlopen(req, timeout=S2_TIMEOUT) as resp:
                 data = json.load(resp)
                 count = data.get("citationCount")
-                return int(count) if isinstance(count, int) else None
+                if isinstance(count, int):
+                    return count, "ok"
+                return None, "unresolved"
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries - 1:
                 time.sleep(backoff)
                 backoff *= 2
                 continue
             print(f"  semantic-scholar fetch failed for {sid}: {e}", file=sys.stderr)
-            return None
+            return None, ("rate_limited" if e.code == 429 else "unresolved")
         except (urllib.error.URLError, TimeoutError, ValueError) as e:
             print(f"  semantic-scholar fetch failed for {sid}: {e}", file=sys.stderr)
-            return None
-    return None
+            return None, "error"
+    return None, "rate_limited"
 
 
 def build_publications() -> tuple[str, int, int]:
@@ -366,6 +385,8 @@ def build_publications() -> tuple[str, int, int]:
     successes = 0
     failures = 0
     fetched = 0
+    unresolved: list[str] = []   # likely bad/dropped id -- worth fixing
+    transient: list[str] = []    # 429 / network -- next run retries
     for pub in pubs:
         sid = pub.get("sid")
         if not sid:
@@ -373,16 +394,35 @@ def build_publications() -> tuple[str, int, int]:
         if fetched > 0:
             time.sleep(1.0)
         fetched += 1
-        count = fetch_citation_count(sid)
-        if count is None:
-            failures += 1
+        count, status = fetch_citation_count(sid)
+        if status == "ok":
+            pub["citations"] = count
+            successes += 1
             continue
-        pub["citations"] = count
-        successes += 1
+        failures += 1
+        (unresolved if status == "unresolved" else transient).append(sid)
 
     save_citation_counts(pubs)
     if successes:
         write_citation_snapshot(pubs)
+
+    # Surface failures distinguishably so a permanently-broken id cannot hide
+    # behind the same silent "cached value preserved" as a transient rate
+    # limit. Cached counts are still shown either way (graceful degradation);
+    # this only makes the failure visible in the weekly Actions run.
+    if unresolved:
+        _gha_warn(
+            f"citation: {len(unresolved)} id(s) did not resolve to a count "
+            f"({', '.join(unresolved)}). NOT a rate limit -- check the "
+            f"PMID/DOI in publications.yaml; the cached count is shown meanwhile."
+        )
+    if transient:
+        _gha_warn(
+            f"citation: {len(transient)} lookup(s) failed transiently "
+            f"({', '.join(transient)}); cached counts preserved, the weekly "
+            f"run will retry."
+        )
+
     return (
         render_homepage_entries(pubs),
         successes,

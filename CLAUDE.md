@@ -1004,6 +1004,16 @@ Build script: scripts/build_resume.py
   templates, its two outputs, and whether it carries a generated
   Publications section. Adding a document is a new DOCS entry.
   Uses markdown-it-py + Jinja2 + WeasyPrint.
+  Skills source of truth: src/content/skills.yaml. build_resume's
+  regenerate_resume_skills() rewrites resume.md's `<!-- skills:start --> ...
+  <!-- skills:end -->` block in place from that YAML (via
+  _skills.render_resume_skills) on every build and commits resume.md back,
+  so the YAML is canonical, not the resume line. skills.yaml ALSO feeds the
+  private job-fit tooling (build_jobsearch / lint_jobfit), so the two must
+  agree; scripts/lint_skills.py is the hard gate that the committed resume.md
+  block matches what skills.yaml renders (the resume build does not run on
+  PRs, so this lint, not the build, is what holds them in sync there). Edit
+  skills in skills.yaml and regenerate; do not hand-edit the resume block.
   Shared pipeline for both docs: make_markdown / transform_role_blocks
   (wraps `org | title / date / stack` role headers into
   <header class="role">) / wrap_sections (wraps each ## section in a
@@ -1154,6 +1164,18 @@ Semantic Scholar's public tier is aggressively rate-limited (HTTP 429).
 The script retries with exponential backoff (1s between requests, 2s/4s
 on retry). If a lookup still fails, the weekly cron will pick it up.
 Do not add an API key without discussion.
+
+Failure visibility: a failed fetch always preserves the cached count
+(graceful degradation), but build_publications now distinguishes WHY it
+failed so a permanently-broken id can't hide behind the same silence as a
+transient 429. fetch_citation_count returns a status, and the build emits a
+GitHub Actions `::warning::` separating "unresolved" ids (a non-429 error or
+a 200 with no citationCount, i.e. a likely bad/dropped PMID/DOI to fix in
+publications.yaml) from "transient" failures (429/network, which the weekly
+run retries). A per-entry last-fetch DATE was deliberately NOT added: it
+would advance every successful run and force a publications.yaml commit
+weekly even when no count changed, the exact churn the build otherwise
+avoids; the data/snapshots series already holds the longitudinal record.
 
 Adding a new publication: append an entry to src/content/publications.yaml
 (see the header for the field contract; set a `sid` and `citations` to
@@ -1408,6 +1430,13 @@ Checks:
   pairs) and still be present, so a stray hand edit can't corrupt a host
   file on the next build or make a generator silently no-op. Add a new
   region's name to `PAIR_MARKERS` in the same change that adds its markers)
+- `python scripts/lint_skills.py` clean (skills consistency: resume.md's
+  generated `<!-- skills -->` block must equal what `src/content/skills.yaml`
+  renders via `render_resume_skills`. build_resume regenerates + commits
+  resume.md on main, but NOT on PRs, so this gate keeps the public resume's
+  Skills line from drifting from its source, `skills.yaml` (which also feeds
+  the private job-fit tooling). Same lockstep contract as lint_facts. Skips
+  when skills.yaml or the markers are absent. See §Resume and CV pipeline)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1429,7 +1458,7 @@ only fires for contributors who push from a machine that has run a project
 script (which installs it). Web-UI edits, fresh clones, the `draft: false`
 bypass, and the workflows' own bot commits all skip it, and the
 `Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
-`build_blog.yml`. So `lint.yml` runs the FULL suite above (all seven linters
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all eight linters
 plus the four grep guards) on every `pull_request` and every `push` to the
 default branch, unconditionally, and never consults the redundancy trailer.
 The hook is the fast local echo; `lint.yml` is the guarantee. Keep the two in

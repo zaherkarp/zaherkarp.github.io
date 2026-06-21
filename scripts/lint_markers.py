@@ -64,6 +64,9 @@ PAIR_MARKERS: dict[str, list[str]] = {
     "life-in-weeks/index.html": [
         "blog-thoughts",
     ],
+    "src/content/resume.md": [
+        "skills",
+    ],
 }
 
 # Files with a single replace-in-place placeholder -> required count.

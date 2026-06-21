@@ -70,7 +70,7 @@ Every fact on the site traces to exactly one of these:
 | `src/content/publications.yaml` | homepage Publications block, CV Publications section, citation snapshots | the publication list + cached citation counts |
 | `src/content/resume.md` | `resume.pdf`, `resume.html` | the 1–2 page resume |
 | `src/content/cv.md` | `cv.pdf`, `cv.html`; the reconciliation target for recognition/facts lints | the comprehensive academic record |
-| `src/content/skills.yaml` | private job-search tooling (matrix, packets, job-fit report); a deferred resume Skills section | the canonical skill list |
+| `src/content/skills.yaml` | the resume's `## Skills` block (regenerated into resume.md, gated by `lint_skills`) + the private job-search tooling (matrix, packets, job-fit report) | the canonical skill list |
 | `src/data/cms-ma-pd-stars-2025.csv` | the homepage Star Ratings cliff curve | the CMS rating distribution |
 | `index.html` (hand-authored prose + marked regions) | the homepage itself | experience, projects, speaking, service, certifications, the hero |
 | `og-default.png` design tokens (inlined in `build_og.py`) | the Open Graph card | the social share image |
@@ -170,10 +170,11 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
   GUARDS (write nothing; fail the push / build)
   ─────────────────────────────────────────────
-  lint.yml (CI) ─▶ ALL seven linters + grep guards, on every PR + push,
+  lint.yml (CI) ─▶ ALL eight linters + grep guards, on every PR + push,
                    unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
-                   lint_recognition · lint_gantt · lint_markers + grep guards
+                   lint_recognition · lint_gantt · lint_markers ·
+                   lint_skills + grep guards
   CI (build_blog) ─▶ lint_vocab · lint_blog   (before build; trailer can skip)
   manual only ─▶ lint_jobfit   (informational, always exits 0)
 ```
@@ -226,9 +227,16 @@ Four insertions:
 - `blog-thoughts` JS markers in life-in-weeks → one 💭 dot per post.
 
 Semantic Scholar's public tier rate-limits (HTTP 429); the script retries
-with backoff and preserves the cached count on failure. The YAML holds only
-the latest count; `data/snapshots/` accretes the longitudinal series
-(record-on-change). See CLAUDE.md §Portfolio pipeline.
+with backoff and preserves the cached count on failure. To keep a
+permanently-broken id from hiding behind the same silence as a transient
+429, the build distinguishes failure kinds and emits a GitHub Actions
+`::warning::` separating "unresolved" ids (a non-429 error or a 200 with no
+count — a likely bad/dropped PMID/DOI to fix) from transient failures (which
+the weekly run retries). The YAML holds only the latest count;
+`data/snapshots/` accretes the longitudinal series (record-on-change). A
+per-entry last-fetch date was deliberately not added — it would force a
+weekly `publications.yaml` commit even when no count changed. See CLAUDE.md
+§Portfolio pipeline.
 
 ### 3. Resume + CV — `scripts/build_resume.py`
 
@@ -323,7 +331,8 @@ regressions before merge.
 - **Trigger:** none, ever — deliberately kept out of CI.
 
 Stacks on the same `skills.yaml` the resume draws from: one skill
-declaration feeds the resume Skills section (deferred), the job-fit matrix,
+declaration feeds the resume Skills section (regenerated into resume.md by
+build_resume, gated by `lint_skills`), the job-fit matrix,
 the application packets, and (via an FK) the outreach tracker. Coverage is
 recency-weighted. Subcommands: `matrix`, `packet <target.md>` / `--all`,
 `outreach`, `all`. Safe on a fresh clone (still emits the matrix from
@@ -349,6 +358,7 @@ run.
 | `lint_recognition.py` | homepage `#service` ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML) |
 | `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry |
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
+| `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
 
 Plus grep guards: em-dash-clean chrome (`index.html`, `resume.md`, `cv.md`,
 life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
@@ -356,7 +366,7 @@ index.html` ≤ 20); no `<p>`-wrapped SVG children in built `blog/`; critique
 independence (no `import anthropic` / `ANTHROPIC_API_KEY`).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all seven linters + the four grep guards) runs on every `pull_request`,
+(all eight linters + the four grep guards) runs on every `pull_request`,
 every `push` to the default branch, and on a **weekly `schedule:`**
 (auditing whatever bot commits have landed on `main`), **unconditionally** —
 it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push
@@ -508,11 +518,14 @@ deleted or crossed.
 
 ### Add a skill or job-search target (private)
 
-Add the skill to `src/content/skills.yaml` (committed). Job targets and
-outreach live in the gitignored `jobsearch/`. Run
-`python scripts/build_jobsearch.py all`; outputs land in the gitignored
-`jobsearch/out/`. `python scripts/lint_jobfit.py` reports skills with no
-public proof (informational).
+Add the skill to `src/content/skills.yaml` (committed) — it is the source of
+truth for the resume's `## Skills` block too. Then regenerate the resume so
+its block matches (`python scripts/build_resume.py`, or let CI do it on
+merge); `lint_skills` will fail the push if the committed resume.md block
+and `skills.yaml` disagree. Job targets and outreach live in the gitignored
+`jobsearch/`. Run `python scripts/build_jobsearch.py all`; outputs land in
+the gitignored `jobsearch/out/`. `python scripts/lint_jobfit.py` reports
+skills with no public proof (informational).
 
 ---
 

@@ -3,10 +3,12 @@
 # The keystone of the private job-search tooling (CLAUDE.md has no public
 # surface for this yet; it is local dev tooling). Consumed by:
 #   - scripts/_skills.py render_resume_skills() -> the resume "## Skills"
-#     section. DEFERRED: written and unit-checked, but NOT wired into
-#     build_resume.py until explicitly turned on. The skill list below is a
-#     byte-exact port of the three current resume.md Skills lines so that the
-#     first regeneration is a no-op diff.
+#     section. build_resume.py (regenerate_resume_skills) rewrites resume.md's
+#     <!-- skills --> block from this list on every build and commits it;
+#     scripts/lint_skills.py is the hard gate that the committed block matches
+#     what this list generates, so the two cannot drift (e.g. on a PR, where
+#     the resume build does not run). This file is the source of truth: edit
+#     skills here, not the resume line.
 #   - scripts/_skills.py render_jobfit_matrix() -> the private job-fit matrix
 #     (jobsearch/out/jobfit-matrix.md; gitignored, never committed).
 #   - scripts/lint_jobfit.py -> the evidence-gap report: any skill whose
