@@ -14,6 +14,10 @@ horizontal soft-wrap (long lines are truncated in the view but stored and saved
 intact). Tab is reserved for moving between fields, so the body cannot insert a
 literal tab.
 
+In the picker, drafts float to the top of the list (the common case is resuming
+an in-progress draft), and "d" toggles a drafts-only view; the header shows the
+draft count.
+
 Usage:
     python scripts/edit_blog.py                 # picker: "New post" + existing posts
     python scripts/edit_blog.py --new           # blank new-post editor
@@ -161,8 +165,14 @@ def load_post_rows() -> list[dict]:
                 "mtime": path.stat().st_mtime,
             }
         )
+    # Drafts float to the top (resume-in-progress is the common case), then each
+    # group is newest-first. reverse=True makes draft True sort before False.
     rows.sort(
-        key=lambda r: (r["sort_key"].toordinal() if r["sort_key"] else -1, r["mtime"]),
+        key=lambda r: (
+            r["draft"],
+            r["sort_key"].toordinal() if r["sort_key"] else -1,
+            r["mtime"],
+        ),
         reverse=True,
     )
     return rows
@@ -274,18 +284,23 @@ def save(state: EditorState) -> bool:
 def run_picker(stdscr) -> EditorState | None:
     """Choose a post to edit, or create a new one. Returns None to quit."""
     rows = load_post_rows()
-    items = [{"new": True, "title": "+ New post"}] + rows
+    n_drafts = sum(1 for r in rows if r["draft"])
+    drafts_only = False
     sel = 0
     top = 0
     curses.curs_set(0)
     while True:
+        visible = [r for r in rows if r["draft"]] if drafts_only else rows
+        items = [{"new": True, "title": "+ New post"}] + visible
+        sel = max(0, min(sel, len(items) - 1))
         stdscr.erase()
         h, w = stdscr.getmaxyx()
         list_h = max(1, h - 2)
-        stdscr.addnstr(
-            0, 0, "Open a blog post  (Enter open  Up/Down move  q quit)".ljust(w - 1),
-            w - 1, curses.A_REVERSE,
-        )
+        if drafts_only:
+            header = f"Drafts only ({n_drafts})  (Enter open  d all posts  q quit)"
+        else:
+            header = f"Open a blog post  ({n_drafts} drafts)  (Enter open  d drafts only  q quit)"
+        stdscr.addnstr(0, 0, header.ljust(w - 1), w - 1, curses.A_REVERSE)
         if sel < top:
             top = sel
         elif sel >= top + list_h:
@@ -311,6 +326,10 @@ def run_picker(stdscr) -> EditorState | None:
             sel = min(len(items) - 1, sel + list_h)
         elif key == curses.KEY_PPAGE:
             sel = max(0, sel - list_h)
+        elif key in (ord("d"), ord("D")):
+            drafts_only = not drafts_only
+            sel = 0
+            top = 0
         elif key in (ord("q"), 27):
             return None
         elif key in (curses.KEY_ENTER, 10, 13):
