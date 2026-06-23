@@ -14,6 +14,18 @@ horizontal soft-wrap (long lines are truncated in the view but stored and saved
 intact). Tab is reserved for moving between fields, so the body cannot insert a
 literal tab.
 
+In the picker, drafts float to the top of the list (the common case is resuming
+an in-progress draft), "d" toggles a drafts-only view, and "/" starts a
+case-insensitive title/slug filter (composes with the draft toggle); the header
+shows the draft count and active filter.
+
+The form exposes the two optional frontmatter fields that feed the homepage and
+the life-in-weeks grid (homepageMarginnote, lifeweek_topic) alongside the core
+fields; vocab_exempt (a list) is still carried through untouched. The divider
+shows a live word count + reading time, and a save runs lint_blog.check_post on
+the written file (non-drafts only, matching CI) and reports any violation in the
+status bar.
+
 Usage:
     python scripts/edit_blog.py                 # picker: "New post" + existing posts
     python scripts/edit_blog.py --new           # blank new-post editor
@@ -47,13 +59,15 @@ POSTS_DIR = REPO_ROOT / "src" / "content" / "blog"
 
 # Form fields shown above the body pane, in display + save order. "draft" is a
 # toggle rather than a free-text field.
-FIELD_KEYS = ["title", "date", "draft", "tags", "description"]
+FIELD_KEYS = ["title", "date", "draft", "tags", "description", "marginnote", "lifeweek"]
 FIELD_LABELS = {
     "title": "Title",
     "date": "Date",
     "draft": "Draft",
     "tags": "Tags",
     "description": "Desc",
+    "marginnote": "MarginNote",
+    "lifeweek": "Lifeweek",
 }
 # Canonical frontmatter key order when serializing (matches existing posts).
 SAVE_ORDER = [
@@ -119,8 +133,17 @@ def build_metadata(state: "EditorState") -> dict:
             tags = [t.strip() for t in state.fields["tags"].split(",") if t.strip()]
             if tags:
                 meta["tags"] = tags
+        elif key == "homepageMarginnote":
+            note = state.fields["marginnote"].strip()
+            if note:
+                meta["homepageMarginnote"] = note
+        elif key == "lifeweek_topic":
+            topic = state.fields["lifeweek"].strip()
+            if topic:
+                meta["lifeweek_topic"] = topic
         else:
-            # Preserved optional keys carried through from a loaded post.
+            # Preserved optional keys carried through from a loaded post (today
+            # just vocab_exempt, a list the form does not expose).
             value = state.preserved.get(key)
             if value:
                 meta[key] = value
@@ -161,8 +184,14 @@ def load_post_rows() -> list[dict]:
                 "mtime": path.stat().st_mtime,
             }
         )
+    # Drafts float to the top (resume-in-progress is the common case), then each
+    # group is newest-first. reverse=True makes draft True sort before False.
     rows.sort(
-        key=lambda r: (r["sort_key"].toordinal() if r["sort_key"] else -1, r["mtime"]),
+        key=lambda r: (
+            r["draft"],
+            r["sort_key"].toordinal() if r["sort_key"] else -1,
+            r["mtime"],
+        ),
         reverse=True,
     )
     return rows
@@ -195,6 +224,8 @@ class EditorState:
                 "draft": "true",
                 "tags": "",
                 "description": "",
+                "marginnote": "",
+                "lifeweek": "",
             },
             body=[""],
             status="New post (draft). Ctrl-S save  Tab next field  Ctrl-Q quit",
@@ -207,11 +238,9 @@ class EditorState:
         tags = meta.get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
-        preserved = {
-            k: meta[k]
-            for k in ("homepageMarginnote", "lifeweek_topic", "vocab_exempt")
-            if k in meta
-        }
+        # homepageMarginnote and lifeweek_topic are now editable form fields;
+        # only vocab_exempt (a list) is carried through untouched.
+        preserved = {k: meta[k] for k in ("vocab_exempt",) if k in meta}
         body = post.content.split("\n")
         if not body:
             body = [""]
@@ -223,6 +252,8 @@ class EditorState:
                 "draft": "true" if meta.get("draft") else "false",
                 "tags": ", ".join(str(t) for t in tags),
                 "description": str(meta.get("description", "")),
+                "marginnote": str(meta.get("homepageMarginnote", "")),
+                "lifeweek": str(meta.get("lifeweek_topic", "")),
             },
             body=body,
             preserved=preserved,
@@ -264,28 +295,73 @@ def save(state: EditorState) -> bool:
     state.path.write_text(text, encoding="utf-8")
     state.dirty = False
     rel = state.path.relative_to(REPO_ROOT)
-    state.status = f"Saved {rel}"
+    state.status = _saved_status(state.path, rel)
     return True
+
+
+def _saved_status(path: Path, rel: Path) -> str:
+    """Saved-confirmation, augmented with the first lint_blog violation (if any).
+
+    Reuses the same check_post() that gates CI, so the editor flags the
+    mistakes (HTML comment in a published post, blank line in <svg>, mermaid-as-
+    blockquote) that would otherwise only surface on push. check_post skips
+    drafts by design, so this fires only on draft: false posts. Any failure to
+    import or run the linter is swallowed; a save must never be blocked by it.
+    """
+    try:
+        from lint_blog import check_post
+
+        issues = check_post(path)
+    except Exception:
+        issues = []
+    if issues:
+        # check_post strings are "<file>:<line>: <message>"; show the message.
+        first = issues[0].split(": ", 1)[-1]
+        n = len(issues)
+        return f"Saved {rel} — {n} lint issue{'s' if n != 1 else ''}: {first}"
+    return f"Saved {rel}"
 
 
 # --------------------------------------------------------------------------- #
 # Picker screen
 # --------------------------------------------------------------------------- #
+def _row_matches(row: dict, query: str) -> bool:
+    """Case-insensitive substring match on a post's title or slug (filename)."""
+    q = query.lower()
+    return q in row["title"].lower() or q in row["path"].stem.lower()
+
+
 def run_picker(stdscr) -> EditorState | None:
     """Choose a post to edit, or create a new one. Returns None to quit."""
     rows = load_post_rows()
-    items = [{"new": True, "title": "+ New post"}] + rows
+    n_drafts = sum(1 for r in rows if r["draft"])
+    drafts_only = False
+    query = ""           # active substring filter (composes with drafts_only)
+    search_mode = False  # True while typing the query
     sel = 0
     top = 0
     curses.curs_set(0)
     while True:
+        visible = rows
+        if drafts_only:
+            visible = [r for r in visible if r["draft"]]
+        if query:
+            visible = [r for r in visible if _row_matches(r, query)]
+        items = [{"new": True, "title": "+ New post"}] + visible
+        sel = max(0, min(sel, len(items) - 1))
         stdscr.erase()
         h, w = stdscr.getmaxyx()
         list_h = max(1, h - 2)
-        stdscr.addnstr(
-            0, 0, "Open a blog post  (Enter open  Up/Down move  q quit)".ljust(w - 1),
-            w - 1, curses.A_REVERSE,
-        )
+        if search_mode:
+            header = f"Search: {query}_  ({len(visible)} match)  (Enter keep  Esc clear)"
+        elif query:
+            scope = "drafts" if drafts_only else "posts"
+            header = f'Filter "{query}" ({len(visible)} {scope})  (/ edit  d drafts  Esc clear  q quit)'
+        elif drafts_only:
+            header = f"Drafts only ({n_drafts})  (Enter open  / search  d all  q quit)"
+        else:
+            header = f"Open a blog post  ({n_drafts} drafts)  (Enter open  / search  d drafts  q quit)"
+        stdscr.addnstr(0, 0, header.ljust(w - 1), w - 1, curses.A_REVERSE)
         if sel < top:
             top = sel
         elif sel >= top + list_h:
@@ -303,6 +379,23 @@ def run_picker(stdscr) -> EditorState | None:
         stdscr.refresh()
 
         key = stdscr.getch()
+
+        # Search mode: keys build the query rather than navigate.
+        if search_mode:
+            if key in (curses.KEY_ENTER, 10, 13):
+                search_mode = False  # keep the filter, return to nav
+            elif key == 27:          # Esc: abandon the query
+                search_mode = False
+                query = ""
+                sel = top = 0
+            elif key in (curses.KEY_BACKSPACE, 127, 8):
+                query = query[:-1]
+                sel = top = 0
+            elif 32 <= key < 127:
+                query += chr(key)
+                sel = top = 0
+            continue
+
         if key in (curses.KEY_UP, ord("k")):
             sel = max(0, sel - 1)
         elif key in (curses.KEY_DOWN, ord("j")):
@@ -311,7 +404,18 @@ def run_picker(stdscr) -> EditorState | None:
             sel = min(len(items) - 1, sel + list_h)
         elif key == curses.KEY_PPAGE:
             sel = max(0, sel - list_h)
-        elif key in (ord("q"), 27):
+        elif key == ord("/"):
+            search_mode = True
+        elif key in (ord("d"), ord("D")):
+            drafts_only = not drafts_only
+            sel = top = 0
+        elif key == 27:  # Esc clears an active filter, else quits
+            if query:
+                query = ""
+                sel = top = 0
+            else:
+                return None
+        elif key == ord("q"):
             return None
         elif key in (curses.KEY_ENTER, 10, 13):
             item = items[sel]
@@ -323,6 +427,22 @@ def run_picker(stdscr) -> EditorState | None:
 # --------------------------------------------------------------------------- #
 # Editor screen
 # --------------------------------------------------------------------------- #
+def _body_stats(body: list[str]) -> str:
+    """`N words · M min` for the body, via build_blog's own counters.
+
+    Reuses count_words/reading_time_minutes so the editor's readout matches the
+    reading-time the build stamps on the published post. Best-effort: any import
+    or compute failure yields an empty string and the plain divider is drawn.
+    """
+    try:
+        from build_blog import count_words, reading_time_minutes
+
+        words = count_words("\n".join(body))
+        return f"{words} words · {reading_time_minutes(words)} min"
+    except Exception:
+        return ""
+
+
 def draw(stdscr, state: EditorState) -> None:
     stdscr.erase()
     h, w = stdscr.getmaxyx()
@@ -350,8 +470,14 @@ def draw(stdscr, state: EditorState) -> None:
         if active and key != "draft":
             cursor_yx = (i, label_w + min(state.fcur, len(value)))
 
-    # Divider.
-    stdscr.addnstr(nfields, 0, "-" * (w - 1), w - 1)
+    # Divider, with a right-aligned word-count / reading-time readout.
+    stats = _body_stats(state.body)
+    dash_w = w - 1
+    if stats and len(stats) + 2 <= dash_w:
+        divider = "-" * (dash_w - len(stats) - 1) + " " + stats
+    else:
+        divider = "-" * dash_w
+    stdscr.addnstr(nfields, 0, divider, w - 1)
 
     # Body pane.
     for row in range(body_h):
