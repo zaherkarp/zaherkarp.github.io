@@ -8,11 +8,13 @@ python-frontmatter library, so the output round-trips cleanly through
 build_blog.py / lint_blog.py.
 
 It is intentionally plain: NO markdown / mermaid / KaTeX rendering, NO live
-preview, NO syntax highlighting. Deliberately out of scope for this MVP: undo,
+preview, NO syntax highlighting. Deliberately out of scope for this MVP:
 search/replace, selection / copy-paste, mouse, multi-file editing, and
 horizontal soft-wrap (long lines are truncated in the view but stored and saved
 intact). Tab is reserved for moving between fields, so the body cannot insert a
-literal tab.
+literal tab. Ctrl-Z undoes and Ctrl-Y (or Ctrl-R) redoes, across both the body
+pane and the form fields; consecutive same-kind keystrokes coalesce into one
+step, and the history is capped.
 
 In the picker, drafts float to the top of the list (the common case is resuming
 an in-progress draft), "d" toggles a drafts-only view, and "/" starts a
@@ -197,9 +199,33 @@ def load_post_rows() -> list[dict]:
     return rows
 
 
+# Undo history is capped so a long session can't grow it without bound; each
+# snapshot is a shallow copy of the editable state, so the cost is small.
+UNDO_MAX = 200
+
+# Pressing one of these breaks undo coalescing (the next edit starts a fresh
+# group), so an undo never jumps the cursor across an intervening navigation.
+_NAV_KEYS = {
+    curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN,
+    curses.KEY_HOME, curses.KEY_END, curses.KEY_NPAGE, curses.KEY_PPAGE,
+}
+
+
 # --------------------------------------------------------------------------- #
 # Editor state
 # --------------------------------------------------------------------------- #
+@dataclass
+class Snapshot:
+    """An undo/redo point: a shallow copy of everything an edit can change."""
+    body: list[str]
+    fields: dict
+    focus: str
+    field_idx: int
+    fcur: int
+    cy: int
+    cx: int
+
+
 @dataclass
 class EditorState:
     path: Path | None = None
@@ -214,6 +240,44 @@ class EditorState:
     scroll: int = 0        # first body line shown
     dirty: bool = False
     status: str = ""
+    undo_stack: list = field(default_factory=list)
+    redo_stack: list = field(default_factory=list)
+    last_edit_kind: str | None = None  # coalescing key for checkpoint()
+
+    def snapshot(self) -> "Snapshot":
+        return Snapshot(
+            body=list(self.body),
+            fields=dict(self.fields),
+            focus=self.focus,
+            field_idx=self.field_idx,
+            fcur=self.fcur,
+            cy=self.cy,
+            cx=self.cx,
+        )
+
+    def restore(self, snap: "Snapshot") -> None:
+        self.body = list(snap.body)
+        self.fields = dict(snap.fields)
+        self.focus = snap.focus
+        self.field_idx = snap.field_idx
+        self.fcur = snap.fcur
+        self.cy = snap.cy
+        self.cx = snap.cx
+
+    def checkpoint(self, kind: str) -> None:
+        """Record an undo point before a mutation, coalescing same-kind runs.
+
+        Call this inside a mutation guard, just before changing the buffer, so a
+        no-op keystroke never creates a dead undo step. A run of consecutive
+        edits of the same `kind` (e.g. typing) collapses to a single undo;
+        navigation/focus changes reset `last_edit_kind` to break the run.
+        """
+        if kind != self.last_edit_kind:
+            self.undo_stack.append(self.snapshot())
+            if len(self.undo_stack) > UNDO_MAX:
+                del self.undo_stack[:-UNDO_MAX]
+            self.redo_stack.clear()
+        self.last_edit_kind = kind
 
     @classmethod
     def new(cls) -> "EditorState":
@@ -228,7 +292,7 @@ class EditorState:
                 "lifeweek": "",
             },
             body=[""],
-            status="New post (draft). Ctrl-S save  Tab next field  Ctrl-Q quit",
+            status="New post (draft). Ctrl-S save  Ctrl-Z undo  Tab next field  Ctrl-Q quit",
         )
 
     @classmethod
@@ -257,7 +321,7 @@ class EditorState:
             },
             body=body,
             preserved=preserved,
-            status=f"Editing {path.name}. Ctrl-S save  Tab next field  Ctrl-Q quit",
+            status=f"Editing {path.name}. Ctrl-S save  Ctrl-Z undo  Tab next field  Ctrl-Q quit",
         )
 
     def clamp_scroll(self, body_h: int) -> None:
@@ -501,9 +565,12 @@ def draw(stdscr, state: EditorState) -> None:
 
 
 def handle_form_key(state: EditorState, key) -> None:
+    if key in _NAV_KEYS:
+        state.last_edit_kind = None  # break undo coalescing on a cursor move
     fkey = FIELD_KEYS[state.field_idx]
     if fkey == "draft":
         if key in (" ", curses.KEY_ENTER, 10, 13, "x"):
+            state.checkpoint("toggle")
             checked = state.fields["draft"].strip().lower() == "true"
             state.fields["draft"] = "false" if checked else "true"
             state.dirty = True
@@ -520,20 +587,25 @@ def handle_form_key(state: EditorState, key) -> None:
         state.fcur = len(value)
     elif key in (curses.KEY_BACKSPACE, "\x7f", "\b", "\x08"):
         if state.fcur > 0:
+            state.checkpoint("delete")
             state.fields[fkey] = value[: state.fcur - 1] + value[state.fcur:]
             state.fcur -= 1
             state.dirty = True
     elif key == curses.KEY_DC:
         if state.fcur < len(value):
+            state.checkpoint("delete")
             state.fields[fkey] = value[: state.fcur] + value[state.fcur + 1:]
             state.dirty = True
     elif isinstance(key, str) and key.isprintable():
+        state.checkpoint("type")
         state.fields[fkey] = value[: state.fcur] + key + value[state.fcur:]
         state.fcur += 1
         state.dirty = True
 
 
 def handle_body_key(state: EditorState, key, body_h: int) -> None:
+    if key in _NAV_KEYS:
+        state.last_edit_kind = None  # break undo coalescing on a cursor move
     line = state.body[state.cy]
     if key == curses.KEY_LEFT:
         if state.cx > 0:
@@ -566,6 +638,7 @@ def handle_body_key(state: EditorState, key, body_h: int) -> None:
         state.cy = max(0, state.cy - body_h)
         state.cx = min(state.cx, len(state.body[state.cy]))
     elif key in (curses.KEY_ENTER, 10, 13, "\n", "\r"):
+        state.checkpoint("newline")
         rest = line[state.cx:]
         state.body[state.cy] = line[: state.cx]
         state.body.insert(state.cy + 1, rest)
@@ -574,10 +647,12 @@ def handle_body_key(state: EditorState, key, body_h: int) -> None:
         state.dirty = True
     elif key in (curses.KEY_BACKSPACE, "\x7f", "\b", "\x08"):
         if state.cx > 0:
+            state.checkpoint("delete")
             state.body[state.cy] = line[: state.cx - 1] + line[state.cx:]
             state.cx -= 1
             state.dirty = True
         elif state.cy > 0:
+            state.checkpoint("delete")
             prev = state.body[state.cy - 1]
             state.cx = len(prev)
             state.body[state.cy - 1] = prev + line
@@ -586,13 +661,16 @@ def handle_body_key(state: EditorState, key, body_h: int) -> None:
             state.dirty = True
     elif key == curses.KEY_DC:
         if state.cx < len(line):
+            state.checkpoint("delete")
             state.body[state.cy] = line[: state.cx] + line[state.cx + 1:]
             state.dirty = True
         elif state.cy < len(state.body) - 1:
+            state.checkpoint("delete")
             state.body[state.cy] = line + state.body[state.cy + 1]
             del state.body[state.cy + 1]
             state.dirty = True
     elif isinstance(key, str) and key.isprintable():
+        state.checkpoint("type")
         state.body[state.cy] = line[: state.cx] + key + line[state.cx:]
         state.cx += 1
         state.dirty = True
@@ -618,6 +696,11 @@ def confirm_quit(stdscr, state: EditorState) -> bool:
 def run_editor(stdscr, state: EditorState) -> None:
     curses.curs_set(1)
     stdscr.keypad(True)
+    # raw() delivers control chars (Ctrl-S/Q/Z/Y/R, Esc) to get_wch uniformly
+    # instead of letting the tty intercept them as signals or flow control;
+    # Ctrl-Q (with its save/discard confirm) is the deliberate quit, so losing
+    # Ctrl-C's KeyboardInterrupt here is intended, not a regression.
+    curses.raw()
     nfields = len(FIELD_KEYS)
     while True:
         draw(stdscr, state)
@@ -638,6 +721,29 @@ def run_editor(stdscr, state: EditorState) -> None:
         if key in ("\x11", "\x1b"):
             if confirm_quit(stdscr, state):
                 return
+            continue
+        # Ctrl-Z (undo), Ctrl-Y / Ctrl-R (redo).
+        if key == "\x1a":
+            if state.undo_stack:
+                state.redo_stack.append(state.snapshot())
+                state.restore(state.undo_stack.pop())
+                state.last_edit_kind = None
+                state.dirty = True
+                state.clamp_scroll(body_h)
+                state.status = "Undo"
+            else:
+                state.status = "Nothing to undo"
+            continue
+        if key in ("\x19", "\x12"):
+            if state.redo_stack:
+                state.undo_stack.append(state.snapshot())
+                state.restore(state.redo_stack.pop())
+                state.last_edit_kind = None
+                state.dirty = True
+                state.clamp_scroll(body_h)
+                state.status = "Redo"
+            else:
+                state.status = "Nothing to redo"
             continue
         if key == "\t":
             order = len(FIELD_KEYS) + 1  # fields + body
@@ -660,6 +766,7 @@ def run_editor(stdscr, state: EditorState) -> None:
 
 
 def _set_focus(state: EditorState, idx: int) -> None:
+    state.last_edit_kind = None  # break undo coalescing on a focus change
     if idx >= len(FIELD_KEYS):
         state.focus = FOCUS_BODY
     else:

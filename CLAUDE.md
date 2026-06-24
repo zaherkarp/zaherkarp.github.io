@@ -879,7 +879,9 @@ Blog authoring — scripts/edit_blog.py:
     python scripts/edit_blog.py --edit <slug>   # open <slug>.md (slug == positional)
   Saves through python-frontmatter (canonical key order, title first). It is a
   plain text editor by design: no markdown/mermaid/KaTeX render, no preview, no
-  syntax highlighting/undo/search. Stdlib `curses` + python-frontmatter only, no
+  syntax highlighting/search. It does have multi-level undo/redo (Ctrl-Z /
+  Ctrl-Y or Ctrl-R), across the body and form fields, with same-kind keystrokes
+  coalesced and a capped history. Stdlib `curses` + python-frontmatter only, no
   new deps. Dev-only: needs a real TTY, so it never runs in CI (pipe/no-tty
   exits 2). New posts default to `draft: true` (lint_blog skips drafts). Slug is
   derived from the title; editing an existing post's title does NOT rename the
