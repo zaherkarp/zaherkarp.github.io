@@ -12,6 +12,12 @@ the VS Code integrated terminal — `Terminal → New Terminal`, then pick
 > scenario. This file is the comprehensive playbook; the cheat sheet
 > is the day-to-day reference.
 
+> **Prefer a keyboard editor?** [scripts/edit_blog.md](./edit_blog.md)
+> documents `edit_blog.py`, the terminal (curses) editor for writing
+> and editing posts: a frontmatter form over a plain-text body pane,
+> with lint-on-save. It pairs with this CLI — write in the TUI, lint
+> and publish with `blog`.
+
 The CLI lives at `scripts/blog` (no `.py` extension). Three valid
 invocation forms:
 
