@@ -11,7 +11,7 @@
   --muted:    #6a6a6a;
   --accent:   #0a5c54;
 
-  --size-caption: 0.78rem;
+  --size-caption: 0.85rem;
   --size-body:    1.15rem;
   --gap:          1.75rem;
 
@@ -57,7 +57,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
-  font-size: 21px;
+  font-size: 18px;
   background: var(--bg);
   color: var(--text);
   scroll-behavior: smooth;
@@ -86,7 +86,7 @@ body {
 .skip-link:focus { left: 1rem; top: 1rem; }
 
 .page {
-  max-width: 640px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
@@ -369,7 +369,18 @@ nav {
   border-radius: 2px;
 }
 
-.blog-body figure { margin: 1.5rem 0; }
+/* Figures break out wider than the prose measure (Tufte: narrow text,
+   generous figures). The width clamps to 92vw and the left margin mirrors
+   it as 50% minus half the figure's own width, so the figure stays centered
+   on the column and never overflows the viewport on a phone (the 92vw cap is
+   the mobile guard; no media query needed). 800px == the widest figure
+   canvas, so charts render at native scale instead of being downscaled into
+   the column, which restores in-chart label legibility. */
+.blog-body figure {
+  width: min(800px, 92vw);
+  margin: 1.75rem 0 1.75rem calc(50% - min(400px, 46vw));
+}
+.blog-body figure svg { width: 100%; height: auto; display: block; }
 .blog-body figcaption {
   font-size: var(--size-caption);
   color: var(--muted);
