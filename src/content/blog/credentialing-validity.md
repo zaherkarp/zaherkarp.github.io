@@ -1,0 +1,755 @@
+---
+title: "Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise."
+description: "Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing."
+publishDate: 2026-06-26
+tags: ["healthcare", "credentialing", "statistics", "reliability"]
+draft: false
+---
+
+## A system built to reassure
+
+Physician credentialing and privileging are built to reassure. A hospital verifies a license, confirms a board certification, reviews a work history, and then keeps watch through performance data. The apparatus has high face validity. It looks like exactly what a careful institution would do to keep a dangerous provider away from patients, and that resemblance is most of why we trust it. This piece is about a different property, predictive validity, which is whether the same apparatus actually separates a safe provider from a dangerous one. The two are not the same thing, and the distance between them is statistical, not moral or procedural.
+
+Consider the ongoing-monitoring half of the system. [The Joint Commission requires](https://www.jointcommission.org/standards/standard-faqs/hospital-and-hospital-clinics/medical-staff-ms/000001500/) Ongoing Professional Practice Evaluation, or OPPE: performance data collected on each individual privileged provider and factored into the decision to keep, limit, or revoke privileges. The intent is sound and the data are real. The difficulty is arithmetic. A dangerous provider is a rare event. Any one physician accrues only a small number of relevant cases in a year. A rare numerator measured over a small denominator produces an estimate that is dominated by noise rather than by the quantity you wanted to measure, and no amount of administrative care around the edges changes that core.
+
+## Reliability is signal divided by noise
+
+The standard way to make this precise is the reliability of a physician-level measure, the share of the observed variation between physicians that reflects true differences rather than measurement error. Written out, it is R(n) = var_between / (var_between + var_within / n). Reliability rises with genuine physician-to-physician variation and falls as measurement noise grows, and because the noise term shrinks as one over the caseload, sample size is what tips the balance. The chart below traces that curve. At realistic case volumes the measure barely lifts off the floor.
+
+<style>
+.crv-trace { stroke-dasharray: var(--crv-len); stroke-dashoffset: var(--crv-len); animation: crv-draw 1.4s ease-out forwards; }
+.crv-fade  { opacity: 0; animation: crv-fade 0.6s ease-out forwards; }
+@keyframes crv-draw { to { stroke-dashoffset: 0; } }
+@keyframes crv-fade { to { opacity: 1; } }
+</style>
+
+<figure>
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of measure reliability against caseload on a log scale, computed from R of n equals var between over var between plus var within over n, with var between 1 and var within 45. Reliability is 0.31 at 20 cases, 0.40 at 30 cases, and 0.53 at 50 cases, all far below the marked 0.90 line, which the curve does not reach until several hundred cases. Illustrative simulation, not real provider data." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">RELIABILITY OF A PHYSICIAN-LEVEL SCORE RISES SLOWLY WITH CASELOAD</text>
+  <text x="20" y="44" font-size="11" font-style="italic" fill="#6a6a6a">R(n) = var_between / (var_between + var_within / n), with var_between = 1, var_within = 45</text>
+  <rect x="386.6" y="60" width="89.2" height="270" fill="#6a6a6a" opacity="0.10"/>
+  <text x="431.2" y="322" font-size="10" font-style="italic" fill="#6a6a6a" text-anchor="middle">realistic volume, 20 to 50 cases</text>
+  <line x1="95" y1="330.0" x2="700" y2="330.0" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="87" y="333.0" font-size="10" fill="#6a6a6a" text-anchor="end">0.00</text>
+  <line x1="95" y1="262.5" x2="700" y2="262.5" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="87" y="265.5" font-size="10" fill="#6a6a6a" text-anchor="end">0.25</text>
+  <line x1="95" y1="195.0" x2="700" y2="195.0" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="87" y="198.0" font-size="10" fill="#6a6a6a" text-anchor="end">0.50</text>
+  <line x1="95" y1="127.5" x2="700" y2="127.5" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="87" y="130.5" font-size="10" fill="#6a6a6a" text-anchor="end">0.75</text>
+  <line x1="95" y1="60.0" x2="700" y2="60.0" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="87" y="63.0" font-size="10" fill="#6a6a6a" text-anchor="end">1.00</text>
+  <line class="crv-fade" style="animation-delay:1.2s" x1="95" y1="87.0" x2="700" y2="87.0" stroke="#7a0000" stroke-width="1.2" stroke-dasharray="5,3"/>
+  <text class="crv-fade" style="animation-delay:1.3s" x="700" y="81.0" font-size="11" font-style="italic" fill="#7a0000" text-anchor="end">reliability 0.90, the level a high-stakes decision wants</text>
+  <polyline class="crv-trace" style="--crv-len:662" points="95.0,324.1 98.0,323.9 101.1,323.8 104.1,323.6 107.1,323.4 110.1,323.2 113.1,323.0 116.2,322.7 119.2,322.5 122.2,322.3 125.2,322.1 128.3,321.8 131.3,321.6 134.3,321.3 137.3,321.0 140.4,320.8 143.4,320.5 146.4,320.2 149.4,319.9 152.5,319.6 155.5,319.3 158.5,318.9 161.6,318.6 164.6,318.3 167.6,317.9 170.6,317.6 173.7,317.2 176.7,316.8 179.7,316.4 182.7,316.0 185.8,315.6 188.8,315.1 191.8,314.7 194.8,314.2 197.9,313.8 200.9,313.3 203.9,312.8 206.9,312.3 209.9,311.8 213.0,311.2 216.0,310.7 219.0,310.1 222.1,309.5 225.1,309.0 228.1,308.3 231.1,307.7 234.2,307.1 237.2,306.4 240.2,305.7 243.2,305.0 246.2,304.3 249.3,303.6 252.3,302.8 255.3,302.1 258.4,301.3 261.4,300.5 264.4,299.7 267.4,298.8 270.4,297.9 273.5,297.1 276.5,296.1 279.5,295.2 282.6,294.3 285.6,293.3 288.6,292.3 291.6,291.3 294.7,290.2 297.7,289.2 300.7,288.1 303.7,287.0 306.8,285.8 309.8,284.7 312.8,283.5 315.8,282.3 318.9,281.0 321.9,279.8 324.9,278.5 327.9,277.2 331.0,275.9 334.0,274.5 337.0,273.1 340.0,271.7 343.0,270.3 346.1,268.8 349.1,267.3 352.1,265.8 355.1,264.3 358.2,262.7 361.2,261.2 364.2,259.6 367.2,257.9 370.3,256.3 373.3,254.6 376.3,252.9 379.3,251.2 382.4,249.4 385.4,247.7 388.4,245.9 391.4,244.1 394.5,242.2 397.5,240.4 400.5,238.5 403.6,236.6 406.6,234.7 409.6,232.8 412.6,230.8 415.7,228.9 418.7,226.9 421.7,224.9 424.7,222.9 427.8,220.9 430.8,218.9 433.8,216.8 436.8,214.8 439.8,212.7 442.9,210.7 445.9,208.6 448.9,206.5 451.9,204.4 455.0,202.3 458.0,200.3 461.0,198.2 464.1,196.1 467.1,194.0 470.1,191.9 473.1,189.8 476.1,187.7 479.2,185.6 482.2,183.5 485.2,181.4 488.2,179.4 491.3,177.3 494.3,175.2 497.3,173.2 500.4,171.1 503.4,169.1 506.4,167.1 509.4,165.1 512.5,163.1 515.5,161.1 518.5,159.2 521.5,157.2 524.5,155.3 527.6,153.4 530.6,151.5 533.6,149.7 536.6,147.8 539.7,146.0 542.7,144.2 545.7,142.4 548.8,140.6 551.8,138.9 554.8,137.1 557.8,135.4 560.9,133.8 563.9,132.1 566.9,130.5 569.9,128.9 573.0,127.3 576.0,125.7 579.0,124.2 582.0,122.7 585.1,121.2 588.1,119.7 591.1,118.3 594.1,116.9 597.1,115.5 600.2,114.2 603.2,112.8 606.2,111.5 609.2,110.2 612.3,109.0 615.3,107.7 618.3,106.5 621.3,105.4 624.4,104.2 627.4,103.1 630.4,101.9 633.5,100.9 636.5,99.8 639.5,98.7 642.5,97.7 645.5,96.7 648.6,95.8 651.6,94.8 654.6,93.9 657.6,93.0 660.7,92.1 663.7,91.2 666.7,90.4 669.8,89.5 672.8,88.7 675.8,87.9 678.8,87.2 681.9,86.4 684.9,85.7 687.9,85.0 690.9,84.3 694.0,83.6 697.0,82.9 700.0,82.3" fill="none" stroke="#111" stroke-width="1.8"/>
+  <circle class="crv-fade" style="animation-delay:1.5s" cx="426.1" cy="222.0" r="4" fill="#111"/>
+  <text class="crv-fade" style="animation-delay:1.6s" x="436.1" y="236.0" font-size="11" fill="#111">30 cases: R = 0.40</text>
+  <line x1="95" y1="330" x2="700" y2="330" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="95.0" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">1</text>
+  <text x="251.7" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">5</text>
+  <text x="319.2" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">10</text>
+  <text x="426.1" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">30</text>
+  <text x="475.8" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">50</text>
+  <text x="543.3" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">100</text>
+  <text x="650.3" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">300</text>
+  <text x="700.0" y="348" font-size="10" fill="#6a6a6a" text-anchor="middle">500</text>
+  <text x="398" y="368" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="middle">cases per physician (log scale)</text>
+</svg>
+<figcaption>Reliability of a physician-level performance measure as a function of caseload, R(n) = var_between / (var_between + var_within / n) with var_between = 1 and var_within = 45, chosen so the curve sits in the range the literature reports at realistic volumes. Illustrative simulation, not real provider data.</figcaption>
+</figure>
+
+With the illustrative variance values shown, a physician with thirty cases has a reliability near 0.40, and across a twenty-to-fifty-case band it stays between 0.31 and 0.53, far below any threshold one would trust for a decision about someone's privileges. The published literature lands in the same place from the other direction. In [a study of physician-level patient-experience measures](https://doi.org/10.1007/s11606-017-4175-y), reaching a reliability of 0.90 required between 138 and 255 patients per physician once the adjustment was done carefully, and a change from standard to expanded risk adjustment reclassified 8 of 56 doctors across the top and bottom quartiles, about one in seven. Patient experience is easier to measure than rare clinical harm, so if anything that is the optimistic end of the problem.
+
+## What pure noise looks like when you rank it
+
+It helps to see what a noise-dominated measure does when you rank people with it. The cleanest way to see it is to build a world with no real differences at all and watch the ranking invent some. In the funnel plot below, every one of three hundred simulated providers shares a single true event rate of three percent. Their caseloads are drawn from a skewed distribution with a median near thirty, so most carry few cases and a few carry many, and the only thing that varies between them is luck. The control limits are computed, not sketched: they are the true rate plus or minus z times the binomial standard error, sqrt(p0 (1 - p0) / n), evaluated across the range of volumes.
+
+<figure>
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Funnel plot of 300 simulated providers who share one true event rate of 3 percent, with skewed caseloads. Observed rates are single binomial draws. Control limits are p0 plus or minus z times the square root of p0 times one minus p0 over n, at the 95 and 99.8 percent levels. Nearly all providers fall inside the funnel; 15 cross the 95 percent line by chance alone. Illustrative simulation, not real provider data." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">WITH NO REAL DIFFERENCES, RANKING STILL MANUFACTURES OUTLIERS</text>
+  <text x="20" y="44" font-size="11" font-style="italic" fill="#6a6a6a">300 simulated providers, one shared true rate p0 = 3%, lognormal caseloads (median 30)</text>
+  <polyline class="crv-fade" style="animation-delay:0.0s" points="95.0,85.5 100.0,88.8 104.9,92.0 109.9,95.3 114.8,98.4 119.8,101.5 124.7,104.6 129.7,107.7 134.7,110.6 139.6,113.6 144.6,116.5 149.5,119.3 154.5,122.1 159.5,124.9 164.4,127.6 169.4,130.3 174.3,133.0 179.3,135.6 184.3,138.2 189.2,140.7 194.2,143.2 199.1,145.7 204.1,148.1 209.0,150.5 214.0,152.8 219.0,155.1 223.9,157.4 228.9,159.7 233.8,161.9 238.8,164.0 243.7,166.2 248.7,168.3 253.7,170.4 258.6,172.5 263.6,174.5 268.5,176.5 273.5,178.4 278.5,180.4 283.4,182.3 288.4,184.2 293.3,186.0 298.3,187.8 303.2,189.6 308.2,191.4 313.2,193.1 318.1,194.9 323.1,196.5 328.0,198.2 333.0,199.9 338.0,201.5 342.9,203.1 347.9,204.6 352.8,206.2 357.8,207.7 362.8,209.2 367.7,210.7 372.7,212.1 377.6,213.6 382.6,215.0 387.5,216.4 392.5,217.8 397.5,219.1 402.4,220.4 407.4,221.8 412.3,223.0 417.3,224.3 422.2,225.6 427.2,226.8 432.2,228.0 437.1,229.2 442.1,230.4 447.0,231.6 452.0,232.7 457.0,233.9 461.9,235.0 466.9,236.1 471.8,237.1 476.8,238.2 481.8,239.3 486.7,240.3 491.7,241.3 496.6,242.3 501.6,243.3 506.5,244.3 511.5,245.2 516.5,246.2 521.4,247.1 526.4,248.0 531.3,248.9 536.3,249.8 541.2,250.7 546.2,251.5 551.2,252.4 556.1,253.2 561.1,254.1 566.0,254.9 571.0,255.7 576.0,256.5 580.9,257.2 585.9,258.0 590.8,258.8 595.8,259.5 600.8,260.2 605.7,261.0 610.7,261.7 615.6,262.4 620.6,263.1 625.5,263.7 630.5,264.4 635.5,265.1 640.4,265.7 645.4,266.4 650.3,267.0 655.3,267.6 660.2,268.2 665.2,268.8 670.2,269.4 675.1,270.0 680.1,270.6 685.0,271.2 690.0,271.7" fill="none" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="2,3"/>
+  <polyline class="crv-fade" style="animation-delay:0.1s" points="95.0,340.0 100.0,340.0 104.9,340.0 109.9,340.0 114.8,340.0 119.8,340.0 124.7,340.0 129.7,340.0 134.7,340.0 139.6,340.0 144.6,340.0 149.5,340.0 154.5,340.0 159.5,340.0 164.4,340.0 169.4,340.0 174.3,340.0 179.3,340.0 184.3,340.0 189.2,340.0 194.2,340.0 199.1,340.0 204.1,340.0 209.0,340.0 214.0,340.0 219.0,340.0 223.9,340.0 228.9,340.0 233.8,340.0 238.8,340.0 243.7,340.0 248.7,340.0 253.7,340.0 258.6,340.0 263.6,340.0 268.5,340.0 273.5,340.0 278.5,340.0 283.4,340.0 288.4,340.0 293.3,340.0 298.3,340.0 303.2,340.0 308.2,340.0 313.2,340.0 318.1,340.0 323.1,340.0 328.0,340.0 333.0,340.0 338.0,340.0 342.9,340.0 347.9,340.0 352.8,340.0 357.8,340.0 362.8,340.0 367.7,340.0 372.7,340.0 377.6,340.0 382.6,340.0 387.5,340.0 392.5,340.0 397.5,340.0 402.4,340.0 407.4,340.0 412.3,340.0 417.3,340.0 422.2,340.0 427.2,340.0 432.2,340.0 437.1,340.0 442.1,340.0 447.0,340.0 452.0,340.0 457.0,340.0 461.9,340.0 466.9,340.0 471.8,340.0 476.8,340.0 481.8,340.0 486.7,340.0 491.7,340.0 496.6,340.0 501.6,340.0 506.5,340.0 511.5,340.0 516.5,340.0 521.4,340.0 526.4,340.0 531.3,340.0 536.3,340.0 541.2,340.0 546.2,340.0 551.2,340.0 556.1,340.0 561.1,340.0 566.0,340.0 571.0,340.0 576.0,340.0 580.9,340.0 585.9,340.0 590.8,340.0 595.8,340.0 600.8,340.0 605.7,340.0 610.7,340.0 615.6,340.0 620.6,340.0 625.5,340.0 630.5,340.0 635.5,340.0 640.4,340.0 645.4,340.0 650.3,340.0 655.3,340.0 660.2,340.0 665.2,340.0 670.2,340.0 675.1,340.0 680.1,340.0 685.0,340.0 690.0,340.0" fill="none" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="2,3"/>
+  <polyline class="crv-trace" style="--crv-len:609;animation-delay:0.2s" points="95.0,167.2 100.0,169.3 104.9,171.3 109.9,173.4 114.8,175.4 119.8,177.4 124.7,179.3 129.7,181.2 134.7,183.1 139.6,185.0 144.6,186.8 149.5,188.7 154.5,190.4 159.5,192.2 164.4,193.9 169.4,195.6 174.3,197.3 179.3,199.0 184.3,200.6 189.2,202.2 194.2,203.8 199.1,205.3 204.1,206.9 209.0,208.4 214.0,209.9 219.0,211.4 223.9,212.8 228.9,214.2 233.8,215.6 238.8,217.0 243.7,218.4 248.7,219.7 253.7,221.0 258.6,222.3 263.6,223.6 268.5,224.9 273.5,226.1 278.5,227.4 283.4,228.6 288.4,229.8 293.3,230.9 298.3,232.1 303.2,233.2 308.2,234.4 313.2,235.5 318.1,236.6 323.1,237.6 328.0,238.7 333.0,239.7 338.0,240.8 342.9,241.8 347.9,242.8 352.8,243.7 357.8,244.7 362.8,245.7 367.7,246.6 372.7,247.5 377.6,248.4 382.6,249.3 387.5,250.2 392.5,251.1 397.5,251.9 402.4,252.8 407.4,253.6 412.3,254.4 417.3,255.2 422.2,256.0 427.2,256.8 432.2,257.6 437.1,258.4 442.1,259.1 447.0,259.8 452.0,260.6 457.0,261.3 461.9,262.0 466.9,262.7 471.8,263.4 476.8,264.0 481.8,264.7 486.7,265.4 491.7,266.0 496.6,266.6 501.6,267.3 506.5,267.9 511.5,268.5 516.5,269.1 521.4,269.7 526.4,270.3 531.3,270.8 536.3,271.4 541.2,272.0 546.2,272.5 551.2,273.0 556.1,273.6 561.1,274.1 566.0,274.6 571.0,275.1 576.0,275.6 580.9,276.1 585.9,276.6 590.8,277.1 595.8,277.6 600.8,278.0 605.7,278.5 610.7,278.9 615.6,279.4 620.6,279.8 625.5,280.2 630.5,280.7 635.5,281.1 640.4,281.5 645.4,281.9 650.3,282.3 655.3,282.7 660.2,283.1 665.2,283.5 670.2,283.8 675.1,284.2 680.1,284.6 685.0,284.9 690.0,285.3" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <polyline class="crv-trace" style="--crv-len:595;animation-delay:0.3s" points="95.0,340.0 100.0,340.0 104.9,340.0 109.9,340.0 114.8,340.0 119.8,340.0 124.7,340.0 129.7,340.0 134.7,340.0 139.6,340.0 144.6,340.0 149.5,340.0 154.5,340.0 159.5,340.0 164.4,340.0 169.4,340.0 174.3,340.0 179.3,340.0 184.3,340.0 189.2,340.0 194.2,340.0 199.1,340.0 204.1,340.0 209.0,340.0 214.0,340.0 219.0,340.0 223.9,340.0 228.9,340.0 233.8,340.0 238.8,340.0 243.7,340.0 248.7,340.0 253.7,340.0 258.6,340.0 263.6,340.0 268.5,340.0 273.5,340.0 278.5,340.0 283.4,340.0 288.4,340.0 293.3,340.0 298.3,340.0 303.2,340.0 308.2,340.0 313.2,340.0 318.1,340.0 323.1,340.0 328.0,340.0 333.0,340.0 338.0,340.0 342.9,340.0 347.9,340.0 352.8,340.0 357.8,340.0 362.8,340.0 367.7,340.0 372.7,340.0 377.6,340.0 382.6,340.0 387.5,340.0 392.5,340.0 397.5,340.0 402.4,340.0 407.4,340.0 412.3,340.0 417.3,340.0 422.2,340.0 427.2,340.0 432.2,340.0 437.1,340.0 442.1,340.0 447.0,340.0 452.0,340.0 457.0,340.0 461.9,340.0 466.9,340.0 471.8,340.0 476.8,340.0 481.8,340.0 486.7,340.0 491.7,340.0 496.6,340.0 501.6,340.0 506.5,340.0 511.5,340.0 516.5,340.0 521.4,340.0 526.4,340.0 531.3,340.0 536.3,340.0 541.2,340.0 546.2,340.0 551.2,340.0 556.1,340.0 561.1,340.0 566.0,340.0 571.0,340.0 576.0,340.0 580.9,340.0 585.9,340.0 590.8,340.0 595.8,340.0 600.8,339.7 605.7,339.2 610.7,338.8 615.6,338.3 620.6,337.9 625.5,337.5 630.5,337.0 635.5,336.6 640.4,336.2 645.4,335.8 650.3,335.4 655.3,335.0 660.2,334.6 665.2,334.2 670.2,333.9 675.1,333.5 680.1,333.1 685.0,332.8 690.0,332.4" fill="none" stroke="#6a6a6a" stroke-width="1"/>
+  <line x1="95" y1="308.9" x2="690" y2="308.9" stroke="#111" stroke-width="1"/>
+  <text x="694" y="312.9" font-size="10" fill="#111">p0 = 3%</text>
+  <text x="694" y="288.3" font-size="9" fill="#6a6a6a">95%</text>
+  <text x="694" y="274.7" font-size="9" fill="#6a6a6a">99.8%</text>
+  <g class="crv-fade" style="animation-delay:0.9s">
+    <circle cx="413.7" cy="314.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="603.8" cy="307.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="401.1" cy="312.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="534.6" cy="254.5" r="3.2" fill="#7a0000"/>
+    <circle cx="331.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="468.3" cy="321.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="315.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="288.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="372.6" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="377.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="409.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="235.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="497.6" cy="294.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="518.2" cy="286.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="306.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="509.3" cy="311.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="421.6" cy="243.4" r="3.2" fill="#7a0000"/>
+    <circle cx="401.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="142.3" r="3.2" fill="#7a0000"/>
+    <circle cx="593.1" cy="297.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="224.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="459.4" cy="320.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="372.6" cy="307.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="302.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="246.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="235.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="532.6" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="429.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="302.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="282.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="179.7" cy="236.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="260.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="436.3" cy="317.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="429.1" cy="293.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="462.4" cy="321.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="538.4" cy="328.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="536.5" cy="291.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="484.9" cy="274.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="331.7" cy="257.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="413.7" cy="264.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="690.0" cy="325.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="315.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="468.3" cy="321.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="396.7" cy="311.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="401.1" cy="285.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="253.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="482.3" cy="273.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="436.3" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="500.0" cy="325.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="263.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="253.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="484.9" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="319.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="413.7" cy="238.7" r="3.2" fill="#7a0000"/>
+    <circle cx="324.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="409.6" cy="288.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="286.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="551.3" cy="317.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="267.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="462.4" cy="302.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="120.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="425.4" cy="316.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="372.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="524.5" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="456.3" cy="300.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="377.7" cy="308.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="439.8" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="487.5" cy="291.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="554.8" cy="329.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="246.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="377.7" cy="245.6" r="3.2" fill="#7a0000"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="387.4" cy="310.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="265.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="443.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="569.6" cy="320.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="429.1" cy="293.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="413.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="500.0" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="311.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="306.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="382.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="492.6" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="429.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="267.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="465.4" cy="284.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="300.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="311.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="372.6" cy="307.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="311.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="382.6" cy="187.3" r="3.2" fill="#7a0000"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="300.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="296.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="253.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="409.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="246.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="311.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="405.4" cy="313.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="421.6" cy="291.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="311.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="658.1" cy="311.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="95.0" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="405.4" cy="313.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="277.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="273.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="413.7" cy="314.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="387.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="249.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="282.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="224.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="265.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="587.6" cy="286.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="507.1" cy="325.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="288.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="268.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="492.6" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="387.4" cy="310.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="331.7" cy="298.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="432.8" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="372.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="487.5" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="401.1" cy="312.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="255.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="195.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="361.9" cy="305.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="296.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="459.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="361.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="425.4" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="528.6" cy="302.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="482.3" cy="306.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="331.7" cy="298.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="462.4" cy="264.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="285.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="504.7" cy="325.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="282.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="267.7" cy="278.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="382.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="409.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="474.0" cy="304.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="530.6" cy="327.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="265.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="417.7" cy="315.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="516.0" cy="312.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="443.2" cy="276.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="484.9" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="361.9" cy="305.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="530.6" cy="265.0" r="3.2" fill="#7a0000"/>
+    <circle cx="429.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="443.2" cy="276.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="294.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="439.8" cy="275.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="542.2" cy="293.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="532.6" cy="278.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="298.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="409.6" cy="314.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="540.3" cy="281.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="425.4" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="532.6" cy="290.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="500.0" cy="325.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="382.6" cy="278.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="283.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="304.2" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="142.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="283.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="285.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="206.1" r="3.2" fill="#7a0000"/>
+    <circle cx="396.7" cy="283.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="224.7" r="3.2" fill="#7a0000"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="277.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="142.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="296.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="436.3" cy="251.7" r="3.2" fill="#7a0000"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="401.1" cy="312.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="432.8" cy="317.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="286.1" cy="285.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="522.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="634.2" cy="299.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="235.5" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="317.8" cy="294.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="162.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="518.2" cy="313.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="396.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="245.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="356.3" cy="268.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="246.9" cy="270.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="331.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="413.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="479.6" cy="271.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="462.4" cy="302.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="306.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="296.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="223.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="344.4" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="277.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="350.4" cy="302.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="392.1" cy="282.3" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="209.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="235.5" cy="265.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="367.3" cy="306.5" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="310.5" cy="292.8" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="331.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="456.3" cy="320.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="459.4" cy="301.6" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="520.3" cy="313.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="338.2" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="446.6" cy="277.7" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="257.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="421.6" cy="315.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="302.7" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="425.4" cy="316.4" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="471.2" cy="322.1" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="324.9" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="436.3" cy="317.9" r="2.4" fill="#111" opacity="0.5"/>
+    <circle cx="479.6" cy="340.0" r="2.4" fill="#111" opacity="0.5"/>
+  </g>
+  <text class="crv-fade" style="animation-delay:1.4s" x="320" y="84" font-size="11" font-style="italic" fill="#7a0000">15 providers cross the 95% line, yet all share one true</text>
+  <text class="crv-fade" style="animation-delay:1.4s" x="320" y="100" font-size="11" font-style="italic" fill="#7a0000">rate: the spread is noise (the league-table fallacy)</text>
+  <line x1="95" y1="340" x2="690" y2="340" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="179.7" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">10</text>
+  <text x="294.6" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">20</text>
+  <text x="361.9" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">30</text>
+  <text x="446.6" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">50</text>
+  <text x="561.5" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">100</text>
+  <text x="676.5" y="358" font-size="10" fill="#6a6a6a" text-anchor="middle">200</text>
+  <text x="392" y="378" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="middle">cases per provider (log scale)</text>
+  <text x="20" y="200" font-size="11" font-style="italic" fill="#6a6a6a" transform="rotate(-90 20 200)" text-anchor="middle">observed event rate</text>
+</svg>
+<figcaption>A funnel plot of 300 simulated providers who share one true event rate (p0 = 3%); observed rates are single Binomial(n, p0) draws over lognormal caseloads. The control limits are p0 +/- z*sqrt(p0(1-p0)/n) at the 95% and 99.8% levels, computed on a grid. The accented points are flagged by a 95% cutoff even though no provider differs from any other. Illustrative simulation, not real provider data.</figcaption>
+</figure>
+
+Nearly every provider falls inside the funnel, exactly as they should, because they are in truth identical. Yet a naive worst-to-best ranking still lifts a handful above the line and labels them outliers. In this run 15 providers cross the ninety-five-percent limit despite sharing the same true rate. This is the league-table fallacy: the spread is noise, and ranking is a machine for converting noise into apparent signal. A committee handed the sorted list would have fifteen names to explain, and every one of them is a coin that came up heads a few too many times.
+
+## The ranking does not survive a second year
+
+If the ranking were measuring something real, it would hold still from one year to the next. It does not. Drawing two independent years from the identical true rate and sorting each into quartiles produces the slopegraph below.
+
+<figure>
+<svg viewBox="0 0 620 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slopegraph connecting each of 300 simulated providers' quartile in year one to its quartile in year two, both years drawn from one shared true rate. 68 percent of providers land in a different quartile the second year; with no true differences, all of the movement is noise. Illustrative simulation, not real provider data." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="20" y="24" font-size="11" letter-spacing="1.4" fill="#6a6a6a">RANKINGS RESHUFFLE WHEN NOTHING REAL HAS CHANGED</text>
+  <text x="20" y="44" font-size="11" font-style="italic" fill="#6a6a6a">two independent years, one shared true rate; every quartile move is noise</text>
+  <text x="200" y="74" font-size="12" fill="#111" text-anchor="middle">Year 1</text>
+  <text x="420" y="74" font-size="12" fill="#111" text-anchor="middle">Year 2</text>
+  <g class="crv-fade" style="animation-delay:0.4s">
+    <line x1="200" y1="239.7" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="173.3" x2="420" y2="169.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="239.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="322.0" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="91.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="330.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="326.0" x2="420" y2="342.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="173.3" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="338.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="103.0" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="177.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="161.3" x2="420" y2="161.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="173.3" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="103.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="83.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="243.7" x2="420" y2="251.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="326.0" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="243.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="185.3" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="259.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="161.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="173.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="107.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="95.0" x2="420" y2="91.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="239.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="95.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="95.0" x2="420" y2="91.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="103.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="103.0" x2="420" y2="87.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="263.7" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="173.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="107.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="95.0" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="87.0" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="247.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="255.7" x2="420" y2="103.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="87.0" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="342.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="251.7" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="103.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="173.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="247.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="173.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="247.7" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="255.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="161.3" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="330.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="107.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="326.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="255.7" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="326.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="177.3" x2="420" y2="181.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="338.0" x2="420" y2="322.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="263.7" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="330.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="169.3" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="247.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="177.3" x2="420" y2="181.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="322.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="330.0" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="259.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="177.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="83.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="173.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="326.0" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="173.3" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="338.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="177.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="318.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="83.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="322.0" x2="420" y2="330.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="103.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="243.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="107.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="83.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="322.0" x2="420" y2="173.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="334.0" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="239.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="95.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="181.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="259.7" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="161.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="165.3" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="334.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="161.3" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="330.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="173.3" x2="420" y2="169.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="255.7" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="99.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="83.0" x2="420" y2="83.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="243.7" x2="420" y2="251.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="247.7" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="247.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="243.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="99.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="239.7" x2="420" y2="161.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="173.3" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="259.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="259.7" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="330.0" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="322.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="263.7" x2="420" y2="255.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="161.3" x2="420" y2="161.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="95.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="326.0" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="330.0" x2="420" y2="326.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="334.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="322.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="177.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="83.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="169.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="322.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="263.7" x2="420" y2="334.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="83.0" x2="420" y2="83.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="165.3" x2="420" y2="173.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="185.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="247.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="177.3" x2="420" y2="181.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="165.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="107.0" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="83.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="322.0" x2="420" y2="330.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="91.0" x2="420" y2="107.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="247.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="259.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="161.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="322.0" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="107.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="95.0" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="103.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="318.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="95.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="247.7" x2="420" y2="342.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="330.0" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="181.3" x2="420" y2="322.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="107.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="251.7" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="103.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="338.0" x2="420" y2="322.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="342.0" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="103.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="185.3" x2="420" y2="99.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="318.0" x2="420" y2="161.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="87.0" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="91.0" x2="420" y2="263.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="330.0" x2="420" y2="326.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="99.0" x2="420" y2="103.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="338.0" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="334.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="83.0" x2="420" y2="318.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="251.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="173.3" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="255.7" x2="420" y2="338.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="322.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="107.0" x2="420" y2="255.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="161.3" x2="420" y2="161.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="87.0" x2="420" y2="173.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="326.0" x2="420" y2="107.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="95.0" x2="420" y2="326.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="177.3" x2="420" y2="181.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="181.3" x2="420" y2="322.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="342.0" x2="420" y2="177.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="239.7" x2="420" y2="161.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="165.3" x2="420" y2="173.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="169.3" x2="420" y2="185.3" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="91.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="99.0" x2="420" y2="259.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="259.7" x2="420" y2="87.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="263.7" x2="420" y2="255.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="318.0" x2="420" y2="239.7" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="243.7" x2="420" y2="95.0" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="247.7" x2="420" y2="263.7" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="330.0" x2="420" y2="326.0" stroke="#6a6a6a" stroke-width="0.8" opacity="0.13"/>
+    <line x1="200" y1="255.7" x2="420" y2="181.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+    <line x1="200" y1="338.0" x2="420" y2="165.3" stroke="#7a0000" stroke-width="0.8" opacity="0.35"/>
+  </g>
+  <text x="170" y="334.0" font-size="11" fill="#111" text-anchor="end">Q1</text>
+  <text x="450" y="334.0" font-size="11" fill="#111" text-anchor="start">Q1</text>
+  <text x="170" y="255.7" font-size="11" fill="#111" text-anchor="end">Q2</text>
+  <text x="450" y="255.7" font-size="11" fill="#111" text-anchor="start">Q2</text>
+  <text x="170" y="177.3" font-size="11" fill="#111" text-anchor="end">Q3</text>
+  <text x="450" y="177.3" font-size="11" fill="#111" text-anchor="start">Q3</text>
+  <text x="170" y="99.0" font-size="11" fill="#111" text-anchor="end">Q4</text>
+  <text x="450" y="99.0" font-size="11" fill="#111" text-anchor="start">Q4</text>
+  <text class="crv-fade" style="animation-delay:1.1s" x="310" y="370" font-size="12" font-style="italic" fill="#7a0000" text-anchor="middle">68% of providers change quartile between two identical years</text>
+</svg>
+<figcaption>Quartile assignments for the same 300 simulated providers across two independent years drawn from one true rate. Ties among low-volume providers are broken at random, the correct treatment when there is no real order to recover. The share changing quartile is computed directly. Illustrative simulation, not real provider data.</figcaption>
+</figure>
+
+Because the data were built with no true differences whatsoever, every line that changes height is pure noise, and 68 percent of providers land in a different quartile the second year. Set that against the one-in-seven reclassification the patient-experience study found between two adjustment methods on real data. The simulation churns more, not less, because resampling the same providers at low volume is a harsher test than a single change of method. Either way the lesson is the same: a quartile label that reshuffles this freely is not a measurement of the provider, it is a measurement of the year.
+
+## The yield, in dollars
+
+None of this is hypothetical at the level of yield. In [a 2023 study in the Journal of the American College of Radiology](https://www.jacr.org/article/S1546-1440(23)00648-8/abstract), six hospital systems totaling 12,854 privileged providers found that zero were flagged as outliers through the OPPE metrics alone, at a recurring labor cost near fifty dollars per provider, which the authors scaled to roughly seventy-eight million dollars per year across the country. They described the process as possibly predominantly administrative waste.
+
+<figure>
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Panel of three published figures from a six-system OPPE cost study: zero of 12,854 providers flagged as outliers by OPPE metrics alone, about 50 dollars recurring labor cost per provider, and about 78 million dollars estimated cost per year nationally. Cost per outlier detected is undefined because no outliers were found." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+  <text x="380" y="40" font-size="14" fill="#111" text-anchor="middle">Cost per outlier detected has no finite value: the denominator is zero</text>
+  <g class="crv-fade" style="animation-delay:0.3s">
+    <text x="127" y="130" font-size="40" fill="#7a0000" text-anchor="middle">0 of 12,854</text>
+    <text x="127" y="172" font-size="12" fill="#6a6a6a" text-anchor="middle">flagged as outliers by</text>
+    <text x="127" y="190" font-size="12" fill="#6a6a6a" text-anchor="middle">OPPE metrics alone</text>
+    <text x="380" y="130" font-size="40" fill="#111" text-anchor="middle">~$50</text>
+    <text x="380" y="172" font-size="12" fill="#6a6a6a" text-anchor="middle">recurring labor cost</text>
+    <text x="380" y="190" font-size="12" fill="#6a6a6a" text-anchor="middle">per provider</text>
+    <text x="633" y="130" font-size="40" fill="#111" text-anchor="middle">~$78M</text>
+    <text x="633" y="172" font-size="12" fill="#6a6a6a" text-anchor="middle">estimated cost per</text>
+    <text x="633" y="190" font-size="12" fill="#6a6a6a" text-anchor="middle">year, nationally</text>
+  </g>
+  <line x1="60" y1="218" x2="700" y2="218" stroke="#d0d0c8" stroke-width="1"/>
+  <text x="380" y="238" font-size="11" font-style="italic" fill="#6a6a6a" text-anchor="middle">Sourced figures (Joint Commission OPPE cost study), not simulation.</text>
+</svg>
+<figcaption>Reported yield of OPPE-metric monitoring at the scale studied: 0 of 12,854 providers flagged, about $50 per provider, about $78M per year nationally. These are sourced figures, not simulation. Cost per outlier detected is undefined because no outliers were detected by the metrics alone.</figcaption>
+</figure>
+
+The cost per outlier detected has no finite value, because the denominator is zero. The Joint Commission itself concedes the underlying problem through its low-volume provision, which permits supplemental data from other facilities when local activity is too sparse to evaluate a provider. That carve-out is an admission written in policy language that the denominators are often too small to support the inference anyone wants to draw from them.
+
+## Low yield is not zero value
+
+Low yield is not zero value, and the distinction matters. A program that finds nothing through its metrics can still deter, can still catch the rare unambiguous case that no statistic was needed to see, and the entry-level work of verifying a license and screening for outright fraud does real good that has nothing to do with the reliability of a performance score. The claim worth making is narrow. Credentialing and the OPPE score have high face validity and weak predictive validity. They look like instruments that separate safe providers from dangerous ones, and at the volumes most physicians actually generate, they mostly cannot. Treating a noisy score as if it were a sharp one does more than waste money. It manufactures false confidence in both directions, flagging the unlucky and clearing no one in particular. The figures above are simulated on clearly labelled illustrative data, but the arithmetic they make visible is the same arithmetic that governs the real programs.
+
+The three sourced figures in this post, the OPPE yield, the reliability sample sizes, and the quartile reclassification, are real and linked above. The funnel and the slopegraph are seeded simulations, generated by a stdlib-only script in this site's repo, and are not real provider data. The reliability curve uses illustrative variance values, stated on the chart, chosen so the curve sits where the literature reports it at realistic volumes.
