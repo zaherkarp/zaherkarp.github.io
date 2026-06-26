@@ -6,8 +6,21 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jun 2026 12:51:13 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 26 Jun 2026 18:31:14 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</title>
+      <link>https://zaherkarp.com/blog/credentialing-validity/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/credentialing-validity/</guid>
+      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
+      <description>Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing.</description>
+      <category>healthcare</category>
+      <category>credentialing</category>
+      <category>statistics</category>
+      <category>reliability</category>
+      
+    </item>
     
     <item>
       <title>Your Cut Point Forecast Has a Lucas Critique Problem</title>
@@ -415,20 +428,6 @@
       <category>healthcare-it</category>
       <category>architecture</category>
       <category>systems</category>
-      
-    </item>
-    
-    <item>
-      <title>What LLM Systems Teach Healthcare IT About Architecture</title>
-      <link>https://zaherkarp.com/blog/what-llm-systems-teach-healthcare-it/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/what-llm-systems-teach-healthcare-it/</guid>
-      <pubDate>Sun, 01 Feb 2026 00:00:00 +0000</pubDate>
-      <description>Large language models force healthcare IT teams to rethink batching, memory, routing, and state management at production scale.</description>
-      <category>llm</category>
-      <category>healthcare-it</category>
-      <category>architecture</category>
-      <category>systems-design</category>
-      <category>ai</category>
       
     </item>
     
