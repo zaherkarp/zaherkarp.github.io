@@ -63,7 +63,15 @@ OPPE_OUTLIERS = 0
 OPPE_COST_PER_PROVIDER = 50      # ~$50.20/provider as reported
 OPPE_NATIONAL_COST_M = 78        # ~$78.54M/year as reported
 
+# PPV / base-rate panel (Chart 5): no random draws, exact binomial arithmetic.
+# The "screen" is the SAME rule the funnel draws (flag a provider above the 95%
+# upper control limit at N_SCREEN cases). A "dangerous" provider has a true rate
+# that is a multiple of the base rate p0; we sweep PPV against prevalence.
+N_SCREEN = 30                    # a realistic median caseload, matches the funnel
+DANGER_MULTIPLES = (2, 3, 4)     # "dangerous" = 2x, 3x, 4x the base event rate
+
 SIM_NOTE = "Illustrative simulation, not real provider data."
+CALC_NOTE = "Illustrative computation, not real provider data."
 
 
 def reliability(n):
@@ -450,10 +458,157 @@ def svg_oppe():
             f'</figure>')
 
 
+# ===================== CHART 5: PPV vs PREVALENCE =========================
+def screen_characteristics():
+    """Operating characteristics of the funnel flag rule, computed exactly.
+
+    The flag threshold k is the smallest integer event count whose rate clears
+    the 95% upper control limit at N_SCREEN cases, i.e. the very rule the funnel
+    plot uses, rounded up by discreteness. From it:
+        false-positive rate = P(events >= k | base rate p0)   -> 1 - specificity
+        sensitivity(m)      = P(events >= k | rate m * p0)     per danger multiple
+    No random draws: these are exact binomial tail sums. Returns (k, spec, sens).
+    """
+    n = N_SCREEN
+
+    def binom_tail(p, k):
+        # P(X >= k) for X ~ Binomial(n, p), summed exactly.
+        return sum(math.comb(n, j) * p ** j * (1 - p) ** (n - j)
+                   for j in range(k, n + 1))
+
+    ul = P0 + Z95 * math.sqrt(P0 * (1 - P0) / n)   # same normal-approx limit
+    k = next(j for j in range(n + 1) if j / n > ul)
+    fpr = binom_tail(P0, k)
+    spec = 1 - fpr
+    sens = {m: binom_tail(P0 * m, k) for m in DANGER_MULTIPLES}
+    return k, spec, sens
+
+
+def svg_ppv():
+    """PPV of the funnel flag rule as the base rate of dangerous providers varies.
+
+    For each danger multiple, PPV(prev) = sens*prev / (sens*prev +
+    (1-spec)*(1-prev)) is computed across a log grid of prevalence. The point is
+    the base-rate fallacy: a screen with respectable sensitivity and specificity,
+    pointed at a rare condition, still returns mostly false positives.
+    """
+    k, spec, sens = screen_characteristics()
+
+    W, H = 760, 420
+    x0, x1 = 95, 690
+    yT, yB = 70, 340
+    lo_p, hi_p = 0.001, 0.30
+    logspan = math.log10(hi_p) - math.log10(lo_p)
+
+    def sx(pr):
+        return x0 + (math.log10(pr) - math.log10(lo_p)) / logspan * (x1 - x0)
+
+    def sy(v):
+        return yB - v * (yB - yT)
+
+    def ppv(s, pr):
+        return s * pr / (s * pr + (1 - spec) * (1 - pr))
+
+    grid = [lo_p * (hi_p / lo_p) ** (i / 140) for i in range(141)]
+
+    p = []
+    p.append('  <text x="20" y="24" font-size="11" letter-spacing="1.4" '
+             'fill="#6a6a6a">A WORKING SCREEN STILL FAILS WHEN THE CONDITION '
+             'IS RARE</text>')
+    sub = (f'the 95% funnel flag at n={N_SCREEN} ({k} or more events): '
+           f'specificity {spec * 100:.0f}%, sensitivity '
+           f'{sens[2] * 100:.0f}/{sens[3] * 100:.0f}/{sens[4] * 100:.0f}% '
+           f'at 2x/3x/4x the base rate')
+    p.append(f'  <text x="20" y="44" font-size="11" font-style="italic" '
+             f'fill="#6a6a6a">{sub}</text>')
+    # Illustrative low-prevalence band.
+    bx0, bx1 = sx(0.005), sx(0.05)
+    p.append(f'  <rect x="{bx0:.1f}" y="{yT}" width="{bx1 - bx0:.1f}" '
+             f'height="{yB - yT}" fill="#6a6a6a" opacity="0.10"/>')
+    p.append(f'  <text x="{(bx0 + bx1) / 2:.1f}" y="{yT + 14}" font-size="10" '
+             f'font-style="italic" fill="#6a6a6a" text-anchor="middle">'
+             f'illustrative low base rate</text>')
+    # Horizontal gridlines + y labels.
+    for v in (0.0, 0.25, 0.5, 0.75, 1.0):
+        p.append(f'  <line x1="{x0}" y1="{sy(v):.1f}" x2="{x1}" y2="{sy(v):.1f}" '
+                 f'stroke="#d0d0c8" stroke-width="1"/>')
+        p.append(f'  <text x="{x0 - 8}" y="{sy(v) + 3:.1f}" font-size="10" '
+                 f'fill="#6a6a6a" text-anchor="end">{v:.2f}</text>')
+    # The three PPV curves, traced on load; higher multiple sits higher.
+    for idx, m in enumerate(DANGER_MULTIPLES):
+        curve = [(sx(pr), sy(ppv(sens[m], pr))) for pr in grid]
+        L = poly_len(curve)
+        p.append(f'  <polyline class="crv-trace" style="--crv-len:{L:.0f};'
+                 f'animation-delay:{idx * 0.15:.2f}s" points="{pts_str(curve)}" '
+                 f'fill="none" stroke="#111" stroke-width="1.6"/>')
+        ly = sy(ppv(sens[m], hi_p))
+        p.append(f'  <text class="crv-fade" style="animation-delay:'
+                 f'{0.8 + idx * 0.1:.1f}s" x="{x1 + 6}" y="{ly + 3:.1f}" '
+                 f'font-size="10" fill="#111">{m}x the rate</text>')
+    # Operating point: the 3x curve at 1% prevalence, the headline number.
+    op = ppv(sens[3], 0.01)
+    opx, opy = sx(0.01), sy(op)
+    p.append(f'  <circle class="crv-fade" style="animation-delay:1.3s" '
+             f'cx="{opx:.1f}" cy="{opy:.1f}" r="4" fill="#7a0000"/>')
+    p.append(f'  <text class="crv-fade" style="animation-delay:1.35s" '
+             f'x="{opx + 7:.1f}" y="{opy + 4:.1f}" font-size="11" '
+             f'fill="#7a0000">{op * 100:.0f}%</text>')
+    # Callout in the empty upper-left corner (low prevalence, high PPV).
+    p.append('  <text class="crv-fade" style="animation-delay:1.4s" x="105" '
+             'y="104" font-size="11" font-style="italic" fill="#7a0000">'
+             'The lever is the base rate, not the test.</text>')
+    p.append('  <text class="crv-fade" style="animation-delay:1.4s" x="105" '
+             'y="120" font-size="11" font-style="italic" fill="#7a0000">'
+             'Even a screen that catches half of 3x providers</text>')
+    p.append('  <text class="crv-fade" style="animation-delay:1.4s" x="105" '
+             'y="136" font-size="11" font-style="italic" fill="#7a0000">'
+             'flags mostly safe ones when danger is rare.</text>')
+    # X axis.
+    p.append(f'  <line x1="{x0}" y1="{yB}" x2="{x1}" y2="{yB}" '
+             f'stroke="#d0d0c8" stroke-width="1"/>')
+    for pr in (0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2):
+        p.append(f'  <text x="{sx(pr):.1f}" y="{yB + 18}" font-size="10" '
+                 f'fill="#6a6a6a" text-anchor="middle">{pr * 100:g}%</text>')
+    p.append(f'  <text x="{(x0 + x1) / 2:.0f}" y="{yB + 38}" font-size="11" '
+             f'font-style="italic" fill="#6a6a6a" text-anchor="middle">true '
+             f'prevalence of a dangerous provider (log scale)</text>')
+    p.append(f'  <text x="20" y="{(yT + yB) / 2:.0f}" font-size="11" '
+             f'font-style="italic" fill="#6a6a6a" transform="rotate(-90 20 '
+             f'{(yT + yB) / 2:.0f})" text-anchor="middle">positive predictive '
+             f'value of a flag</text>')
+
+    aria = (f"Three curves of the positive predictive value of a flag against the "
+            f"true prevalence of a dangerous provider, on a log prevalence axis, "
+            f"for providers whose true rate is 2, 3, or 4 times the base rate. The "
+            f"screen is the 95 percent funnel flag at {N_SCREEN} cases, with "
+            f"specificity {spec * 100:.0f} percent and sensitivities "
+            f"{sens[2] * 100:.0f}, {sens[3] * 100:.0f}, and {sens[4] * 100:.0f} "
+            f"percent. Across the plausible low-prevalence range the predictive "
+            f"value stays low: at 1 percent prevalence a flagged provider at triple "
+            f"the base rate is genuinely high-rate only about {op * 100:.0f} "
+            f"percent of the time. {CALC_NOTE}")
+    body = "\n".join(p)
+    return (f'<figure>\n'
+            f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" '
+            f'role="img" aria-label="{aria}" style="width:100%;height:auto;'
+            f"font-family:'et-book',Palatino,Georgia,serif\">\n"
+            f'{body}\n</svg>\n'
+            f'<figcaption>Positive predictive value of the funnel flag rule (flag '
+            f'at {k} or more events in {N_SCREEN} cases, the 95% upper limit) as '
+            f'the base rate of truly dangerous providers varies, computed exactly '
+            f'from the binomial for providers at 2x, 3x, and 4x the base rate '
+            f'(specificity {spec * 100:.0f}%, sensitivity {sens[2] * 100:.0f}/'
+            f'{sens[3] * 100:.0f}/{sens[4] * 100:.0f}%). PPV = sens*prev / '
+            f'(sens*prev + (1-spec)*(1-prev)). Because the condition is rare, most '
+            f'positives are false even when the screen catches a fair share of '
+            f'true cases. {CALC_NOTE}</figcaption>\n'
+            f'</figure>')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--emit", choices=["reliability", "funnel", "quartile",
-                                       "oppe"])
+                                       "oppe", "ppv"])
     args = ap.parse_args()
 
     rng = random.Random(SEED)
@@ -467,16 +622,25 @@ def main():
         print(svg_quartile(state, rng)[0])
     elif args.emit == "oppe":
         print(svg_oppe())
+    elif args.emit == "ppv":
+        print(svg_ppv())
     else:
         # Summary: print the seed and every number the prose depends on.
         _, n_out = svg_funnel(state)
         _, pct = svg_quartile(state, rng)
+        k, spec, sens = screen_characteristics()
         print(f"seed = {SEED}")
         print(f"reliability: R(20)={reliability(20):.3f} "
               f"R(30)={reliability(30):.3f} R(50)={reliability(50):.3f}")
         print(f"funnel: providers beyond 95% upper limit = {n_out} / "
               f"{N_PROVIDERS}")
         print(f"quartiles: share changing quartile = {pct:.1f}%")
+        print(f"screen (n={N_SCREEN}, flag >= {k} events): "
+              f"specificity={spec * 100:.1f}% "
+              f"sensitivity={'/'.join(f'{sens[m] * 100:.0f}' for m in DANGER_MULTIPLES)}% "
+              f"at {'/'.join(f'{m}x' for m in DANGER_MULTIPLES)}")
+        ppv01 = sens[3] * 0.01 / (sens[3] * 0.01 + (1 - spec) * 0.99)
+        print(f"ppv: 3x-elevated provider at 1% prevalence = {ppv01 * 100:.1f}%")
 
 
 if __name__ == "__main__":
