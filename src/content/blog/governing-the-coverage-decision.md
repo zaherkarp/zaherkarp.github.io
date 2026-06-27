@@ -2,7 +2,6 @@
 title: "Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders"
 description: "A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders."
 publishDate: 2026-06-27
-author: "Zaher Karp"
 tags: ["ai-governance", "medicare-advantage", "payer", "llm", "utilization-management", "cms"]
 ---
 
@@ -83,14 +82,36 @@ The canonical demonstration that a neutral-looking process can be structurally i
 
 International guidance treats this as a governance obligation, not an aspiration. The World Health Organization's 2021 principles for AI in health name equity and accountability among six core commitments, and its 2024 guidance on large multi-modal models adds more than forty recommendations directed at governments, developers, and deployers.[^who2024][^who2021] The empirical case for treating bias as a base-rate expectation rather than a tail risk is now strong. A 2025 systematic review of twenty-four studies of demographic bias in medical LLMs found bias in twenty-two of them, including gender bias in 93.7 percent and racial or ethnic bias in 90.9 percent of the studies that examined each (Figure 3).[^biasreview] A payer cannot govern bias as an exception when the literature reports it as the rule.
 
-![Bar chart. Gender bias was reported in 93.7 percent of the 16 studies that examined it. Racial or ethnic bias was reported in 90.9 percent of the 11 studies that examined it.](assets/bias-prevalence.svg)
+<figure>
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart of demographic bias prevalence in medical large language model studies. Gender bias was reported in 93.7 percent of the 16 studies that examined it, that is 15 of 16. Racial or ethnic bias was reported in 90.9 percent of the 11 studies that examined it, that is 10 of 11. From a 2025 systematic review of 24 studies." style="width:100%;height:auto;font-family:'et-book',Palatino,Georgia,serif">
+<line x1="300" y1="60" x2="300" y2="210" stroke="#d0d0c8" stroke-width="1"/>
+<line x1="400" y1="60" x2="400" y2="210" stroke="#d0d0c8" stroke-width="1"/>
+<line x1="500" y1="60" x2="500" y2="210" stroke="#d0d0c8" stroke-width="1"/>
+<line x1="600" y1="60" x2="600" y2="210" stroke="#d0d0c8" stroke-width="1"/>
+<line x1="200" y1="60" x2="200" y2="210" stroke="#d0d0c8" stroke-width="1"/>
+<text x="200" y="228" fill="#6a6a6a" font-size="11" text-anchor="middle">0%</text>
+<text x="300" y="228" fill="#6a6a6a" font-size="11" text-anchor="middle">25%</text>
+<text x="400" y="228" fill="#6a6a6a" font-size="11" text-anchor="middle">50%</text>
+<text x="500" y="228" fill="#6a6a6a" font-size="11" text-anchor="middle">75%</text>
+<text x="600" y="228" fill="#6a6a6a" font-size="11" text-anchor="middle">100%</text>
+<rect x="200" y="78" width="374.8" height="38" fill="#7a0000"/>
+<text x="200" y="72" fill="#111" font-size="16">Gender bias</text>
+<text x="582.8" y="102" fill="#111" font-size="16" font-weight="600">93.7%</text>
+<text x="200" y="132" fill="#6a6a6a" font-size="12">15 of 16 studies that examined it</text>
+<rect x="200" y="156" width="363.6" height="38" fill="#7a0000"/>
+<text x="200" y="150" fill="#111" font-size="16">Racial or ethnic bias</text>
+<text x="571.6" y="180" fill="#111" font-size="16" font-weight="600">90.9%</text>
+<text x="200" y="210" fill="#6a6a6a" font-size="12">10 of 11 studies that examined it</text>
+<text x="400" y="252" fill="#6a6a6a" font-size="11" text-anchor="middle">Share of examining studies that found the bias</text>
+<text x="200" y="278" fill="#6a6a6a" font-size="12">Source: systematic review of 24 studies, Int. J. for Equity in Health (2025).</text>
+</svg>
+<figcaption>Figure 3. Prevalence of demographic bias across medical-LLM studies that examined each category, from a 2025 systematic review of 24 studies. Gender bias 93.7 percent (15 of 16); racial or ethnic bias 90.9 percent (10 of 11). Bias is the base rate, not the exception.[^biasreview]</figcaption>
+</figure>
 
 | Bias category | Share of examining studies | Studies |
 | --- | --- | --- |
 | Gender bias | 93.7% | 15 of 16 |
 | Racial or ethnic bias | 90.9% | 10 of 11 |
-
-*Figure 3. Prevalence of demographic bias across medical-LLM studies that examined each category (2025 systematic review of 24 studies). Bias is the base rate, not the exception.*
 
 ## 4. A payer's core functions are allocative by construction, and the deployer profits from the denial its model recommends
 
@@ -168,14 +189,14 @@ The crosswalk in Table 1 is the core of the framework. It pairs each failure nod
 
 | Failure node | Operative CMS authority and control | Audit evidence |
 | --- | --- | --- |
-| Not individualized | `422.101(c)` plus the 2024 AI FAQ: determinations must rest on the member's own circumstances; require individual-record conditioning. | ODAG case review; conditioning logs showing the member record was in context. |
-| Non-public or drifting criteria | `422.101(b)(6)`: internal coverage criteria must be evidence-based and publicly accessible; lock logic to published criteria under version control. | Published criteria; version-control history showing no silent drift. |
-| Hollow human review | `422.566(d)`: an adverse medical-necessity decision must be reviewed by a qualified clinician with appropriate expertise. | Override-rate metrics; reviewer credentials; time-per-review distribution. |
+| Not individualized | 422.101(c) plus the 2024 AI FAQ: determinations must rest on the member's own circumstances; require individual-record conditioning. | ODAG case review; conditioning logs showing the member record was in context. |
+| Non-public or drifting criteria | 422.101(b)(6): internal coverage criteria must be evidence-based and publicly accessible; lock logic to published criteria under version control. | Published criteria; version-control history showing no silent drift. |
+| Hollow human review | 422.566(d): an adverse medical-necessity decision must be reviewed by a qualified clinician with appropriate expertise. | Override-rate metrics; reviewer credentials; time-per-review distribution. |
 | Demographic bias | ACA Section 1557 nondiscrimination, now largely voluntary after the 2025 retreat; pre-deployment and ongoing subgroup testing. | Bias-test reports; subgroup approval and denial rates over time. |
 | Opaque, uncontestable denial | Notice-and-appeal rules: the member must receive a specific reason and a route to challenge it. | Denial notices with specific rationale; appeal acknowledgement records. |
 | Delay as denial | UM timeframe rules plus the CMS-0057-F prior-authorization API: a slow answer functions as a denial. | Turnaround-time metrics; the eight aggregate, contract-level PA metrics published from 2026. |
-| Stinting or weak independence (payvider) | `422.566(d)` plus the UM committee independent-physician requirement: the reviewer must be genuinely independent. | Reporting-line evidence for reviewers; stinting-sensitive utilization monitoring. |
-| Program-level gap | `422.503(b)(4)(vi)`: the Medicare Advantage compliance program elements; seat a model governance committee within them. | Compliance program effectiveness review; committee charter and minutes. |
+| Stinting or weak independence (payvider) | 422.566(d) plus the UM committee independent-physician requirement: the reviewer must be genuinely independent. | Reporting-line evidence for reviewers; stinting-sensitive utilization monitoring. |
+| Program-level gap | 422.503(b)(4)(vi): the Medicare Advantage compliance program elements; seat a model governance committee within them. | Compliance program effectiveness review; committee charter and minutes. |
 
 The architecture is seated, not free-floating. A model governance committee operates inside the existing compliance program required by 42 CFR 422.503(b)(4)(vi), owning the preventive, detective, and corrective controls and the evidence they generate.[^cfr503] Placing it there is deliberate: it makes the framework an obligation the plan already carries rather than a parallel bureaucracy that an incentive-conflicted deployer can quietly defund.
 
@@ -203,10 +224,6 @@ The governance conclusion is that the floor is not the ceiling, and a prudent pr
 ## 8. Accountability is the design target; accuracy is necessary but not sufficient
 
 The model's inability to occupy the situation is permanent, so the work of governance is to make every place that inability can cause harm answerable to someone. No training run closes the gap identified in Section 1, because the gap is not a defect in the weights but a property of what an LLM is. The framework's logic, accordingly, is not to perfect the model but to ensure that for each node where a coverage decision can fail, a named control and a named owner answer for it, and that the answer is provable to an auditor, a court, and the member. Accuracy remains necessary; a careless model is a worse one. But accuracy is not sufficient, because a perfectly accurate model deployed without answerability still collapses into the failures now in litigation. The payvider variant sharpens the same lesson from both sides: it can supply more of the missing context and must supply more of the missing independence. In a period when the regulatory floor is dropping, the durable move is to build above it, on the controls the binding rules, the contracts, and the courts will continue to demand.
-
----
-
-## References
 
 [^bullshit]: M. T. Hicks, J. Humphries, and J. Slater, "ChatGPT is bullshit," *Ethics and Information Technology* 26, 38 (2024). <https://link.springer.com/article/10.1007/s10676-024-09775-5>
 
