@@ -1,0 +1,52 @@
+<svg viewBox="0 0 640 300" role="img" aria-labelledby="v7title v7desc" xmlns="http://www.w3.org/2000/svg" width="640" height="300">
+  <title id="v7title">Demographic bias prevalence in medical large language model studies</title>
+  <desc id="v7desc">Gender bias was reported in 93.7 percent of the 16 studies that examined it. Racial or ethnic bias was reported in 90.9 percent of the 11 studies that examined it. From a 2025 systematic review of 24 studies.</desc>
+  <!--
+    Self-contained chart. The internal style block carries its own light/dark
+    rules via prefers-color-scheme so the same file is legible whether shown
+    on a cream or a slate page. Plot maps 0..100% to x = 200..600 (4 px / pt).
+  -->
+  <style>
+    .v7-bg   { fill: #fffff8; }
+    .v7-grid { stroke: #e7e7df; stroke-width: 1; }
+    .v7-axis { stroke: #d0d0c8; stroke-width: 1; }
+    .v7-bar  { fill: #0a5c54; }
+    .v7-lbl  { fill: #111111; font: 16px Palatino, Georgia, serif; }
+    .v7-val  { fill: #111111; font: 600 16px Palatino, Georgia, serif; }
+    .v7-sub  { fill: #6a6a6a; font: 12px system-ui, sans-serif; }
+    .v7-tick { fill: #6a6a6a; font: 11px system-ui, sans-serif; }
+    @media (prefers-color-scheme: dark) {
+      .v7-bg   { fill: #16191d; }
+      .v7-grid { stroke: #232830; }
+      .v7-axis { stroke: #2a2f36; }
+      .v7-bar  { fill: #3fb0a0; }
+      .v7-lbl, .v7-val { fill: #e6e8ea; }
+      .v7-sub, .v7-tick { fill: #b4bac2; }
+    }
+  </style>
+  <rect class="v7-bg" x="0" y="0" width="640" height="300" rx="4"/>
+  <g class="v7-grid">
+    <line x1="300" y1="60" x2="300" y2="210"/>
+    <line x1="400" y1="60" x2="400" y2="210"/>
+    <line x1="500" y1="60" x2="500" y2="210"/>
+    <line x1="600" y1="60" x2="600" y2="210"/>
+  </g>
+  <line class="v7-axis" x1="200" y1="60" x2="200" y2="210"/>
+  <g class="v7-tick" text-anchor="middle">
+    <text x="200" y="228">0%</text>
+    <text x="300" y="228">25%</text>
+    <text x="400" y="228">50%</text>
+    <text x="500" y="228">75%</text>
+    <text x="600" y="228">100%</text>
+  </g>
+  <rect class="v7-bar" x="200" y="78" width="374.8" height="38"/>
+  <text class="v7-lbl" x="200" y="72">Gender bias</text>
+  <text class="v7-val" x="582.8" y="102">93.7%</text>
+  <text class="v7-sub" x="200" y="132">15 of 16 studies that examined it</text>
+  <rect class="v7-bar" x="200" y="156" width="363.6" height="38"/>
+  <text class="v7-lbl" x="200" y="150">Racial or ethnic bias</text>
+  <text class="v7-val" x="571.6" y="180">90.9%</text>
+  <text class="v7-sub" x="200" y="210">10 of 11 studies that examined it</text>
+  <text class="v7-tick" x="400" y="252" text-anchor="middle">Share of examining studies that found the bias</text>
+  <text class="v7-sub" x="200" y="278">Source: systematic review of 24 studies, Int. J. for Equity in Health (2025).</text>
+</svg>
