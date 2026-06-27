@@ -6,8 +6,23 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2026 16:29:56 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 17:34:37 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</title>
+      <link>https://zaherkarp.com/blog/governing-the-coverage-decision/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/governing-the-coverage-decision/</guid>
+      <pubDate>Sat, 27 Jun 2026 00:00:00 +0000</pubDate>
+      <description>A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders.</description>
+      <category>ai-governance</category>
+      <category>medicare-advantage</category>
+      <category>payer</category>
+      <category>llm</category>
+      <category>utilization-management</category>
+      <category>cms</category>
+      
+    </item>
     
     <item>
       <title>Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</title>
@@ -414,20 +429,6 @@
       <category>yaml</category>
       <category>bash</category>
       <category>debugging</category>
-      
-    </item>
-    
-    <item>
-      <title>LLM Inference Is Not Just Bigger Inference</title>
-      <link>https://zaherkarp.com/blog/llm-inference-is-not-bigger-inference/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/llm-inference-is-not-bigger-inference/</guid>
-      <pubDate>Sun, 08 Feb 2026 00:00:00 +0000</pubDate>
-      <description>Why serving large language models is a fundamentally different systems problem from traditional ML inference, especially in applied healthcare IT.</description>
-      <category>llm</category>
-      <category>inference</category>
-      <category>healthcare-it</category>
-      <category>architecture</category>
-      <category>systems</category>
       
     </item>
     
