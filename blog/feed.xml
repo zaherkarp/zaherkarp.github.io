@@ -6,7 +6,7 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2026 17:34:37 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 01 Jul 2026 17:44:11 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
     
     <item>
@@ -187,7 +187,7 @@
       <link>https://zaherkarp.com/blog/medicare-advantage-insight-engine/?utm_source=rss&amp;utm_medium=feed</link>
       <guid isPermaLink="true">https://zaherkarp.com/blog/medicare-advantage-insight-engine/</guid>
       <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
-      <description>A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know.</description>
+      <description>A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features.</description>
       <category>medicare-advantage</category>
       <category>stars</category>
       <category>automation</category>

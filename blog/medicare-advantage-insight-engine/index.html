@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Distinguishing a CMS Rulemaking Notice from a Press Release — Zaher Karp</title>
-<meta name="description" content="A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know.">
+<meta name="description" content="A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features.">
 <link rel="canonical" href="https://zaherkarp.com/blog/medicare-advantage-insight-engine/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -18,7 +18,7 @@
 
 
 <meta property="og:title" content="Distinguishing a CMS Rulemaking Notice from a Press Release — Zaher Karp">
-<meta property="og:description" content="A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know.">
+<meta property="og:description" content="A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features.">
 <meta property="og:url" content="https://zaherkarp.com/blog/medicare-advantage-insight-engine/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Zaher Karp">
@@ -26,7 +26,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Distinguishing a CMS Rulemaking Notice from a Press Release — Zaher Karp">
-<meta name="twitter:description" content="A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know.">
+<meta name="twitter:description" content="A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Distinguishing a CMS Rulemaking Notice from a Press Release", "description": "A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know.", "url": "https://zaherkarp.com/blog/medicare-advantage-insight-engine/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/medicare-advantage-insight-engine/"}, "datePublished": "2026-05-13T00:00:00Z", "dateModified": "2026-05-21T22:46:39-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2348, "timeRequired": "PT9M", "inLanguage": "en-US", "keywords": "medicare-advantage, stars, automation, python, domain-knowledge"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Distinguishing a CMS Rulemaking Notice from a Press Release", "description": "A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features.", "url": "https://zaherkarp.com/blog/medicare-advantage-insight-engine/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/medicare-advantage-insight-engine/"}, "datePublished": "2026-05-13T00:00:00Z", "dateModified": "2026-07-01T12:43:56-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2361, "timeRequired": "PT9M", "inLanguage": "en-US", "keywords": "medicare-advantage, stars, automation, python, domain-knowledge"}
 </script>
 
 
@@ -89,7 +89,7 @@
 <p>&quot;Matter&quot; is not a vague word here. It has a specific meaning that the analyst could articulate if you asked them. A CMS rulemaking notice that changes a measure weight matters. A trade-press article that mentions Medicare Advantage in passing, while really reporting on a hospital system's earnings call, does not matter. A NCQA bulletin about a value-set update matters. A press release from a quality-improvement vendor reframing a CMS announcement as their product launch, also mentions Medicare Advantage, does not matter.</p>
 <p>The first time I sat with an analyst doing this triage, the most striking thing was how fast they were. Title and source were enough to dismiss 80% of items in under a second each. The remaining 20% got a five-second skim of the lede. Of those, maybe ten percent got opened, and of those, maybe half ended up shared with the team. The output was five items.</p>
 <p>What the analyst was doing is what any domain expert does on a flood of input: applying a learned scoring function, fast, with high recall on the items that matter. The fact that it was fast made it tempting to leave alone. The fact that it was fast also made it a near-perfect candidate for codification, because the scoring function was operating on a small number of features that the analyst could name.</p>
-<p>That is the working observation behind the Medicare Advantage Insight Engine. The hard part of building a domain news monitor is not the code. The hard part is naming what you know.</p>
+<p>That is the working observation behind the Medicare Advantage Insight Engine. The scoring function already exists, unspoken, in the analyst's head. Building the tool is mostly the work of drawing it out, feature by feature, so it can be written down, weighted, and argued with.</p>
 <hr />
 <h2>What &quot;matters&quot; decomposes into</h2>
 <p>The first conversation produced four features. Each one had a name and an honest weight.</p>
@@ -177,7 +177,7 @@
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-06-27 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/466f07c">466f07c</a>.</p>
+    <p class="footer-meta">Built 2026-07-01 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/10f3599">10f3599</a>.</p>
     
   </footer>
 

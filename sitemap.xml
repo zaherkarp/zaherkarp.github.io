@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://zaherkarp.com/</loc><lastmod>2026-06-26T18:31:38Z</lastmod></url>
+  <url><loc>https://zaherkarp.com/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/</loc><lastmod>2026-06-27T00:00:00Z</lastmod></url>
   <url><loc>https://zaherkarp.com/resume.html</loc><lastmod>2026-06-25T12:51:23Z</lastmod></url>
   <url><loc>https://zaherkarp.com/star-rating-predictor/</loc><lastmod>2026-06-25T12:42:24Z</lastmod></url>
-  <url><loc>https://zaherkarp.com/life-in-weeks/</loc><lastmod>2026-06-26T18:31:38Z</lastmod></url>
+  <url><loc>https://zaherkarp.com/life-in-weeks/</loc><lastmod>2026-06-27T17:35:04Z</lastmod></url>
   <url><loc>https://zaherkarp.com/epidemic-simulation/</loc><lastmod>2026-06-25T12:42:24Z</lastmod></url>
   <url><loc>https://zaherkarp.com/colophon/</loc><lastmod>2026-06-25T12:42:24Z</lastmod></url>
   <url><loc>https://zaherkarp.com/case-study-care-redesign/</loc><lastmod>2026-06-17T12:19:10Z</lastmod></url>
@@ -20,7 +20,7 @@
   <url><loc>https://zaherkarp.com/blog/cicd-for-sql-developers-from-one-commit-to-a-pipeline/</loc><lastmod>2026-05-18T23:50:20Z</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/paper-saver-estimating-xgboost-compute-costs-on-aws/</loc><lastmod>2026-05-18T18:51:24-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/python-compiled/</loc><lastmod>2026-05-15T02:39:05-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/medicare-advantage-insight-engine/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/medicare-advantage-insight-engine/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/medicare-advantage-market-exits-timing/</loc><lastmod>2026-06-07T09:55:01-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/onet-reskilling-probabilities/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/interrupted-time-series-care-redesign/</loc><lastmod>2026-06-17T12:19:10Z</lastmod></url>
@@ -75,12 +75,12 @@
   <url><loc>https://zaherkarp.com/blog/white-house-facebook-weatherization/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/concrete-insulation-carbon-footprint/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/green-guitars-sustainable-music/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/</loc><lastmod>2026-06-27T17:33:06Z</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/data-engineering/</loc><lastmod>2026-05-18T23:50:38Z</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/interview/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/healthcare/</loc><lastmod>2026-06-27T11:29:25-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/healthcare-data/</loc><lastmod>2026-05-18T23:50:38Z</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/medicare-advantage/</loc><lastmod>2026-06-27T17:33:06Z</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/medicare-advantage/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/policy/</loc><lastmod>2026-05-11T14:16:26-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/architecture/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/green-building/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
@@ -92,7 +92,7 @@
   <url><loc>https://zaherkarp.com/blog/tags/environment/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/healthcare-analytics/</loc><lastmod>2026-05-18T18:51:24-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/star-ratings/</loc><lastmod>2026-05-11T14:16:26-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/stars/</loc><lastmod>2026-06-12T23:50:21-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/stars/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/analytics/</loc><lastmod>2026-05-15T03:03:53-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/clean-technology/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/cms/</loc><lastmod>2026-06-27T17:33:06Z</lastmod></url>
@@ -100,11 +100,11 @@
   <url><loc>https://zaherkarp.com/blog/tags/health-policy/</loc><lastmod>2026-06-12T23:34:33-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/hedis/</loc><lastmod>2026-05-15T03:03:53-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/llm/</loc><lastmod>2026-06-27T17:33:06Z</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/python/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/python/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/reliability/</loc><lastmod>2026-06-27T11:29:25-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/version-control/</loc><lastmod>2026-05-18T23:50:20Z</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/apis/</loc><lastmod>2026-04-20T21:58:36-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/automation/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/automation/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/aws/</loc><lastmod>2026-05-18T18:51:24-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/cost-modeling/</loc><lastmod>2026-05-18T18:51:24-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/data-analysis/</loc><lastmod>2026-04-20T21:58:36-05:00</lastmod></url>
@@ -165,7 +165,7 @@
   <url><loc>https://zaherkarp.com/blog/tags/developer-tools/</loc><lastmod>2026-04-30T17:32:50-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/devops/</loc><lastmod>2026-05-18T23:50:26Z</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/difference-in-differences/</loc><lastmod>2026-06-12T23:34:33-05:00</lastmod></url>
-  <url><loc>https://zaherkarp.com/blog/tags/domain-knowledge/</loc><lastmod>2026-05-21T22:46:39-05:00</lastmod></url>
+  <url><loc>https://zaherkarp.com/blog/tags/domain-knowledge/</loc><lastmod>2026-07-01T12:43:56-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/ecds/</loc><lastmod>2026-05-15T03:03:53-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/ehr/</loc><lastmod>2026-05-11T14:16:26-05:00</lastmod></url>
   <url><loc>https://zaherkarp.com/blog/tags/energy/</loc><lastmod>2026-04-18T14:26:00-05:00</lastmod></url>
