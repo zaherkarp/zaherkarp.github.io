@@ -1,6 +1,6 @@
 ---
 title: "Distinguishing a CMS Rulemaking Notice from a Press Release"
-description: "A small news-triage tool for Medicare Advantage analysts, built around the working observation that the hard part is not the code. The hard part is naming what you know."
+description: "A small news-triage tool for Medicare Advantage analysts that turns their fast, intuitive scoring into a handful of named, weighted, explainable features."
 publishDate: 2026-05-13
 tags: ["medicare-advantage", "stars", "automation", "python", "domain-knowledge"]
 ---
@@ -15,7 +15,7 @@ The first time I sat with an analyst doing this triage, the most striking thing 
 
 What the analyst was doing is what any domain expert does on a flood of input: applying a learned scoring function, fast, with high recall on the items that matter. The fact that it was fast made it tempting to leave alone. The fact that it was fast also made it a near-perfect candidate for codification, because the scoring function was operating on a small number of features that the analyst could name.
 
-That is the working observation behind the Medicare Advantage Insight Engine. The hard part of building a domain news monitor is not the code. The hard part is naming what you know.
+That is the working observation behind the Medicare Advantage Insight Engine. The scoring function already exists, unspoken, in the analyst's head. Building the tool is mostly the work of drawing it out, feature by feature, so it can be written down, weighted, and argued with.
 
 ---
 
