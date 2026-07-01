@@ -951,6 +951,34 @@ figure.outcome-figure figcaption {
 }
 
 /* ============================================================
+   TRIAGE FUNNEL FIGURE (Projects: Medicare Advantage Insight
+   Engine). A three-bar funnel showing a typical analyst week
+   narrowing from ~200 news items to the ~5 worth sharing. Same
+   inline-in-body sizing idiom as cliff-figure / sankey-figure.
+   Its own class (not cliff / sankey / outcome / gantt) so none of
+   the scroll-draw selectors in section 18 match it: this figure
+   is deliberately static, like the sankey figure beside it. The
+   hex presentation attributes adapt to light/dark via the palette
+   selectors lower in this stylesheet; one accent use (the final
+   "5" bar plus its label) via the accent sentinel.
+   ============================================================ */
+figure.triage-figure {
+  margin: 1.2rem 0;
+  max-width: 520px;
+}
+figure.triage-figure svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+figure.triage-figure figcaption {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================================
    FORMULA BLOCK
    Inline math display for short equations like Huber's
    psi-function. Pure CSS, no MathJax; works because the
@@ -2456,133 +2484,63 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <div class="project">
       <span class="num"></span>
       <div class="body">
-        <h3>Healthcare Workforce Transition Platform</h3>
+        <h3>Medicare Advantage Insight Engine</h3>
         <p>
-          The platform estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data provides the feature structure; logistic regression produces Ready Now, Trainable, and Long-Term Reskill recommendations with skill-domain gap analysis.
+          A Stars analyst skims about 200 healthcare news items a week; roughly five of them matter. This engine codifies that triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability. The hard part was never the code. It was naming what the analyst already knew.
         </p>
 
         <!-- ==========================================================
-             SKILLSPROUT TRANSITION FIGURE
-             Worked example: Medical Assistant as the source
-             occupation, showing five plausible target occupations
-             distributed across the three readiness categories.
+             TRIAGE FUNNEL FIGURE
+             A typical analyst week: the ~200 healthcare news items
+             skimmed narrow to the ~5 worth sharing. Three horizontal
+             bars, decreasing in length top to bottom, encode the
+             funnel; the final "5" bar is the single accent use (petrol
+             teal via the accent sentinel, remapped by the palette
+             selectors), the payoff the whole tool exists to reach.
 
-             Design rationale:
-               A traditional Sankey with curved bezier flows is
-               visually heavy at this size and overstates precision
-               for example data. A linked-bar/slope-graph design
-               carries the same information (source -> target with
-               flow weight) more cleanly: source bar on left,
-               target bars on right, straight connecting lines
-               whose stroke-width encodes flow magnitude.
-
-               Numbers are schematic but defensible. Of 100
-               hypothetical Medical Assistants:
-                 - Ready Now (5%):     EHR Specialist
-                 - Trainable (60%):    LPN, Phlebotomist
-                                       (with appropriate cert)
-                 - Long-Term (35%):    RN, Health Information Tech
-                                       (degree required)
-               Bar widths and stroke widths reflect these shares.
-
-               Color stays monochrome ink to match the rest of the
-               page. Categories are distinguished by their column
-               headers and faint backgrounds, not by line color.
+             Numbers are grounded in the methodology post, not invented:
+             ~200 items skimmed, the ~20% (~40) that survive a title and
+             source glance and get a lede read, and the ~5 that clear the
+             relevance threshold. Bar length = count * 1.6; monochrome
+             ink otherwise, per accent discipline. Static (no section-18
+             scroll-draw selector matches .triage-figure), like the
+             sankey figure it replaced in this slot.
              ========================================================== -->
-        <figure class="sankey-figure">
+        <figure class="triage-figure">
           <figcaption>
-            One worked example: a Medical Assistant routed to five candidate target occupations. Bar widths and stroke widths reflect illustrative shares.
+            A typical analyst week: roughly 200 healthcare news items skimmed, about 40 read closely after a title and source glance, five cleared for sharing. The engine reproduces that funnel with a six-feature relevance score.
           </figcaption>
 
-          <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example showing transition pathways from Medical Assistant to five target occupations across three readiness categories">
+          <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Funnel of a typical analyst week: about 200 healthcare news items skimmed, about 40 read closely, and 5 shared with the team">
 
-            <!-- ==========================================================
-                 CATEGORY HEADERS at the top.
-                 Three columns (Ready Now / Trainable / Long-Term),
-                 left-aligned over their respective target groups.
-                 Faint italic to read as labels not titles.
-                 ========================================================== -->
-            <g font-family="et-book, Palatino, Georgia, serif" font-size="11" font-style="italic" fill="#6a6a6a">
-              <text x="370" y="24">ready now</text>
-              <text x="370" y="92">trainable</text>
-              <!-- "long-term reskill" header dropped: the only y-position that
-                   clears Phlebotomist's subtitles AND the diagonal HIT connector
-                   was outside the figure entirely. The RN+HIT cluster in the
-                   bottom-right reads as a long-term group from spatial layout
-                   alone, which is the Tufte-elide-redundant-labels move. -->
+            <!-- STAGE LABELS (left gutter, right-aligned, muted italic) -->
+            <g font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">
+              <text x="158" y="50">skimmed</text>
+              <text x="158" y="105">read closely</text>
+              <text x="158" y="160">shared</text>
             </g>
 
-            <!-- ==========================================================
-                 SOURCE BAR (left side).
-                 Medical Assistant, full pool of 100. Vertical bar
-                 from y=40 to y=240, anchored at x=80. Total height
-                 200 = 100% of pool.
-                 ========================================================== -->
-            <rect x="74" y="40" width="6" height="200" fill="#111"/>
-            <text x="68" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#111" text-anchor="end">Medical</text>
-            <text x="68" y="65" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#111" text-anchor="end">Assistant</text>
-            <text x="68" y="84" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" text-anchor="end" font-style="italic">100 candidates</text>
+            <!-- FUNNEL BARS. Left edge x=170, length = count * 1.6:
+                 200 -> 320, 40 -> 64, 5 -> 8. The final bar is accent. -->
+            <rect x="170" y="30" width="320" height="30" fill="#111"/>
+            <rect x="170" y="85" width="64" height="30" fill="#111"/>
+            <rect x="170" y="140" width="8" height="30" fill="#7a0000"/>
 
-            <!-- ==========================================================
-                 TARGET BARS AND CONNECTING LINES.
-
-                 Each target gets a bar at x=360 with height
-                 proportional to its share, plus a connecting line
-                 from the source bar at the appropriate vertical
-                 slice of the source bar.
-
-                 Source bar slice mapping (top to bottom):
-                   y=40 to y=50:   Ready Now (5%)
-                   y=50 to y=170:  Trainable (60%)
-                   y=170 to y=240: Long-Term Reskill (35%)
-
-                 Each target's source slice is the midpoint of its
-                 share within its category band.
-                 ========================================================== -->
-
-            <!-- READY NOW: EHR Specialist (5%, 10px tall bar) -->
-            <line x1="80" y1="45" x2="360" y2="35" stroke="#6a6a6a" stroke-width="0.7"/>
-            <rect x="360" y="32" width="6" height="10" fill="#111"/>
-            <text x="372" y="40" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">EHR Specialist</text>
-            <text x="372" y="54" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">5 candidates</text>
-
-            <!-- TRAINABLE: LPN (35%, 70px tall bar) -->
-            <line x1="80" y1="80" x2="360" y2="105" stroke="#6a6a6a" stroke-width="2"/>
-            <rect x="360" y="100" width="6" height="70" fill="#111"/>
-            <text x="372" y="125" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">LPN</text>
-            <text x="372" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">35 candidates, with</text>
-            <text x="372" y="152" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">12-month certificate</text>
-
-            <!-- TRAINABLE: Phlebotomist (25%, 50px tall bar) -->
-            <line x1="80" y1="135" x2="360" y2="190" stroke="#6a6a6a" stroke-width="1.4"/>
-            <rect x="360" y="180" width="6" height="50" fill="#111"/>
-            <text x="372" y="200" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">Phlebotomist</text>
-            <text x="372" y="214" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">25 candidates,</text>
-            <text x="372" y="227" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">short certification</text>
-
-            <!-- LONG-TERM: RN (25%, 50px tall bar) -->
-            <line x1="80" y1="180" x2="360" y2="248" stroke="#6a6a6a" stroke-width="1.4"/>
-            <rect x="360" y="238" width="6" height="50" fill="#111"/>
-            <text x="372" y="258" font-family="et-book, Palatino, Georgia, serif" font-size="12" fill="#111">Registered Nurse</text>
-            <text x="372" y="272" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">25 candidates, ADN</text>
-            <text x="372" y="284" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">or BSN program</text>
-
-            <!-- LONG-TERM: Health Information Tech (10%, 20px tall bar)
-                 Stacked above the RN target as a smaller second
-                 long-term option. -->
-            <line x1="80" y1="220" x2="510" y2="248" stroke="#6a6a6a" stroke-width="0.9"/>
-            <rect x="510" y="238" width="6" height="20" fill="#111"/>
-            <text x="522" y="248" font-family="et-book, Palatino, Georgia, serif" font-size="11" fill="#111">Health Info Tech</text>
-            <text x="522" y="261" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">10 candidates,</text>
-            <text x="522" y="273" font-family="et-book, Palatino, Georgia, serif" font-size="10" fill="#6a6a6a" font-style="italic">associate's degree</text>
+            <!-- COUNT LABELS at each bar's right end; the final "5"
+                 takes the accent to match its bar. -->
+            <g font-family="et-book, Palatino, Georgia, serif" font-size="16">
+              <text x="498" y="51" fill="#111">~200</text>
+              <text x="242" y="106" fill="#111">~40</text>
+              <text x="186" y="161" fill="#7a0000">5</text>
+            </g>
           </svg>
         </figure>
 
         <p class="links">
-          <a href="https://github.com/zaherkarp/skillsprout" data-goatcounter-click="project-skillsprout-github" data-goatcounter-title="SkillSprout GitHub" aria-label="GitHub repository: SkillSprout">GitHub</a>
-          <a href="/blog/onet-reskilling-probabilities/" aria-label="Methodology post: O*NET reskilling probabilities">Methodology post</a>
+          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
+          <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
         </p>
-        <p class="stack">FastAPI &middot; PostgreSQL &middot; scikit-learn &middot; logistic regression &middot; O*NET</p>
+        <p class="stack">Python &middot; feature scoring &middot; Microsoft Teams webhook &middot; automation</p>
       </div>
     </div>
 
@@ -2611,15 +2569,15 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 
     <div class="project-tile">
       <span class="num"></span>
-      <h3>Medicare Advantage Insight Engine</h3>
+      <h3>Healthcare Workforce Transition Platform</h3>
       <p class="tile-summary">
-        Scores public Medicare Advantage news for analytic relevance using keyword and domain heuristics, then posts structured alerts to a Teams webhook.
+        Estimates transition probabilities from clinical and administrative roles into adjacent occupations. O*NET skill data feeds a logistic model that sorts targets into Ready Now, Trainable, and Long-Term Reskill, each with a skill-domain gap analysis.
       </p>
       <p class="tile-links">
-        <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub repository: Medicare Advantage Insight Engine">GitHub</a>
-        <a href="/blog/medicare-advantage-insight-engine/" aria-label="Blog post: Medicare Advantage Insight Engine">post</a>
+        <a href="https://github.com/zaherkarp/skillsprout" data-goatcounter-click="project-skillsprout-github" data-goatcounter-title="SkillSprout GitHub" aria-label="GitHub repository: SkillSprout">GitHub</a>
+        <a href="/blog/onet-reskilling-probabilities/" aria-label="Blog post: O*NET reskilling probabilities">post</a>
       </p>
-      <p class="stack">Python &middot; automation &middot; webhook</p>
+      <p class="stack">FastAPI &middot; PostgreSQL &middot; scikit-learn &middot; O*NET</p>
     </div>
 
     <div class="project-tile">

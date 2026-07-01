@@ -651,15 +651,15 @@ The section uses a featured + small-multiples-index pattern:
 
   - **Featured** (inside `<section id="projects">`, 60% body column):
     The first two projects in DOM order — currently Stars Cliff
-    Simulator and Healthcare Workforce Transition Platform. Each
+    Simulator and the Medicare Advantage Insight Engine. Each
     renders as a `<div class="project">` with an inline SVG figure
-    (cliff-figure, sankey-figure), full prose, links row, and stack
+    (cliff-figure, triage-figure), full prose, links row, and stack
     line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
   - **Index** (outside the section, as a sibling `<div
     class="projects-index">`, 90% max-width grid): The remaining
     projects as `<div class="project-tile">` small multiples (today:
-    Medicare Advantage Insight Engine, ECDS Shock Index, Care
+    Healthcare Workforce Transition Platform, ECDS Shock Index, Care
     Delivery Workflow Changes, Practice Automation Analytics). Tiles
     use `position:absolute` for the hanging number (not float),
     a smaller h3, a `.tile-summary` paragraph (30-50 words), an
@@ -754,8 +754,11 @@ tile-links href on index.html.
 
 **SkillSprout subpage removal (2026-05-19):** /skillsprout/ deleted from
 this repo; the project survives at github.com/zaherkarp/skillsprout.
-The Healthcare Workforce Transition Platform project card keeps the
-slope-graph figure and links out to the standalone repo. The 900KB
+The Healthcare Workforce Transition Platform project card links out to
+the standalone repo; as of 2026-07-01 it renders as a small-multiples
+tile (demoted when the Medicare Advantage Insight Engine took its
+featured slot), so the slope-graph figure it carried while featured is
+no longer shown. The 900KB
 vendored client was the loudest contradiction between the site's
 no-bundler discipline and what it shipped; removing it eliminated that.
 
