@@ -652,9 +652,9 @@ The section uses a featured + small-multiples-index pattern:
   - **Featured** (inside `<section id="projects">`, 60% body column):
     The first two projects in DOM order — currently Stars Cliff
     Simulator and the Medicare Advantage Insight Engine. Each
-    renders as a `<div class="project">` with an inline SVG figure
-    (cliff-figure, triage-figure), full prose, links row, and stack
-    line. The hanging number floats left as a large oldstyle figure
+    renders as a `<div class="project">` with inline figures
+    (cliff-figure / triage-figure as SVG, plus an HTML/CSS scorecard
+    on the Medicare card), full prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
   - **Index** (outside the section, as a sibling `<div
     class="projects-index">`, 90% max-width grid): The remaining

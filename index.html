@@ -979,6 +979,58 @@ figure.triage-figure figcaption {
 }
 
 /* ============================================================
+   SCORING SCORECARD FIGURE (Projects: Medicare Advantage Insight
+   Engine). An HTML/CSS figure (not SVG): two item cards, each with
+   six per-feature score bars and a weighted-score gauge carrying a
+   threshold tick. Bars are divs sized by an inline --v custom
+   property; the gauge fill by --t. Colours resolve straight through
+   the palette custom properties, so it adapts to light/dark with no
+   sentinel-hex trick. Static (no scroll-draw). Two accent uses only,
+   both on the accept card (the "alerted" badge and its gauge fill),
+   per accent discipline; everything else is ink / muted / rule.
+   ============================================================ */
+figure.scorecard-figure {
+  margin: 1.3rem 0;
+  max-width: 600px;
+}
+figure.scorecard-figure figcaption {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-bottom: 0.7rem;
+}
+.scorecard { display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.sc-card {
+  flex: 1 1 240px;
+  border: 1px solid var(--rule);
+  padding: 0.85rem 1rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+}
+.sc-kicker { font-size: 0.82rem; color: var(--muted); font-style: italic; margin: 0 0 0.15rem 0; }
+.sc-card h4 { margin: 0 0 0.55rem 0; font-size: 1.05rem; font-weight: normal; line-height: 1.2; }
+.sc-badge { font-size: 0.85rem; margin: 0 0 0.8rem 0; color: var(--muted); }
+.sc-accept .sc-badge { color: var(--accent); }
+.sc-feats { list-style: none; margin: 0; padding: 0; }
+.sc-feats li { display: grid; grid-template-columns: 1fr 78px 1.8rem; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+.sc-feats .fname { font-size: 0.82rem; color: var(--muted); }
+.sc-bar { height: 7px; background: var(--rule); }
+.sc-fill { display: block; height: 7px; width: calc(var(--v) * 100%); background: var(--ink); }
+.sc-val { font-size: 0.8rem; color: var(--muted); text-align: right; font-variant-numeric: oldstyle-nums; }
+.sc-feats li.sc-key .fname, .sc-feats li.sc-key .sc-val { color: var(--ink); }
+.sc-total { margin-top: auto; padding-top: 0.75rem; }
+.sc-tlabel { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.3rem 0; }
+.sc-gauge { height: 10px; background: var(--rule); position: relative; }
+.sc-gfill { display: block; height: 10px; width: calc(var(--t) * 100%); background: var(--muted); }
+.sc-accept .sc-gfill { background: var(--accent); }
+.sc-gauge::after { content: ""; position: absolute; top: -3px; bottom: -3px; left: 60%; width: 2px; background: var(--ink); }
+.sc-verdict { font-size: 0.82rem; font-style: italic; color: var(--muted); margin: 0.35rem 0 0 0; }
+.sc-approx { font-style: normal; }
+@media (max-width: 760px) {
+  figure.scorecard-figure { max-width: 100%; }
+}
+
+/* ============================================================
    FORMULA BLOCK
    Inline math display for short equations like Huber's
    psi-function. Pure CSS, no MathJax; works because the
@@ -2534,6 +2586,66 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
               <text x="186" y="161" fill="#7a0000">5</text>
             </g>
           </svg>
+        </figure>
+
+        <!-- ==========================================================
+             SCORING SCORECARD FIGURE
+             Built from the two worked examples in the methodology
+             post: a CMS proposed rule (true positive) that clears the
+             alert threshold, beside a vendor press release (near-miss
+             false positive) that mirrors the same keywords but does
+             not. Six per-feature bars each; the decisive feature is
+             source authority (emphasised in ink, not accent). HTML/CSS,
+             not SVG: bars are divs sized by an inline --v custom
+             property, palette via the CSS variables directly.
+             Honesty: the CMS scores are the exact six values published
+             in the post; the vendor scores are labelled (approx.)
+             because the post gives only the qualitative pattern (low
+             source authority, high measure relevance and recency,
+             below threshold after the source-authority fix).
+             ========================================================== -->
+        <figure class="scorecard-figure">
+          <figcaption>
+            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them.
+          </figcaption>
+          <div class="scorecard">
+            <div class="sc-card sc-accept">
+              <p class="sc-kicker">true positive</p>
+              <h4>CMS proposed rule</h4>
+              <p class="sc-badge">alerted &#10003;</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
+                <p class="sc-verdict">well above threshold</p>
+              </div>
+            </div>
+            <div class="sc-card sc-reject">
+              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
+              <h4>Vendor press release</h4>
+              <p class="sc-badge">skipped</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
+                <p class="sc-verdict">below threshold, after the source-authority fix</p>
+              </div>
+            </div>
+          </div>
         </figure>
 
         <p class="links">
