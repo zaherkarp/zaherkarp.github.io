@@ -724,7 +724,7 @@ figures and stats to the same standard.
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
   Healthcare Workforce Transition Platform (SkillSprout): GitHub repo + /blog/onet-reskilling-probabilities/
-  Medicare Advantage Insight Engine: GitHub repo + /blog/medicare-advantage-insight-engine/
+  Medicare Advantage Insight Engine: live feed at /medicare-advantage-insight-engine/ (served by the SEPARATE zaherkarp/medicare-advantage-insight-engine repo's own GitHub Pages, exposed under the shared zaherkarp.com custom domain, so it is NOT a directory in this repo and won't show up in a filesystem search here) + GitHub repo + /blog/medicare-advantage-insight-engine/
   ECDS Shock Index: GitHub repo + /blog/ecds-shock-index/
   Care Delivery Workflow Changes: /blog/interrupted-time-series-care-redesign/
   Practice Automation Analytics (Charlie at OCHIN): /blog/practice-automation-workflow-roi/
