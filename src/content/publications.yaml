@@ -34,7 +34,7 @@
 
 - id: herd
   year: 2019
-  citations: 12
+  citations: 13
   sid: "PMID:30913920"
   title: "Influence of environmental design on team interactions across 3 family medicine clinics"
   authors: "Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfetter T, Pandhi N."
@@ -86,7 +86,7 @@
 
 - id: jihi
   year: 2014
-  citations: 24
+  citations: 25
   sid: "PMID:25584902"
   title: "Approaches and challenges to optimizing primary care teams' electronic health record usage"
   authors: "Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P."
