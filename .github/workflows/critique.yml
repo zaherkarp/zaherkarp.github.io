@@ -21,6 +21,14 @@ name: Critique
 #     having to remember.
 # Deliberately not push-triggered: the workflow commits its artifact
 # back to the branch, and a push-trigger would loop on that commit.
+#
+# Secret setup (one-time, repo owner): the CLAUDE_CODE_OAUTH_TOKEN
+# repository secret must exist or every run fails before the critique
+# starts (this is what killed the 2026-06-01 and 2026-07-01 scheduled
+# runs). Generate a token locally with `claude setup-token`, then add
+# it at Settings -> Secrets and variables -> Actions ->
+# New repository secret, name CLAUDE_CODE_OAUTH_TOKEN. The preflight
+# step below fails fast with this pointer if the secret is missing.
 
 on:
   workflow_dispatch:
@@ -44,6 +52,16 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Preflight auth check
+        env:
+          OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$OAUTH_TOKEN" ]; then
+            echo "::error::The CLAUDE_CODE_OAUTH_TOKEN repository secret is missing or empty, so the critique cannot authenticate. Fix: run 'claude setup-token' locally, then add the token as a repository secret named CLAUDE_CODE_OAUTH_TOKEN (Settings -> Secrets and variables -> Actions). See the header comment in .github/workflows/critique.yml."
+            exit 1
+          fi
+          echo "CLAUDE_CODE_OAUTH_TOKEN secret is present."
+
       - uses: actions/checkout@v4
 
       - name: Resolve target
