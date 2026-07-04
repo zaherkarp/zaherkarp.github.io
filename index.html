@@ -1508,6 +1508,26 @@ figure.timeline svg.dp-mobile a circle {
   stroke-width: 40;
 }
 
+/* No-count publications render as open rings, so absence of data
+   looks different from a measured low value (Encoding rigorists). The
+   filled circle stays as the invisible WCAG touch target (transparent
+   fill + the 40-unit touch stroke above); this sibling .dp-ring
+   (pointer-events: none) carries the visible open dot. The class
+   overrides the transparent touch stroke and re-asserts an ink ring
+   that adapts light/dark via var(--ink). */
+figure.timeline svg.dp-wide a circle.dp-ring,
+figure.timeline svg.dp-mobile a circle.dp-ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+figure.timeline svg.dp-mobile a circle.dp-ring { stroke-width: 0.8; }
+/* Keep the engaged ring bright and enlarged, not dimmed, when its
+   link is hovered or focused (overrides the field-dim rule below). */
+figure.timeline svg.dp-wide a:hover circle.dp-ring,
+figure.timeline svg.dp-wide a:focus circle.dp-ring,
+figure.timeline svg.dp-mobile a:focus circle.dp-ring { opacity: 1; transform: scale(1.8); }
+
 /* Career arc: each band is a link to its role. Engaging one (hover
    or keyboard focus) dims the other role groups and thickens the
    engaged band; clicking jumps to that role in Experience. */
@@ -1808,10 +1828,11 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
        ========================================================== -->
   <figure class="fullwidth timeline">
     <figcaption>
-      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count.
+      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count; open dots have no count on record.
     </figcaption>
 
-    <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019">
+    <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019" aria-describedby="dp-w-desc">
+      <desc id="dp-w-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
 
       <!-- LANE LABELS (left side, vertically aligned with each lane) -->
       <text x="40" y="70" font-family="et-book, Palatino, Georgia, serif" font-size="20" fill="#111">publications</text>
@@ -1838,29 +1859,30 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 
       <!-- PUBLICATIONS (above the axis).
            Each dot is a publication, y=95 (just above axis), sized
-           by citation count. Citation-to-radius mapping:
-             unknown/no count = 4
-             4 citations      = 5
-             11 citations     = 7
-             23 citations     = 10
+           by citation count. Radii are ORDINAL, not a formula, and
+           carry no absolute count. Least to most cited:
+           none-on-record, low, high, most-cited (radii 4, 5, 7, 10).
+           Live counts live in src/content/publications.yaml, refreshed
+           by build_portfolio.py; do not hand-copy a number here, it
+           would drift against that source.
            When two pubs in the same year, offset x by a few units
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="#111"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="transparent"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><circle cx="410" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
 
-      <!-- 2014: Pandhi et al JIHI, 23 citations (most-cited) -->
+      <!-- 2014: Pandhi et al JIHI, most-cited (largest radius) -->
       <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">JIHI 2014</text></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="#111"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="#111"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
 
-      <!-- 2019a: Karp et al HERD, 11 citations -->
+      <!-- 2019a: Karp et al HERD, high count (second-largest radius) -->
       <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1138" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">HERD 2019</text></a>
-      <!-- 2019b: Pandhi et al Acad Med, 4 citations (slight x offset) -->
+      <!-- 2019b: Pandhi et al Acad Med, low count (slight x offset) -->
       <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
 
       <!-- PRESENTATIONS (below the axis).
@@ -1935,7 +1957,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
              2015) is preserved; the literal countability is not.
              At phone scale, seven stacked dots become illegible
              smudges, so a clean bar is the better encoding.
-           - Dropped the "23 citations" and "Patient Choice Award"
+           - Dropped the citation-count and "Patient Choice Award"
              annotations. The size of the 2014 publication dot
              already encodes its citation count visually; an
              explicit label at this scale would crowd. The Patient
@@ -1948,7 +1970,8 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
            - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
              (10 years, 38px apart, 360-unit usable width)
            ========================================================== -->
-    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout">
+    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout" aria-describedby="dp-m-desc">
+      <desc id="dp-m-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
 
       <!-- LANE LABELS, left edge -->
       <text x="6" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">pubs</text>
@@ -1972,17 +1995,16 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
       </g>
 
       <!-- PUBLICATIONS, above axis at y=55.
-           Same citation->radius mapping as wide:
-             unknown/no count = 2.5
-             4 citations      = 3
-             11 citations     = 4
-             23 citations     = 5.5 (the 2014 standout) -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="#111"/></a>     <!-- 2012 WCEL -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, 23 cites -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="#111"/></a>     <!-- 2016 ImplSci -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="#111"/></a>     <!-- 2018 IJHM -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, 11 cites -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, 4 cites -->
+           Same ordinal radius scale as wide (no absolute counts; see
+           the wide-chart note and publications.yaml). Least to most
+           cited: none-on-record 2.5, low 3, high 4, most-cited 5.5
+           (the 2014 standout). -->
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="transparent"/><circle cx="146" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2012 WCEL -->
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, most-cited -->
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="transparent"/><circle cx="298" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2016 ImplSci -->
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="transparent"/><circle cx="374" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2018 IJHM -->
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, high -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, low -->
 
       <!-- PRESENTATIONS, below axis at y=85.
            Stacked dots, one per presentation. First dot at cy=108,
