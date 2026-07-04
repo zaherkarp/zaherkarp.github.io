@@ -102,10 +102,19 @@ jobs:
             in the next step.
 
       - name: Commit critique artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if ! git diff --quiet -- critiques/ || [ -n "$(git ls-files --others --exclude-standard critiques/)" ]; then
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            # claude-code-action reconfigures the repo's git auth for its own
+            # commits, which strips the checkout's push credential; a plain
+            # `git push` here then fails with "Authentication failed". Re-point
+            # origin at the workflow GITHUB_TOKEN so this step can push. The job
+            # has contents:write, and a GITHUB_TOKEN push does not re-trigger
+            # workflows, which is exactly this pipeline's intent (no commit-loop).
+            git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
             git add critiques/
             git commit -m "critique: $(basename '${{ steps.target.outputs.target }}') $(date -u +%Y-%m-%d)"
             for i in 1 2 3; do
