@@ -82,6 +82,17 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Headless CI denies file-modification tools by default (only
+          # read-only Read/Grep/Glob are auto-allowed), so without this the
+          # playbook reads every input but its Write of the critique artifact
+          # is denied and the run "succeeds" having produced nothing (see the
+          # 2026-07-04 run: success, permission_denials_count 2, no commit).
+          # Grant exactly what the playbook needs: read the target + docs,
+          # write one artifact under critiques/. No Edit (target is read-only),
+          # no Bash/git (the next step commits). Keeps the independence
+          # contract's tight secret/tool surface intact.
+          claude_args: |
+            --allowedTools "Read,Glob,Grep,Write"
           prompt: |
             Read docs/critique/playbook.md and execute it against
             ${{ steps.target.outputs.target }}. Follow every step in
