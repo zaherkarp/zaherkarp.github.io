@@ -6,8 +6,21 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Jul 2026 07:40:41 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jul 2026 08:03:57 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>Should I Buy RAM Now?</title>
+      <link>https://zaherkarp.com/blog/should-i-buy-ram-now/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/should-i-buy-ram-now/</guid>
+      <pubDate>Sun, 05 Jul 2026 00:00:00 +0000</pubDate>
+      <description>A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit — built to be honest about how little it can forecast.</description>
+      <category>hardware</category>
+      <category>forecasting</category>
+      <category>statistics</category>
+      <category>ddr5</category>
+      
+    </item>
     
     <item>
       <title>Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</title>
@@ -416,19 +429,6 @@
       <category>data modeling</category>
       <category>warehousing</category>
       <category>data architecture</category>
-      
-    </item>
-    
-    <item>
-      <title>Debugging GitHub Actions: The Heredoc Horror Story</title>
-      <link>https://zaherkarp.com/blog/debugging-github-actions-heredoc/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/debugging-github-actions-heredoc/</guid>
-      <pubDate>Sun, 15 Feb 2026 00:00:00 +0000</pubDate>
-      <description>A deep dive into debugging a GitHub Actions workflow where heredoc syntax clashed with YAML parsing, leading to five different errors and one elegant solution.</description>
-      <category>github-actions</category>
-      <category>yaml</category>
-      <category>bash</category>
-      <category>debugging</category>
       
     </item>
     

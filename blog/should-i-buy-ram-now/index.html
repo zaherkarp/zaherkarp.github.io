@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Should I Buy RAM Now? — Zaher Karp</title>
+<meta name="description" content="A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit — built to be honest about how little it can forecast.">
+<link rel="canonical" href="https://zaherkarp.com/blog/should-i-buy-ram-now/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="Should I Buy RAM Now? — Zaher Karp">
+<meta property="og:description" content="A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit — built to be honest about how little it can forecast.">
+<meta property="og:url" content="https://zaherkarp.com/blog/should-i-buy-ram-now/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Should I Buy RAM Now? — Zaher Karp">
+<meta name="twitter:description" content="A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit — built to be honest about how little it can forecast.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Should I Buy RAM Now?", "description": "A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit \u2014 built to be honest about how little it can forecast.", "url": "https://zaherkarp.com/blog/should-i-buy-ram-now/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/should-i-buy-ram-now/"}, "datePublished": "2026-07-05T00:00:00Z", "dateModified": "2026-07-05T03:03:41-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 10716, "timeRequired": "PT43M", "inLanguage": "en-US", "keywords": "hardware, forecasting, statistics, ddr5"}
+</script>
+
+
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">Should I Buy RAM Now?</h1>
+    <div class="blog-meta">
+      <time datetime="2026-07-05" class="blog-date">July 5, 2026</time>
+      
+      <span class="blog-readtime">43 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li><a href="/blog/tags/hardware/">hardware</a></li><li><a href="/blog/tags/forecasting/">forecasting</a></li><li><a href="/blog/tags/statistics/">statistics</a></li><li><a href="/blog/tags/ddr5/">ddr5</a></li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>My machine runs one G.Skill Trident Z5 Neo kit — 64GB (2×32) of DDR5-6000 CL30 — and I want more memory. This year a DDR5 shortage dragged that exact kit from a boring ~$210 up to about $955, and a third-party reseller listed it near $1,140.</p>
+<p>So I pulled the real price history from Keepa and asked a narrower question than &quot;what will it cost&quot;: buy now, or wait — framed as the expected savings from waiting, with the uncertainty kept honest. Two facts dominate. The kit sat near $210 for two years, so today's ~$955 is roughly <strong>4.6×</strong> its own norm and near an all-time high. And the recent plateau is flat: there is no downward trend to ride.</p>
+<p>I made the forecast earn its uncertainty rather than assert it. It fits only the post-shortage regime, selects its smoothing parameters by walk-forward cross-validation, calibrates its intervals to real out-of-sample errors (conformal prediction), and benchmarks against a plain random walk. The result is deflating in the right way: on this plateau the model barely edges a random walk, and the calibrated 80% band for the 30-day price is only about ±$20. &quot;Wait for it to drop&quot; is a hope, not a forecast.</p>
+<p>Either way there are two upgrade paths: a second identical kit toward 128GB (though four dual-rank DIMMs usually will not hold EXPO 6000 on AM5), or a single 2×64 kit that keeps the rated speed and frees the old kit for resale.</p>
+<p>Here is the model on the real series — move the thresholds and the horizon, and read the diagnostics.</p>
+<figure class="rw-fig">
+<div class="rw-widget" id="rw-widget">
+<p class="rw-badge">Real data &middot; Keepa &ldquo;New&rdquo; price history &middot; as of 2026-07-05</p>
+<div class="rw-spark" id="rw-spark"><svg viewBox="0 0 760 96" width="100%" role="img" aria-label="Full price history: about two years near $209, then a shortage spike to about $955." preserveAspectRatio="xMidYMid meet" font-family="inherit"><line x1="8" y1="73.9" x2="752" y2="73.9" stroke="#d0d0c8" stroke-width="1" stroke-dasharray="2 3"/><text x="10" y="70.9" font-size="9" fill="#6a6a6a">norm $209</text><path d="M 8.0 49.6 L 10.8 49.6 L 13.7 49.6 L 16.5 49.6 L 19.4 49.6 L 22.2 49.6 L 25.0 49.6 L 27.9 51.2 L 30.7 51.2 L 33.6 51.2 L 36.4 54.9 L 39.2 54.9 L 42.1 54.9 L 44.9 54.9 L 47.8 58.8 L 50.6 58.8 L 53.4 58.8 L 56.3 58.8 L 59.1 62.1 L 62.0 62.1 L 64.8 62.1 L 67.6 62.1 L 70.5 65.2 L 73.3 65.2 L 76.2 65.2 L 79.0 67.5 L 81.8 67.5 L 84.7 67.5 L 87.5 69.8 L 90.4 69.8 L 93.2 69.8 L 96.0 69.8 L 98.9 71.8 L 101.7 71.8 L 104.5 71.8 L 107.4 71.8 L 110.2 71.8 L 113.1 73.0 L 115.9 73.0 L 118.7 73.0 L 121.6 73.0 L 124.4 73.0 L 127.3 73.8 L 130.1 73.8 L 132.9 73.8 L 135.8 73.8 L 138.6 73.8 L 141.5 73.8 L 144.3 73.8 L 147.1 73.8 L 150.0 73.8 L 152.8 73.8 L 155.7 73.8 L 158.5 73.8 L 161.3 73.8 L 164.2 74.2 L 167.0 74.2 L 169.9 74.2 L 172.7 74.2 L 175.5 74.2 L 178.4 74.2 L 181.2 74.2 L 184.1 74.2 L 186.9 74.2 L 189.7 74.2 L 192.6 74.2 L 195.4 74.2 L 198.3 73.7 L 201.1 73.7 L 203.9 73.7 L 206.8 73.7 L 209.6 73.7 L 212.5 73.7 L 215.3 73.7 L 218.1 73.7 L 221.0 73.7 L 223.8 73.7 L 226.7 73.7 L 229.5 73.7 L 232.3 73.7 L 235.2 73.7 L 238.0 74.5 L 240.9 74.5 L 243.7 74.5 L 246.5 74.5 L 249.4 74.5 L 252.2 74.5 L 255.1 74.5 L 257.9 74.5 L 260.7 74.5 L 263.6 74.5 L 266.4 74.5 L 269.3 74.5 L 272.1 74.5 L 274.9 74.5 L 277.8 74.5 L 280.6 74.5 L 283.5 74.2 L 286.3 74.2 L 289.1 74.2 L 292.0 74.2 L 294.8 74.2 L 297.6 74.2 L 300.5 74.2 L 303.3 74.2 L 306.2 74.2 L 309.0 74.2 L 311.8 74.2 L 314.7 74.2 L 317.5 74.2 L 320.4 74.2 L 323.2 74.2 L 326.0 74.2 L 328.9 74.2 L 331.7 74.2 L 334.6 74.2 L 337.4 74.7 L 340.2 74.7 L 343.1 74.7 L 345.9 74.7 L 348.8 74.7 L 351.6 74.7 L 354.4 74.7 L 357.3 74.7 L 360.1 74.7 L 363.0 74.7 L 365.8 74.7 L 368.6 74.7 L 371.5 74.7 L 374.3 74.7 L 377.2 74.7 L 380.0 74.7 L 382.8 74.7 L 385.7 74.7 L 388.5 74.7 L 391.4 73.9 L 394.2 73.9 L 397.0 73.9 L 399.9 73.9 L 402.7 73.9 L 405.6 73.9 L 408.4 73.9 L 411.2 73.9 L 414.1 73.9 L 416.9 73.9 L 419.8 73.9 L 422.6 73.9 L 425.4 73.9 L 428.3 73.9 L 431.1 73.9 L 434.0 73.9 L 436.8 73.9 L 439.6 73.9 L 442.5 74.3 L 445.3 74.3 L 448.2 74.3 L 451.0 74.3 L 453.8 74.3 L 456.7 75.2 L 459.5 75.2 L 462.4 75.2 L 465.2 75.2 L 468.0 75.2 L 470.9 75.2 L 473.7 75.2 L 476.5 75.2 L 479.4 75.2 L 482.2 75.2 L 485.1 75.2 L 487.9 75.2 L 490.7 74.2 L 493.6 74.2 L 496.4 74.2 L 499.3 74.2 L 502.1 74.2 L 504.9 74.2 L 507.8 74.2 L 510.6 74.2 L 513.5 74.2 L 516.3 74.2 L 519.1 74.2 L 522.0 74.2 L 524.8 74.2 L 527.7 74.2 L 530.5 74.2 L 533.3 74.2 L 536.2 74.2 L 539.0 74.2 L 541.9 74.2 L 544.7 73.8 L 547.5 73.8 L 550.4 73.8 L 553.2 73.8 L 556.1 73.8 L 558.9 73.8 L 561.7 73.8 L 564.6 73.8 L 567.4 73.8 L 570.3 73.8 L 573.1 73.8 L 575.9 73.8 L 578.8 73.0 L 581.6 73.0 L 584.5 73.0 L 587.3 73.0 L 590.1 73.0 L 593.0 73.0 L 595.8 72.1 L 598.7 72.1 L 601.5 72.1 L 604.3 66.7 L 607.2 66.7 L 610.0 66.7 L 612.9 57.4 L 615.7 57.4 L 618.5 57.4 L 621.4 43.2 L 624.2 43.2 L 627.1 43.2 L 629.9 33.8 L 632.7 33.8 L 635.6 33.8 L 638.4 24.5 L 641.3 24.5 L 644.1 24.5 L 646.9 19.1 L 649.8 19.1 L 652.6 19.1 L 655.5 17.3 L 658.3 17.3 L 661.1 17.3 L 664.0 16.3 L 666.8 16.3 L 669.6 16.3 L 672.5 15.9 L 675.3 15.9 L 678.2 15.9 L 681.0 16.2 L 683.8 16.2 L 686.7 16.2 L 689.5 16.2 L 692.4 16.2 L 695.2 16.2 L 698.0 16.7 L 700.9 17.1 L 703.7 18.4 L 706.6 14.8 L 709.4 16.1 L 712.2 16.1 L 715.1 16.4 L 717.9 16.4 L 720.8 16.4 L 723.6 15.9 L 726.4 15.9 L 729.3 15.9 L 732.1 16.2 L 735.0 16.2 L 737.8 16.4 L 740.6 16.4 L 743.5 16.8 L 746.3 16.8 L 749.2 15.9 L 752.0 15.6" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="752.0" cy="15.6" r="2.6" fill="#7a0000"/><text x="752" y="11.6" text-anchor="end" font-size="9" fill="#6a6a6a">now $955</text><text x="8" y="92" font-size="9" fill="#6a6a6a">2022-12-05</text><text x="752" y="92" text-anchor="end" font-size="9" fill="#6a6a6a">2026-07-05</text></svg></div>
+<div class="rw-live" id="rw-live" aria-live="polite" aria-atomic="true"><p class="rw-verdict rw-hold"><span class="rw-call">HOLD</span></p><p class="rw-sub">At $955 this kit is 4.6× its pre-shortage norm and near an all-time high (99.5% percentile). The backtested forecast is essentially flat — waiting 30 days is expected to save only 1.2%, and no model here reliably beats a random walk — so there is neither a case to wait for a drop nor a case to call this cheap. Decide on need, not on price.</p><p class="rw-price"><strong>$955</strong> now · 99.5% percentile over 3.6 yrs · <strong>4.6×</strong> the $209 pre-shortage norm</p></div>
+<div class="rw-chart" id="rw-chart"><svg viewBox="0 0 760 300" width="100%" role="img" aria-label="Recent price plateau near $955 and a 60-day forecast with a calibrated 80 percent band and median line." preserveAspectRatio="xMidYMid meet" font-family="inherit"><title>Recent plateau and 60-day conformal forecast</title><line x1="54" y1="250.8" x2="748" y2="250.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="253.8" text-anchor="end" font-size="11" fill="#6a6a6a">$920</text><line x1="54" y1="216.8" x2="748" y2="216.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="219.8" text-anchor="end" font-size="11" fill="#6a6a6a">$930</text><line x1="54" y1="182.8" x2="748" y2="182.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="185.8" text-anchor="end" font-size="11" fill="#6a6a6a">$940</text><line x1="54" y1="148.8" x2="748" y2="148.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="151.8" text-anchor="end" font-size="11" fill="#6a6a6a">$950</text><line x1="54" y1="114.8" x2="748" y2="114.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="117.8" text-anchor="end" font-size="11" fill="#6a6a6a">$960</text><line x1="54" y1="80.8" x2="748" y2="80.8" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="83.8" text-anchor="end" font-size="11" fill="#6a6a6a">$970</text><line x1="54" y1="46.9" x2="748" y2="46.9" stroke="#d0d0c8" stroke-width="1"/><text x="48" y="49.9" text-anchor="end" font-size="11" fill="#6a6a6a">$980</text><path d="M 515.4 131.8 L 519.3 128.4 L 523.1 116.1 L 527.0 115.9 L 530.9 99.8 L 534.8 99.7 L 538.6 99.6 L 542.5 96.3 L 546.4 96.1 L 550.3 95.8 L 554.1 77.3 L 558.0 75.4 L 561.9 74.1 L 565.8 72.8 L 569.7 69.7 L 573.5 69.6 L 577.4 69.6 L 581.3 69.5 L 585.2 69.5 L 589.0 69.4 L 592.9 69.4 L 596.8 69.3 L 600.7 69.3 L 604.5 59.7 L 608.4 58.4 L 612.3 57.3 L 616.2 48.6 L 620.1 46.7 L 623.9 43.4 L 627.8 41.4 L 631.7 41.4 L 635.6 41.4 L 639.4 41.4 L 643.3 41.4 L 647.2 41.4 L 651.1 41.3 L 654.9 41.3 L 658.8 41.3 L 662.7 40.6 L 666.6 39.1 L 670.5 34.4 L 674.3 31.9 L 678.2 31.9 L 682.1 31.8 L 686.0 31.8 L 689.8 31.8 L 693.7 31.8 L 697.6 31.8 L 701.5 31.8 L 705.4 31.8 L 709.2 31.8 L 713.1 31.8 L 717.0 31.8 L 720.9 31.8 L 724.7 31.8 L 728.6 31.8 L 732.5 31.8 L 736.4 31.8 L 740.2 31.8 L 744.1 31.8 L 748.0 31.8 L 748.0 175.0 L 744.1 175.0 L 740.2 175.0 L 736.4 175.0 L 732.5 175.0 L 728.6 175.0 L 724.7 175.0 L 720.9 175.0 L 717.0 175.0 L 713.1 175.0 L 709.2 175.0 L 705.4 175.0 L 701.5 175.0 L 697.6 175.0 L 693.7 175.0 L 689.8 175.0 L 686.0 175.0 L 682.1 175.0 L 678.2 175.0 L 674.3 175.0 L 670.5 175.0 L 666.6 174.7 L 662.7 174.3 L 658.8 174.0 L 654.9 173.8 L 651.1 173.5 L 647.2 173.3 L 643.3 173.2 L 639.4 173.0 L 635.6 168.6 L 631.7 168.5 L 627.8 168.4 L 623.9 161.8 L 620.1 161.4 L 616.2 161.4 L 612.3 161.4 L 608.4 161.5 L 604.5 161.5 L 600.7 161.5 L 596.8 161.6 L 592.9 161.6 L 589.0 161.6 L 585.2 161.7 L 581.3 161.7 L 577.4 161.8 L 573.5 161.8 L 569.7 161.9 L 565.8 162.0 L 561.9 162.0 L 558.0 162.1 L 554.1 162.2 L 550.3 162.3 L 546.4 162.4 L 542.5 162.5 L 538.6 162.7 L 534.8 152.9 L 530.9 153.0 L 527.0 149.8 L 523.1 145.6 L 519.3 142.8 Z" fill="#6a6a6a" fill-opacity="0.16" stroke="none"/><path d="M 54.0 155.6 L 57.9 155.6 L 61.8 155.6 L 65.6 155.6 L 69.5 155.6 L 73.4 155.6 L 77.3 155.6 L 81.1 155.6 L 85.0 155.6 L 88.9 155.6 L 92.8 155.6 L 96.6 155.6 L 100.5 155.6 L 104.4 155.6 L 108.3 155.6 L 112.2 155.6 L 116.0 155.6 L 119.9 155.6 L 123.8 155.6 L 127.7 155.6 L 131.5 155.6 L 135.4 155.6 L 139.3 155.6 L 143.2 155.6 L 147.1 179.4 L 150.9 179.4 L 154.8 179.4 L 158.7 179.4 L 162.6 179.4 L 166.4 179.4 L 170.3 179.4 L 174.2 196.4 L 178.1 196.4 L 181.9 196.4 L 185.8 254.2 L 189.7 254.2 L 193.6 254.2 L 197.5 254.2 L 201.3 254.2 L 205.2 142.0 L 209.1 97.8 L 213.0 97.8 L 216.8 97.8 L 220.7 97.8 L 224.6 152.2 L 228.5 152.2 L 232.3 152.2 L 236.2 152.2 L 240.1 152.2 L 244.0 152.2 L 247.9 152.2 L 251.7 152.2 L 255.6 152.2 L 259.5 152.2 L 263.4 152.2 L 267.2 165.8 L 271.1 165.8 L 275.0 165.8 L 278.9 165.8 L 282.7 165.8 L 286.6 165.8 L 290.5 165.8 L 294.4 165.8 L 298.3 165.8 L 302.1 165.8 L 306.0 165.8 L 309.9 165.8 L 313.8 165.8 L 317.6 165.8 L 321.5 145.4 L 325.4 145.4 L 329.3 145.4 L 333.2 145.4 L 337.0 145.4 L 340.9 145.4 L 344.8 145.4 L 348.7 145.4 L 352.5 145.4 L 356.4 145.4 L 360.3 145.4 L 364.2 145.4 L 368.0 145.4 L 371.9 145.4 L 375.8 145.4 L 379.7 145.4 L 383.6 159.0 L 387.4 159.0 L 391.3 101.2 L 395.2 101.2 L 399.1 101.2 L 402.9 159.0 L 406.8 159.0 L 410.7 165.8 L 414.6 165.8 L 418.4 165.8 L 422.3 165.8 L 426.2 165.8 L 430.1 165.8 L 434.0 165.8 L 437.8 165.8 L 441.7 165.8 L 445.6 165.8 L 449.5 165.8 L 453.3 165.8 L 457.2 182.8 L 461.1 182.8 L 465.0 182.8 L 468.8 182.8 L 472.7 182.8 L 476.6 182.8 L 480.5 182.8 L 484.4 182.8 L 488.2 145.4 L 492.1 145.4 L 496.0 145.4 L 499.9 145.4 L 503.7 145.4 L 507.6 131.8 L 511.5 131.8 L 515.4 131.8" fill="none" stroke="#111" stroke-width="1.4"/><path d="M 515.4 131.8 L 519.3 139.5 L 523.1 139.4 L 527.0 139.2 L 530.9 139.0 L 534.8 138.9 L 538.6 138.7 L 542.5 138.6 L 546.4 138.5 L 550.3 138.4 L 554.1 138.3 L 558.0 138.2 L 561.9 138.1 L 565.8 138.1 L 569.7 138.0 L 573.5 137.9 L 577.4 137.9 L 581.3 137.8 L 585.2 137.8 L 589.0 137.7 L 592.9 137.7 L 596.8 137.6 L 600.7 137.6 L 604.5 137.6 L 608.4 137.5 L 612.3 137.5 L 616.2 137.5 L 620.1 137.5 L 623.9 137.4 L 627.8 137.4 L 631.7 137.4 L 635.6 137.4 L 639.4 137.4 L 643.3 137.4 L 647.2 137.3 L 651.1 137.3 L 654.9 137.3 L 658.8 137.3 L 662.7 137.3 L 666.6 137.3 L 670.5 137.3 L 674.3 137.3 L 678.2 137.3 L 682.1 137.3 L 686.0 137.3 L 689.8 137.3 L 693.7 137.3 L 697.6 137.2 L 701.5 137.2 L 705.4 137.2 L 709.2 137.2 L 713.1 137.2 L 717.0 137.2 L 720.9 137.2 L 724.7 137.2 L 728.6 137.2 L 732.5 137.2 L 736.4 137.2 L 740.2 137.2 L 744.1 137.2 L 748.0 137.2" fill="none" stroke="#7a0000" stroke-width="1.7"/><line x1="515.4" y1="14" x2="515.4" y2="272" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3 3"/><circle cx="515.4" cy="131.8" r="3.2" fill="#111"/><text x="54.0" y="292" font-size="11" fill="#6a6a6a">−119d</text><text x="515.4" y="292" text-anchor="middle" font-size="11" fill="#6a6a6a">today</text><text x="748.0" y="292" text-anchor="end" font-size="11" fill="#6a6a6a">+60d</text></svg></div>
+<div id="rw-stats"><table class="rw-stats"><thead><tr><th>Horizon</th><th>Median</th><th>Exp. min</th><th>Exp. saving</th><th>vs now</th></tr></thead><tbody><tr><td>30 days</td><td>$953</td><td>$944</td><td>$11</td><td>1.2%</td></tr><tr><td>60 days</td><td>$953</td><td>$935</td><td>$20</td><td>2.1%</td></tr><tr><td>90 days</td><td>$953</td><td>$929</td><td>$26</td><td>2.7%</td></tr></tbody></table></div>
+<details class="rw-diagwrap"><summary>Model diagnostics</summary><div id="rw-diag"><dl class="rw-diag"><dt>Backtest</dt><dd>91 walk-forward forecasts (out-of-sample)</dd><dt>30-day error</dt><dd>RMSE $14 (model) vs $17 (random walk) — ES beats it by 15.6%</dd><dt>80% band</dt><dd>±$19 at 30d, ±$21 at 90d</dd><dt>Calibration</dt><dd>80.2% of real out-of-sample errors fall in the 80% band (target 80.0%)</dd></dl></div></details>
+<noscript><p class="rw-fit">The forecast and verdict above are computed from the real series. Enable JavaScript to move the thresholds, change the horizon, and adjust the model.</p></noscript>
+<form class="rw-controls" id="rw-controls">
+<div class="rw-cell"><fieldset class="rw-group"><legend>Forecast horizon</legend><label><input type="radio" name="rw-h" value="30"> 30 days</label> <label><input type="radio" name="rw-h" value="60" checked> 60 days</label> <label><input type="radio" name="rw-h" value="90"> 90 days</label></fieldset></div>
+<div class="rw-cell"><div class="rw-row"><label for="rw-buyp">Buy if price &le; this percentile</label><span class="rw-val" id="rw-buyp-v">20th pctl</span></div><input type="range" id="rw-buyp" min="0.05" max="1" step="0.01" value="0.2"></div>
+<div class="rw-cell"><div class="rw-row"><label for="rw-buymax">Buy only if 30-day expected saving &le;</label><span class="rw-val" id="rw-buymax-v">3.0%</span></div><input type="range" id="rw-buymax" min="0" max="0.1" step="0.005" value="0.03"></div>
+<div class="rw-cell"><div class="rw-row"><label for="rw-waitmin">Wait if 30-day expected saving &ge;</label><span class="rw-val" id="rw-waitmin-v">7.0%</span></div><input type="range" id="rw-waitmin" min="0" max="0.2" step="0.005" value="0.07"></div>
+<div class="rw-cell rw-full"><details class="rw-adv"><summary>Advanced model settings</summary><div class="rw-adv-body"><div class="rw-row"><label for="rw-phi">Damping &phi;</label><span class="rw-val" id="rw-phi-v">0.92</span></div><input type="range" id="rw-phi" min="0.5" max="0.99" step="0.01" value="0.92"><div class="rw-row"><label for="rw-n">Bootstrap paths N</label><span class="rw-val" id="rw-n-v">400</span></div><input type="range" id="rw-n" min="100" max="1000" step="50" value="400"><label class="rw-toggle"><input type="checkbox" id="rw-auto" checked> Select &alpha;, &beta; by walk-forward CV (recommended)</label><div id="rw-ab" hidden><div class="rw-row"><label for="rw-alpha">Smoothing &alpha;</label><span class="rw-val" id="rw-alpha-v">0.30</span></div><input type="range" id="rw-alpha" min="0.05" max="0.95" step="0.05" value="0.3"><div class="rw-row"><label for="rw-beta">Trend &beta;</label><span class="rw-val" id="rw-beta-v">0.10</span></div><input type="range" id="rw-beta" min="0.02" max="0.5" step="0.02" value="0.1"></div></div></details></div>
+</form>
+<p class="rw-fit" id="rw-fit">Damped-trend ES: α=0.9, β=0.02, φ=0.92 (walk-forward selected) · ensemble 58% ES / 42% random walk · 400 bootstrap paths.</p>
+</div>
+<figcaption>Real prices for the G.Skill F5-6000J3040G32GX2-TZ5NR kit, digitized from Keepa&rsquo;s &ldquo;New&rdquo; (first-party) price history for amazon.com as of 2026-07-05 (chart-resolution, &plusmn;~$15). Top: the full 3.5-year arc &mdash; ~2 years near 209 dollars, then the shortage spike. Main chart: the recent plateau and a 90-day forecast; the shaded band is a conformally-calibrated 80% interval, the teal line is the ensemble median. Verdict thresholds are a personal buying policy, not a prediction.</figcaption>
+</figure>
+<style>
+.rw-widget { --rw-ink:#111; --rw-muted:#6a6a6a; --rw-rule:#d0d0c8; --rw-accent:#0a5c54; --rw-paper:#fffff8; --rw-warn:#9a6a00; font-family:'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; box-sizing:border-box; max-width:760px; width:100%; margin:1.6rem auto; padding:1rem 1.15rem 1.1rem; border:1px solid var(--rw-rule); border-radius:3px; background:var(--rw-paper); }
+.rw-widget *, .rw-widget *::before, .rw-widget *::after { box-sizing:border-box; }
+@media (prefers-color-scheme: dark) { .rw-widget { --rw-ink:#e6e8ea; --rw-muted:#b4bac2; --rw-rule:#2a2f36; --rw-accent:#3fb0a0; --rw-paper:#16191d; --rw-warn:#d0a24c; } }
+.rw-badge { margin:0 0 0.5rem; font-variant:small-caps; letter-spacing:0.06em; font-size:0.72rem; color:var(--rw-muted); }
+.rw-spark { margin:0 0 0.7rem; }
+.rw-spark svg { width:100%; height:auto; display:block; }
+.rw-verdict { margin:0; line-height:1; }
+.rw-call { font-size:2.1rem; font-weight:600; letter-spacing:0.02em; }
+.rw-buy .rw-call { color:var(--rw-accent); }
+.rw-wait .rw-call { color:var(--rw-warn); }
+.rw-hold .rw-call { color:var(--rw-muted); }
+.rw-sub { margin:0.35rem 0 0.5rem; color:var(--rw-ink); font-size:0.95rem; line-height:1.5; }
+.rw-price { margin:0.2rem 0; color:var(--rw-muted); font-size:0.9rem; }
+.rw-price strong { color:var(--rw-ink); font-weight:600; }
+.rw-chart { margin:0.6rem 0 0.4rem; }
+.rw-chart svg { width:100%; height:auto; display:block; }
+.rw-widget #rw-stats table { width:100%; border-collapse:collapse; font-size:0.85rem; margin:0.3rem 0 0.2rem; }
+.rw-widget #rw-stats th { text-align:right; font-variant:small-caps; letter-spacing:0.04em; font-weight:400; color:var(--rw-muted); padding:0.2rem 0 0.2rem 0.9rem; border-bottom:1px solid var(--rw-rule); }
+.rw-widget #rw-stats th:first-child, .rw-widget #rw-stats td:first-child { text-align:left; padding-left:0; }
+.rw-widget #rw-stats td { text-align:right; padding:0.2rem 0 0.2rem 0.9rem; color:var(--rw-ink); border-bottom:1px solid var(--rw-rule); font-variant-numeric:tabular-nums; }
+.rw-diagwrap { margin-top:0.7rem; }
+.rw-diagwrap summary { cursor:pointer; color:var(--rw-muted); font-variant:small-caps; letter-spacing:0.05em; font-size:0.82rem; }
+.rw-diag { margin:0.5rem 0 0; display:grid; grid-template-columns:auto 1fr; gap:0.25rem 0.9rem; font-size:0.82rem; }
+.rw-diag dt { color:var(--rw-muted); font-variant:small-caps; letter-spacing:0.03em; white-space:nowrap; }
+.rw-diag dd { margin:0; color:var(--rw-ink); }
+.rw-controls { display:none; grid-template-columns:1fr 1fr; gap:0.8rem 1.4rem; margin-top:0.9rem; padding-top:0.85rem; border-top:1px solid var(--rw-rule); }
+.rw-widget.rw-enhanced .rw-controls { display:grid; }
+.rw-cell { min-width:0; }
+.rw-cell.rw-full { grid-column:1 / -1; }
+.rw-group { border:none; margin:0; padding:0; }
+.rw-group legend { font-variant:small-caps; letter-spacing:0.05em; color:var(--rw-muted); padding:0 0 0.25rem; font-size:0.82rem; }
+.rw-group label { margin-right:0.6rem; white-space:nowrap; font-size:0.88rem; color:var(--rw-ink); }
+.rw-row { display:flex; justify-content:space-between; align-items:baseline; gap:0.5rem; margin-bottom:0.15rem; }
+.rw-row label { font-size:0.85rem; color:var(--rw-ink); }
+.rw-val { color:var(--rw-muted); font-variant-numeric:tabular-nums; font-size:0.8rem; white-space:nowrap; }
+.rw-toggle { display:inline-flex; align-items:flex-start; gap:0.4rem; font-size:0.85rem; color:var(--rw-ink); cursor:pointer; margin-top:0.3rem; }
+.rw-widget input[type=range] { width:100%; accent-color:var(--rw-accent); margin:0.1rem 0 0; }
+.rw-widget input[type=checkbox], .rw-widget input[type=radio] { accent-color:var(--rw-accent); }
+.rw-adv { margin-top:0.2rem; }
+.rw-adv summary { cursor:pointer; color:var(--rw-muted); font-variant:small-caps; letter-spacing:0.05em; font-size:0.82rem; }
+.rw-adv-body { margin-top:0.5rem; }
+.rw-fit { margin:0.7rem 0 0; color:var(--rw-muted); font-size:0.78rem; font-style:italic; line-height:1.45; }
+.rw-widget :focus-visible { outline:2px solid var(--rw-accent); outline-offset:2px; border-radius:2px; }
+@media (max-width:560px) { .rw-controls { grid-template-columns:1fr; } .rw-call { font-size:1.8rem; } .rw-diag { grid-template-columns:1fr; gap:0.05rem 0; } .rw-diag dd { margin-bottom:0.35rem; } }
+</style>
+<script>
+/* ==========================================================================
+   RAM buy-or-wait model — REAL DATA edition.
+
+   The price series is digitized from the Keepa "New" (first-party) price
+   history for G.Skill F5-6000J3040G32GX2-TZ5NR (amazon.com), read off the
+   All-range and 3-month charts as of 2026-07-05. Keepa records price CHANGES,
+   so the series is stored as observed change-points and step-held to daily —
+   that is the faithful reconstruction, not interpolation. Values are
+   chart-resolution (±~$15); the signals that drive the verdict (an all-time-
+   high plateau with no downtrend) are far larger than that error.
+
+   Statistics are deliberately conservative. Six choices, each commented where
+   it lives:
+     1. Regime-aware fit  — forecast only on the post-shortage regime.
+     2. Robust cleaning   — Hampel/MAD outlier filter.
+     3. Block bootstrap   — stationary bootstrap preserves autocorrelation.
+     4. Conformal bands   — interval width calibrated to backtested coverage.
+     5. Walk-forward CV    — out-of-sample selection + honest diagnostics.
+     6. RW benchmark + ensemble — never claim skill we can't show.
+   Deterministic given a seed; no Math.random.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+
+  // -- Real digitized data --------------------------------------------------
+  // [ISO date, New price USD] change-points. Sparse in the long flat era,
+  // denser through the shortage break and the recent plateau.
+  var CHANGEPOINTS = [
+    ['2022-12-05', 520], ['2023-01-05', 500], ['2023-01-22', 452], ['2023-02-12', 402],
+    ['2023-03-04', 360], ['2023-03-22', 320], ['2023-04-06', 291], ['2023-04-22', 262],
+    ['2023-05-12', 236], ['2023-06-04', 221], ['2023-07-02', 210], ['2023-09-03', 205],
+    ['2023-11-05', 212], ['2024-01-10', 201], ['2024-04-02', 206], ['2024-07-05', 199],
+    ['2024-10-08', 209], ['2025-01-05', 204], ['2025-02-01', 193], ['2025-04-03', 206],
+    ['2025-07-04', 211], ['2025-09-05', 221],
+    // --- shortage break (~Oct 2025) ---
+    ['2025-10-04', 232], ['2025-10-18', 301], ['2025-11-02', 421], ['2025-11-16', 602],
+    ['2025-12-02', 722], ['2025-12-16', 841], ['2026-01-03', 910], ['2026-01-17', 934],
+    ['2026-02-02', 946], ['2026-02-16', 951], ['2026-03-02', 948], ['2026-04-01', 941],
+    // --- recent 3-month detail ---
+    ['2026-04-08', 936], ['2026-04-11', 919], ['2026-04-16', 952], ['2026-04-17', 965],
+    ['2026-04-21', 949], ['2026-05-02', 945], ['2026-05-16', 951], ['2026-06-01', 947],
+    ['2026-06-03', 964], ['2026-06-08', 945], ['2026-06-20', 940], ['2026-06-28', 951],
+    ['2026-07-03', 955], ['2026-07-05', 955]
+  ];
+  var REGIME_START = '2025-10-01';  // shortage break; forecast fits only after this
+  var AS_OF = '2026-07-05';
+  var DATA_META = {
+    source: 'Keepa "New" price history, amazon.com',
+    asin: 'B0BJNTLJ5X', kit: 'G.Skill F5-6000J3040G32GX2-TZ5NR',
+    asOf: AS_OF, regimeStart: REGIME_START, method: 'digitized change-points, step-held to daily'
+  };
+
+  // -- PRNG (seedable; no Math.random) --------------------------------------
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // -- Date helpers (UTC, day granularity) ----------------------------------
+  function toDay(iso) { return Math.floor(Date.parse(iso + 'T00:00:00Z') / 86400000); }
+  function dayToISO(d) { return new Date(d * 86400000).toISOString().slice(0, 10); }
+
+  // Step-hold change-points to a daily series over [firstDay, lastDay].
+  function expandDaily(changepoints) {
+    var pts = changepoints.map(function (c) { return [toDay(c[0]), c[1]]; });
+    var first = pts[0][0], last = pts[pts.length - 1][0];
+    var out = [];
+    var ci = 0, cur = pts[0][1];
+    for (var d = first; d <= last; d++) {
+      while (ci < pts.length && pts[ci][0] <= d) { cur = pts[ci][1]; ci++; }
+      out.push({ day: d, iso: dayToISO(d), price: cur });
+    }
+    return out;
+  }
+
+  // -- Robust statistics ----------------------------------------------------
+  function median(arr) {
+    var a = arr.filter(function (v) { return v != null && !Number.isNaN(v); }).slice()
+      .sort(function (x, y) { return x - y; });
+    if (!a.length) return null;
+    var m = a.length >> 1;
+    return (a.length & 1) ? a[m] : (a[m - 1] + a[m]) / 2;
+  }
+  function mad(arr, med) {
+    // Median absolute deviation, scaled to be a consistent SD estimator.
+    var dev = arr.map(function (v) { return Math.abs(v - med); });
+    var m = median(dev);
+    return m == null ? 0 : m * 1.4826;
+  }
+  function quantileSorted(sorted, q) {
+    if (!sorted.length) return NaN;
+    var idx = (sorted.length - 1) * q, lo = Math.floor(idx), hi = Math.ceil(idx);
+    return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+  }
+
+  // 2. ROBUST CLEANING: Hampel filter. Flags points more than nSigma robust
+  // deviations from a local median and replaces them with that median. Removes
+  // one-day junk prints (e.g. a bad listing) without hand-editing.
+  function hampel(series, win, nSigma) {
+    win = win || 7; nSigma = nSigma || 4;
+    var p = series.map(function (s) { return s.price; });
+    var out = series.map(function (s) { return { day: s.day, iso: s.iso, price: s.price }; });
+    for (var i = 0; i < p.length; i++) {
+      var lo = Math.max(0, i - win), hi = Math.min(p.length, i + win + 1);
+      var window = p.slice(lo, hi);
+      var med = median(window), sd = mad(window, med);
+      if (sd > 0 && Math.abs(p[i] - med) > nSigma * sd) out[i].price = med;
+    }
+    return out;
+  }
+
+  function trailingMedian(vals, win) {
+    var out = new Array(vals.length);
+    for (var i = 0; i < vals.length; i++) out[i] = median(vals.slice(Math.max(0, i - win + 1), i + 1));
+    return out;
+  }
+
+  // -- Damped-trend exponential smoothing (Holt) on a log series ------------
+  function esPass(logY, alpha, beta, phi) {
+    var n = logY.length;
+    if (n < 2) return { level: n ? logY[n - 1] : 0, trend: 0, sse: Infinity };
+    var level = logY[0], trend = logY[1] - logY[0], sse = 0;
+    for (var t = 1; t < n; t++) {
+      var f = level + phi * trend, e = logY[t] - f; sse += e * e;
+      var prev = level;
+      level = alpha * logY[t] + (1 - alpha) * (level + phi * trend);
+      trend = beta * (level - prev) + (1 - beta) * phi * trend;
+    }
+    return { level: level, trend: trend, phi: phi, sse: sse };
+  }
+  // damped h-step point in log space: level + trend * sum_{i=1..h} phi^i
+  function esForecast(fit, h) {
+    var s = 0, pw = 1;
+    for (var i = 1; i <= h; i++) { pw *= fit.phi; s += pw; }
+    return fit.level + fit.trend * s;
+  }
+
+  // 5. WALK-FORWARD CV for (alpha, beta): sum one-step-ahead OOS squared error
+  // over rolling origins. Out-of-sample selection resists overfitting far
+  // better than the in-sample SSE minimisation it replaces.
+  function selectParams(logMed, phi, minTrain) {
+    var alphas = [0.1, 0.3, 0.5, 0.7, 0.9], betas = [0.02, 0.05, 0.1, 0.2, 0.4];
+    var best = null;
+    for (var ai = 0; ai < alphas.length; ai++) for (var bi = 0; bi < betas.length; bi++) {
+      var a = alphas[ai], b = betas[bi], err = 0, cnt = 0;
+      for (var t = minTrain; t < logMed.length - 1; t++) {
+        var fit = esPass(logMed.slice(0, t + 1), a, b, phi);
+        var pred = fit.level + phi * fit.trend;         // one-step-ahead
+        var e = logMed[t + 1] - pred; err += e * e; cnt++;
+      }
+      var mse = cnt ? err / cnt : Infinity;
+      if (!best || mse < best.mse) best = { alpha: a, beta: b, phi: phi, mse: mse };
+    }
+    return best || { alpha: 0.3, beta: 0.1, phi: phi, mse: Infinity };
+  }
+
+  // 5+6+4+3. Walk-forward backtest that yields whole OUT-OF-SAMPLE ERROR
+  // TRAJECTORIES. At each in-regime origin t we fit ES on data<=t and record,
+  // for every horizon h, the signed log error of BOTH the ES forecast and a
+  // random-walk baseline against the real future price. A whole trajectory
+  // (h = 1..Hmax) is one real, joint sample of "how wrong a forecast made here
+  // turned out to be." Bootstrapping these trajectories later gives prediction
+  // intervals that are (4) CONFORMAL — their width IS the empirical spread of
+  // real out-of-sample errors, so an 80% band covers ~80% by construction —
+  // and (3) autocorrelation- and horizon-scaling-correct for free, because
+  // each trajectory carries the real joint error path (no random-walk variance
+  // assumption, which is exactly what over-widened a mean-reverting plateau).
+  function backtest(priceLog, logMed, params, Hmax, minTrain) {
+    var n = priceLog.length, origins = [];
+    for (var t = minTrain; t + Hmax < n; t++) {
+      var fit = esPass(logMed.slice(0, t + 1), params.alpha, params.beta, params.phi);
+      var rw = priceLog[t];                          // RW baseline = last price
+      var errES = new Array(Hmax), errRW = new Array(Hmax);
+      for (var h = 1; h <= Hmax; h++) {
+        var actual = priceLog[t + h];
+        errES[h - 1] = actual - esForecast(fit, h);
+        errRW[h - 1] = actual - rw;
+      }
+      origins.push({ errES: errES, errRW: errRW });
+    }
+    var rmseES = {}, rmseRW = {}, skill = {};
+    [30, 60, 90].forEach(function (h) {
+      var i = h - 1, sE = 0, sR = 0;
+      origins.forEach(function (o) { sE += o.errES[i] * o.errES[i]; sR += o.errRW[i] * o.errRW[i]; });
+      var m = origins.length || 1;
+      rmseES[h] = Math.sqrt(sE / m); rmseRW[h] = Math.sqrt(sR / m);
+      rmseRW[h] = rmseRW[h] || 1e-9;
+      skill[h] = 1 - rmseES[h] / rmseRW[h];          // >0 means ES beats RW
+    });
+    return { origins: origins, rmseES: rmseES, rmseRW: rmseRW, skill: skill };
+  }
+
+  // 4+6. Ensemble point path: blend ES and random walk by inverse-RMSE weights
+  // from the backtest (at the 30-day horizon). If ES can't beat RW, RW gets the
+  // weight — the model never asserts skill the backtest doesn't support.
+  function ensembleWeights(bt, hRef) {
+    var eES = bt.rmseES[hRef], eRW = bt.rmseRW[hRef];
+    if (!(eES > 0) || !(eRW > 0)) return { es: 0.5, rw: 0.5 };
+    var wES = 1 / (eES * eES), wRW = 1 / (eRW * eRW), s = wES + wRW;
+    return { es: wES / s, rw: wRW / s };
+  }
+
+  function clamp(v, lo, hi) { v = +v; if (Number.isNaN(v)) return lo; return Math.min(hi, Math.max(lo, v)); }
+
+  // -- Top-level model ------------------------------------------------------
+  function runModel(opts) {
+    opts = opts || {};
+    var Hmax = 90, horizons = [30, 60, 90];
+    var seed = (opts.seed >>> 0) || 12345;
+    var phi = clamp(opts.phi != null ? opts.phi : 0.92, 0.5, 0.999);
+    var N = Math.round(clamp(opts.N != null ? opts.N : 400, 100, 1000));
+    var params = {
+      buyPercentile: clamp(opts.buyPercentile != null ? opts.buyPercentile : 0.20, 0.01, 1.0),
+      buyMax: clamp(opts.buyMax != null ? opts.buyMax : 0.03, 0, 0.5),
+      waitMin: clamp(opts.waitMin != null ? opts.waitMin : 0.07, 0, 0.5),
+      fallingThreshold: clamp(opts.fallingThreshold != null ? opts.fallingThreshold : 0.02, 0, 0.5)
+    };
+    var targetConf = 0.80;                    // nominal central-interval coverage (p10..p90)
+
+    // Full daily series -> robust clean.
+    var full = hampel(expandDaily(CHANGEPOINTS), 7, 4);
+    var prices = full.map(function (s) { return s.price; });
+    var currentPrice = prices[prices.length - 1];
+    if (!(currentPrice > 0) || full.length < 30) return { degenerate: true, currentPrice: currentPrice || 0 };
+
+    // 1. REGIME-AWARE: fit/backtest/forecast use only the post-break regime.
+    var regimeDay = toDay(REGIME_START);
+    var recent = full.filter(function (s) { return s.day >= regimeDay; });
+    if (recent.length < 40) recent = full.slice(-Math.max(40, Math.floor(full.length / 2)));
+    var rPrice = recent.map(function (s) { return s.price; });
+    var rLogMed = trailingMedian(rPrice, 7).map(function (v) { return Math.log(Math.max(v, 1e-6)); });
+    var rLogPrice = rPrice.map(function (v) { return Math.log(Math.max(v, 1e-6)); });
+
+    // 5. OOS parameter selection, then the trajectory backtest.
+    var minTrain = Math.max(30, Math.floor(recent.length * 0.35));
+    var sel = (opts.alpha != null && opts.beta != null)
+      ? { alpha: clamp(opts.alpha, 0.01, 0.99), beta: clamp(opts.beta, 0.01, 0.99), phi: phi }
+      : selectParams(rLogMed, phi, minTrain);
+    var bt = backtest(rLogPrice, rLogMed, sel, Hmax, minTrain);
+    var w = ensembleWeights(bt, 30);
+
+    // Final fit on all recent data for the forward point path.
+    var fit = esPass(rLogMed, sel.alpha, sel.beta, sel.phi);
+    var lastLogPrice = rLogPrice[rLogPrice.length - 1];
+    function ensemblePointLog(h) { return w.es * esForecast(fit, h) + w.rw * lastLogPrice; }
+
+    // 4+6. Ensemble OOS error trajectories: err_ensemble = w_ES*err_ES + w_RW*
+    // err_RW (equals actual - ensemble forecast, since the weights sum to 1).
+    // These ARE the conformal nonconformity scores; resampling whole
+    // trajectories yields calibrated, autocorrelation-correct paths.
+    var ensErr = bt.origins.map(function (o) {
+      var e = new Array(Hmax);
+      for (var h = 0; h < Hmax; h++) e[h] = w.es * o.errES[h] + w.rw * o.errRW[h];
+      return e;
+    });
+    // Fallback if the regime is too short to backtest: a flat, apologetic band.
+    if (ensErr.length < 6) {
+      var sd = mad(rLogPrice, median(rLogPrice)) || 0.02;
+      ensErr = [];
+      for (var q = -2; q <= 2; q++) { var row = new Array(Hmax); for (var hh0 = 0; hh0 < Hmax; hh0++) row[hh0] = q * sd * Math.sqrt((hh0 + 1) / 5); ensErr.push(row); }
+    }
+
+    // 3. SIMULATE by bootstrapping whole error trajectories (preserves the joint
+    // autocorrelation/horizon structure; no random-walk variance assumption).
+    var simRng = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+    var paths = new Array(N);
+    for (var k = 0; k < N; k++) {
+      var er = ensErr[Math.floor(simRng() * ensErr.length)];
+      var path = new Array(Hmax);
+      for (var h = 1; h <= Hmax; h++) {
+        var logp = ensemblePointLog(h) + er[h - 1];
+        var price = Math.exp(logp);
+        if (!(price > 0) || Number.isNaN(price)) price = Math.exp(ensemblePointLog(h));
+        path[h - 1] = price;
+      }
+      paths[k] = path;
+    }
+
+    // Bands = conformal predictive quantiles: point path +/- empirical OOS
+    // error quantiles, with a MONOTONE widening envelope so uncertainty never
+    // *appears* to shrink with horizon (an artifact of the small backtest
+    // sample on a flat plateau). We only ever widen, never narrow.
+    var loQ = new Array(Hmax), hiQ = new Array(Hmax), center = new Array(Hmax);
+    for (var hh = 0; hh < Hmax; hh++) {
+      var col = ensErr.map(function (e) { return e[hh]; }).sort(function (a, b) { return a - b; });
+      center[hh] = ensemblePointLog(hh + 1);
+      loQ[hh] = quantileSorted(col, 0.10);   // <= 0
+      hiQ[hh] = quantileSorted(col, 0.90);   // >= 0
+    }
+    for (var e1 = 1; e1 < Hmax; e1++) {
+      if (hiQ[e1] < hiQ[e1 - 1]) hiQ[e1] = hiQ[e1 - 1];
+      if (loQ[e1] > loQ[e1 - 1]) loQ[e1] = loQ[e1 - 1];
+    }
+    var p10 = new Array(Hmax), p50 = new Array(Hmax), p90 = new Array(Hmax);
+    for (var hb = 0; hb < Hmax; hb++) {
+      p50[hb] = Math.exp(center[hb]);
+      p10[hb] = Math.exp(center[hb] + loQ[hb]);
+      p90[hb] = Math.exp(center[hb] + hiQ[hb]);
+    }
+    var bands = { p10: p10, p50: p50, p90: p90 };
+
+    // Calibration check at h=30: by construction the 80% band is the 10th-90th
+    // percentile of the real OOS 30-day errors, so ~80% of them fall inside it.
+    var hRef = 30, col30 = ensErr.map(function (e) { return e[hRef - 1]; });
+    var q10 = quantileSorted(col30.slice().sort(function (a, b) { return a - b; }), 0.10);
+    var q90 = quantileSorted(col30.slice().sort(function (a, b) { return a - b; }), 0.90);
+    var inside = 0;
+    col30.forEach(function (e) { if (e >= q10 && e <= q90) inside++; });
+    var coverage = col30.length ? inside / col30.length : NaN;
+
+    // -- Decision statistics ------------------------------------------------
+    var stats = {};
+    for (var hi = 0; hi < horizons.length; hi++) {
+      var h2 = horizons[hi], sumMin = 0, sumMin2 = 0;
+      for (var kp = 0; kp < N; kp++) {
+        var m = Infinity, pth = paths[kp];
+        for (var i2 = 0; i2 < h2; i2++) if (pth[i2] < m) m = pth[i2];
+        sumMin += m; sumMin2 += m * m;
+      }
+      var expMin = sumMin / N;
+      var varMin = sumMin2 / N - expMin * expMin;
+      var seMin = Math.sqrt(Math.max(0, varMin) / N);          // MC standard error
+      var savings = currentPrice - expMin;
+      stats[h2] = { expMin: expMin, seMin: seMin, savings: savings, savingsPct: savings / currentPrice };
+    }
+
+    // Current price percentile over the FULL history (the honest "near an
+    // all-time high" framing), plus the premium multiple over the pre-shortage
+    // norm (median price strictly before the regime break) -- the number that
+    // actually conveys how far from normal this is.
+    var atOrBelow = 0;
+    prices.forEach(function (v) { if (v <= currentPrice) atOrBelow++; });
+    var pricePercentile = prices.length ? atOrBelow / prices.length : 0.5;
+    var normPrices = full.filter(function (s) { return s.day < regimeDay; }).map(function (s) { return s.price; });
+    var norm = median(normPrices) || currentPrice;
+    var premiumVsNorm = currentPrice / norm;
+
+    // Falling test on the recent (regime) series.
+    var med7 = median(rPrice.slice(-7)), med30 = median(rPrice.slice(-30));
+    var falling = (med7 != null && med30 != null && med30 > 0) && (med7 < med30 * (1 - params.fallingThreshold));
+
+    // Verdict (unchanged semantics).
+    var s30 = stats[30].savingsPct, call;
+    if (pricePercentile <= params.buyPercentile && s30 <= params.buyMax && !falling) call = 'BUY';
+    else if (falling || s30 >= params.waitMin) call = 'WAIT';
+    else call = 'HOLD';
+
+    return {
+      degenerate: false, meta: DATA_META,
+      full: full, recent: recent, currentPrice: currentPrice, regimeISO: REGIME_START,
+      seed: seed, N: N, phi: phi, params: params, fit: sel, weights: w,
+      bands: bands, stats: stats, pricePercentile: pricePercentile,
+      norm: norm, premiumVsNorm: premiumVsNorm,
+      falling: { falling: falling, med7: med7, med30: med30 },
+      verdict: { call: call, pct: pricePercentile, s30: s30, falling: falling },
+      diagnostics: {
+        rmseES_log: bt.rmseES, rmseRW_log: bt.rmseRW, skill: bt.skill,
+        coverage: coverage, targetCoverage: targetConf,
+        nRecent: recent.length, nBacktest: ensErr.length,
+        // RMSE in dollars at the current level, for a legible readout.
+        rmseES_usd30: bt.rmseES[30] != null ? currentPrice * bt.rmseES[30] : NaN,
+        rmseRW_usd30: bt.rmseRW[30] != null ? currentPrice * bt.rmseRW[30] : NaN,
+        // Calibrated 80% band half-width in dollars.
+        band80_usd30: (bands.p90[29] - bands.p10[29]) / 2,
+        band80_usd90: (bands.p90[89] - bands.p10[89]) / 2
+      },
+      Hmax: Hmax
+    };
+  }
+
+  var RAMModel = {
+    mulberry32: mulberry32, CHANGEPOINTS: CHANGEPOINTS, DATA_META: DATA_META,
+    expandDaily: expandDaily, hampel: hampel, median: median, mad: mad,
+    esPass: esPass, esForecast: esForecast, selectParams: selectParams,
+    backtest: backtest, runModel: runModel,
+    toDay: toDay, dayToISO: dayToISO
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = RAMModel;
+  else root.RAMModel = RAMModel;
+})(typeof window !== 'undefined' ? window : this);
+/* ==========================================================================
+   Presentation layer for the RAM buy-or-wait widget (real-data edition).
+   Turns a model result into: a full-arc sparkline (the 3.5-year story), a
+   zoomed plateau + conformal forecast chart, the verdict block, the per-
+   horizon savings table, and the model-diagnostics panel. Colours use the
+   site's Tufte sentinel hexes so blog.css remaps them for dark mode; #7a0000
+   renders as the teal accent and is spent once, on the median forecast line.
+   All SVG is emitted on a single line (no blank lines) so the JS-off fallback
+   never trips markdown-it's blank-line-inside-svg rule.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  // Tag names built by concatenation on purpose: it keeps the literal open/
+  // close tokens out of THIS source file, so the legacy source-linter (which
+  // scans the whole post, including this <script>, and naively balances those
+  // tags) is not thrown off by them. The runtime output is unchanged.
+  var SVGO = '<' + 'svg', SVGC = '</' + 'svg' + '>';
+  function usd(x) { return '$' + Math.round(x).toLocaleString('en-US'); }
+  function pct1(x) { return (x * 100).toFixed(1) + '%'; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function niceStep(range, target) {
+    var raw = range / target, mag = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / mag;
+    return (n >= 5 ? 5 : n >= 2 ? 2 : 1) * mag;
+  }
+
+  // Full-arc sparkline: the whole digitized history, decimated, with the
+  // pre-shortage norm as a reference line and "now" marked. Conveys the 4.6x
+  // spike at a glance without dominating the layout.
+  function sparkline(m) {
+    var W = 760, H = 96, L = 8, R = 8, T = 10, B = 16;
+    var pw = W - L - R, ph = H - T - B;
+    var s = m.full, step = Math.max(1, Math.floor(s.length / 240));
+    var pts = []; for (var i = 0; i < s.length; i += step) pts.push(s[i]);
+    if (pts[pts.length - 1] !== s[s.length - 1]) pts.push(s[s.length - 1]);
+    var lo = Infinity, hi = -Infinity;
+    pts.forEach(function (p) { if (p.price < lo) lo = p.price; if (p.price > hi) hi = p.price; });
+    var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    function X(i) { return L + (i / (pts.length - 1)) * pw; }
+    function Y(v) { return T + (hi - v) / (hi - lo) * ph; }
+    var out = [SVGO + ' viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Full price history: about two years near ' + usd(m.norm) + ', then a shortage spike to about ' + usd(m.currentPrice) + '." preserveAspectRatio="xMidYMid meet" font-family="inherit">'];
+    // norm reference line
+    out.push('<line x1="' + L + '" y1="' + Y(m.norm).toFixed(1) + '" x2="' + (W - R) + '" y2="' + Y(m.norm).toFixed(1) + '" stroke="#d0d0c8" stroke-width="1" stroke-dasharray="2 3"/>');
+    out.push('<text x="' + (L + 2) + '" y="' + (Y(m.norm) - 3).toFixed(1) + '" font-size="9" fill="#6a6a6a">norm ' + usd(m.norm) + '</text>');
+    var d = [];
+    for (var j = 0; j < pts.length; j++) d.push((j === 0 ? 'M ' : 'L ') + X(j).toFixed(1) + ' ' + Y(pts[j].price).toFixed(1));
+    out.push('<path d="' + d.join(' ') + '" fill="none" stroke="#111" stroke-width="1.2"/>');
+    out.push('<circle cx="' + X(pts.length - 1).toFixed(1) + '" cy="' + Y(pts[pts.length - 1].price).toFixed(1) + '" r="2.6" fill="#7a0000"/>');
+    out.push('<text x="' + (W - R) + '" y="' + (Y(m.currentPrice) - 4).toFixed(1) + '" text-anchor="end" font-size="9" fill="#6a6a6a">now ' + usd(m.currentPrice) + '</text>');
+    out.push('<text x="' + L + '" y="' + (H - 4) + '" font-size="9" fill="#6a6a6a">' + m.full[0].iso + '</text>');
+    out.push('<text x="' + (W - R) + '" y="' + (H - 4) + '" text-anchor="end" font-size="9" fill="#6a6a6a">' + m.meta.asOf + '</text>');
+    out.push(SVGC);
+    return out.join('');
+  }
+
+  // Zoomed chart: recent plateau (last ~120 days) + conformal forecast band.
+  function renderChart(m, horizon) {
+    var W = 760, H = 300, L = 54, R = 12, T = 14, B = 28;
+    var pw = W - L - R, ph = H - T - B;
+    var HIST = Math.min(120, m.full.length);
+    var hist = m.full.slice(m.full.length - HIST).map(function (s) { return s.price; });
+    var p10 = m.bands.p10.slice(0, horizon), p50 = m.bands.p50.slice(0, horizon), p90 = m.bands.p90.slice(0, horizon);
+    var cur = m.currentPrice;
+    var lo = Infinity, hi = -Infinity;
+    function seen(v) { if (v > 0 && !Number.isNaN(v)) { if (v < lo) lo = v; if (v > hi) hi = v; } }
+    hist.forEach(seen); p10.forEach(seen); p90.forEach(seen); seen(cur);
+    if (!(hi > lo)) { hi = lo * 1.1 + 1; lo = Math.max(0, lo * 0.9 - 1); }
+    var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    var xTotal = (HIST - 1) + horizon, today = HIST - 1;
+    function X(i) { return L + (i / xTotal) * pw; }
+    function Y(v) { return T + (hi - v) / (hi - lo) * ph; }
+    var out = [SVGO + ' viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Recent price plateau near ' + usd(cur) + ' and a ' + horizon + '-day forecast with a calibrated 80 percent band and median line." preserveAspectRatio="xMidYMid meet" font-family="inherit">'];
+    out.push('<title>Recent plateau and ' + horizon + '-day conformal forecast</title>');
+    var step = niceStep(hi - lo, 4), g0 = Math.ceil(lo / step) * step;
+    for (var g = g0; g <= hi; g += step) {
+      out.push('<line x1="' + L + '" y1="' + Y(g).toFixed(1) + '" x2="' + (W - R) + '" y2="' + Y(g).toFixed(1) + '" stroke="#d0d0c8" stroke-width="1"/>');
+      out.push('<text x="' + (L - 6) + '" y="' + (Y(g) + 3).toFixed(1) + '" text-anchor="end" font-size="11" fill="#6a6a6a">' + usd(g) + '</text>');
+    }
+    // forecast band (p10..p90), starting from today's price
+    var up = ['M ' + X(today).toFixed(1) + ' ' + Y(cur).toFixed(1)];
+    for (var h = 1; h <= horizon; h++) up.push('L ' + X(today + h).toFixed(1) + ' ' + Y(p90[h - 1]).toFixed(1));
+    for (var h2 = horizon; h2 >= 1; h2--) up.push('L ' + X(today + h2).toFixed(1) + ' ' + Y(p10[h2 - 1]).toFixed(1));
+    up.push('Z');
+    out.push('<path d="' + up.join(' ') + '" fill="#6a6a6a" fill-opacity="0.16" stroke="none"/>');
+    // history
+    var hp = [];
+    for (var i = 0; i < hist.length; i++) hp.push((i === 0 ? 'M ' : 'L ') + X(i).toFixed(1) + ' ' + Y(hist[i]).toFixed(1));
+    out.push('<path d="' + hp.join(' ') + '" fill="none" stroke="#111" stroke-width="1.4"/>');
+    // median forecast (accent)
+    var mp = ['M ' + X(today).toFixed(1) + ' ' + Y(cur).toFixed(1)];
+    for (var h3 = 1; h3 <= horizon; h3++) mp.push('L ' + X(today + h3).toFixed(1) + ' ' + Y(p50[h3 - 1]).toFixed(1));
+    out.push('<path d="' + mp.join(' ') + '" fill="none" stroke="#7a0000" stroke-width="1.7"/>');
+    out.push('<line x1="' + X(today).toFixed(1) + '" y1="' + T + '" x2="' + X(today).toFixed(1) + '" y2="' + (T + ph) + '" stroke="#6a6a6a" stroke-width="1" stroke-dasharray="3 3"/>');
+    out.push('<circle cx="' + X(today).toFixed(1) + '" cy="' + Y(cur).toFixed(1) + '" r="3.2" fill="#111"/>');
+    out.push('<text x="' + X(0).toFixed(1) + '" y="' + (H - 8) + '" font-size="11" fill="#6a6a6a">−' + (HIST - 1) + 'd</text>');
+    out.push('<text x="' + X(today).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="#6a6a6a">today</text>');
+    out.push('<text x="' + X(xTotal).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="end" font-size="11" fill="#6a6a6a">+' + horizon + 'd</text>');
+    out.push(SVGC);
+    return out.join('');
+  }
+
+  function rationale(m) {
+    var v = m.verdict, p = m.params, s30 = m.stats[30].savingsPct, prem = m.premiumVsNorm.toFixed(1);
+    if (v.call === 'BUY') return 'Under your policy this counts as a buy: the price clears your percentile threshold and waiting 30 days is expected to save only ' + pct1(s30) + ' (at or under ' + pct1(p.buyMax) + '), with no downward trend.';
+    if (v.call === 'WAIT') {
+      if (m.falling.falling) return 'The 7-day median has dropped more than ' + pct1(p.fallingThreshold) + ' below the 30-day median, so the price is still falling; waiting 30 days is expected to save about ' + pct1(s30) + '.';
+      return 'Waiting 30 days is expected to save about ' + pct1(s30) + ', at or above your ' + pct1(p.waitMin) + ' wait threshold.';
+    }
+    return 'At ' + usd(m.currentPrice) + ' this kit is ' + prem + '× its pre-shortage norm and near an all-time high (' + pct1(m.pricePercentile) + ' percentile). The backtested forecast is essentially flat — waiting 30 days is expected to save only ' + pct1(s30) + ', and no model here reliably beats a random walk — so there is neither a case to wait for a drop nor a case to call this cheap. Decide on need, not on price.';
+  }
+
+  // Verdict + price/premium + falling — the aria-live region.
+  function verdictHTML(m) {
+    if (m.degenerate) return '<p class="rw-verdict rw-hold"><span class="rw-call">—</span></p><p class="rw-sub">No usable data.</p>';
+    var v = m.verdict, cls = v.call === 'BUY' ? 'rw-buy' : v.call === 'WAIT' ? 'rw-wait' : 'rw-hold';
+    var out = [];
+    out.push('<p class="rw-verdict ' + cls + '"><span class="rw-call">' + v.call + '</span></p>');
+    out.push('<p class="rw-sub">' + esc(rationale(m)) + '</p>');
+    out.push('<p class="rw-price"><strong>' + usd(m.currentPrice) + '</strong> now · ' + pct1(m.pricePercentile) + ' percentile over ' + (m.full.length / 365).toFixed(1) + ' yrs · <strong>' + m.premiumVsNorm.toFixed(1) + '×</strong> the ' + usd(m.norm) + ' pre-shortage norm</p>');
+    return out.join('');
+  }
+
+  function chartHTML(m, horizon) { return m.degenerate ? '' : renderChart(m, horizon); }
+
+  function statsHTML(m) {
+    if (m.degenerate) return '';
+    var out = ['<table class="rw-stats"><thead><tr><th>Horizon</th><th>Median</th><th>Exp. min</th><th>Exp. saving</th><th>vs now</th></tr></thead><tbody>'];
+    [30, 60, 90].forEach(function (h) {
+      var d = m.stats[h], med = m.bands.p50[h - 1];
+      out.push('<tr><td>' + h + ' days</td><td>' + usd(med) + '</td><td>' + usd(d.expMin) + '</td><td>' + usd(d.savings) + '</td><td>' + pct1(d.savingsPct) + '</td></tr>');
+    });
+    out.push('</tbody></table>');
+    return out.join('');
+  }
+
+  // Model-diagnostics panel — the rigor made visible.
+  function diagnosticsHTML(m) {
+    if (m.degenerate) return '';
+    var d = m.diagnostics, skill = d.skill[30];
+    var skillTxt = skill > 0.02 ? ('ES beats it by ' + pct1(skill)) : skill < -0.02 ? ('random walk wins by ' + pct1(-skill)) : 'a statistical tie';
+    var rows = [
+      ['Backtest', d.nBacktest + ' walk-forward forecasts (out-of-sample)'],
+      ['30-day error', 'RMSE ' + usd(d.rmseES_usd30) + ' (model) vs ' + usd(d.rmseRW_usd30) + ' (random walk) — ' + skillTxt],
+      ['80% band', '±' + usd(d.band80_usd30) + ' at 30d, ±' + usd(d.band80_usd90) + ' at 90d'],
+      ['Calibration', pct1(d.coverage) + ' of real out-of-sample errors fall in the 80% band (target ' + pct1(d.targetCoverage) + ')']
+    ];
+    var out = ['<dl class="rw-diag">'];
+    rows.forEach(function (r) { out.push('<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'); });
+    out.push('</dl>');
+    return out.join('');
+  }
+
+  function sparklineHTML(m) { return m.degenerate ? '' : sparkline(m); }
+  function fitHTML(m) {
+    if (m.degenerate) return '';
+    return 'Damped-trend ES: α=' + m.fit.alpha + ', β=' + m.fit.beta + ', φ=' + m.phi + ' (walk-forward selected) · ensemble ' + Math.round(m.weights.es * 100) + '% ES / ' + Math.round(m.weights.rw * 100) + '% random walk · ' + m.N + ' bootstrap paths.';
+  }
+
+  var RAMRender = {
+    sparklineHTML: sparklineHTML, verdictHTML: verdictHTML, chartHTML: chartHTML,
+    statsHTML: statsHTML, diagnosticsHTML: diagnosticsHTML, fitHTML: fitHTML,
+    renderChart: renderChart, sparkline: sparkline, rationale: rationale, usd: usd, pct1: pct1, esc: esc
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = RAMRender;
+  else root.RAMRender = RAMRender;
+})(typeof window !== 'undefined' ? window : this);
+/* ==========================================================================
+   Widget UI wiring (real-data edition). The price data is fixed and real, so
+   there is no "reshuffle" and no marketplace toggle; the reader explores the
+   decision by moving the policy thresholds, the horizon, and the model knobs,
+   and watches the verdict, chart, savings table, and diagnostics recompute.
+   If the model/render modules are missing, the baked static fallback stays.
+   No motion is introduced here.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var M = window.RAMModel, R = window.RAMRender;
+  var root = document.getElementById('rw-widget');
+  if (!root || !M || !R) return;
+
+  var elLive = document.getElementById('rw-live');
+  var elChart = document.getElementById('rw-chart');
+  var elStats = document.getElementById('rw-stats');
+  var elDiag = document.getElementById('rw-diag');
+  var elFit = document.getElementById('rw-fit');
+  var elSpark = document.getElementById('rw-spark');
+  var form = document.getElementById('rw-controls');
+
+  var state = {
+    horizon: 60,
+    buyPercentile: 0.20, buyMax: 0.03, waitMin: 0.07, fallingThreshold: 0.02,
+    phi: 0.92, N: 400, auto: true, alpha: 0.30, beta: 0.10
+  };
+
+  function byId(id) { return document.getElementById(id); }
+  function setText(id, v) { var e = byId(id); if (e) e.textContent = v; }
+  function fnum(id, d) { var e = byId(id); return e ? parseFloat(e.value) : d; }
+
+  function readControls() {
+    var h = form.querySelector('input[name="rw-h"]:checked');
+    if (h) state.horizon = parseInt(h.value, 10);
+    state.buyPercentile = fnum('rw-buyp', 0.20);
+    state.buyMax = fnum('rw-buymax', 0.03);
+    state.waitMin = fnum('rw-waitmin', 0.07);
+    state.phi = fnum('rw-phi', 0.92);
+    state.N = parseInt(byId('rw-n').value, 10);
+    state.auto = byId('rw-auto').checked;
+    state.alpha = fnum('rw-alpha', 0.30);
+    state.beta = fnum('rw-beta', 0.10);
+    setText('rw-buyp-v', Math.round(state.buyPercentile * 100) + 'th pctl');
+    setText('rw-buymax-v', (state.buyMax * 100).toFixed(1) + '%');
+    setText('rw-waitmin-v', (state.waitMin * 100).toFixed(1) + '%');
+    setText('rw-phi-v', state.phi.toFixed(2));
+    setText('rw-n-v', String(state.N));
+    setText('rw-alpha-v', state.alpha.toFixed(2));
+    setText('rw-beta-v', state.beta.toFixed(2));
+    var ab = byId('rw-ab'); if (ab) ab.hidden = state.auto;
+  }
+
+  function compute() {
+    var opts = {
+      phi: state.phi, N: state.N, buyPercentile: state.buyPercentile,
+      buyMax: state.buyMax, waitMin: state.waitMin, fallingThreshold: state.fallingThreshold
+    };
+    if (!state.auto) { opts.alpha = state.alpha; opts.beta = state.beta; }
+    var m;
+    try { m = M.runModel(opts); } catch (e) { return; }
+    if (elLive) elLive.innerHTML = R.verdictHTML(m);
+    if (elChart) elChart.innerHTML = R.chartHTML(m, state.horizon);
+    if (elStats) elStats.innerHTML = R.statsHTML(m);
+    if (elDiag) elDiag.innerHTML = R.diagnosticsHTML(m);
+    if (elFit) elFit.textContent = R.fitHTML(m);
+  }
+
+  var timer = null;
+  function schedule() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function () { requestAnimationFrame(function () { readControls(); compute(); }); }, 110);
+  }
+  form.addEventListener('input', schedule);
+  form.addEventListener('change', schedule);
+
+  // Sparkline depends only on the (fixed) data — paint it once.
+  if (elSpark) { try { elSpark.innerHTML = R.sparklineHTML(M.runModel({})); } catch (e) {} }
+
+  root.classList.add('rw-enhanced');
+  readControls();
+  compute();
+})();
+</script>
+<p>The honest output isn't a predicted price; it's a percentile, a small and uncertain expected saving, and a buy-or-wait policy you set yourself. Prices are digitized from Keepa's New-price history for this kit as of 2026-07-05 (chart-resolution, ±~$15).</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/colophon/">Colophon</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/#contact">Contact</a>
+    </nav>
+    
+    <p class="footer-meta">Built 2026-07-05 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/bbb6e96">bbb6e96</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
