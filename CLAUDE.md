@@ -138,10 +138,12 @@ Dark mode (`@media (prefers-color-scheme: dark)`):
   --accent: #3fb0a0    /* Petrol teal lightened for dark mode (~6.7:1 on slate, clears AA) */
 
 **Accent discipline.** The Tufte rule is one or two accent uses per chart,
-never decoratively. On the homepage that's roughly: the 2020 acquisition
-callout in the career arc, the 4.0 cliff line + $50M label in the cliff
-curve, the 2014–2015 cluster annotation in the Gantt. A handful of total
-uses on the page. Subpages, blog post links, buttons, and other chrome use
+never decoratively. On the homepage that's roughly: the 4.0 cliff line +
+$50M label in the cliff curve, the "after" bar in the Health Catalyst
+outcome figure, and the accept card in the news-triage scorecard (the
+alerted badge and its gauge fill). A handful of total uses on the page.
+The career arc and the Education/Service Gantt deliberately use NO accent
+(see §Career arc). Subpages, blog post links, buttons, and other chrome use
 --ink or --muted, not --accent. The prior site used --accent 32+ times
 across links/section labels/project numbers/details summaries/activity
 dots — that's the pattern to NOT re-grow.
