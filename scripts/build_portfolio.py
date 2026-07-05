@@ -92,6 +92,11 @@ PRE_BLOG_CUTOFF = date(2025, 1, 1)
 # top CADENCE_TAGS_MIN_FLOOR by frequency are shown regardless.
 CADENCE_TAG_MIN_COUNT = 2
 CADENCE_TAGS_MIN_FLOOR = 8
+# Upper cap: show at most this many tags in the rollup, ranked by count
+# then alphabetic, with the remainder summarized as a plain "and N more"
+# suffix. Without a cap the note rendered every qualifying tag (~38), an
+# undifferentiated wall that carried no argument (critique 2026-07-04, M1).
+CADENCE_TAGS_TOP_N = 10
 S2_TIMEOUT = 10  # seconds
 S2_URL = "https://api.semanticscholar.org/graph/v1/paper/{sid}?fields=citationCount"
 
@@ -144,7 +149,8 @@ def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
     Aggregates tags across the cadence window (post-2025), keeps tags
     appearing in ≥ CADENCE_TAG_MIN_COUNT posts, and falls back to the
     top CADENCE_TAGS_MIN_FLOOR by count if too few qualify. Sorted by
-    count desc, then alphabetic. Rendered as compact `tag (n)` pairs
+    count desc then alphabetic, then capped at CADENCE_TAGS_TOP_N with
+    the remainder summarized as `and N more`. Rendered as compact `tag (n)` pairs
     separated by middle dots, each tag linking to its /blog/tags/<slug>/
     archive page (the slug rule is shared with build_blog.py via
     _common.slugify_tag, so the homepage link and the generated page can
@@ -163,10 +169,18 @@ def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
         qualifying = counter.most_common(CADENCE_TAGS_MIN_FLOOR)
     qualifying.sort(key=lambda kv: (-kv[1], kv[0]))
 
+    # Cap the visible list so the rollup reads as a ranked top-N rather
+    # than an undifferentiated wall of every qualifying tag; the long tail
+    # is summarized as a plain "and N more" suffix (a nested disclosure
+    # inside a marginnote span would be fragile, so no second-level fold).
+    shown = qualifying[:CADENCE_TAGS_TOP_N]
     pairs = " · ".join(
         f'<a href="/blog/tags/{slugify_tag(tag)}/">{_esc(tag)}</a> ({n})'
-        for tag, n in qualifying
+        for tag, n in shown
     )
+    remaining = len(qualifying) - len(shown)
+    if remaining:
+        pairs += f" · and {remaining} more"
     return pairs
 
 
