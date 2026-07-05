@@ -7,6 +7,22 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 
+# Resolve a Python interpreter that has the lint deps. Prefer a repo-local
+# .venv (create with: python3 -m venv .venv && .venv/bin/pip install -r
+# scripts/requirements.txt), then a `python` on PATH, then `python3`.
+# Modern macOS ships only `python3`, so a bare `python` call would fail
+# with "command not found" and every lint would be skipped as a failure.
+if [ -x ".venv/bin/python" ]; then
+  PY=".venv/bin/python"
+elif command -v python >/dev/null 2>&1; then
+  PY="python"
+elif command -v python3 >/dev/null 2>&1; then
+  PY="python3"
+else
+  echo "  FAIL: no python interpreter found (install python3)" >&2
+  exit 1
+fi
+
 failures=0
 
 fail() { echo "  FAIL: $1" >&2; failures=$((failures + 1)); }
@@ -39,14 +55,14 @@ fi
 
 CLI_LINTED=false
 if [ ${#RANGE_ARGS[@]} -gt 0 ]; then
-  if python scripts/redundancy.py prepush_lint "${RANGE_ARGS[@]}" 2>/dev/null; then
+  if "$PY" scripts/redundancy.py prepush_lint "${RANGE_ARGS[@]}" 2>/dev/null; then
     CLI_LINTED=true
     ok "lint_blog/lint_vocab/lint_facts skipped (every commit in push range CLI-linted, toggle on)"
   fi
 else
   # Manual invocation outside the hook context (stdin is a tty or empty).
   # Fall back to HEAD-only check.
-  if python scripts/redundancy.py prepush_lint 2>/dev/null; then
+  if "$PY" scripts/redundancy.py prepush_lint 2>/dev/null; then
     CLI_LINTED=true
     ok "lint_blog/lint_vocab/lint_facts skipped (HEAD CLI-linted, toggle on; no push range)"
   fi
@@ -56,7 +72,7 @@ if [ "$CLI_LINTED" = "false" ]; then
   # 1. Blog source-side lint (HTML comments, blockquote-as-diagram,
   #    blank line inside <svg>, etc).
   if compgen -G "src/content/blog/*.md" >/dev/null; then
-    if output=$(python scripts/lint_blog.py 2>&1); then
+    if output=$("$PY" scripts/lint_blog.py 2>&1); then
       ok "lint_blog clean"
     else
       echo "$output" >&2
@@ -66,7 +82,7 @@ if [ "$CLI_LINTED" = "false" ]; then
 
   # 2. Vocabulary lint (canonical CMS program-name capitalization across
   #    blog sources, resume, index.html). See CLAUDE.md §Vocabulary.
-  if output=$(python scripts/lint_vocab.py 2>&1); then
+  if output=$("$PY" scripts/lint_vocab.py 2>&1); then
     ok "lint_vocab clean"
   else
     echo "$output" >&2
@@ -76,7 +92,7 @@ if [ "$CLI_LINTED" = "false" ]; then
   # 3. Cross-surface fact lint (resume.md vs index.html h3+meta vs JSON-LD).
   #    Playbook for failures: scripts/lint_facts.md.
   if [ -f src/content/resume.md ] && [ -f index.html ]; then
-    if output=$(python scripts/lint_facts.py 2>&1); then
+    if output=$("$PY" scripts/lint_facts.py 2>&1); then
       ok "lint_facts clean"
     else
       echo "$output" >&2
@@ -91,7 +107,7 @@ fi
 #     short-circuit above because the blog CLI's lint set does not
 #     include it. See CLAUDE.md §Sidenote system (additivity rule).
 if [ -f scripts/lint_notes.py ]; then
-  if output=$(python scripts/lint_notes.py 2>&1); then
+  if output=$("$PY" scripts/lint_notes.py 2>&1); then
     ok "lint_notes clean"
   else
     echo "$output" >&2
@@ -104,10 +120,10 @@ fi
 #     Awards / Fellowships / Service record). The gate blocks a push
 #     when the two hand-authored surfaces drift; the (non-failing)
 #     coverage report of CV-only items is shown on a manual
-#     `python scripts/lint_recognition.py` run. See CLAUDE.md
+#     `"$PY" scripts/lint_recognition.py` run. See CLAUDE.md
 #     §Recognition alignment lint.
 if [ -f scripts/lint_recognition.py ] && [ -f src/content/cv.md ]; then
-  if output=$(python scripts/lint_recognition.py 2>&1); then
+  if output=$("$PY" scripts/lint_recognition.py 2>&1); then
     ok "lint_recognition clean"
   else
     echo "$output" >&2
@@ -120,7 +136,7 @@ fi
 #     entry). Guards the figure against falling out of date when a
 #     section grows. See CLAUDE.md §Gantt figure alignment lint.
 if [ -f scripts/lint_gantt.py ] && [ -f index.html ]; then
-  if output=$(python scripts/lint_gantt.py 2>&1); then
+  if output=$("$PY" scripts/lint_gantt.py 2>&1); then
     ok "lint_gantt clean"
   else
     echo "$output" >&2
@@ -135,7 +151,7 @@ fi
 #     marker-injection pattern against a stray hand edit that deletes or
 #     crosses a pair. See docs/pipelines.md §marker-injection pattern.
 if [ -f scripts/lint_markers.py ]; then
-  if output=$(python scripts/lint_markers.py 2>&1); then
+  if output=$("$PY" scripts/lint_markers.py 2>&1); then
     ok "lint_markers clean"
   else
     echo "$output" >&2
@@ -149,7 +165,7 @@ fi
 #     on main, but not on PRs, so this gate keeps the two from drifting
 #     before the next build. See CLAUDE.md §Resume and CV pipeline.
 if [ -f scripts/lint_skills.py ] && [ -f src/content/skills.yaml ]; then
-  if output=$(python scripts/lint_skills.py 2>&1); then
+  if output=$("$PY" scripts/lint_skills.py 2>&1); then
     ok "lint_skills clean"
   else
     echo "$output" >&2
