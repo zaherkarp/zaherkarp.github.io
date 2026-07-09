@@ -6,8 +6,21 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 05 Jul 2026 08:03:57 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 09 Jul 2026 07:19:01 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>One API call, three ways to split it: a FRED case study</title>
+      <link>https://zaherkarp.com/blog/one-api-call-three-ways-to-split-it/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/one-api-call-three-ways-to-split-it/</guid>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
+      <description>Pull five FRED series once, cache the raw pull, then fan it out into per-year-per-indicator files three different ways — plus a fourth example: keeping the local store current with real-time incremental pulls instead of re-running the big fetch.</description>
+      <category>python</category>
+      <category>data-engineering</category>
+      <category>apis</category>
+      <category>sqlite</category>
+      
+    </item>
     
     <item>
       <title>Should I Buy RAM Now?</title>
@@ -417,18 +430,6 @@
       <category>collaboration</category>
       <category>medicare</category>
       <category>data-science</category>
-      
-    </item>
-    
-    <item>
-      <title>Why You Probably Shouldn&#39;t Version Your Fact Table</title>
-      <link>https://zaherkarp.com/blog/dont-version-facts/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/dont-version-facts/</guid>
-      <pubDate>Sun, 22 Feb 2026 00:00:00 +0000</pubDate>
-      <description>Most teams version their fact tables because they&#39;ve modeled their dimensions incorrectly. Understanding the true grain of your table—whether it&#39;s event-based or state-based—will save you from double-counting metrics, failed audits, and painful refactoring projects in healthcare data warehouses.</description>
-      <category>data modeling</category>
-      <category>warehousing</category>
-      <category>data architecture</category>
       
     </item>
     
