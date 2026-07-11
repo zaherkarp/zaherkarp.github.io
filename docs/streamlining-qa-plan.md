@@ -126,54 +126,74 @@ Explicitly out of scope for these fixes: the redundancy-trailer logic and the
 
 ---
 
-## 5. Track 3 — Script consolidation (follow-up PR)
+## 5. Track 3 — Script consolidation (pass 1 DONE; remainder follow-up)
 
 **Gate: do this only after the Track 1 suite is green**, so each change can be
 shown to preserve behavior rather than argued to. The whole track is
 behavior-neutral by intent; the tests are how that intent is verified.
 
-### 5.1 Adopt the shared alignment matcher
+**Status.** Pass 1 shipped gated on the green suite: the alignment-matcher
+adoption (§5.1), the shared `.row-entry` field parser (part of §5.2), and one
+of the two dead-code removals (§5.3). Byte-for-byte identical
+`lint_recognition` / `lint_gantt` output before and after proved the
+neutrality, and the 58-test suite stayed green (one test that unpacked a
+private helper's return arity was updated to the simplified signature — the
+observable assertions were untouched). The remaining §5.2 helpers are the
+follow-up; two original targets were reclassified after reading the code.
 
-`_common.py` already exposes `years_of` / `tokens_of` / `token_overlap` /
+### 5.1 Adopt the shared alignment matcher — DONE
+
+`_common.py` already exposed `years_of` / `tokens_of` / `token_overlap` /
 `alignment_match`, extracted *from* `lint_recognition.py` and `lint_gantt.py`
-so a third lint could reuse them. Those two never adopted them and keep local
-copies; `alignment_match` currently has **zero callers**. Adopt the shared
-functions in both lints.
-
-**Hard constraint (CLAUDE.md):** share the *matcher functions* with each
-call site passing its own `STOP` set as a parameter — `tokens_of(s, stop,
-...)` already takes `stop` as a required argument for exactly this reason. Do
-**not** merge the two stoplists: `lint_recognition`'s `STOP` drops
-`"research"`; `lint_gantt`'s must keep it.
+but never adopted — `alignment_match` had **zero callers**. Both lints now
+import and use them. Each passes its own `STOP` to `tokens_of(s, stop, ...)`
+(the parameter is required for exactly this reason) and keeps its own
+`normalize`, so the stoplists stay separate per CLAUDE.md
+(`lint_recognition` drops `"research"`; `lint_gantt` keeps it). Verified
+byte-identical output; `alignment_match` is no longer dead.
 
 ### 5.2 Consolidate duplicated helpers
 
-Into `_common.py` (or a second small shared module if `_common` gets
-crowded):
+**Done in pass 1:** the identical `.row-entry` field parser (`ROW_ENTRY_RE` /
+`ROW_DATE_RE` / `ROW_TITLE_RE` / `ROW_ORG_RE` + the field getter, now
+`_common.row_field`) is shared by `lint_recognition` and `lint_gantt`, giving
+the homepage `.row-entry` contract one update point.
 
-| Helper | Copies today | Target |
+**Deferred / reclassified** — the rest of the original table did not all
+survive contact with the code:
+
+| Helper | Copies | Disposition |
 | --- | --- | --- |
-| `line_of()` | `lint_blog`, `lint_notes` (+ inline copies) | one shared |
-| `.row-entry` regex parser + `_field()` | `lint_recognition`, `lint_gantt` (near-identical) | one shared |
-| `_section_body()` | `lint_recognition`, `lint_gantt` | one shared |
-| HTML-entity `normalize()` / decode | `lint_recognition`, `lint_gantt`, `lint_facts` | one shared |
-| draft / `_`-prefix post-skip iteration | `lint_blog`, `lint_vocab`, `lint_notes`, `build_blog`, `build_portfolio`, `lint_jobfit` (6 copies) | one shared iterator |
-| `_esc()` | `build_portfolio`, `_publications`, `_skills` (identical) | one shared |
-| `publishDate` coercion | 4 copies | one shared |
+| `.row-entry` parser + field getter | `lint_recognition`, `lint_gantt` | **Shared** into `_common` (pass 1). |
+| HTML-entity `normalize()` | `lint_recognition`, `lint_gantt`, `lint_facts` | **Left local** (→ §5.4). Not identical: recognition decodes `&nbsp;`, gantt decodes `&ndash;`. A merged superset would change tokenization. |
+| `_section_body()` | `lint_recognition`, `lint_gantt` | **Left local** (→ §5.4). Same name, different job (markdown-heading slice vs `<section id>` slice). |
+| `line_of()` | `lint_blog`, `lint_notes`, + inline | **Left inline.** A one-liner (`text.count("\n", 0, offset) + 1`); a shared import is more surface than the duplication removes. |
+| `_esc()` | `build_portfolio`, `_publications`, `_skills` | **Left inline.** One line (`html.escape(str(s), quote=False)`); same reasoning. |
+| draft / `_`-prefix post-skip loop | 6 copies | **Deferred.** A genuine candidate, but the copies differ in what they iterate and count; a shared iterator needs its own test-backed pass. |
+| `publishDate` coercion | 4 copies | **Deferred.** The four differ in fallbacks; worth a dedicated, test-backed pass. |
 
 ### 5.3 Remove dead code
 
-- `lint_blog.main()`'s redundant `_`-prefix skip (the file-collection step
-  already excludes `_`-prefixed files).
-- `lint_markers._scan_pairs()`'s always-empty second return value (`return
-  tokens, set()` — the `completed_names` set is computed by `_check_structure`,
-  not here).
+- **Done:** `lint_markers._scan_pairs()`'s always-empty second return value
+  (`return tokens, set()`) — dropped; the sole caller no longer unpacks a
+  phantom set (`completed_names` is computed by `_check_structure`).
+- **Not dead after all:** `lint_blog.main()`'s `_`-prefix skip looked
+  redundant but *gates the `checked` counter* — it keeps `_`-prefixed fixtures
+  out of the "N posts checked" tally. Removing it would change the reported
+  count, so it stays. A reminder that "looks redundant" is a claim the tests
+  get to check.
 
 ### 5.4 Explicitly do NOT consolidate
 
 Superficial similarity is not sufficient reason to merge; forcing these
 together adds coupling for little gain.
 
+- **`normalize()` across the lints** — genuinely different entity sets (§5.2);
+  a shared superset would silently change what each tokenizes.
+- **`_section_body()` in `lint_recognition` vs `lint_gantt`** — same name,
+  unrelated implementations (CV markdown headings vs homepage HTML sections).
+- **One-line helpers (`line_of`, `_esc`)** — the import line *is* the surface;
+  inlining is clearer and cheaper than a shared dependency.
 - **The two markdown-it factories** in `build_blog` vs `build_resume`. They
   configure different options and are legitimately distinct.
 - **The three resume role-header regexes** (`lint_facts` / `lint_jobfit` /

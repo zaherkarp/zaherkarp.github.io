@@ -45,7 +45,17 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from _common import install_git_hooks
+from _common import (
+    ROW_DATE_RE,
+    ROW_ENTRY_RE,
+    ROW_ORG_RE,
+    ROW_TITLE_RE,
+    alignment_match,
+    install_git_hooks,
+    row_field,
+    years_of,
+)
+from _common import tokens_of as _tokens_of
 
 install_git_hooks()
 
@@ -79,17 +89,12 @@ def normalize(s: str) -> str:
 
 
 def tokens_of(s: str) -> frozenset[str]:
-    s = normalize(s).lower()
-    out: set[str] = set()
-    for t in re.split(r"[^a-z0-9]+", s):
-        if len(t) < 3 or t in STOP or t.isdigit():
-            continue
-        out.add(t)
-    return frozenset(out)
+    """Significant tokens in `s`, via _common with this lint's STOP + normalize."""
+    return frozenset(_tokens_of(s, STOP, normalize=normalize))
 
 
 def years_in(s: str) -> frozenset[int]:
-    return frozenset(int(m.group()) for m in re.finditer(r"\b(?:19|20)\d{2}\b", s))
+    return frozenset(years_of(s))
 
 
 def year_at_x(x: float) -> int:
@@ -107,9 +112,9 @@ class Item:
     def matches(self, other: "Item") -> bool:
         if self.lane != other.lane:
             return False
-        if not (self.years & other.years):
-            return False
-        return len(self.tokens & other.tokens) >= MIN_SHARED_TOKENS
+        return alignment_match(self.years, self.tokens,
+                               other.years, other.tokens,
+                               min_shared=MIN_SHARED_TOKENS)
 
 
 # ─── figure parser ────────────────────────────────────────────────────────
@@ -167,13 +172,8 @@ def parse_figure(text: str) -> list[Item]:
 
 
 # ─── section parser ───────────────────────────────────────────────────────
-
-ROW_ENTRY_RE = re.compile(
-    r'<div class="row-entry">(?P<row>.*?)</div>\s*</div>', re.DOTALL
-)
-ROW_DATE_RE = re.compile(r'<div class="row-date">(?P<v>[^<]*)</div>')
-ROW_TITLE_RE = re.compile(r'<span class="row-title">(?P<v>[^<]*)</span>')
-ROW_ORG_RE = re.compile(r'<span class="row-org">(?P<v>[^<]*)</span>')
+# The .row-entry field regexes + row_field come from _common (shared with
+# lint_recognition); the <section id> slice below is gantt-local.
 
 
 def _section_body(text: str, section_id: str) -> tuple[str, int] | None:
@@ -184,11 +184,6 @@ def _section_body(text: str, section_id: str) -> tuple[str, int] | None:
     return m.group("body"), m.start("body")
 
 
-def _field(pattern: re.Pattern, row: str) -> str:
-    mm = pattern.search(row)
-    return mm.group("v") if mm else ""
-
-
 def parse_section(text: str, section_id: str, lane: str) -> list[Item]:
     found = _section_body(text, section_id)
     if not found:
@@ -197,9 +192,9 @@ def parse_section(text: str, section_id: str, lane: str) -> list[Item]:
     items: list[Item] = []
     for m in ROW_ENTRY_RE.finditer(body):
         row = m.group("row")
-        date = _field(ROW_DATE_RE, row)
-        title = _field(ROW_TITLE_RE, row)
-        org = _field(ROW_ORG_RE, row)
+        date = row_field(ROW_DATE_RE, row)
+        title = row_field(ROW_TITLE_RE, row)
+        org = row_field(ROW_ORG_RE, row)
         if not title:
             continue
         line = text.count("\n", 0, base + m.start()) + 1

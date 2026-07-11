@@ -11,7 +11,7 @@ import lint_markers
 
 
 def _structure_failures(text: str):
-    tokens, _ = lint_markers._scan_pairs(text)
+    tokens = lint_markers._scan_pairs(text)
     failures, completed = lint_markers._check_structure("fixture", tokens)
     return failures, completed
 
