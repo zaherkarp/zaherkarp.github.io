@@ -21,4 +21,3 @@
 redundancy:
   prepush_lint: always
   ci_blog_lint: always
-  ci_portfolio_lint: always

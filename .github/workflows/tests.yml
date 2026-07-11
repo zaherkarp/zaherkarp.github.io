@@ -1,0 +1,48 @@
+name: Tests
+
+# Characterization test harness for the Python build/lint tooling under
+# scripts/. Separate from lint.yml (which runs the linters against the repo
+# as the pre-push gate); this workflow runs pytest, which exercises the
+# scripts' internals and locks in their current behavior so a later
+# consolidation refactor can be verified as behavior-preserving.
+#
+# Deliberately does NOT apt-install pango/cairo: the build_resume test
+# self-skips (pytest.importorskip("weasyprint")) when the native libs are
+# absent, and running here without them proves that skip path works.
+#
+# Read-only: this workflow commits nothing. It only passes or fails.
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            scripts/requirements.txt
+            scripts/requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt -r scripts/requirements-dev.txt
+
+      - name: Run tests
+        run: pytest scripts/tests/ -v

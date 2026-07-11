@@ -833,7 +833,6 @@ app.add_typer(config_app, name="config")
 TOGGLE_DESCRIPTIONS = {
     "prepush_lint": "pre-push hook: lint_blog + lint_vocab + lint_facts",
     "ci_blog_lint": "build_blog.yml: lint_vocab + lint_blog steps",
-    "ci_portfolio_lint": "build_portfolio.yml: reserved (no lints in workflow today)",
 }
 
 

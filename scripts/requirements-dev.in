@@ -1,0 +1,5 @@
+# Dev-only dependencies for the pytest test harness under scripts/tests/.
+# Runtime deps live in requirements.in; this file adds only what the tests
+# need on top of that. Compile with:
+#   uv pip compile --universal --python-version 3.12 scripts/requirements-dev.in -o scripts/requirements-dev.txt
+pytest>=8.0
