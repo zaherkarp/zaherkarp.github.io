@@ -82,11 +82,8 @@ _MARKER_RE = re.compile(
 _PLACEHOLDER_RE_TMPL = r"<!--\s*{name}\s*-->"
 
 
-def _scan_pairs(text: str) -> tuple[list[tuple[int, str, str]], set[str]]:
-    """Return (tokens, completed_names).
-
-    tokens: ordered (lineno, name, kind) for every marker line.
-    """
+def _scan_pairs(text: str) -> list[tuple[int, str, str]]:
+    """The ordered (lineno, name, kind) tokens for every marker line."""
     tokens: list[tuple[int, str, str]] = []
     for i, line in enumerate(text.splitlines(), start=1):
         m = _MARKER_RE.match(line)
@@ -95,7 +92,7 @@ def _scan_pairs(text: str) -> tuple[list[tuple[int, str, str]], set[str]]:
         name = m.group(1) or m.group(3)
         kind = m.group(2) or m.group(4)
         tokens.append((i, name, kind))
-    return tokens, set()
+    return tokens
 
 
 def _check_structure(rel: str, tokens: list[tuple[int, str, str]]) -> tuple[list[str], set[str]]:
@@ -145,7 +142,7 @@ def run() -> int:
             continue
         checked += 1
         text = path.read_text(encoding="utf-8")
-        tokens, _ = _scan_pairs(text)
+        tokens = _scan_pairs(text)
         struct_failures, completed = _check_structure(rel, tokens)
         failures.extend(struct_failures)
         for name in required:

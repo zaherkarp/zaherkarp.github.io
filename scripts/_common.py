@@ -9,10 +9,11 @@ links to them from the homepage cadence rollup) import slugify_tag so the
 two surfaces can never disagree on a slug.
 
 Also exposes the cross-surface alignment matcher (years_of / tokens_of /
-token_overlap / alignment_match), extracted from lint_recognition.py and
-lint_gantt.py so a new alignment lint (lint_jobfit.py) can reuse it. The
-extraction is additive: those two lints keep their own local copies and
-stoplists, so their behavior is unchanged.
+token_overlap / alignment_match) and the homepage .row-entry field parser,
+the single source of truth now shared by lint_recognition.py, lint_gantt.py,
+and lint_jobfit.py. Each lint passes its OWN stoplist to tokens_of (the
+`stop` parameter is required), so the stoplists stay per-lint and their
+matching behavior is unchanged.
 """
 
 from __future__ import annotations
@@ -40,12 +41,11 @@ def slugify_tag(tag: str) -> str:
 
 
 # ─── cross-surface alignment matcher ───────────────────────────────────────
-# Extracted from lint_recognition.py / lint_gantt.py so a new alignment lint
-# (lint_jobfit.py) can reuse the same year + token machinery. Additive: those
-# two lints keep their own local copies and STOP sets, so their behavior is
-# unchanged. The one design difference is that `stop` is a REQUIRED parameter
-# (no default), which makes the stoplist an explicit choice at every call site
-# and prevents one caller's tuning from silently shifting another's.
+# The single home for the year + token machinery shared by lint_recognition,
+# lint_gantt, and lint_jobfit. `stop` is a REQUIRED parameter (no default), so
+# each lint passes its own stoplist explicitly and one caller's tuning can
+# never silently shift another's -- the reason the three keep distinct STOP
+# sets while sharing this code.
 
 _YEAR_RE = re.compile(r"\b(?:19|20)\d{2}\b")
 _NON_TOKEN_RE = re.compile(r"[^a-z0-9]+")
@@ -93,6 +93,26 @@ def alignment_match(a_years, a_tokens, b_years, b_tokens, *, min_shared=2) -> bo
     if not (a_years & b_years):
         return False
     return token_overlap(a_tokens, b_tokens, min_shared=min_shared)
+
+
+# ─── homepage .row-entry field parser ──────────────────────────────────────
+# Both lint_recognition and lint_gantt read the homepage #service / #education
+# <div class="row-entry"> blocks with the same four regexes and field getter.
+# Shared here so the .row-entry contract has one update point; each lint still
+# owns its own section slicing (the CV-markdown vs HTML-section difference).
+
+ROW_ENTRY_RE = re.compile(
+    r'<div class="row-entry">(?P<row>.*?)</div>\s*</div>', re.DOTALL
+)
+ROW_DATE_RE = re.compile(r'<div class="row-date">(?P<v>[^<]*)</div>')
+ROW_TITLE_RE = re.compile(r'<span class="row-title">(?P<v>[^<]*)</span>')
+ROW_ORG_RE = re.compile(r'<span class="row-org">(?P<v>[^<]*)</span>')
+
+
+def row_field(pattern: re.Pattern, row: str) -> str:
+    """The captured `v` group of `pattern` in `row`, or "" if absent."""
+    m = pattern.search(row)
+    return m.group("v") if m else ""
 
 
 def install_git_hooks() -> None:

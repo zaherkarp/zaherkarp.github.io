@@ -51,7 +51,17 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from _common import install_git_hooks
+from _common import (
+    ROW_DATE_RE,
+    ROW_ENTRY_RE,
+    ROW_ORG_RE,
+    ROW_TITLE_RE,
+    alignment_match,
+    install_git_hooks,
+    row_field,
+    years_of,
+)
+from _common import tokens_of as _tokens_of
 
 install_git_hooks()
 
@@ -87,23 +97,9 @@ def normalize(s: str) -> str:
              .replace("&nbsp;", " "))
 
 
-def years_of(s: str) -> set[int]:
-    return {int(m.group()) for m in re.finditer(r"\b(?:19|20)\d{2}\b", s)}
-
-
 def tokens_of(s: str) -> set[str]:
-    s = normalize(s).lower()
-    raw = re.split(r"[^a-z0-9]+", s)
-    out: set[str] = set()
-    for t in raw:
-        if len(t) < 3:
-            continue
-        if t in STOP:
-            continue
-        if t.isdigit():  # bare years / numbers handled by years_of
-            continue
-        out.add(t)
-    return out
+    """Significant tokens in `s`, via _common with this lint's STOP + normalize."""
+    return _tokens_of(s, STOP, normalize=normalize)
 
 
 @dataclass(frozen=True)
@@ -114,27 +110,18 @@ class Entry:
     source: str         # "index.html:NNN" or "cv.md:NNN §Section"
 
     def matches(self, other: "Entry") -> bool:
-        if not (self.years & other.years):
-            return False
-        return len(self.tokens & other.tokens) >= MIN_SHARED_TOKENS
+        return alignment_match(self.years, self.tokens,
+                               other.years, other.tokens,
+                               min_shared=MIN_SHARED_TOKENS)
 
 
 # ─── homepage parser ──────────────────────────────────────────────────────
+# The .row-entry field regexes + row_field come from _common (shared with
+# lint_gantt); only the #service section slice is local here.
 
 SERVICE_SECTION_RE = re.compile(
     r'<section id="service">(?P<body>.*?)</section>', re.DOTALL
 )
-ROW_ENTRY_RE = re.compile(
-    r'<div class="row-entry">(?P<row>.*?)</div>\s*</div>', re.DOTALL
-)
-ROW_DATE_RE = re.compile(r'<div class="row-date">(?P<v>[^<]*)</div>')
-ROW_TITLE_RE = re.compile(r'<span class="row-title">(?P<v>[^<]*)</span>')
-ROW_ORG_RE = re.compile(r'<span class="row-org">(?P<v>[^<]*)</span>')
-
-
-def _field(pattern: re.Pattern, row: str) -> str:
-    m = pattern.search(row)
-    return m.group("v") if m else ""
 
 
 def parse_homepage(text: str) -> list[Entry]:
@@ -145,9 +132,9 @@ def parse_homepage(text: str) -> list[Entry]:
     entries: list[Entry] = []
     for m in ROW_ENTRY_RE.finditer(sec.group("body")):
         row = m.group("row")
-        date = _field(ROW_DATE_RE, row)
-        title = _field(ROW_TITLE_RE, row)
-        org = _field(ROW_ORG_RE, row)
+        date = row_field(ROW_DATE_RE, row)
+        title = row_field(ROW_TITLE_RE, row)
+        org = row_field(ROW_ORG_RE, row)
         if not title:
             continue
         line = text.count("\n", 0, base + m.start()) + 1
