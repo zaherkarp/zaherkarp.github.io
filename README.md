@@ -466,6 +466,22 @@ this site's data for that browser; clearing data means redoing the step.
 
 Two passes: static checks (terminal) and a browser walk-through.
 
+### Running the tests
+
+A pytest suite covers the build and lint scripts. Install the dev deps once,
+then run it:
+
+```bash
+.venv/bin/pip install -r scripts/requirements-dev.txt
+pytest scripts/tests/
+```
+
+These are characterization tests (each linter's pass + violation paths, plus
+build smoke tests); the WeasyPrint PDF test self-skips without libpango.
+`.github/workflows/tests.yml` runs the same suite in CI. See
+[CLAUDE.md](./CLAUDE.md) §Testing and
+[docs/streamlining-qa-plan.md](./docs/streamlining-qa-plan.md).
+
 ### Static checks
 
 ```bash

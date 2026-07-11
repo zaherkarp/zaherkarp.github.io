@@ -1481,6 +1481,28 @@ live in [README.md](README.md) §Before pushing.
 
 ---
 
+## Testing
+
+A pytest suite lives at `scripts/tests/`, run with `pytest scripts/tests/`.
+Its dev-only deps are pinned in `scripts/requirements-dev.in` /
+`scripts/requirements-dev.txt` (separate from the runtime
+`scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
+CI.
+
+These are **characterization tests**, not a spec: each of the eight gate
+linters is exercised for both a pass case (against the clean repo tree) and a
+violation case, and the build scripts get smoke tests (build_blog pages +
+well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;
+build_resume skills-block regeneration, with the WeasyPrint PDF render
+self-skipping when libpango is absent). Their purpose is to pin current
+behavior so the planned script consolidation can be shown to preserve it. They
+guard the code that guards the content; the integrity linters above guard the
+content. The streamlining + QA program that motivates them (tests, CI tuning,
+consolidation, new gates) is documented in
+[docs/streamlining-qa-plan.md](docs/streamlining-qa-plan.md).
+
+---
+
 ## What NOT to do
 
 - No npm/node/JS build tooling, CSS frameworks, or frontend frameworks.
