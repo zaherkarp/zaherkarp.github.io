@@ -41,7 +41,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "scripts" / "blog.config.yaml"
 
-KNOWN_TOGGLES = ("prepush_lint", "ci_blog_lint", "ci_portfolio_lint")
+KNOWN_TOGGLES = ("prepush_lint", "ci_blog_lint")
 VALID_VALUES = ("always", "skip-if-cli-linted")
 
 TRAILER_RE = re.compile(r"^Blog-CLI-Linted:\s+\S+", re.MULTILINE)

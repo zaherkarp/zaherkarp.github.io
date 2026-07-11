@@ -96,4 +96,25 @@ jobs:
             exit 0
           fi
           git commit -m "build: regenerate blog output"
-          git push
+
+          # Push, retrying on a non-fast-forward. build_portfolio.yml /
+          # build_resume.yml can land a commit on main while we build, so on
+          # a rejected push we rebase onto the fresh origin/main and try
+          # again. We push FIRST (no rebase when there is no race) and only
+          # fetch+rebase on rejection; a failed rebase is aborted so the next
+          # attempt starts clean instead of wedging on a half-applied state.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "push attempt ${attempt} rejected; rebasing onto origin/main"
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "rebase failed on attempt ${attempt}; will retry after backoff"
+            fi
+            sleep $((attempt * 3))
+          done
+          echo "::error::could not push regenerated blog output after 5 attempts"
+          exit 1

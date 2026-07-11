@@ -349,13 +349,6 @@ that `blog publish` actually ran. For a single-author repo this is an
 accepted trade-off; if multiple authors land, either keep the toggles
 on `always` or upgrade `redundancy.py` to verify a signed trailer.
 
-### 3c. `ci_portfolio_lint` is reserved
-
-`build_portfolio.yml` runs no linters today, so `ci_portfolio_lint` is
-a no-op toggle. The config key is wired in `redundancy.py` so adding a
-linter to that workflow later is a one-line `if:` gate. Setting it
-today is harmless.
-
 ---
 
 ## 4. Quick reference
