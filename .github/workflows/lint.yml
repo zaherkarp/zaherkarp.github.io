@@ -81,7 +81,7 @@ jobs:
       - name: Lint internal links and anchors
         run: python scripts/lint_links.py
 
-      # Grep guards mirror scripts/hooks/pre-push blocks 4-7. Kept as
+      # Guard steps mirror scripts/hooks/pre-push blocks 4-8. Kept as
       # explicit steps (rather than invoking the hook) so CI stays
       # independent of the hook's redundancy short-circuit.
       - name: Em-dash-clean chrome
@@ -125,3 +125,9 @@ jobs:
             echo "FAIL: Anthropic SDK import or ANTHROPIC_API_KEY ref found (see CLAUDE.md §Critique pipeline)"; exit 1
           fi
           echo "ok: critique-pipeline independence"
+
+      # The Pyodide-hosted simulator model is client-side Python no build
+      # step imports; a syntax error would otherwise surface only
+      # in-browser at page load.
+      - name: Syntax-check epidemic-simulation/sim.py
+        run: python -m py_compile epidemic-simulation/sim.py

@@ -10,12 +10,14 @@ Run in-process (not via subprocess) on purpose: a subprocess would execute
 each script's top-level ``install_git_hooks()`` and mutate the repo's git
 config. conftest neutralizes that call for in-process imports.
 
-Also asserts the four grep guards that lint.yml enforces alongside the
-nine linters, so the full pre-push gate is characterized as green.
+Also asserts the five guard steps (four greps + the sim.py py_compile)
+that lint.yml enforces alongside the nine linters, so the full pre-push
+gate is characterized as green.
 """
 
 from __future__ import annotations
 
+import py_compile
 import re
 import subprocess
 from pathlib import Path
@@ -52,7 +54,7 @@ def test_linter_clean_on_real_repo(module_name, entry, capsys):
     )
 
 
-# ── grep guards mirrored from .github/workflows/lint.yml ───────────────────
+# ── guard steps mirrored from .github/workflows/lint.yml ───────────────────
 
 CHROME_FILES = [
     "index.html",
@@ -94,6 +96,26 @@ def test_no_p_wrapped_svg_children_in_built_blog():
         if pat.search(p.read_text(encoding="utf-8"))
     ]
     assert not offenders, f"<p>-wrapped SVG children in: {offenders}"
+
+
+def test_sim_py_compiles(tmp_path):
+    """epidemic-simulation/sim.py passes py_compile (lint.yml guard).
+
+    The cfile is directed at tmp_path so the test never writes a
+    __pycache__ into the repo tree.
+    """
+    sim = REPO_ROOT / "epidemic-simulation" / "sim.py"
+    if not sim.exists():
+        pytest.skip("epidemic-simulation/sim.py not present in this checkout")
+    py_compile.compile(str(sim), cfile=str(tmp_path / "sim.pyc"), doraise=True)
+
+
+def test_py_compile_guard_catches_syntax_error(tmp_path):
+    """The violation path: a syntax error raises, so the guard step fails."""
+    bad = tmp_path / "bad_sim.py"
+    bad.write_text("def broken(:\n    pass\n", encoding="utf-8")
+    with pytest.raises(py_compile.PyCompileError):
+        py_compile.compile(str(bad), cfile=str(tmp_path / "bad.pyc"), doraise=True)
 
 
 def test_critique_pipeline_independence():

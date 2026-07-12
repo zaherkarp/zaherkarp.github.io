@@ -1475,6 +1475,10 @@ Checks:
 - `grep -rE 'import anthropic|ANTHROPIC_API_KEY' scripts/ .github/workflows/`
   returns empty (critique-pipeline independence contract: no Anthropic
   SDK import, no API-key env var in workflows; see §Critique pipeline)
+- `python -m py_compile epidemic-simulation/sim.py` succeeds (the
+  Pyodide-hosted simulator model is client-side Python that no build
+  step imports, so a syntax error would otherwise surface only
+  in-browser at page load; see §Stack blog-experiment subpages)
 
 **Server-side backstop (`.github/workflows/lint.yml`).** The pre-push hook
 only fires for contributors who push from a machine that has run a project
@@ -1482,7 +1486,8 @@ script (which installs it). Web-UI edits, fresh clones, the `draft: false`
 bypass, and the workflows' own bot commits all skip it, and the
 `Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
 `build_blog.yml`. So `lint.yml` runs the FULL suite above (all nine linters
-plus the four grep guards) on every `pull_request` and every `push` to the
+plus the five guard steps: four greps and the sim.py py_compile) on every
+`pull_request` and every `push` to the
 default branch, unconditionally, and never consults the redundancy trailer.
 The hook is the fast local echo; `lint.yml` is the guarantee. Keep the two in
 sync: a check added to the hook belongs in `lint.yml` too (and vice versa).

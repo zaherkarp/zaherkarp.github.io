@@ -103,7 +103,7 @@ job-search pipelines are documented in full in
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ 8 linters + grep guards
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 9 linters + guard steps
                                               (blog, vocab, facts, notes,
                                                recognition, gantt, markers,
                                                skills)
@@ -233,10 +233,13 @@ no-ops. The hook runs nine linters:
   homepage file links (`/medicare-advantage-insight-engine/` is served
   by a separate repo under the shared domain).
 
-Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
+Plus five guard steps: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
-`index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
-critique-pipeline independence contract. Note the scope difference from
+`index.html`, no `<p>`-wrapped SVG children in built `blog/`, the
+critique-pipeline independence contract, and a `py_compile`
+syntax-check of `epidemic-simulation/sim.py` (client-side Pyodide
+Python that no build imports — a syntax error would otherwise only
+surface in-browser). Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
 content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **nine**
 above plus the guards run in the pre-push hook on every `git push`.
@@ -246,7 +249,7 @@ who push from a machine that has run a project script (which installs
 it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. So
 [lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
-nine linters + the four grep guards) on every `pull_request` and every
+nine linters + the five guard steps) on every `pull_request` and every
 `push` to the default branch, unconditionally — it never consults the
 `Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
 `lint.yml` is the guarantee.
@@ -497,6 +500,9 @@ python3 scripts/lint_blog.py
 
 # Internal link + anchor integrity (index.html anchors, /blog/ links, sitemap)
 python3 scripts/lint_links.py
+
+# Syntax-check the client-side Pyodide simulator model
+python3 -m py_compile epidemic-simulation/sim.py
 
 # SVG mangling in built blog output (blank-line-inside-<svg> slips)
 grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/
