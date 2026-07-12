@@ -289,8 +289,12 @@ reveals it as an indented inline block with a left rule.
 Margin block discipline: marginnote spans must contain inline-only
 content (no `<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<table>`, `<div>`,
 `<pre>`). At narrow viewports a block-level child either renders badly
-or breaks the toggle layout. `scripts/lint_blog.py` does NOT enforce
-this — it's a homepage-only rule; check via grep on content changes.
+or breaks the toggle layout. Enforced by `scripts/lint_notes.py`
+(check 4, since 2026-07-12; previously a by-hand grep) against BOTH
+note flavors — sidenote and marginnote spans share the collapse
+layout — with no exemptions (the `.stat-num` additivity escape hatch
+does not cover block tags). Still homepage-only; `scripts/lint_blog.py`
+does not enforce it.
 
 Sidenotes are homepage-only. Blog posts use KaTeX/Mermaid/Prism for
 technical depth, not sidenotes.
@@ -1410,7 +1414,10 @@ Checks:
   note and the page prose outside it, `homepageMarginnote` additive to
   its post's title+description, publications.yaml `note` free of
   venue/year repeats. `.stat-num` margin stats and the generated marker
-  regions are exempt by design; see §Sidenote system additivity rule)
+  regions are exempt by design; see §Sidenote system additivity rule.
+  Also enforces margin block discipline: no block-level tags inside a
+  sidenote/marginnote span, no exemptions; retires the by-hand grep in
+  §Sidenote system)
 - `python scripts/lint_recognition.py` clean (recognition alignment: every
   homepage `#service` "Service and Recognition" entry must have a
   counterpart in cv.md's Awards / Fellowships / Service record. Both
