@@ -361,13 +361,16 @@ run.
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
 | `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
 
-Plus grep guards: em-dash-clean chrome (`index.html`, `resume.md`, `cv.md`,
-life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
+Plus five guard steps: em-dash-clean chrome (`index.html`, `resume.md`,
+`cv.md`, life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
 index.html` ≤ 20); no `<p>`-wrapped SVG children in built `blog/`; critique
-independence (no `import anthropic` / `ANTHROPIC_API_KEY`).
+independence (no `import anthropic` / `ANTHROPIC_API_KEY`); and
+`python -m py_compile epidemic-simulation/sim.py` (the client-side Pyodide
+model no build imports — a syntax error would otherwise only surface
+in-browser).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all nine linters + the four grep guards) runs on every `pull_request`,
+(all nine linters + the five guard steps) runs on every `pull_request`,
 every `push` to the default branch, and on a **weekly `schedule:`**
 (auditing whatever bot commits have landed on `main`), **unconditionally** —
 it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push
