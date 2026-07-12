@@ -1,6 +1,6 @@
 """Layer 1 -- baseline: the committed repo is currently lint-clean.
 
-Each of the eight gate linters is run in-process against the REAL repo
+Each of the nine gate linters is run in-process against the REAL repo
 (their module-level path constants already point at the repo root) and
 asserted to return exit code 0. This is the cheapest, most stable, and
 highest-value characterization: it locks in the property that a later
@@ -11,7 +11,7 @@ each script's top-level ``install_git_hooks()`` and mutate the repo's git
 config. conftest neutralizes that call for in-process imports.
 
 Also asserts the four grep guards that lint.yml enforces alongside the
-eight linters, so the full pre-push gate is characterized as green.
+nine linters, so the full pre-push gate is characterized as green.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
-# (module_name, entrypoint_attr) for each of the eight gate linters.
+# (module_name, entrypoint_attr) for each of the nine gate linters.
 LINTERS = [
     ("lint_blog", "main"),
     ("lint_vocab", "main"),
@@ -35,6 +35,7 @@ LINTERS = [
     ("lint_gantt", "run"),
     ("lint_markers", "run"),
     ("lint_skills", "run"),
+    ("lint_links", "run"),
 ]
 
 

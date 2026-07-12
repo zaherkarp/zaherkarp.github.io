@@ -199,7 +199,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs eight linters:
+no-ops. The hook runs nine linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -225,13 +225,19 @@ no-ops. The hook runs eight linters:
   match what `src/content/skills.yaml` (the source of truth, shared with
   the private job-fit tooling) renders. `build_resume` regenerates it on
   main but not on PRs, so this gate keeps them in sync.
+- `lint_links.py` — internal link + anchor integrity: every fragment
+  href in `index.html` resolves to a real `id=` there, every homepage
+  `/blog/...` link resolves to built blog output, and every
+  `sitemap.xml` `<loc>` resolves to a real file. Scoped to `/blog/` for
+  homepage file links (`/medicare-advantage-insight-engine/` is served
+  by a separate repo under the shared domain).
 
 Plus a few `grep` guards: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
 `index.html`, no `<p>`-wrapped SVG children in built `blog/`, and the
 critique-pipeline independence contract. Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **eight**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **nine**
 above plus the guards run in the pre-push hook on every `git push`.
 
 **Server-side backstop.** The pre-push hook only fires for contributors
@@ -239,7 +245,7 @@ who push from a machine that has run a project script (which installs
 it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. So
 [lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
-eight linters + the four grep guards) on every `pull_request` and every
+nine linters + the four grep guards) on every `pull_request` and every
 `push` to the default branch, unconditionally — it never consults the
 `Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
 `lint.yml` is the guarantee.
@@ -369,8 +375,8 @@ filename. Write the body, `preview` as you go (slug fragments work, e.g.
 3. **Commit.** Flips `draft: true` → `false`, `git add`s the post, and
    commits with a `Blog-CLI-Linted:` trailer (the provenance token that
    lets later lint stages skip redundant work).
-4. **Push to `main`.** This fires the **pre-push hook** (the six linters
-   (eight of them) plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
+4. **Push to `main`.** This fires the **pre-push hook** (the nine
+   linters plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
    above), then hands off to CI.
 
 After the push, two GitHub Actions runs finish the job with no further
@@ -488,6 +494,9 @@ build smoke tests); the WeasyPrint PDF test self-skips without libpango.
 # Blog source lint (HTML-comment leaks, blockquote-as-diagram, nested fences)
 python3 scripts/lint_blog.py
 
+# Internal link + anchor integrity (index.html anchors, /blog/ links, sitemap)
+python3 scripts/lint_links.py
+
 # SVG mangling in built blog output (blank-line-inside-<svg> slips)
 grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/
 
@@ -512,7 +521,8 @@ kill %1
 
 Serve locally (`python3 -m http.server 8765`) and check:
 
-- All internal anchor links resolve; external links open.
+- External links open. (Internal anchors, homepage `/blog/` links, and
+  sitemap entries are covered by `scripts/lint_links.py`.)
 - Light + dark mode render correctly in Chrome and Safari.
 - GoatCounter fires on page load (network tab).
 - Resume PDF downloads, ATS-parseable, 1–2 pages.
