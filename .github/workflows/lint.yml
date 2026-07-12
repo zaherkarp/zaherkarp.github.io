@@ -81,6 +81,9 @@ jobs:
       - name: Lint internal links and anchors
         run: python scripts/lint_links.py
 
+      - name: Lint HTML structural well-formedness
+        run: python scripts/lint_html.py
+
       # Guard steps mirror scripts/hooks/pre-push blocks 4-8. Kept as
       # explicit steps (rather than invoking the hook) so CI stays
       # independent of the hook's redundancy short-circuit.

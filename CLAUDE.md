@@ -1460,6 +1460,17 @@ Checks:
   `/medicare-advantage-insight-engine/` is served by a separate repo's
   GitHub Pages under the shared domain (see §Links) and has no directory
   here. Retires the "all internal anchor links resolve" eyeball check)
+- `python scripts/lint_html.py` clean (HTML structural well-formedness:
+  index.html and the generated blog / resume.html / cv.html pages parse
+  with tinyhtml5 and carry no tree-builder structural errors, i.e.
+  misnested / unclosed / orphan tags, loose table cells, or content
+  after `</body>`. tinyhtml5 is already in requirements.txt transitively
+  via WeasyPrint. Tokenizer / character-level errors are deliberately
+  OUT of scope: a bare `&` in KaTeX LaTeX source and a `--` inside an
+  HTML comment do not break the DOM tree and appear in legitimate
+  content, so failing on them would false-positive on valid math /
+  CSS-doc markup. Replaces the lenient `html.parser` balanced-tag
+  eyeball smoke check in README)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1485,7 +1496,7 @@ only fires for contributors who push from a machine that has run a project
 script (which installs it). Web-UI edits, fresh clones, the `draft: false`
 bypass, and the workflows' own bot commits all skip it, and the
 `Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
-`build_blog.yml`. So `lint.yml` runs the FULL suite above (all nine linters
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all ten linters
 plus the five guard steps: four greps and the sim.py py_compile) on every
 `pull_request` and every `push` to the
 default branch, unconditionally, and never consults the redundancy trailer.
@@ -1510,7 +1521,7 @@ Its dev-only deps are pinned in `scripts/requirements-dev.in` /
 `scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
 CI.
 
-These are **characterization tests**, not a spec: each of the nine gate
+These are **characterization tests**, not a spec: each of the ten gate
 linters is exercised for both a pass case (against the clean repo tree) and a
 violation case, and the build scripts get smoke tests (build_blog pages +
 well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;
