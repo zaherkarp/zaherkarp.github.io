@@ -48,7 +48,7 @@ from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks, slugify_tag
+from _common import install_git_hooks, iter_post_paths, slugify_tag
 from _publications import (
     load_publications,
     render_homepage_entries,
@@ -111,9 +111,7 @@ def load_posts() -> list[dict]:
     posts: list[dict] = []
     # Sort the glob so same-date posts tie-break on filename deterministically;
     # an unordered glob lets the auto-committed outputs reorder run-to-run.
-    for p in sorted(POSTS_DIR.glob("*.md")):
-        if p.stem.startswith("_"):
-            continue
+    for p in iter_post_paths(POSTS_DIR):
         fm = frontmatter.load(p)
         if fm.metadata.get("draft"):
             continue

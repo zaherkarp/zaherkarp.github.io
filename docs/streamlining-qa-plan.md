@@ -126,7 +126,7 @@ Explicitly out of scope for these fixes: the redundancy-trailer logic and the
 
 ---
 
-## 5. Track 3 — Script consolidation (pass 1 DONE; remainder follow-up)
+## 5. Track 3 — Script consolidation (passes 1–2 DONE; remainder follow-up)
 
 **Gate: do this only after the Track 1 suite is green**, so each change can be
 shown to preserve behavior rather than argued to. The whole track is
@@ -138,8 +138,14 @@ of the two dead-code removals (§5.3). Byte-for-byte identical
 `lint_recognition` / `lint_gantt` output before and after proved the
 neutrality, and the 58-test suite stayed green (one test that unpacked a
 private helper's return arity was updated to the simplified signature — the
-observable assertions were untouched). The remaining §5.2 helpers are the
-follow-up; two original targets were reclassified after reading the code.
+observable assertions were untouched). Two original §5.2 targets were
+reclassified after reading the code.
+
+**Pass 2** added the shared post-path iterator and the date-coercion helper
+(§5.2): byte-identical linter output again, and `build_blog` regenerates the
+same post set in the same order (its only rebuild diff is date / sha / git-
+timestamp drift, which any rebuild produces). What remains is genuinely
+different code that should stay separate (§5.4).
 
 ### 5.1 Adopt the shared alignment matcher — DONE
 
@@ -169,8 +175,8 @@ survive contact with the code:
 | `_section_body()` | `lint_recognition`, `lint_gantt` | **Left local** (→ §5.4). Same name, different job (markdown-heading slice vs `<section id>` slice). |
 | `line_of()` | `lint_blog`, `lint_notes`, + inline | **Left inline.** A one-liner (`text.count("\n", 0, offset) + 1`); a shared import is more surface than the duplication removes. |
 | `_esc()` | `build_portfolio`, `_publications`, `_skills` | **Left inline.** One line (`html.escape(str(s), quote=False)`); same reasoning. |
-| draft / `_`-prefix post-skip loop | 6 copies | **Deferred.** A genuine candidate, but the copies differ in what they iterate and count; a shared iterator needs its own test-backed pass. |
-| `publishDate` coercion | 4 copies | **Deferred.** The four differ in fallbacks; worth a dedicated, test-backed pass. |
+| draft / `_`-prefix post-skip loop | 6 copies | **Shared** (pass 2): `_common.iter_post_paths` centralizes the sorted-glob + `_`-fixture-skip convention across all six sites. Each keeps its own draft handling, which genuinely differs (some skip `draft:true`, some count drafts, some print). |
+| `publishDate` coercion | 4 copies | **Partly shared** (pass 2): the two identical private-tool copies (`lint_jobfit._post_date` ≡ `build_jobsearch._as_date`) collapse to `_common.coerce_date`. The other two stay distinct by design → §5.4. |
 
 ### 5.3 Remove dead code
 
@@ -194,6 +200,11 @@ together adds coupling for little gain.
   unrelated implementations (CV markdown headings vs homepage HTML sections).
 - **One-line helpers (`line_of`, `_esc`)** — the import line *is* the surface;
   inlining is clearer and cheaper than a shared dependency.
+- **`publishDate` coercion in the build scripts** — `build_blog.as_date`
+  *raises* on a bad date (fail-loud build) and `build_portfolio` parses
+  strictly with `date.fromisoformat`; neither should adopt the lenient,
+  `None`-returning `_common.coerce_date` that the private job-search tools
+  share, or a malformed date would pass silently.
 - **The two markdown-it factories** in `build_blog` vs `build_resume`. They
   configure different options and are legitimately distinct.
 - **The three resume role-header regexes** (`lint_facts` / `lint_jobfit` /

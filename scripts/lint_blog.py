@@ -36,7 +36,7 @@ from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks
+from _common import install_git_hooks, iter_post_paths
 
 install_git_hooks()
 
@@ -221,12 +221,9 @@ def main() -> int:
 
     all_violations: list[str] = []
     checked = 0
-    for path in sorted(POSTS_DIR.glob("*.md")):
-        violations = check_post(path)
-        if path.stem.startswith("_"):
-            continue
+    for path in iter_post_paths(POSTS_DIR):
         checked += 1
-        all_violations.extend(violations)
+        all_violations.extend(check_post(path))
 
     if all_violations:
         print("Blog lint found violations:\n", file=sys.stderr)

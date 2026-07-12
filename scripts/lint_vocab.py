@@ -70,7 +70,7 @@ from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks
+from _common import install_git_hooks, iter_post_paths
 from lint_blog import fence_spans, line_of
 
 install_git_hooks()
@@ -274,7 +274,7 @@ def iter_surfaces() -> list[tuple[Path, bool, frozenset[str]]]:
     """Yield (path, is_markdown, exemptions) for every surface."""
     surfaces: list[tuple[Path, bool, frozenset[str]]] = []
     if POSTS_DIR.exists():
-        for path in sorted(POSTS_DIR.glob("*.md")):
+        for path in iter_post_paths(POSTS_DIR):
             if is_skipped_post(path):
                 continue
             surfaces.append((path, True, post_exemptions(path)))

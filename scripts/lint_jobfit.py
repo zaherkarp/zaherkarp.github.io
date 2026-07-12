@@ -30,12 +30,12 @@ from __future__ import annotations
 
 import re
 import sys
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks
+from _common import coerce_date, install_git_hooks, iter_post_paths
 from _skills import SKILLS_YAML, load_skills
 
 install_git_hooks()
@@ -69,19 +69,6 @@ def _strip_tags(s: str) -> str:
     return _TAG_RE.sub("", s).strip()
 
 
-def _post_date(v) -> date | None:
-    if isinstance(v, datetime):
-        return v.date()
-    if isinstance(v, date):
-        return v
-    if isinstance(v, str):
-        try:
-            return date.fromisoformat(v[:10])
-        except ValueError:
-            return None
-    return None
-
-
 def _role_end_date(dates_line: str, today: date) -> date | None:
     if "present" in dates_line.lower():
         return today
@@ -108,16 +95,14 @@ def scan_artifacts(today: date | None = None) -> dict:
 
     posts: dict[str, date | None] = {}
     if POSTS_DIR.is_dir():
-        for p in sorted(POSTS_DIR.glob("*.md")):
-            if p.stem.startswith("_"):
-                continue
+        for p in iter_post_paths(POSTS_DIR):
             try:
                 fm = frontmatter.load(p)
             except Exception:
                 continue
             if fm.metadata.get("draft"):
                 continue
-            posts[p.stem] = _post_date(fm.metadata.get("publishDate"))
+            posts[p.stem] = coerce_date(fm.metadata.get("publishDate"))
     return {"projects": projects, "roles": roles, "posts": posts}
 
 

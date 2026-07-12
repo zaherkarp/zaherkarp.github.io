@@ -27,13 +27,13 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import frontmatter
 import yaml
 
-from _common import install_git_hooks
+from _common import coerce_date, install_git_hooks
 from _skills import (
     SKILLS_YAML,
     load_skills,
@@ -81,19 +81,6 @@ def _write_out(name: str, text: str) -> Path:
     path.write_text(text, encoding="utf-8")
     print(f"  wrote {path.relative_to(ROOT)}")
     return path
-
-
-def _as_date(v) -> date | None:
-    if isinstance(v, datetime):
-        return v.date()
-    if isinstance(v, date):
-        return v
-    if isinstance(v, str):
-        try:
-            return date.fromisoformat(v[:10])
-        except ValueError:
-            return None
-    return None
 
 
 def _evidence_line(info_one: dict) -> str:
@@ -267,7 +254,7 @@ def cmd_outreach() -> int:
 
     due = []
     for c in contacts:
-        nf = _as_date(c.get("next_followup"))
+        nf = coerce_date(c.get("next_followup"))
         status = str(c.get("status", "")).lower()
         if nf and status in DUE_STATUSES and nf <= today:
             due.append((nf, c))
@@ -304,7 +291,7 @@ def cmd_outreach() -> int:
             history = c.get("history") or []
             if history:
                 last = history[-1]
-                ld = _as_date(last.get("date"))
+                ld = coerce_date(last.get("date"))
                 out.append(f"    - last: {ld.isoformat() if ld else '?'} "
                            f"{last.get('kind', '')} {last.get('note', '')}".rstrip())
         out.append("")

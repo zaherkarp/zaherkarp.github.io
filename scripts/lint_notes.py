@@ -58,7 +58,7 @@ from pathlib import Path
 import frontmatter
 import yaml
 
-from _common import install_git_hooks
+from _common import install_git_hooks, iter_post_paths
 
 install_git_hooks()
 
@@ -219,9 +219,7 @@ def check_posts() -> tuple[list[str], int]:
     checked = 0
     if not POSTS_DIR.exists():
         return violations, checked
-    for path in sorted(POSTS_DIR.glob("*.md")):
-        if path.stem.startswith("_"):
-            continue
+    for path in iter_post_paths(POSTS_DIR):
         post = frontmatter.load(path)
         if post.metadata.get("draft", False):
             continue
