@@ -214,7 +214,15 @@ together adds coupling for little gain.
 
 ---
 
-## 6. Track 4 — New QA gates (follow-up PR(s))
+## 6. Track 4 — New QA gates (COMPLETE 2026-07-12)
+
+**Status: all shipped.** The five gates below landed one PR each (#96
+lint_links, #97 marginnote block discipline, #98 sim.py py_compile, #99
+lint_html, #100 Lighthouse subpage coverage), each wired into every
+no-drift surface and covered by a pass + violation test. The integrity
+suite is now **10 gate linters + 5 guard steps** (was 8 + 4). The one
+optional item (post-build sanity checks inside the three build workflows)
+is left as a future follow-up, not part of this batch.
 
 Each new gate closes a check that README §Before pushing currently asks a
 human to perform. **Wiring requirement (the no-drift contract):** a new gate
@@ -228,8 +236,8 @@ reintroduces exactly the drift this program is trying to remove.
 | HTML well-formedness | Parse `index.html` and the generated `blog/` / `resume.html` / `cv.html` and fail on malformed structure. | **DONE 2026-07-12** as `scripts/lint_html.py` using `tinyhtml5` (already in `requirements.txt` via WeasyPrint, zero new dependency). Fails only on **tree-builder** structural errors (misnested/unclosed/orphan tags, loose table cells, content after `</body>`); **tokenizer/character-level** errors are out of scope by design because a bare `&` in KaTeX LaTeX source and a `--` inside an HTML comment do not break the DOM tree and are legitimate content this repo ships — failing on them would false-positive on valid math/CSS-doc markup and tempt weakening the linter. Proven clean: 0 structural errors across all 245 parsed pages. Replaces README's lenient `html.parser` balanced-tag smoke check. |
 | `python -m py_compile epidemic-simulation/sim.py` | Syntax-check the client-side Pyodide model that no build imports. | **DONE 2026-07-12.** Landed as guard step 8 in `pre-push` and a named `lint.yml` step (grep-guard shaped, no new script, exactly as planned). Before this, a syntax error there only surfaced in-browser. |
 | Marginnote inline-only rule | No block-level tags (`<p>`, `<ul>`, `<blockquote>`, `<div>`, …) inside a `marginnote` span. | **DONE 2026-07-12.** Landed as check 4 in `lint_notes.py`. Applied to both note flavors (sidenote + marginnote spans share the collapse layout), no exemptions; uses the exact tag set CLAUDE.md documents. |
-| Extend `lighthouse.yml` | Also audit `/life-in-weeks/` and `/epidemic-simulation/`, and add their paths to the workflow triggers. | Both subpages have **zero** a11y coverage today. |
-| Post-build sanity checks in the three build workflows | Run the generated-output guards (`lint_markers`, the `<p>`-wrapped-SVG grep) *after* the build inside `build_blog.yml` / `build_portfolio.yml` / `build_resume.yml`. | Cheap — the env is already installed there — and closes the bot-commit-lint seam (`lint.yml`'s weekly `schedule:` is the only thing that catches lint-violating *generated* output today). |
+| Extend `lighthouse.yml` | Also audit `/life-in-weeks/` and `/epidemic-simulation/`, and add their paths to the workflow triggers. | **DONE 2026-07-12.** Both subpage URLs added to the audit set and their `**` globs to the `pull_request` triggers. Surfaced a real a11y gap the coverage was meant to catch: the epidemic simulator's three range sliders had visible label text but no programmatic label; fixed with `aria-labelledby` to the existing visible spans (invisible, zero layout/JS change) so the accessibility `error` gate ships green. |
+| Post-build sanity checks in the three build workflows | Run the generated-output guards (`lint_markers`, the `<p>`-wrapped-SVG grep) *after* the build inside `build_blog.yml` / `build_portfolio.yml` / `build_resume.yml`. | **DEFERRED (optional).** Cheap — the env is already installed there — and closes the bot-commit-lint seam (`lint.yml`'s weekly `schedule:` is the only thing that catches lint-violating *generated* output today). Left as a future follow-up; the five gates above were the committed Track 4 batch. |
 
 ---
 

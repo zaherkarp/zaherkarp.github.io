@@ -41,16 +41,16 @@
     </div>
     <div class="row" style="margin-top:0.75rem;">
       <div class="slider-group">
-        <div class="label-row"><span>Replicates</span><span id="n_runs_val">100</span></div>
-        <input type="range" id="n_runs" min="10" max="300" step="10" value="100">
+        <div class="label-row"><span id="n_runs_lbl">Replicates</span><span id="n_runs_val">100</span></div>
+        <input type="range" id="n_runs" min="10" max="300" step="10" value="100" aria-labelledby="n_runs_lbl">
       </div>
       <div class="slider-group">
-        <div class="label-row"><span>Population</span><span id="pop_val">100,000</span></div>
-        <input type="range" id="pop" min="10000" max="500000" step="10000" value="100000">
+        <div class="label-row"><span id="pop_lbl">Population</span><span id="pop_val">100,000</span></div>
+        <input type="range" id="pop" min="10000" max="500000" step="10000" value="100000" aria-labelledby="pop_lbl">
       </div>
       <div class="slider-group">
-        <div class="label-row"><span>Horizon</span><span id="tmax_val">180 days</span></div>
-        <input type="range" id="tmax" min="60" max="365" step="5" value="180">
+        <div class="label-row"><span id="tmax_lbl">Horizon</span><span id="tmax_val">180 days</span></div>
+        <input type="range" id="tmax" min="60" max="365" step="5" value="180" aria-labelledby="tmax_lbl">
       </div>
       <button id="run" type="button">Run simulation</button>
     </div>

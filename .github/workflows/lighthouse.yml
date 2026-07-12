@@ -8,6 +8,8 @@ on:
       - 'src/content/blog/**'
       - 'scripts/build_blog.py'
       - 'scripts/templates/blog/**'
+      - 'life-in-weeks/**'
+      - 'epidemic-simulation/**'
       - '.github/workflows/lighthouse.yml'
       - '.lighthouserc.json'
   workflow_dispatch:
@@ -53,6 +55,8 @@ jobs:
             http://localhost:8000/blog/
             http://localhost:8000/blog/two-states-one-pathogen/
             http://localhost:8000/star-rating-predictor/
+            http://localhost:8000/life-in-weeks/
+            http://localhost:8000/epidemic-simulation/
           configPath: ./.lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
