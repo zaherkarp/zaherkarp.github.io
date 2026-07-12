@@ -170,11 +170,11 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
   GUARDS (write nothing; fail the push / build)
   ─────────────────────────────────────────────
-  lint.yml (CI) ─▶ ALL nine linters + grep guards, on every PR + push,
+  lint.yml (CI) ─▶ ALL ten linters + guard steps, on every PR + push,
                    unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
                    lint_recognition · lint_gantt · lint_markers ·
-                   lint_skills · lint_links + grep guards
+                   lint_skills · lint_links · lint_html + guard steps
   CI (build_blog) ─▶ lint_vocab · lint_blog   (before build; trailer can skip)
   manual only ─▶ lint_jobfit   (informational, always exits 0)
 ```
@@ -360,6 +360,7 @@ run.
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
 | `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
+| `lint_html.py` | HTML structural well-formedness: `index.html` + generated `blog/` / `resume.html` / `cv.html` parse with tinyhtml5 (present via WeasyPrint) with no tree-builder structural errors (misnested/unclosed/orphan tags, loose table cells, content after `</body>`); tokenizer nits (bare `&` in KaTeX, `--` in a comment) out of scope by design |
 
 Plus five guard steps: em-dash-clean chrome (`index.html`, `resume.md`,
 `cv.md`, life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
@@ -370,7 +371,7 @@ model no build imports — a syntax error would otherwise only surface
 in-browser).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all nine linters + the five guard steps) runs on every `pull_request`,
+(all ten linters + the five guard steps) runs on every `pull_request`,
 every `push` to the default branch, and on a **weekly `schedule:`**
 (auditing whatever bot commits have landed on `main`), **unconditionally** —
 it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push

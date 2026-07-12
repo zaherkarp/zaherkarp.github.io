@@ -173,6 +173,21 @@ if [ -f scripts/lint_skills.py ] && [ -f src/content/skills.yaml ]; then
   fi
 fi
 
+# 3h. HTML structural well-formedness (index.html + generated blog /
+#     resume / cv pages parse with tinyhtml5 and carry no tree-builder
+#     structural errors: misnested/unclosed/orphan tags, loose table
+#     cells, content after </body>). Tokenizer-level nits (bare & in
+#     KaTeX math, -- in a comment) are out of scope by design. See
+#     CLAUDE.md §Pre-push checks.
+if [ -f scripts/lint_html.py ] && [ -f index.html ]; then
+  if output=$("$PY" scripts/lint_html.py 2>&1); then
+    ok "lint_html clean"
+  else
+    echo "$output" >&2
+    fail "lint_html"
+  fi
+fi
+
 # 3g. Internal link + anchor integrity (every fragment href in
 #     index.html resolves to a real id=, every homepage /blog/... link
 #     points at built blog output, every sitemap.xml <loc> resolves to

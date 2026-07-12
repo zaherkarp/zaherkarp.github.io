@@ -103,7 +103,7 @@ job-search pipelines are documented in full in
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ 9 linters + guard steps
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 10 linters + guard steps
                                               (blog, vocab, facts, notes,
                                                recognition, gantt, markers,
                                                skills)
@@ -199,7 +199,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs nine linters:
+no-ops. The hook runs ten linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -232,6 +232,13 @@ no-ops. The hook runs nine linters:
   `sitemap.xml` `<loc>` resolves to a real file. Scoped to `/blog/` for
   homepage file links (`/medicare-advantage-insight-engine/` is served
   by a separate repo under the shared domain).
+- `lint_html.py` — HTML structural well-formedness: `index.html` and the
+  generated `blog/` / `resume.html` / `cv.html` pages parse with
+  tinyhtml5 (already present via WeasyPrint) with no tree-builder
+  structural errors (misnested/unclosed/orphan tags, loose table cells,
+  content after `</body>`). Tokenizer nits — a bare `&` in KaTeX math, a
+  `--` in a comment — are out of scope by design. Replaces the lenient
+  `html.parser` balanced-tag smoke check.
 
 Plus five guard steps: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
@@ -241,7 +248,7 @@ syntax-check of `epidemic-simulation/sim.py` (client-side Pyodide
 Python that no build imports — a syntax error would otherwise only
 surface in-browser). Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **nine**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **ten**
 above plus the guards run in the pre-push hook on every `git push`.
 
 **Server-side backstop.** The pre-push hook only fires for contributors
@@ -249,7 +256,7 @@ who push from a machine that has run a project script (which installs
 it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. So
 [lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
-nine linters + the five guard steps) on every `pull_request` and every
+ten linters + the five guard steps) on every `pull_request` and every
 `push` to the default branch, unconditionally — it never consults the
 `Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
 `lint.yml` is the guarantee.
@@ -513,8 +520,8 @@ grep -c '—' index.html        # expect 0
 # Accent discipline (counts --accent var refs + the #7a0000 SVG sentinel)
 grep -cE -- '--accent|#7a0000' index.html   # expect ≤ 20
 
-# Balanced HTML tag structure
-python3 -c "from html.parser import HTMLParser; p=HTMLParser(); p.feed(open('index.html').read())"
+# HTML structural well-formedness (index.html + generated blog/resume/cv)
+python3 scripts/lint_html.py
 
 # HTTP smoke test
 python3 -m http.server 8765 &
