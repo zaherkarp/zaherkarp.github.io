@@ -211,7 +211,8 @@ no-ops. The hook runs nine linters:
   `index.html` h3+meta, and the JSON-LD block. Failure playbook at
   [scripts/lint_facts.md](./scripts/lint_facts.md).
 - `lint_notes.py` — sidenote/margin-note additivity (a note may not
-  restate a number or phrase already in the page prose).
+  restate a number or phrase already in the page prose) and margin
+  block discipline (no block-level tags inside a note span).
 - `lint_recognition.py` — the homepage "Service and Recognition"
   section must stay a subset of the comprehensive record in `cv.md`.
 - `lint_gantt.py` — the homepage Education + Service Gantt figure must

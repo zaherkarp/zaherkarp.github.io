@@ -354,7 +354,7 @@ run.
 | `lint_blog.py` | HTML-comment leaks in non-draft posts, fenced code nested in a comment, blockquote-as-Mermaid, blank line inside `<svg>` |
 | `lint_vocab.py` | canonical CMS program-name casing (Star Ratings, Medicare Advantage, HEDIS…) across blog, resume, cv, homepage |
 | `lint_facts.py` | cross-surface fact drift between `resume.md`, `cv.md`, `index.html` h3+meta, and JSON-LD (playbook: `scripts/lint_facts.md`) |
-| `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats |
+| `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats; margin block discipline (no block-level tags inside a note span) |
 | `lint_recognition.py` | homepage `#service` ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML) |
 | `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry |
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |

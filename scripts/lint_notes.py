@@ -8,7 +8,7 @@ text, so a note that restates facts already in the prose is
 redundancy, not annotation. Born from a 2026-06-11 editorial-council
 review that removed five such duplications by hand.
 
-Three checks, all deterministic and deliberately narrow (the
+Four checks, all deterministic and deliberately narrow (the
 lint_vocab philosophy: high-precision matchers plus explicit escape
 hatches, no fuzzy similarity scoring):
 
@@ -31,6 +31,16 @@ hatches, no fuzzy similarity scoring):
   3. publications.yaml: a `note` field must not contain the entry's
      venue string or its publication year — both already render in
      the visible citation line directly below the note.
+  4. Margin block discipline (CLAUDE.md §Sidenote system): every
+     index.html note span must contain inline-only content — no
+     block-level `<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<table>`,
+     `<div>`, `<pre>`. At narrow viewports a block-level child
+     renders badly or breaks the toggle layout. Applied to BOTH note
+     flavors (sidenote and marginnote spans) because they share the
+     collapse machinery, and with NO exemptions: the `.stat-num` and
+     EXEMPT_NOTE_IDS escape hatches are additivity-only — a stat-num
+     note must still be inline-only (its numeral markup is nested
+     spans, which pass). Was a by-hand grep before 2026-07-12.
 
 Generated marker regions in index.html (activity-grid, writing-list,
 writing-index, pub-list) are blanked before scanning: their content
@@ -91,6 +101,11 @@ MARKER_PAIRS: list[tuple[str, str]] = [
 ]
 
 NOTE_OPEN_RE = re.compile(r'<span class="(?:sidenote|marginnote)">')
+# The exact block-level set CLAUDE.md §Sidenote system forbids inside a
+# note span. \b keeps <path>/<polyline> etc. from matching <p>.
+BLOCK_TAG_RE = re.compile(
+    r"<(p|ul|ol|blockquote|table|div|pre)\b", re.IGNORECASE
+)
 SPAN_TOKEN_RE = re.compile(r"<span\b[^>]*>|</span>")
 INPUT_ID_RE = re.compile(r'<input[^>]*\bid="([^"]*)"')
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
@@ -214,6 +229,33 @@ def check_index() -> tuple[list[str], int]:
     return violations, checked
 
 
+def inline_only_violations(
+    text: str, rel: str = "index.html"
+) -> tuple[list[str], int]:
+    """Check 4: every note span is inline-only. No exemptions -- the
+    .stat-num / EXEMPT_NOTE_IDS escape hatches apply to additivity
+    (check 1) only."""
+    violations: list[str] = []
+    checked = 0
+    for start, end in note_spans(text):
+        checked += 1
+        body = text[start:end]
+        for m in BLOCK_TAG_RE.finditer(body):
+            tag = m.group(1).lower()
+            violations.append(
+                f"{rel}:{line_of(text, start + m.start())}: note "
+                f"'{note_id(text, start)}' contains block-level <{tag}> "
+                f"(note spans must be inline-only; CLAUDE.md §Sidenote "
+                f"system, margin block discipline)"
+            )
+    return violations, checked
+
+
+def check_blocks() -> tuple[list[str], int]:
+    text = blank_generated(INDEX.read_text(encoding="utf-8"))
+    return inline_only_violations(text)
+
+
 def check_posts() -> tuple[list[str], int]:
     violations: list[str] = []
     checked = 0
@@ -270,9 +312,12 @@ def check_pubs() -> tuple[list[str], int]:
 def main() -> int:
     all_violations: list[str] = []
     index_violations, n_notes = check_index()
+    block_violations, n_spans = check_blocks()
     post_violations, n_posts = check_posts()
     pub_violations, n_pubs = check_pubs()
-    all_violations = index_violations + post_violations + pub_violations
+    all_violations = (
+        index_violations + block_violations + post_violations + pub_violations
+    )
 
     if all_violations:
         print("Notes lint found violations:\n", file=sys.stderr)
@@ -280,16 +325,19 @@ def main() -> int:
             print(f"  {v}", file=sys.stderr)
         print(
             f"\n{len(all_violations)} violation(s). A note must add, "
-            f"not restate; see CLAUDE.md §Sidenote system (additivity "
-            f"rule). For a legitimate duplicate, use EXEMPT_NOTE_IDS "
-            f"in lint_notes.py.",
+            f"not restate, and stay inline-only; see CLAUDE.md "
+            f"§Sidenote system (additivity rule, margin block "
+            f"discipline). For a legitimate additivity duplicate, use "
+            f"EXEMPT_NOTE_IDS in lint_notes.py; block-level tags have "
+            f"no exemption.",
             file=sys.stderr,
         )
         return 1
 
     print(
-        f"notes lint: {n_notes} homepage note(s), {n_posts} post "
-        f"field(s), {n_pubs} yaml note(s) clean"
+        f"notes lint: {n_notes} homepage note(s), {n_spans} span(s) "
+        f"inline-only, {n_posts} post field(s), {n_pubs} yaml note(s) "
+        f"clean"
     )
     return 0
 

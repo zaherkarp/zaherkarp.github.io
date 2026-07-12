@@ -1,9 +1,11 @@
-"""Layer 2 -- lint_notes additivity detection.
+"""Layer 2 -- lint_notes additivity + margin-block-discipline detection.
 
-Two seams:
+Three seams:
   - collisions(): the pure predicate for number and shingle overlap.
   - check_index(): the end-to-end homepage scan, driven by a monkeypatched
     INDEX fixture holding a note that restates page prose.
+  - inline_only_violations(): the pure check-4 scan for block-level tags
+    inside a sidenote/marginnote span.
 """
 
 from __future__ import annotations
@@ -90,3 +92,69 @@ def test_check_index_stat_num_note_is_exempt(monkeypatch, tmp_path):
     violations, checked = lint_notes.check_index()
     assert violations == []
     assert checked == 0  # the stat-num note is skipped before counting
+
+
+# ── check 4: margin block discipline (inline-only note spans) ──────────────
+
+def test_block_tag_in_marginnote_flagged():
+    text = '<span class="marginnote">a list <ul><li>x</li></ul></span>\n'
+    violations, checked = lint_notes.inline_only_violations(text)
+    assert checked == 1
+    assert any("block-level <ul>" in v for v in violations), violations
+
+
+def test_block_tag_in_sidenote_flagged():
+    # Both note flavors share the mobile collapse layout, so both are held
+    # to the inline-only rule.
+    text = '<span class="sidenote">two<p>paragraphs</p></span>\n'
+    violations, _ = lint_notes.inline_only_violations(text)
+    assert any("block-level <p>" in v for v in violations), violations
+
+
+def test_inline_content_is_clean():
+    text = (
+        '<span class="marginnote">an <em>inline</em> gloss with an '
+        '<a href="/x">anchor</a> and a nested <span>span</span></span>\n'
+    )
+    violations, checked = lint_notes.inline_only_violations(text)
+    assert checked == 1
+    assert violations == []
+
+
+def test_svg_path_is_not_a_p_tag():
+    # \b in BLOCK_TAG_RE: <path>/<polyline> must not match <p>.
+    text = '<span class="marginnote"><svg><path d="M0 0"/><polyline points="0,0"/></svg></span>\n'
+    violations, _ = lint_notes.inline_only_violations(text)
+    assert violations == []
+
+
+def test_block_tag_outside_note_span_not_flagged():
+    text = '<div>prose</div>\n<span class="marginnote">clean note</span>\n'
+    violations, checked = lint_notes.inline_only_violations(text)
+    assert checked == 1
+    assert violations == []
+
+
+def test_stat_num_note_is_not_exempt_from_block_rule():
+    # The .stat-num escape hatch is additivity-only; a stat-num note with a
+    # block-level child is still a violation.
+    text = (
+        '<span class="marginnote"><span class="stat-num">373,000</span>'
+        "<p>care gaps</p></span>\n"
+    )
+    violations, _ = lint_notes.inline_only_violations(text)
+    assert any("block-level <p>" in v for v in violations), violations
+
+
+def test_check_blocks_end_to_end(monkeypatch, tmp_path):
+    page = (
+        "<!doctype html><html><body>\n"
+        '<span class="marginnote">bad<blockquote>quote</blockquote></span>\n'
+        "</body></html>\n"
+    )
+    p = tmp_path / "index.html"
+    p.write_text(page, encoding="utf-8")
+    monkeypatch.setattr(lint_notes, "INDEX", p)
+    violations, checked = lint_notes.check_blocks()
+    assert checked == 1
+    assert any("block-level <blockquote>" in v for v in violations), violations
