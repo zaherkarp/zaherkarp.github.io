@@ -1444,6 +1444,15 @@ Checks:
   Skills line from drifting from its source, `skills.yaml` (which also feeds
   the private job-fit tooling). Same lockstep contract as lint_facts. Skips
   when skills.yaml or the markers are absent. See §Resume and CV pipeline)
+- `python scripts/lint_links.py` clean (internal link + anchor integrity:
+  every fragment href in index.html resolves to a real `id=` there (ids
+  inside HTML comments / `<style>` / `<script>` don't count as targets),
+  every homepage `/blog/...` link resolves to built blog output on disk,
+  and every sitemap.xml `<loc>` resolves to a real file in the repo. The
+  homepage file-link check is deliberately scoped to `/blog/` because
+  `/medicare-advantage-insight-engine/` is served by a separate repo's
+  GitHub Pages under the shared domain (see §Links) and has no directory
+  here. Retires the "all internal anchor links resolve" eyeball check)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1465,7 +1474,7 @@ only fires for contributors who push from a machine that has run a project
 script (which installs it). Web-UI edits, fresh clones, the `draft: false`
 bypass, and the workflows' own bot commits all skip it, and the
 `Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
-`build_blog.yml`. So `lint.yml` runs the FULL suite above (all eight linters
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all nine linters
 plus the four grep guards) on every `pull_request` and every `push` to the
 default branch, unconditionally, and never consults the redundancy trailer.
 The hook is the fast local echo; `lint.yml` is the guarantee. Keep the two in
@@ -1489,7 +1498,7 @@ Its dev-only deps are pinned in `scripts/requirements-dev.in` /
 `scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
 CI.
 
-These are **characterization tests**, not a spec: each of the eight gate
+These are **characterization tests**, not a spec: each of the nine gate
 linters is exercised for both a pass case (against the clean repo tree) and a
 violation case, and the build scripts get smoke tests (build_blog pages +
 well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;

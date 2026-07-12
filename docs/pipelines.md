@@ -170,11 +170,11 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
   GUARDS (write nothing; fail the push / build)
   ─────────────────────────────────────────────
-  lint.yml (CI) ─▶ ALL eight linters + grep guards, on every PR + push,
+  lint.yml (CI) ─▶ ALL nine linters + grep guards, on every PR + push,
                    unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
                    lint_recognition · lint_gantt · lint_markers ·
-                   lint_skills + grep guards
+                   lint_skills · lint_links + grep guards
   CI (build_blog) ─▶ lint_vocab · lint_blog   (before build; trailer can skip)
   manual only ─▶ lint_jobfit   (informational, always exits 0)
 ```
@@ -359,6 +359,7 @@ run.
 | `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry |
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
+| `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
 
 Plus grep guards: em-dash-clean chrome (`index.html`, `resume.md`, `cv.md`,
 life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
@@ -366,7 +367,7 @@ index.html` ≤ 20); no `<p>`-wrapped SVG children in built `blog/`; critique
 independence (no `import anthropic` / `ANTHROPIC_API_KEY`).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all eight linters + the four grep guards) runs on every `pull_request`,
+(all nine linters + the four grep guards) runs on every `pull_request`,
 every `push` to the default branch, and on a **weekly `schedule:`**
 (auditing whatever bot commits have landed on `main`), **unconditionally** —
 it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push

@@ -173,6 +173,21 @@ if [ -f scripts/lint_skills.py ] && [ -f src/content/skills.yaml ]; then
   fi
 fi
 
+# 3g. Internal link + anchor integrity (every fragment href in
+#     index.html resolves to a real id=, every homepage /blog/... link
+#     points at built blog output, every sitemap.xml <loc> resolves to
+#     a real file). Deliberately scoped to /blog/ for homepage file
+#     links; /medicare-advantage-insight-engine/ is served by a
+#     separate repo (CLAUDE.md §Links). See CLAUDE.md §Pre-push checks.
+if [ -f scripts/lint_links.py ]; then
+  if output=$("$PY" scripts/lint_links.py 2>&1); then
+    ok "lint_links clean"
+  else
+    echo "$output" >&2
+    fail "lint_links"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to
