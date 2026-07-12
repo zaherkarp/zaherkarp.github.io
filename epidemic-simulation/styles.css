@@ -69,6 +69,11 @@ p { margin: 0 0 1rem; }
 
 a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
 a:hover { border-bottom-color: var(--accent); }
+/* In-prose links carry a persistent underline so they are distinguishable
+   from surrounding body text without relying on color alone (WCAG 1.4.1 /
+   axe link-in-text-block). Scoped to content paragraphs; nav.back and the
+   footer keep their own link treatments (they are not in-text-block links). */
+.page > p a, .lede a { border-bottom-color: var(--accent); }
 
 code {
   font-family: var(--font-mono);
