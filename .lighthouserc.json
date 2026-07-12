@@ -8,25 +8,54 @@
       }
     },
     "assert": {
-      "preset": "lighthouse:no-pwa",
-      "assertions": {
-        "categories:performance": ["warn", { "minScore": 0.85 }],
-        "categories:accessibility": ["error", { "minScore": 0.9 }],
-        "categories:best-practices": ["warn", { "minScore": 0.9 }],
-        "categories:seo": ["error", { "minScore": 0.9 }],
-        "csp-xss": "off",
-        "color-contrast": "warn",
-        "non-composited-animations": "warn",
-        "label-content-name-mismatch": "warn",
-        "third-party-cookies": "off",
-        "uses-text-compression": "off",
-        "unminified-css": "off",
-        "unminified-javascript": "off",
-        "total-byte-weight": "off",
-        "unused-css-rules": "off",
-        "uses-long-cache-ttl": "off",
-        "font-display": "warn"
-      }
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": "^(?!.*epidemic-simulation).*$",
+          "preset": "lighthouse:no-pwa",
+          "assertions": {
+            "categories:performance": ["warn", { "minScore": 0.85 }],
+            "categories:accessibility": ["error", { "minScore": 0.9 }],
+            "categories:best-practices": ["warn", { "minScore": 0.9 }],
+            "categories:seo": ["error", { "minScore": 0.9 }],
+            "csp-xss": "off",
+            "color-contrast": "warn",
+            "non-composited-animations": "warn",
+            "label-content-name-mismatch": "warn",
+            "third-party-cookies": "off",
+            "uses-text-compression": "off",
+            "unminified-css": "off",
+            "unminified-javascript": "off",
+            "total-byte-weight": "off",
+            "unused-css-rules": "off",
+            "uses-long-cache-ttl": "off",
+            "font-display": "warn"
+          }
+        },
+        {
+          "matchingUrlPattern": ".*epidemic-simulation.*",
+          "preset": "lighthouse:no-pwa",
+          "assertions": {
+            "categories:performance": ["warn", { "minScore": 0.85 }],
+            "categories:accessibility": ["error", { "minScore": 0.9 }],
+            "categories:best-practices": ["warn", { "minScore": 0.9 }],
+            "categories:seo": ["error", { "minScore": 0.9 }],
+            "csp-xss": "off",
+            "color-contrast": "warn",
+            "non-composited-animations": "warn",
+            "label-content-name-mismatch": "warn",
+            "third-party-cookies": "off",
+            "uses-text-compression": "off",
+            "unminified-css": "off",
+            "unminified-javascript": "off",
+            "total-byte-weight": "off",
+            "unused-css-rules": "off",
+            "uses-long-cache-ttl": "off",
+            "font-display": "warn",
+            "deprecations": "warn",
+            "unused-javascript": "warn"
+          }
+        }
+      ]
     },
     "upload": {
       "target": "temporary-public-storage"

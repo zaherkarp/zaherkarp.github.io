@@ -319,8 +319,23 @@ multi-agent prompts live under `scripts/review/prompts/`. See CLAUDE.md
 
 CI-only quality gate (no script, no committed output). Runs on
 `pull_request` touching `index.html`, `blog.css`, blog sources, the blog
-build, blog templates, or the workflow. Use it to catch accessibility/perf
-regressions before merge.
+build, blog templates, the `life-in-weeks/` or `epidemic-simulation/`
+subpages, or the workflow. Audits the homepage, `/blog/`, a representative
+post, and the three interactive subpages (`/star-rating-predictor/`,
+`/life-in-weeks/`, `/epidemic-simulation/`). Use it to catch
+accessibility/perf regressions before merge.
+
+Assertions live in `.lighthouserc.json` as a per-URL `assertMatrix`:
+every URL is held to the strict assertion set (accessibility + SEO at
+`error`), except `/epidemic-simulation/`, whose entry additionally scopes
+`deprecations` + `unused-javascript` to `warn`. Those two error-gated
+audits are unwinnable there because the page loads the Pyodide + Plotly
+CDN runtimes (the documented CDN-runtime exception, CLAUDE.md §Stack), and
+no markup change removes a third-party bundle's unused code or deprecated
+API use. The relaxation is surgical (that URL only, those two audits
+only); the a11y bar stays strict for it, and no other page's bar moves.
+The strict entry uses a negative-lookahead `matchingUrlPattern`
+(`^(?!.*epidemic-simulation).*$`) so each URL matches exactly one entry.
 
 ### 9. Job search — `scripts/build_jobsearch.py` (private, local-only)
 
