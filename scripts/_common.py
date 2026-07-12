@@ -21,6 +21,7 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -38,6 +39,48 @@ _TAG_SLUG_RE = re.compile(r"[^a-z0-9]+")
 def slugify_tag(tag: str) -> str:
     """Normalize a blog tag to its URL slug (lowercase, hyphen-separated)."""
     return _TAG_SLUG_RE.sub("-", str(tag).strip().lower()).strip("-")
+
+
+# ─── blog-post loading ─────────────────────────────────────────────────────
+# The two conventions every src/content/blog/*.md consumer shares, in one
+# place. Draft handling is deliberately NOT here: consumers differ (some skip
+# draft:true, some count drafts, some print), so each applies its own after
+# loading frontmatter.
+
+
+def iter_post_paths(posts_dir: Path):
+    """Yield each buildable blog-post path under `posts_dir`, sorted.
+
+    Encapsulates the two shared conventions: the glob is SORTED (same-date
+    posts tie-break deterministically on filename, so auto-committed outputs
+    do not reorder run-to-run) and `_`-prefixed files are skipped (the
+    fixture / scaffold-marker convention).
+    """
+    for path in sorted(posts_dir.glob("*.md")):
+        if path.stem.startswith("_"):
+            continue
+        yield path
+
+
+def coerce_date(value):
+    """Coerce a datetime / date / ISO string to a `date`, or None.
+
+    The date part of a string is read from the first 10 chars, so a full
+    timestamp works too. Returns None on anything else. This is the lenient
+    form shared by the private job-search tooling (publishDate + outreach
+    dates); the build scripts deliberately do NOT use it -- build_blog raises
+    on a bad publishDate (fail-loud) and build_portfolio parses strictly.
+    """
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str):
+        try:
+            return date.fromisoformat(value[:10])
+        except ValueError:
+            return None
+    return None
 
 
 # ─── cross-surface alignment matcher ───────────────────────────────────────

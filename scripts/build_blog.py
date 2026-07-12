@@ -36,7 +36,7 @@ from markdown_it import MarkdownIt
 from mdit_py_plugins.footnote import footnote_plugin
 from mdit_py_plugins.deflist import deflist_plugin
 
-from _common import install_git_hooks, slugify_tag
+from _common import install_git_hooks, iter_post_paths, slugify_tag
 
 install_git_hooks()
 
@@ -537,9 +537,7 @@ def main() -> int:
 
     posts: list[dict] = []
     skipped_errors = 0
-    for path in sorted(POSTS_DIR.glob("*.md")):
-        if path.stem.startswith("_"):
-            continue
+    for path in iter_post_paths(POSTS_DIR):
         try:
             post = parse_post(path, md)
         except Exception as exc:
