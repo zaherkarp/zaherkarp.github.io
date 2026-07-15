@@ -6,8 +6,22 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Jul 2026 05:06:14 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 15 Jul 2026 05:24:08 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>The Metric Isn&#39;t Wrong. It&#39;s Just Not Where Quality Lives.</title>
+      <link>https://zaherkarp.com/blog/what-the-metric-cannot-see/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/what-the-metric-cannot-see/</guid>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+      <description>Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</description>
+      <category>healthcare</category>
+      <category>quality-measurement</category>
+      <category>medicare-advantage</category>
+      <category>statistics</category>
+      <category>health-policy</category>
+      
+    </item>
     
     <item>
       <title>One API call, three ways to split it: a FRED case study</title>
@@ -415,21 +429,6 @@
       <category>concurrency</category>
       <category>data-engineering</category>
       <category>healthcare-analytics</category>
-      
-    </item>
-    
-    <item>
-      <title>Why Pull Requests Changed Everything in Healthcare Data Science</title>
-      <link>https://zaherkarp.com/blog/version-control/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/version-control/</guid>
-      <pubDate>Sun, 01 Mar 2026 00:00:00 +0000</pubDate>
-      <description>How version control and pull requests transformed healthcare analytics from chaotic file management into transparent, collaborative systems that save lives.</description>
-      <category>healthcare-data</category>
-      <category>version-control</category>
-      <category>pull-requests</category>
-      <category>collaboration</category>
-      <category>medicare</category>
-      <category>data-science</category>
       
     </item>
     
