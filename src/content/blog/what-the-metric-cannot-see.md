@@ -1,0 +1,51 @@
+---
+title: "The Metric Isn't Wrong. It's Just Not Where Quality Lives."
+description: "Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives."
+publishDate: 2026-07-15
+tags: ["healthcare", "quality-measurement", "medicare-advantage", "statistics", "health-policy"]
+lifeweek_topic: "Healthcare metrics"
+homepageMarginnote: "The four hour antibiotic rule was loosened to six hours in 2007 and then retired outright, an unusually clean admission that a measure had failed."
+draft: false
+---
+
+## The score improves and nothing else does
+
+Anyone who has sat through enough quality reviews knows the meeting where every number on the slide is green and nobody in the room quite believes that care got better. The dashboard is not lying. The measures went up because people worked hard to move them. And yet the improvement on the screen and the improvement a patient would feel have come apart, and everyone senses the gap without naming it.
+
+The usual explanation is gaming. A measure tends to degrade once it becomes a target, which is Goodhart's law, and I have written separately about [how forecasts break when the rules underneath them change](/blog/lucas-critique-stars-forecasting/). This post is about a failure that arrives even when no one games anything and the rules never move. It has two layers. The first is the cost of enforcing a metric, which is real and lands on specific people. The second, underneath it, is that a single metric can only ever see a thin slice of what it stands for. The metric captures one thing well and misses the rest, and the part it misses is not noise. It is usually where the quality lives.
+
+## Four hours to the wrong diagnosis
+
+In the mid-2000s, hospitals were measured on how quickly patients with pneumonia received antibiotics. The standard, endorsed nationally and reported publicly, required the first dose within four hours of arrival, and performance was tied to a hospital's reputation and payment. On its face this is a reasonable thing to want. Pneumonia can kill, and antibiotics work better the sooner they start.
+
+Then watch what a four-hour clock does inside an emergency department. Pneumonia is not obvious on arrival. It presents like several other things, and the imaging and labs that tell them apart take time, often more than four hours. A physician who waits for the diagnosis to settle risks missing the clock, and the hospital's score. A physician who treats on suspicion protects the score. So the rational move, under the constraint, is to give antibiotics before you are sure, to more people than actually have the disease.
+
+The consequences were measured. In a 2007 study in Chest, [Kanwar and colleagues](https://doi.org/10.1378/chest.07-0164) found that after the guideline took hold, the share of admitted patients who genuinely turned out to have pneumonia fell from 75.9 percent to 58.9 percent, while antibiotic use per patient rose. A 2008 study in Archives of Internal Medicine by [Welker and colleagues](https://doi.org/10.1001/archinternmed.2007.84) found that tightening the deadline left patients markedly less likely to actually meet the criteria for the diagnosis they were being treated for. That same year, [Wachter and colleagues](https://doi.org/10.7326/0003-4819-149-1-200807010-00007) reviewed the episode in Annals of Internal Medicine under a blunt title: lessons from a flawed performance measure. The window was loosened to six hours in 2007, and the timing measure was later abandoned.
+
+Through all of it, compliance looked excellent. The measure was doing its job perfectly. It was measuring time to antibiotics, and time to antibiotics fell. What it could not see was whether the patient had the illness the antibiotics were for.
+
+## The shadow price of a constraint
+
+It helps to write down what the clinician is actually solving. Set the metric aside for a moment and say a clinician chooses a course of action \(x\) to maximize the real benefit to the patient, call it \(Q(x)\). Now impose the metric as a hard constraint: the action must also produce a measured score \(m(x)\) that clears the target \(t\). The problem becomes a constrained optimization, and the standard way to analyze one introduces a multiplier \(\lambda\) that prices the constraint.
+
+\[\mathcal{L}(x, \lambda) = Q(x) + \lambda\,\bigl(m(x) - t\bigr)\]
+
+The multiplier \(\lambda\) carries a precise meaning. It is the shadow price of the constraint: the amount of real patient benefit given up for each additional unit of pressure to hit the target. When good care clears the target on its own, the constraint does not bind, \(\lambda\) is zero, and the metric costs nothing. When clearing the target requires acting against clinical judgment, \(\lambda\) is positive, and it measures how much genuine quality is being traded away to satisfy the number.
+
+The question worth asking is who pays that price. It is the person at the point of care, and the currency is not the one we usually name. We call it burnout, which frames the problem as depleted personal resilience, a battery that ran down. The clinicians living it have offered a sharper word. Writing in [STAT in 2018](https://www.statnews.com/2018/07/26/physicians-not-burning-out-they-are-suffering-moral-injury/), Talbot and Dean called it moral injury: the distinct harm of being forced, again and again, by the system you work inside, to act against your own judgment of what the patient needs. Burnout locates the fault in the worker. Moral injury locates it in the constraint. In these terms, \(\lambda\) is the size of the injury.
+
+## The metric is a projection
+
+The shadow price explains the visible damage, the strained workforce and the strange incentives, but it is a symptom. The deeper problem is what a metric is. Any metric is a compression. Care is an enormously high-dimensional thing, thousands of facts about a patient, a clinician, a decision, and a moment, and a metric takes all of that and returns a single number. In the language of data, it is a dimensionality reduction, a projection from a space with a great many axes down onto one. Projection always discards. The information lost in going from the full picture to the number is the reconstruction error, the part of reality you cannot rebuild from the score alone. For a well-chosen metric that discarded part is small and unimportant. For most of the metrics we actually use, it is neither.
+
+Medication adherence is the cleanest example I know. Plans and pharmacies are scored on it, and in Medicare Advantage it feeds directly into Star Ratings. The dominant measure is the proportion of days covered, the share of days in a period on which the patient had the drug on hand according to pharmacy fill records. The exact thresholds and weights are in my [simulator methodology post](/blog/star-rating-predictor-methodology/) and do not matter here. The number is meant to stand for a real thing, that the patient is taking the medicine that keeps them well.
+
+Now look at what the projection keeps and what it drops. It keeps dispensing. A ninety-day supply arrives by mail, an automatic refill program reorders it on schedule, and the fill record fills in one covered day after another. Measured adherence approaches perfect. What the number cannot see is whether a single pill was swallowed. The bottles can accumulate unopened on a counter while the score reads one hundred percent. This is not hypothetical. Studies of automatic refill programs find they lift measured adherence by [several percentage points](https://pmc.ncbi.nlm.nih.gov/articles/PMC7891841/), because raising days covered is what they are built to do, and CMS had to require per-delivery consent after beneficiaries reported receiving drugs [they never asked for and never used](https://www.amcp.org/resource/cms-2014-policy-automatic-delivery-prescriptions-under-part-d). Meanwhile the real quantity sits far below the score. [Osterberg and Blaschke](https://doi.org/10.1056/NEJMra050100), in a 2005 review in the New England Journal of Medicine, put average adherence to long-term therapy for chronic illness near fifty percent and noted that refill-based measures read higher than what patients actually take. You can have perfect metric compliance and almost no real adherence at the same time, and nothing in the pharmacy data will tell you which patient you are looking at.
+
+## Quality lives in the residual
+
+Here is why the system cannot catch this on its own. Every channel through which it learns, the dashboard, the bonus formula, the public report, the improvement project, takes the metric as its input. Each one consumes the projected number, and none can see the reconstruction error, because the error is by definition the part that never made it into the number. A system that optimizes what it can measure will drift happily toward states with excellent scores and hollow reality, and it will have no internal signal that anything is wrong, because on every instrument it owns the reading is good. The residual does not appear in any report. It cannot. It was projected out before the report was written.
+
+Adding more metrics does not fix this. It adds axes, and each new constraint carries its own shadow price. The dimensionality of real care will always exceed that of any dashboard. There is exactly one instrument that samples the discarded dimension, and it is the people paying \(\lambda\). When clinicians tell you the numbers are up and the care is not, they are not being difficult. They are reporting the reconstruction error directly, from the one sensor placed where it can be felt.
+
+So the metric is not wrong. The pneumonia clock measured time correctly, and the adherence score measures dispensing correctly. Each simply measures next to the thing that matters, and the distance between the measurement and the thing, the part the number was never able to hold, is exactly where the quality was.
