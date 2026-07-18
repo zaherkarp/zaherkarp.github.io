@@ -238,6 +238,7 @@ def build_activity_grid(posts: list[dict]) -> str:
         '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
         '      24 weeks\n'
         '      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" '
+        'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">\n'
         '        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>\n'
         + stems_block +
