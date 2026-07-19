@@ -550,11 +550,14 @@ the next CI run overwrites them. Two tiers:
     max-width, `auto-fit minmax(240px, 1fr)`, collapses to 1 column at
     760px, just like `.projects-index`). Rendered as compact
     `.writing-tile` small multiples (date + smaller title + tile-summary).
-    `homepageMarginnote` is intentionally ignored on tiles. The grid
-    carries a `<p class="index-label">More writing</p>` header (hand-
-    authored, before the `:start` marker) mirroring `.projects-index`'s
-    "More projects" label, kept for visual parity even though the
-    trailing "View all writing" link is also present.
+    `homepageMarginnote` is intentionally ignored on tiles. The grid is
+    wrapped in a `<details class="fold"><summary>More writing</summary>`
+    disclosure (hand-authored, outside the markers), mirroring
+    `.projects-index`'s "More projects" fold. An earlier
+    `<p class="index-label">` header served this role and was replaced
+    by the fold; its CSS was removed 2026-07-18 after a critique found
+    it orphaned. Note the collapse means six of eight posts are hidden
+    by default, flagged as a P1 in that critique and not yet resolved.
 
 Deliberately NOT reused: `.project-tile` and the `project-num` CSS
 counter. Writing tiles use distinct `.writing-tile`/`.writing-index`
