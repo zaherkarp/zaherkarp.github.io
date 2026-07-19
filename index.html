@@ -614,6 +614,14 @@ figure.timeline:has(svg.tl-horizontal) {
   line-height: inherit;
   margin: 0;
 }
+/* Publication metadata line (authors + venue) beneath each pub entry.
+   Emitted by scripts/_publications.py into the pub-list marker region;
+   promoted from a repeated inline style to this class. */
+.pub-meta {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-top: 0;
+}
 
 /* Writing small-multiples grid. Sibling of section#writing, mirroring
    .projects-index/.project-tile but keyed by date instead of a CSS
@@ -2714,7 +2722,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <span class="pub-citations">13 citations</span>
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Karp Z, Kamnetz S, Wietfeldt N, Sinsky C, Molfetter T, Pandhi N.<br>
         <em>Health Environments Research &amp; Design Journal</em> 12(4):159-173.
       </p>
@@ -2732,7 +2740,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <span class="pub-citations">4 citations</span>
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Pandhi N, Gaines ME, Deci D, Schlesinger M, Culp C, Karp Z et al.<br>
         <em>Academic Medicine</em>.
       </p>
@@ -2748,7 +2756,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           First large-N analysis of the cost-to-savings relationship in early Medicare Shared Savings Program cohorts.
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Berkson S, Davis S, Karp Z, Jaffery J, Flood G, Pandhi N.<br>
         <em>International Journal of Healthcare Management</em>.
       </p>
@@ -2764,7 +2772,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6" aria-label="Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)">Full text</a>
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z.<br>
         <em>Implementation Science</em> 11(Suppl 1):A13.
       </p>
@@ -2782,7 +2790,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <span class="pub-citations">24 citations</span>
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Pandhi N, Yang WL, Karp Z, Young A, Beasley JW, Kraft S, Carayon P.<br>
         <em>Journal of Innovation in Health Informatics</em> 21(3):142-51.
       </p>
@@ -2798,7 +2806,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <a href="https://www.learntechlib.org/p/41869/" aria-label="Full text: Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL 2012)">Full text</a>
         </span>
       </p>
-      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">
+      <p class="pub-meta">
         Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P.<br>
         <em>Proceedings of World Conference on E-Learning, Montréal</em>.
       </p>

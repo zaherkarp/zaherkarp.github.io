@@ -103,7 +103,7 @@ def render_homepage_entry(pub: dict) -> str:
         f'id="mn-{pid}" class="margin-toggle"/>\n'
         f'        {marginnote}\n'
         f'      </p>\n'
-        f'      <p style="color: var(--muted); font-size: 1.05rem; margin-top: 0;">\n'
+        f'      <p class="pub-meta">\n'
         f'        {_esc(pub["authors"])}<br>\n'
         f'        <em>{_esc(pub["venue"])}</em>{detail_suffix}\n'
         f'      </p>\n'
