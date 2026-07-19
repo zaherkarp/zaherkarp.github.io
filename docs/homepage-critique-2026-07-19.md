@@ -213,15 +213,56 @@ differently depending on which reader wins. **This is a Focus Group question
 - The cadence sparkline is the least legible figure on the page and it opens a
   section: no y-axis, no scale label, no reference. 2 vs 3 posts is
   indistinguishable without measuring pixels.
-- Nine inline `style=` attributes repeat `color: var(--muted); font-size: 1.05rem`
-  inside generator-owned marker regions — the one place a value can drift with no
-  linter watching. Promote to a `.pub-meta` class in the generator.
+- ~~Nine inline `style=` attributes repeat `color: var(--muted); font-size:
+  1.05rem` inside generator-owned marker regions.~~ **DONE** (`ef7121a`):
+  promoted to a `.pub-meta` class; the emitter in `scripts/_publications.py`
+  now writes the class and the pub-list region is build-idempotent.
 - `/colophon/` is the most interesting footer link for a Tufte-literate audience
   and sits fourth of five, three of which duplicate the top nav.
-- `MAH, MAC, MAD` (L2241) is the one unglossed acronym in a file that carefully
-  expands HEDIS, QBP, and ECDS. It is contextualized ("Part D medication
-  adherence triplet") but not expanded.
-- No `lang` attribute on `Cancún` (L2834) or `Montréal` (L2839, L2800).
+- ~~`MAH, MAC, MAD` (L2241) is unglossed.~~ **DONE** (`157d226`): glossed inline
+  as "(MAH, MAC, and MAD, for hypertension, cholesterol, and diabetes)".
+- `lang` attributes on foreign proper nouns: **partially DONE** (`55e347c`).
+  Cancún and the Speaking-list Montréal are now wrapped. **Known gap remains**
+  — see §4.1.
+
+### 4.1 Known gap — `lang` on the publications-block Montréal
+
+One of the three foreign proper nouns could not be safely wrapped in the
+mechanical pass, and is left as a documented gap rather than a rushed fix.
+
+**Where.** The venue string of the 2012 WCEL proceedings entry:
+`src/content/publications.yaml:105` —
+`venue: "Proceedings of World Conference on E-Learning, Montréal"`. It renders
+into the homepage `pub-list` marker region (and the CV), so it cannot be
+hand-edited in `index.html`; the next build overwrites it.
+
+**Why the source edit is not mechanical.** The venue flows through `_esc()`
+before it reaches HTML (`scripts/_publications.py:108`), and `_esc` is
+`html.escape(s, quote=False)` (`:32-33`). So markup placed in the YAML value is
+escaped to text: `<span lang="fr">Montréal</span>` would render as the **literal
+visible string** `&lt;span lang="fr"&gt;Montréal&lt;/span&gt;` — the opposite of
+the goal. This escaping is correct and deliberate: venue text is data, and
+escaping it is what stops a stray `&` or `<` in a title from breaking the page.
+
+The distinction from the two edits that *were* applied: the Speaking-list
+Cancún/Montréal are hand-authored HTML in `index.html` with no escaping layer,
+so a `<span>` there is markup. The venue goes through a data-escaping renderer,
+so a `<span>` there is text. Same word, two pipelines, opposite handling.
+
+**Fix options (a real renderer decision, not a mechanical edit):**
+1. **Render-time wrap (preferred).** Keep the YAML plain; have the renderer
+   inject the `lang` span *after* `_esc`, e.g. via an optional `venue_lang`
+   field the template honors. Preserves escaping. Touches `render_cv_entries`
+   (`:137`) too — so it carries a scope question: does the CV citation list get
+   the same wrapper, or homepage-only?
+2. **Per-field `_esc` bypass.** Allow curated markup through for venue only.
+   Reintroduces the injection risk `_esc` exists to prevent, for one accent.
+   Rejected unless the YAML is treated as fully trusted.
+3. **Leave it.** One French city in one folded 2012 citation; a screen reader
+   anglicizes one vowel. Genuinely marginal cost/benefit.
+
+**Status:** deferred. Preferred path is option 1, homepage-only unless the CV
+scope question is answered otherwise. Not urgent.
 
 ### Explicitly out of scope
 
