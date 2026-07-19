@@ -391,6 +391,21 @@ details.speaking-list > summary:focus-visible {
 label.sidenote-number { display: inline; cursor: default; }
 label.margin-toggle:not(.sidenote-number) { display: none; }
 
+/* WCAG 2.4.7 Focus Visible (Haben, 2026-07-18). Above 760px the note
+   already floats into the margin ungated by :checked, so every toggle
+   is functionless here. Leaving the sr-only inputs focusable made 13
+   of them focus stops whose only focus style (the label rule above)
+   sits on a display:none box, so the ring had nothing to paint on:
+   failure technique F78. Removing them from the tab order at desktop
+   honors the L353-355 intent (never strand a note behind a mouse)
+   rather than reversing it. Media-query-scoped deliberately: at 400%
+   zoom a 1280px viewport resolves to ~320 CSS px and falls under the
+   <=760px block below, where the labels re-display and the toggles
+   work, so the 1.4.10 Reflow path is untouched. */
+@media (min-width: 761px) {
+  input.margin-toggle { display: none; }
+}
+
 /* Narrow viewport: collapse notes, reveal via toggle.
    Toggle label uses --muted with an underline for affordance.
    The accent color is reserved for chart callouts; using it on
@@ -727,18 +742,6 @@ figure.timeline:has(svg.tl-horizontal) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.8rem 2.5rem;
-}
-
-/* Index label spans full grid width so it sits as a header above
-   the tile rows rather than inside a tile cell. Shared by the projects
-   and writing small-multiples grids for visual parity. */
-.projects-index .index-label,
-.writing-index .index-label {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-size: 1.1rem;
-  margin: 0 0 0.3rem 0;
-  letter-spacing: 0.02em;
 }
 
 @media (max-width: 760px) {
