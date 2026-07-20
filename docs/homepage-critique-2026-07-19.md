@@ -384,3 +384,86 @@ None of this has been seen in a browser. Before trusting §2:
 - [ ] Light and dark mode on the writing index, confirming the removed
       `.index-label` CSS left no visual gap.
 - [ ] Print preview — folds should force open.
+
+---
+
+## 8. Palette reopening — decision record (exploratory)
+
+**Status: proposal, not a change. Nothing was written to `index.html`.** The
+current cream/slate + petrol-teal palette is a locked design token; this section
+records an exploration of alternatives, not a decision to adopt one. Adopting any
+palette is a separate, deliberate step and a full-council convening.
+
+### What was run
+
+A multi-agent workflow (81 agents): 20 hue-diverse accent seeds sampled from
+impeccable's `palette.mjs`, each composed by an agent into a full 5-role palette
+(paper / ink / muted / rule / accent) for both light and dark. Every palette was
+gated on **exact WCAG AA contrast** computed deterministically in the workflow
+(ink/paper ≥4.5 aiming 7, muted/paper ≥4.5, accent/paper ≥3, both modes). All 20
+cleared the gate. Survivors were scored by three council lenses — **Edward**
+(Tufte restraint), **Massimo** (typographic color), **Jess** (brand /
+anti-slop) — then a synthesis agent ranked a top 3.
+
+**Visual board (private artifact):**
+`https://claude.ai/code/artifact/b7644dc2-2d81-4d00-8a0f-9ae5ad9a44c4` — all 20
+rendered in their own colors, light + dark, with contrast ratios and lens scores.
+The board's own chrome is the current locked palette, so alternatives are shown
+inside the design they would replace.
+
+### Council top 3
+
+| Rank | Palette | Family | Avg | Lenses (E/M/J) | Light key colors |
+|---|---|---|---|---|---|
+| #1 | **Lichen at First Light** (`seed-122`) | mossy forest green | 7.67 | E8/M8/J7 | paper `#f3f6f0` accent `#1d6835` |
+| #2 | **Apothecary Glass** (`seed-041`) | burnt apothecary orange | 7.17 | E6/M8/J7.5 | paper `#f6f7f6` accent `#bf420f` |
+| #3 | **Patina Glasshouse** (`seed-185`) | verdigris teal-green (~170) | 7.33 | E7.5/M8/J6.5 | paper `#f3f6f2` accent `#0a644e` |
+
+- **#1 Lichen** — the only candidate all three lenses accepted at once, and
+  Edward's top score. A monochromatic moss system is a genuine hue change from
+  *both* cream and the incumbent teal, yet the deep `#1d6835` accent is quiet by
+  nature. Distinctiveness bought without spending reading-calm. The calmest of
+  the distinctive options.
+- **#2 Apothecary Glass** — the boldest true escape and Jess's champion (highest
+  anti-slop score); a burnt-amber accent inverts healthcare's reflexive teal.
+  Ranked second because burnt orange carries alert/warning semantics in a
+  chart-heavy page and the dark coral over-glows: high reward, real risk. The
+  "statement" pick.
+- **#3 Patina Glasshouse** — the most technically impeccable and the safe
+  reopening, but its hue-~170 teal-green is the healthcare cliché *and* nearly the
+  hue the site already owns, so it barely clears the "deliberate move away" bar.
+
+### The real decision (the split the council would not average)
+
+The lenses do not disagree about which palette is best — they disagree about
+**what reopening the palette is for.** Edward and Massimo optimize for calm and
+clean execution, which pulls toward the teal family (`seed-185`, `125`, `161`) —
+but those swap cream+teal for tint+teal, i.e. the hue the site already owns: a
+non-move dressed as a decision. Jess optimizes for the move *away*, which rewards
+the amber (`seed-041`) and near-disqualifies the teal seeds. The sharpest single
+split is `seed-041`'s orange: Jess 7.5 (most memorable, inverts the reflex) vs.
+Edward 6 (alert semantics, fails the quiet-accent test without extra discipline).
+
+`seed-122` ranked first not because it resolves this split but because it sits
+above it — distinct enough for Jess, quiet enough for Edward. **If a single
+winner is ever forced rather than a shortlist, the nudge-vs-statement (quiet teal
+vs. bold amber) vote is the one to hold explicitly, not average away.**
+
+### Clusters the field flagged (do-not-repeat)
+
+- **Indigo/blue** (`seed-081`/`213`/`212`/`094`) — escapes cream only to land on
+  blue, healthcare's *other* default; several carry electric light-mode accents
+  that shout at one use.
+- **Warm amber/gold/ochre** (`seed-055`/`063`/`061`/`065`) — abandons cream for
+  the equally reflexive "warm artisanal honey" aesthetic; cozy-editorial, not
+  sober-credible. A lateral move.
+- **Red/magenta/plum** (`seed-201`/`230`/`205`/`198`) — saturated red is an
+  alert/error/blood liability in charts; magenta reads consumer-fintech.
+
+### Caveat
+
+Contrast ratios are exact; the hex values are model-composed. Treat the board as
+a strong first draft to react to, not final tokens. If a direction is chosen, the
+next step is hand-tuning that palette's five roles against the real page (the ten
+figures, the sidenotes, the `#7a0000` accent-sentinel remap) and a full-council
+convening — not a find-and-replace of the tokens.
