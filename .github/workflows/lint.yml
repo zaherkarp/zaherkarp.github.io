@@ -84,6 +84,9 @@ jobs:
       - name: Lint HTML structural well-formedness
         run: python scripts/lint_html.py
 
+      - name: Lint palette single-source contract
+        run: python scripts/lint_palette.py
+
       # Guard steps mirror scripts/hooks/pre-push blocks 4-8. Kept as
       # explicit steps (rather than invoking the hook) so CI stays
       # independent of the hook's redundancy short-circuit.

@@ -4,12 +4,16 @@
 */
 
 :root {
-  /* Tufte palette, cream paper, charcoal ink, petrol-teal accent */
-  --bg:       #fffff8;
-  --rule:     #d0d0c8;
-  --text:     #111;
-  --muted:    #6a6a6a;
-  --accent:   #0a5c54;
+  /* Brand palette colors generated from src/content/palette.yaml
+     (scripts/build_palette.py); the Solarized code palette below is
+     separate and hand-maintained. */
+  /* palette:light:start */
+  --bg: #fffff8;
+  --text: #111;
+  --muted: #6a6a6a;
+  --rule: #d0d0c8;
+  --accent: #0a5c54;
+/* palette:light:end */
 
   --size-caption: 0.85rem;
   --size-body:    1.15rem;
@@ -37,12 +41,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Tufte dark variant, cool neutral slate, cool off-white ink, petrol-teal accent */
-    --bg:       #16191d;
-    --rule:     #2a2f36;
-    --text:     #e6e8ea;
-    --muted:    #b4bac2;
-    --accent:   #3fb0a0;
+    /* palette:dark:start */
+    --bg: #16191d;
+    --text: #e6e8ea;
+    --muted: #b4bac2;
+    --rule: #2a2f36;
+    --accent: #3fb0a0;
+/* palette:dark:end */
 
     /* Solarized base tones flipped to dark; the eight hues above
        stay the same. */

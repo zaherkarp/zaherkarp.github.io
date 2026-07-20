@@ -203,6 +203,20 @@ if [ -f scripts/lint_links.py ]; then
   fi
 fi
 
+# 3i. Palette single-source lint (every consuming file's palette:* block
+#     matches src/content/palette.yaml, no --accent is assigned off-token,
+#     and the two self-contained blog-post figures match the canonical
+#     accent). Keeps the parameterized palette uniform across ~11 files.
+#     See CLAUDE.md §Palette pipeline.
+if [ -f scripts/lint_palette.py ] && [ -f src/content/palette.yaml ]; then
+  if output=$("$PY" scripts/lint_palette.py 2>&1); then
+    ok "lint_palette clean"
+  else
+    echo "$output" >&2
+    fail "lint_palette"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to

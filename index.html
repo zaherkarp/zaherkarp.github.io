@@ -114,28 +114,30 @@
    compromise; the small warmth shift is what makes the page
    feel book-like.
    ============================================================ */
-:root {
-  --paper: #fffff8;   /* background, warm off-white                 */
-  --ink:   #111;      /* body text, near-black                      */
-  --muted: #6a6a6a;   /* sidenote body, de-emphasised metadata      */
-  --rule:  #d0d0c8;   /* horizontal rules, table separators         */
-  --accent:#0a5c54;   /* deep petrol teal, used once or twice max   */
-}
-
-/* Dark mode. Cool neutral slate (de-warmed from the prior warm-brown
-   paper / cream ink), with a petrol-teal accent #3fb0a0 held above
-   AA on the slate paper. Light mode keeps the Tufte cream; only the
-   dark side is cooled, so the two modes differ slightly in warmth
-   but share the constant teal accent. NOTE: the figure SVGs still
+/* Palette tokens are GENERATED from src/content/palette.yaml by
+   scripts/build_palette.py. Edit the YAML and rebuild, not the block
+   below. Light mode keeps the Tufte cream; dark is cooled to a neutral
+   slate, both sharing the constant accent. NOTE: the figure SVGs
    hardcode #7a0000 as the accent *sentinel* (remapped to var(--accent)
-   by the attribute selectors below); it renders teal, not red. */
+   by the attribute selectors below); it renders as the accent, not red. */
+:root {
+  /* palette:light:start */
+  --paper: #fffff8;
+  --ink: #111;
+  --muted: #6a6a6a;
+  --rule: #d0d0c8;
+  --accent: #0a5c54;
+/* palette:light:end */
+}
 @media (prefers-color-scheme: dark) {
   :root {
+    /* palette:dark:start */
     --paper: #16191d;
-    --ink:   #e6e8ea;
+    --ink: #e6e8ea;
     --muted: #b4bac2;
-    --rule:  #2a2f36;
-    --accent:#3fb0a0;
+    --rule: #2a2f36;
+    --accent: #3fb0a0;
+/* palette:dark:end */
   }
 }
 
@@ -1606,7 +1608,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     --ink:   #1a1a1a;
     --muted: #555;
     --rule:  #c8c8c8;
-    --accent:#0a5c54;
+    /* palette:print:start */
+    --accent: #0a5c54;
+/* palette:print:end */
   }
   @page { size: auto; margin: 0.75in; }
   html, body {

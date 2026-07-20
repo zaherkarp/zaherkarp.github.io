@@ -1297,6 +1297,57 @@ remove.
 
 ---
 
+## Palette pipeline
+
+The site's color palette is a single source of truth at
+`src/content/palette.yaml` (added 2026-07-19). The five brand roles
+(bg / surface / ink / ink_sec / muted / rule / accent, in the union across
+files) are defined there for light and dark, plus a favicon fill and a print
+accent. `scripts/build_palette.py` injects each file's token block between
+`palette:*` marker spans; `scripts/lint_palette.py` gates drift. To change the
+palette site-wide, edit the YAML and run `python scripts/build_palette.py`.
+
+Why: the palette was duplicated across ~11 files (index.html, blog.css,
+404.html, the three subpages, the four resume/cv templates, favicon.svg) with
+DIFFERENT local var names (`--paper`/`--ink` on the homepage, `--bg`/`--text`
+in blog + subpages, `--text-sec`/`--surface` extras). That duplication is why
+changing the accent felt risky. The pipeline makes it one edit; the lint makes
+uniformity enforced rather than remembered.
+
+How the generator maps roles to each file (`TARGETS` in build_palette.py):
+  - Markers wrap DECLARATION LINES only (two spans, `palette:light` +
+    `palette:dark`), sitting inside whatever `:root` the file already has, so a
+    file that mixes color tokens with sizing/Solarized (blog.css) works like
+    one whose `:root` is colors-only (index.html).
+  - Each target maps semantic roles to its own local names, so one YAML value
+    lands as `--paper` on the homepage and `--bg`/`--text` in the blog.
+  - Single-mode spans: `palette:print` for the PDF templates' accent and the
+    index.html `@media print` accent (kind `accent_only`); `palette:start`
+    (XML) for the favicon fill.
+
+Deliberately NOT pipeline-managed (documented in the YAML header):
+  - blog.css's Solarized code-block palette (separate, mode-symmetric system).
+  - The print neutrals in the resume/cv PDF templates and index.html's
+    `@media print` block (paper-calibrated white/near-black; only their
+    accent tracks the palette).
+  - The two self-contained blog-post figures
+    (`medicare-advantage-market-exits-timing.md` `--pc-*`,
+    `should-i-buy-ram-now.md` `--rw-*`): they keep their own tokens per the
+    blog-figure "renders standalone" convention, but lint_palette Check C
+    verifies their accent matches the canonical value so they can't drift.
+  - The epidemic simulator's Plotly series colors (categorical rust/forest,
+    JS-set in app.js; not the brand accent by design).
+
+lint_palette.py enforces three things (all hard failures, wired into the
+pre-push hook and lint.yml): (A) no drift from palette.yaml, (B) no `--accent:`
+assigned outside a `palette:*` span in any managed file — the wall that stops
+the accent being hardcoded off-token again, value-agnostic so it also catches
+a stale old accent after a repalette, and (C) the two post figures match.
+
+The `#7a0000` accent-sentinel contract (§Palette design tokens) is unaffected:
+figures still hardcode `#7a0000` remapped to `var(--accent)`; only the
+`--accent` VALUE now comes from palette.yaml.
+
 ## Recognition alignment lint
 
 `scripts/lint_recognition.py` keeps the homepage "Service and Recognition"
@@ -1474,6 +1525,11 @@ Checks:
   content, so failing on them would false-positive on valid math /
   CSS-doc markup. Replaces the lenient `html.parser` balanced-tag
   eyeball smoke check in README)
+- `python scripts/lint_palette.py` clean (palette single-source contract:
+  every consuming file's `palette:*` marker block matches what
+  `src/content/palette.yaml` renders; no `--accent:` is assigned outside a
+  `palette:*` span in any managed file; and the two self-contained blog-post
+  figures' accents match the canonical value. See §Palette pipeline)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored

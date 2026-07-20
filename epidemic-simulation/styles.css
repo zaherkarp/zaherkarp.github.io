@@ -2,13 +2,15 @@
    the parent site so the subpage doesn't clash on nav traversal. */
 
 :root {
+  /* palette:light:start */
   --bg: #fffff8;
   --surface: #f7f2e8;
-  --rule: #d0d0c8;
   --text: #111;
   --text-sec: #4a4238;
   --muted: #6a6a6a;
+  --rule: #d0d0c8;
   --accent: #0a5c54;
+/* palette:light:end */
   --font-body: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --font-head: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-mono: 'Courier New', ui-monospace, monospace;
@@ -16,13 +18,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* palette:dark:start */
     --bg: #16191d;
     --surface: #20242a;
-    --rule: #2a2f36;
     --text: #e6e8ea;
     --text-sec: #c4cad2;
     --muted: #b4bac2;
+    --rule: #2a2f36;
     --accent: #3fb0a0;
+/* palette:dark:end */
   }
 }
 

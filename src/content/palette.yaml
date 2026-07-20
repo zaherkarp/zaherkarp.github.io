@@ -1,0 +1,49 @@
+# palette.yaml — single source of truth for the site's color palette.
+#
+# Change a value here, then run:
+#     python scripts/build_palette.py
+# and every consuming file's `<!-- palette:start --> ... <!-- palette:end -->`
+# block (or, for CSS files, `/* palette:start */ ... /* palette:end */`) is
+# regenerated from these values. `scripts/lint_palette.py` fails the build if
+# any committed block drifts from what this file renders.
+#
+# Roles are SEMANTIC. Each consuming file maps them to its own local custom-
+# property names; the mapping lives in scripts/build_palette.py (TARGETS).
+# See CLAUDE.md "Palette pipeline" for the contract.
+#
+# Out of scope on purpose (NOT driven by this file):
+#   - blog.css Solarized code-block palette (separate, mode-symmetric system)
+#   - the print neutrals in the resume/cv PDF templates (paper-calibrated)
+#   - the two self-contained blog-post figures (--pc-* / --rw-*): they keep
+#     their own tokens per the blog-figure "renders standalone" convention,
+#     but lint_palette.py checks their accent matches `screen.<mode>.accent`.
+#   - the epidemic simulator's Plotly series colors (categorical, JS-set)
+
+# ── Screen palette (light + dark), the brand system Lichen would replace ──
+screen:
+  light:
+    bg:      "#fffff8"   # page background (Tufte cream)
+    surface: "#f7f2e8"   # elevated panel (subpages only)
+    ink:     "#111"      # body text, near-black
+    ink_sec: "#4a4238"   # secondary text (subpages / 404)
+    muted:   "#6a6a6a"   # metadata, sidenote bodies
+    rule:    "#d0d0c8"   # hairline rules
+    accent:  "#0a5c54"   # petrol teal, 1-2x per chart max
+  dark:
+    bg:      "#16191d"   # cool neutral slate
+    surface: "#20242a"
+    ink:     "#e6e8ea"
+    ink_sec: "#c4cad2"
+    muted:   "#b4bac2"
+    rule:    "#2a2f36"
+    accent:  "#3fb0a0"   # petrol teal lightened for AA on slate
+
+# ── Favicon fill (mirrors screen.light.accent) ──
+favicon: "#0a5c54"
+
+# ── Print palette for the resume/cv PDF templates ──
+# Single mode, paper-calibrated neutrals. Only `accent` is pipeline-managed
+# (and it is deliberately unused in the print CSS); the neutrals below are
+# recorded for reference but the generator does NOT rewrite them.
+print:
+  accent: "#0a5c54"
