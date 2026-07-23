@@ -104,8 +104,14 @@ def spans_for(target: dict, pal: dict) -> list[tuple[str, str, str]]:
         indent = target.get("indent", "  ")
         return [(s, e, f"\n{indent}--accent: {pal['print']['accent']};\n")]
     if kind == "favicon":
+        # Standalone asset: can't use CSS vars, so the generator writes the
+        # literals. Both derive from screen.light (rect = accent, glyph = bg),
+        # so the favicon tracks the palette with no separate value to sync.
+        light = pal["screen"]["light"]
         return [("<!-- palette:start -->", "<!-- palette:end -->",
-                 f'\n  <rect width="32" height="32" rx="6" fill="{pal["favicon"]}"/>\n')]
+                 f'\n  <rect width="32" height="32" rx="6" fill="{light["accent"]}"/>\n'
+                 f"  <text x=\"16\" y=\"24\" font-family=\"Palatino, 'Palatino Linotype', Georgia, 'Book Antiqua', serif\" "
+                 f'font-size="22" font-weight="normal" text-anchor="middle" fill="{light["bg"]}" letter-spacing="-0.5">ZK</text>\n')]
     raise ValueError(f"unknown target kind: {kind}")
 
 

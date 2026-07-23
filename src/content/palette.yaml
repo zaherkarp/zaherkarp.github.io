@@ -38,8 +38,8 @@ screen:
     rule:    "#2a2f36"
     accent:  "#3fb0a0"   # petrol teal lightened for AA on slate
 
-# ── Favicon fill (mirrors screen.light.accent) ──
-favicon: "#0a5c54"
+# (The favicon derives from screen.light: rect = accent, glyph = bg. It has
+#  no key of its own, so it can never drift from the screen palette.)
 
 # ── Print palette for the resume/cv PDF templates ──
 # Single mode, paper-calibrated neutrals. Only `accent` is pipeline-managed
