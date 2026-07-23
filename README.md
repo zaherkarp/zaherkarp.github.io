@@ -77,8 +77,8 @@ and commits the output back to the repo. The only network call at build
 time is Semantic Scholar for citation counts; everything else is local. All
 are idempotent: re-running them against unchanged inputs is a no-op. The
 three core build pipelines are sketched below; the resume **and CV** share
-one build, and the cliff curve, OG card, critique, site-review, and private
-job-search pipelines are documented in full in
+one build, and the cliff curve, OG card, critique, site-review, private
+job-search, and external GitHub-profile pipelines are documented in full in
 [docs/pipelines.md](./docs/pipelines.md).
 
 ```
