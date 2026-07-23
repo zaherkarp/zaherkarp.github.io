@@ -618,10 +618,14 @@ math (no MathJax/KaTeX dependency for one short formula).
 **Outcome figures (added 2026-06-09).** Two roles carry a small inline
 `figure.outcome-figure` (before/after bar pair) between the lead paragraph
 and the fold, so the densest section shows data by default instead of pure
-prose: Health Catalyst (refill turnaround 72h to 12h, the section's single
-accent use) and healthfinch (dashboard adoption, roughly 10 users to 100+,
-monochrome; exact client numbers are not public, so both endpoints are
-drawn and labeled as approximations). They
+prose: Health Catalyst (refill turnaround 72h to 12h) and healthfinch
+(dashboard adoption, roughly 10 users to 100+). Both use the same
+gray-before / accent-after pattern: the "after" bar is the `#7a0000`
+accent sentinel, the "before" bar is `#6a6a6a` muted. (The healthfinch
+figure was monochrome until 2026-07-23, when the owner chose visual parity
+with the Health Catalyst figure over the prior single-accent-per-section
+restraint; exact client numbers remain non-public, so both endpoints are
+still labeled as approximations.) They
 reuse the `.cliff-figure`/`.sankey-figure` sizing idiom and the `#7a0000`
 accent-sentinel palette-adapter contract; a single viewBox scales each on
 mobile (no SVG swap). Numbers must match the role prose exactly. BHA gets no
