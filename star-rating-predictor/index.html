@@ -66,6 +66,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+::selection      { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
+::-moz-selection { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
 
 html { font-size: 21px; background: var(--bg); color: var(--text); }
 body { font-family: 'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: var(--size-body); line-height: 1.7; background: var(--bg); }

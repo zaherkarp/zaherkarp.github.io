@@ -36,6 +36,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+::selection      { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
+::-moz-selection { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
 
 html {
   font-size: 19px;

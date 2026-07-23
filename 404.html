@@ -37,6 +37,8 @@
   }
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+::selection      { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
+::-moz-selection { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
 html { font-size: 21px; background: var(--bg); color: var(--text); }
 body { font-family: var(--font-body); line-height: 1.7; padding: 2rem 0 4rem; }
 .page { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }

@@ -60,6 +60,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+::selection      { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
+::-moz-selection { background: color-mix(in srgb, var(--text) 13%, var(--bg)); }
 
 html {
   font-size: 18px;
