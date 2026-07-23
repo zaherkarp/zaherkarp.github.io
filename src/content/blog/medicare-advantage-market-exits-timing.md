@@ -15,7 +15,7 @@ The shape of the contraction is visible in two pictures.
 
 <figure class="post-chart">
 <style>
-.post-chart { --pc-ink:#111; --pc-muted:#6a6a6a; --pc-rule:#d0d0c8; --pc-accent:#0a5c54; --pc-paper:#fffff8; font-family:'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; margin:1.8rem auto; max-width:760px; width:100%; }
+.post-chart { --pc-ink:#161a16; --pc-muted:#5b655c; --pc-rule:#d6ddd3; --pc-accent:#1d6835; --pc-paper:#f3f6f0; font-family:'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; margin:1.8rem auto; max-width:760px; width:100%; }
 .post-chart .pc-summary { display:flex; gap:1rem; flex-wrap:wrap; margin:0 0 1rem; padding:0.55rem 0; border-top:1px solid var(--pc-rule); border-bottom:1px solid var(--pc-rule); }
 .post-chart .pc-summary .metric { flex:1 1 30%; padding:0.2rem 0.3rem; text-align:left; }
 .post-chart .pc-summary .metric .n { display:block; font-size:1.5rem; line-height:1; color:var(--pc-ink); font-feature-settings:"lnum"; }
@@ -40,7 +40,7 @@ The shape of the contraction is visible in two pictures.
 .ma-timeline .ev .note { display:block; font-style:italic; color:var(--pc-accent); font-size:0.8rem; margin-top:0.05rem; padding-left:0.05rem; }
 .ma-timeline .cluster-band { grid-column:1 / -1; margin:0.55rem 0 0.45rem; padding:0.3rem 0; border-top:1px dashed var(--pc-rule); border-bottom:1px dashed var(--pc-rule); text-align:right; font-style:italic; font-size:0.82rem; color:var(--pc-muted); }
 @media (max-width:600px) { .ma-timeline { font-size:0.85rem; column-gap:0.8rem; row-gap:0.3rem; } .ma-timeline .ev { font-size:0.85rem; padding-left:0.9rem; } .ma-timeline .ev .d { display:block; min-width:0; font-size:0.7rem; margin:0 0 0.05rem; } .ma-timeline .ev::before { top:0.3rem; } .ma-timeline .cluster-band { text-align:left; padding:0.25rem 0; font-size:0.78rem; } }
-@media (prefers-color-scheme: dark) { .post-chart { --pc-ink:#e6e8ea; --pc-muted:#b4bac2; --pc-rule:#2a2f36; --pc-accent:#3fb0a0; --pc-paper:#16191d; } }
+@media (prefers-color-scheme: dark) { .post-chart { --pc-ink:#e3e9e2; --pc-muted:#a3ada4; --pc-rule:#293029; --pc-accent:#6fc082; --pc-paper:#141915; } }
 </style>
 <div class="pc-summary"><div class="metric"><span class="n">43</span><span class="lab">peak plans per beneficiary (2023–24)</span></div><div class="metric"><span class="n">18</span><span class="lab">brand exits, 2025 plan year</span></div><div class="metric"><span class="n">1.8M</span><span class="lab">members affected, 2025</span></div></div>
 <div class="pc-panel"><h4 class="pc-panel-title">Plans available per beneficiary, on average</h4><canvas id="chart1-plans"></canvas></div>
@@ -54,7 +54,7 @@ The shape of the contraction is visible in two pictures.
   const ink = dark ? '#e6e8ea' : '#111';
   const muted = dark ? '#b4bac2' : '#6a6a6a';
   const rule = dark ? '#2a2f36' : '#d0d0c8';
-  const accent = dark ? '#3fb0a0' : '#0a5c54';
+  const accent = dark ? '#6fc082' : '#1d6835';
   const years = ['2022', '2023', '2024', '2025', '2026'];
   const plans = [38, 43, 43, 42, 39];
   const hatchCanvas = document.createElement('canvas');

@@ -207,7 +207,7 @@ From `CLAUDE.md` §Design decisions and §What NOT to do. Proposals that
 violate these are out of bounds unless I explicitly reopen the decision:
 
 - Palette: Tufte cream paper (light) / cool neutral slate (dark) / petrol-teal
-  accent. Light accent `#0a5c54`, dark accent `#3fb0a0` (lightened for AA on the
+  accent. Light accent `#1d6835`, dark accent `#6fc082` (lightened for AA on the
   slate paper). `#7a0000` survives only as the SVG accent *sentinel* (remapped to
   `var(--accent)`, renders teal). **Accent discipline: ~1–2 uses per chart, never
   decorative;** the pre-push grep caps `--accent`/`#7a0000` in index.html at 20.

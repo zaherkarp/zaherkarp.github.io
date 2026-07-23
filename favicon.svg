@@ -1,6 +1,6 @@
 <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
   <!-- palette:start -->
-  <rect width="32" height="32" rx="6" fill="#0a5c54"/>
-  <text x="16" y="24" font-family="Palatino, 'Palatino Linotype', Georgia, 'Book Antiqua', serif" font-size="22" font-weight="normal" text-anchor="middle" fill="#fffff8" letter-spacing="-0.5">ZK</text>
+  <rect width="32" height="32" rx="6" fill="#1d6835"/>
+  <text x="16" y="24" font-family="Palatino, 'Palatino Linotype', Georgia, 'Book Antiqua', serif" font-size="22" font-weight="normal" text-anchor="middle" fill="#f3f6f0" letter-spacing="-0.5">ZK</text>
 <!-- palette:end -->
 </svg>

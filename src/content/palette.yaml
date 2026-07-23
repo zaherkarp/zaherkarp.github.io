@@ -22,21 +22,21 @@
 # ── Screen palette (light + dark), the brand system Lichen would replace ──
 screen:
   light:
-    bg:      "#fffff8"   # page background (Tufte cream)
-    surface: "#f7f2e8"   # elevated panel (subpages only)
-    ink:     "#111"      # body text, near-black
-    ink_sec: "#4a4238"   # secondary text (subpages / 404)
-    muted:   "#6a6a6a"   # metadata, sidenote bodies
-    rule:    "#d0d0c8"   # hairline rules
-    accent:  "#0a5c54"   # petrol teal, 1-2x per chart max
+    bg:      "#f3f6f0"   # page background (pale moss-gray, "Lichen")
+    surface: "#eaf0e4"   # elevated panel (subpages only)
+    ink:     "#161a16"   # body text, near-black green
+    ink_sec: "#3c443a"   # secondary text (subpages / 404)
+    muted:   "#5b655c"   # metadata, sidenote bodies
+    rule:    "#d6ddd3"   # hairline rules
+    accent:  "#1d6835"   # deep forest green, 1-2x per chart max
   dark:
-    bg:      "#16191d"   # cool neutral slate
-    surface: "#20242a"
-    ink:     "#e6e8ea"
-    ink_sec: "#c4cad2"
-    muted:   "#b4bac2"
-    rule:    "#2a2f36"
-    accent:  "#3fb0a0"   # petrol teal lightened for AA on slate
+    bg:      "#141915"   # deep moss-slate
+    surface: "#1e241d"
+    ink:     "#e3e9e2"
+    ink_sec: "#c3ccc1"
+    muted:   "#a3ada4"
+    rule:    "#293029"
+    accent:  "#6fc082"   # moss green lightened for AA on the dark ground
 
 # (The favicon derives from screen.light: rect = accent, glyph = bg. It has
 #  no key of its own, so it can never drift from the screen palette.)
@@ -46,4 +46,4 @@ screen:
 # (and it is deliberately unused in the print CSS); the neutrals below are
 # recorded for reference but the generator does NOT rewrite them.
 print:
-  accent: "#0a5c54"
+  accent: "#1d6835"

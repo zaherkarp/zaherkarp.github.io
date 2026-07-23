@@ -39,9 +39,9 @@ Here is the model on the real series — move the thresholds and the horizon, an
 </figure>
 
 <style>
-.rw-widget { --rw-ink:#111; --rw-muted:#6a6a6a; --rw-rule:#d0d0c8; --rw-accent:#0a5c54; --rw-paper:#fffff8; --rw-warn:#9a6a00; font-family:'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; box-sizing:border-box; max-width:760px; width:100%; margin:1.6rem auto; padding:1rem 1.15rem 1.1rem; border:1px solid var(--rw-rule); border-radius:3px; background:var(--rw-paper); }
+.rw-widget { --rw-ink:#161a16; --rw-muted:#5b655c; --rw-rule:#d6ddd3; --rw-accent:#1d6835; --rw-paper:#f3f6f0; --rw-warn:#9a6a00; font-family:'et-book', Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif; box-sizing:border-box; max-width:760px; width:100%; margin:1.6rem auto; padding:1rem 1.15rem 1.1rem; border:1px solid var(--rw-rule); border-radius:3px; background:var(--rw-paper); }
 .rw-widget *, .rw-widget *::before, .rw-widget *::after { box-sizing:border-box; }
-@media (prefers-color-scheme: dark) { .rw-widget { --rw-ink:#e6e8ea; --rw-muted:#b4bac2; --rw-rule:#2a2f36; --rw-accent:#3fb0a0; --rw-paper:#16191d; --rw-warn:#d0a24c; } }
+@media (prefers-color-scheme: dark) { .rw-widget { --rw-ink:#e3e9e2; --rw-muted:#a3ada4; --rw-rule:#293029; --rw-accent:#6fc082; --rw-paper:#141915; --rw-warn:#d0a24c; } }
 .rw-badge { margin:0 0 0.5rem; font-variant:small-caps; letter-spacing:0.06em; font-size:0.72rem; color:var(--rw-muted); }
 .rw-spark { margin:0 0 0.7rem; }
 .rw-spark svg { width:100%; height:auto; display:block; }

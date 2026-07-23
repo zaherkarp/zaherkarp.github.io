@@ -116,26 +116,39 @@ what's locked.
 
 ### Palette
 
-Tufte cream paper (light mode), cool neutral slate (dark mode), petrol-teal
-accent. Light mode keeps the canonical warm Tufte cream; only the dark mode
-is cooled to a neutral slate (de-warmed away from the prior warm-brown paper).
-The accent is a constant teal hue across both modes, lightened for dark-mode
-AA contrast. The two modes therefore differ slightly in warmth by design,
-bridged by the shared teal accent.
+**As of 2026-07-23 the palette is "Lichen" — moss green**, moved off the prior
+petrol teal by owner decision (selected via the palette-committee workflow; see
+docs/homepage-critique-2026-07-19.md §8). Pale moss-gray paper (light), deep
+moss-slate (dark), a deep-forest-green accent constant in hue across both modes
+and lightened for dark-mode AA. The two modes differ slightly by design, bridged
+by the shared green accent.
 
-Light mode (neutrals unchanged from the prior pass; only the accent moved):
-  --paper:  #fffff8    /* Tufte cream */
-  --ink:    #111       /* Near-black body */
-  --muted:  #6a6a6a    /* Neutral gray: dates, metadata, stack lines, sidenote bodies */
-  --rule:   #d0d0c8    /* Hairline rule */
-  --accent: #0a5c54    /* Deep petrol teal. Used 1-2x per chart maximum, never decoratively. ~7.8:1 on cream */
+**The palette is now generated from `src/content/palette.yaml` by
+`scripts/build_palette.py` and guarded by `scripts/lint_palette.py`** — do NOT
+hand-edit the token blocks; edit the YAML and rebuild. See §Palette pipeline.
+The values below are the rendered result (kept here for quick reference).
+
+Light mode:
+  --paper:  #f3f6f0    /* pale moss-gray ("Lichen") */
+  --ink:    #161a16    /* near-black green body */
+  --muted:  #5b655c    /* moss gray: dates, metadata, stack lines, sidenote bodies (~5.6:1) */
+  --rule:   #d6ddd3    /* hairline rule */
+  --accent: #1d6835    /* deep forest green. Used 1-2x per chart maximum, never decoratively. ~6.2:1 */
 
 Dark mode (`@media (prefers-color-scheme: dark)`):
-  --paper:  #16191d    /* Cool neutral slate */
-  --ink:    #e6e8ea    /* Cool off-white so body reads at 21px (~14:1 on slate) */
-  --muted:  #b4bac2    /* Cool mid-tone (~8.4:1 on slate, clears AA) */
-  --rule:   #2a2f36    /* Faint cool hairline */
-  --accent: #3fb0a0    /* Petrol teal lightened for dark mode (~6.7:1 on slate, clears AA) */
+  --paper:  #141915    /* deep moss-slate */
+  --ink:    #e3e9e2    /* off-white green so body reads at 21px (~14:1) */
+  --muted:  #a3ada4    /* moss mid-tone (~7.7:1, clears AA) */
+  --rule:   #293029    /* faint hairline */
+  --accent: #6fc082    /* moss green lightened for dark mode (~8.1:1, clears AA) */
+
+Two extra roles the union of consuming files uses (subpages / 404): `--surface`
+(elevated panel, light #eaf0e4 / dark #1e241d) and `--ink_sec`/`--text-sec`
+(secondary text, light #3c443a / dark #c3ccc1). Both are in palette.yaml.
+
+(History: the site was petrol teal — light `#0a5c54` / dark `#3fb0a0` on Tufte
+cream `#fffff8` / cool slate `#16191d` — from the Tufte rebuild until the
+2026-07-23 Lichen move.)
 
 **Accent discipline.** The Tufte rule is one or two accent uses per chart,
 never decoratively. On the homepage that's roughly: the 4.0 cliff line +
@@ -157,13 +170,15 @@ per-element edits. Do not rewrite SVGs to use CSS classes; the attribute-
 selector approach is the locked contract.
 
 Note: `#7a0000` is now a **historical accent sentinel** only. The rendered
-accent moved to petrol teal (see Palette above), but the SVG presentation
-attributes and the attribute selectors still key on the literal `#7a0000`
-string, which CSS remaps to `var(--accent)` (teal). This was deliberate: it
-keeps the SVG markup, the attribute selectors, and the pre-push accent grep
+accent has moved twice (oxford red, then petrol teal, now Lichen moss green;
+see Palette above), but the SVG presentation attributes and the attribute
+selectors still key on the literal `#7a0000` string, which CSS remaps to
+`var(--accent)` (currently green). This was deliberate: it keeps the SVG
+markup, the attribute selectors, and the pre-push accent grep
 (`grep -cE -- '--accent|#7a0000' index.html`, cap 20) untouched. So a red
-sentinel renders teal on the page — do not "fix" the sentinel hex to match
-the teal, and do not interpret `#7a0000` in an SVG as an oxford-red color.
+sentinel renders as the accent (green) on the page — do not "fix" the sentinel
+hex to match the accent, and do not interpret `#7a0000` in an SVG as an
+oxford-red color.
 
 ### Typography
 
@@ -963,7 +978,7 @@ Blog figure conventions (inline SVG + load-draw motion):
   `<figcaption>` blocks. They use the same palette-adapter contract as
   the homepage: hardcoded presentation hexes (#111, #6a6a6a, #d0d0c8,
   and the #7a0000 accent *sentinel*, which blog.css remaps to
-  var(--accent) petrol teal) so one markup adapts to light/dark. Every
+  var(--accent), now moss green) so one markup adapts to light/dark. Every
   figure carries a role="img" aria-label. No blank lines inside the
   `<svg>` (markdown-it HTML-block rule; lint_blog enforces).
   Motion: the load-draw style established in
@@ -1578,7 +1593,7 @@ Checks:
 - `grep -cE -- '--accent|#7a0000' index.html` ≤ 20 (accent discipline:
   counts both CSS variable refs and SVG literal callouts, since the
   SVG palette adapter expects #7a0000 as the accent *sentinel* presentation
-  attribute (it now renders petrol teal via var(--accent); see §Palette).
+  attribute (it now renders the accent, moss green, via var(--accent); see §Palette).
   Bump the cap only after discussion; ratchet it down when removing
   uses.)
 - `grep -rE '<p><(text|line|polyline|circle|rect|polygon)' blog/` returns
