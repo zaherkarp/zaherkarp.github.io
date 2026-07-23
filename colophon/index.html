@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colophon, Zaher Karp</title>
-<meta name="description" content="How this site is engineered: a pure HTML and CSS portfolio with no framework, built by five Python pipelines, guarded by eight linters and a pre-push hook, and treated as an engineering artifact in its own right.">
+<meta name="description" content="How this site is engineered: a pure HTML and CSS portfolio with no framework, built by five Python pipelines, guarded by eleven linters and a pre-push hook, and treated as an engineering artifact in its own right.">
 <link rel="canonical" href="https://zaherkarp.com/colophon/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://gc.zgo.at">
 
 <meta property="og:title" content="Colophon, Zaher Karp">
-<meta property="og:description" content="How this site is engineered: no framework, five build pipelines, eight linters, a self-installing pre-push hook.">
+<meta property="og:description" content="How this site is engineered: no framework, five build pipelines, eleven linters, a self-installing pre-push hook.">
 <meta property="og:url" content="https://zaherkarp.com/colophon/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Zaher Karp">
@@ -18,7 +18,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Colophon, Zaher Karp">
-<meta name="twitter:description" content="How this site is engineered: no framework, five build pipelines, eight linters, a self-installing pre-push hook.">
+<meta name="twitter:description" content="How this site is engineered: no framework, five build pipelines, eleven linters, a self-installing pre-push hook.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
@@ -107,7 +107,7 @@
 
       <figure class="colophon-figure">
         <svg class="colophon-fig" viewBox="0 0 700 230" role="img"
-             aria-label="Pipeline diagram: sources flow through five build scripts, past a gate of eight linters and a pre-push hook, into the published outputs.">
+             aria-label="Pipeline diagram: sources flow through five build scripts, past a gate of eleven linters and a pre-push hook, into the published outputs.">
           <!-- Sources -->
           <g class="col-node col-d0">
             <rect x="14" y="64" width="184" height="92" rx="3" fill="none" stroke="#111" stroke-width="1.2"/>
@@ -141,7 +141,7 @@
           <!-- quality gate, the punchline, drawn in accent last -->
           <g class="col-gate col-d4">
             <line x1="350" y1="156" x2="350" y2="184" stroke="#7a0000" stroke-width="1.2"/>
-            <text x="350" y="203" text-anchor="middle" font-size="12.5" fill="#7a0000" font-style="italic">8 linters + pre-push hook</text>
+            <text x="350" y="203" text-anchor="middle" font-size="12.5" fill="#7a0000" font-style="italic">11 linters + pre-push hook</text>
             <text x="350" y="220" text-anchor="middle" font-size="11" fill="#6a6a6a">nothing ships that fails a gate</text>
           </g>
         </svg>
@@ -181,7 +181,7 @@
 
       <h2>Quality gates</h2>
       <p>The thing I am most deliberate about is that the site cannot quietly
-      drift. Eight linters run on every push, installed automatically the first
+      drift. Eleven linters run on every push, installed automatically the first
       time any project script runs, so a fresh clone wires up its own pre-push
       hook with no manual setup. They enforce consistency a human reviewer would
       eventually miss.</p>
@@ -194,6 +194,9 @@
         <div><span class="k">lint_blog.py</span><span class="v">Catches the source-side markdown mistakes that render as garbage: leaked HTML comments, blank lines inside an inline SVG, a diagram written as a blockquote.</span></div>
         <div><span class="k">lint_markers.py</span><span class="v">The build-time injection markers a generator splices into, like the writing list and the Publications block, must stay paired and intact, so a stray hand edit cannot corrupt the host file or make a generator silently do nothing.</span></div>
         <div><span class="k">lint_skills.py</span><span class="v">The Skills line on the resume must match exactly what the canonical skills file renders, so the public resume cannot drift from the single source the private job-fit tooling also reads.</span></div>
+        <div><span class="k">lint_links.py</span><span class="v">Every internal anchor, every link to a built blog page, and every sitemap entry resolves to something that actually exists.</span></div>
+        <div><span class="k">lint_html.py</span><span class="v">The homepage and the generated pages parse into a well-formed document tree, with no misnested or orphaned tags.</span></div>
+        <div><span class="k">lint_palette.py</span><span class="v">Every file's color tokens match the single palette source, and the accent color is never hardcoded off-token.</span></div>
       </div>
       <p>Alongside the linters, the pre-push hook also checks that the site
       chrome stays free of em dashes, that the accent color stays within its
