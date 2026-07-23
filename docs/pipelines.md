@@ -79,6 +79,12 @@ Note `index.html` is *both* a hand-authored source (its prose) and a
 generated target (its marked regions). That dual role is why it appears on
 both sides of the diagram below.
 
+Four of these sources (blog frontmatter, `publications.yaml`, `resume.md`,
+and `skills.yaml`) also feed a surface in a *different* repository: the GitHub
+profile README at `zaherkarp/zaherkarp` (see pipeline 10). It is a downstream
+reader of the field names below, so a schema rename here means a matching edit
+there.
+
 ### Three kinds of script
 
 - **Generators** (`build_*.py`) read a source and write an output — either
@@ -353,6 +359,26 @@ recency-weighted. Subcommands: `matrix`, `packet <target.md>` / `--all`,
 `outreach`, `all`. Safe on a fresh clone (still emits the matrix from
 committed inputs; never errors on absent private data). Its companion guard
 `lint_jobfit.py` is informational and always exits 0.
+
+### 10. GitHub profile — `zaherkarp/zaherkarp` (external repo)
+
+- **Source:** this repo's `skills.yaml`, `publications.yaml`, `blog/*.md`
+  frontmatter, and `resume.md` (current "Present" role), read from a shallow
+  clone of this **public** repo.
+- **Output:** four marker-injected blocks (`title`, `stack`, `writing`,
+  `research`) in the profile README shown on github.com/zaherkarp.
+- **Trigger:** a daily cron (plus manual dispatch) in the profile repo.
+
+The generator (`scripts/build_readme.py`) lives in `zaherkarp/zaherkarp`, not
+here, so this is the one pipeline that reaches across a repository boundary. It
+adds no secret: the read side needs none (this repo is public) and the write
+side commits to the profile's own repo with the built-in `GITHUB_TOKEN`. It is
+a fourth projection of the same data the resume, CV, and homepage already read,
+so the profile cannot drift from the site. The coupling to keep in mind here is
+that it reads the documented field names in `skills.yaml` and
+`publications.yaml` and the resume's `**Employer** | Title` + "Present" shape,
+so a rename on this side means a matching edit to `build_readme.py` there (see
+CLAUDE.md, "GitHub profile README (external consumer)").
 
 ---
 

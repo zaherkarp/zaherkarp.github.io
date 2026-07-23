@@ -1204,6 +1204,43 @@ note. Enforced by `scripts/lint_notes.py` (see §Pre-push checks).
 
 ---
 
+## GitHub profile README (external consumer)
+
+The GitHub profile README at `zaherkarp/zaherkarp` (shown on
+github.com/zaherkarp) is generated from THIS repo's sources of truth by a
+generator that lives in THAT repo, not here. It is a fourth projection of the
+same data the resume, CV, and homepage already read:
+
+  - `src/content/skills.yaml` (categories_order + per-skill id/name/category)
+    -> the profile's Tech stack badges
+  - `src/content/publications.yaml` (title/venue/year/links/citations)
+    -> the profile's Research block
+  - `src/content/blog/*.md` frontmatter (title/publishDate/draft)
+    -> the profile's Writing block (recent non-draft posts)
+  - `src/content/resume.md` current "Present" role (`**Employer** | Title`)
+    -> the profile's headline title
+
+How it works (all in `zaherkarp/zaherkarp`, none of it in this repo):
+`scripts/build_readme.py` reads these files from a shallow clone of THIS
+public repo, regenerates four marker-bounded blocks (`title`, `stack`,
+`writing`, `research`) with the same `replace_between` injection pattern the
+site uses, and commits on a daily cron plus manual dispatch. A ported
+`lint_markers.py` guards the marker integrity there. No token crosses repos:
+the read side is public and the write side commits to the profile's own repo
+with the built-in GITHUB_TOKEN, so this adds NO secret to either repo.
+Documented for readers in the site colophon; full pipeline entry in
+docs/pipelines.md (pipeline 10).
+
+Implication for edits HERE: the profile is a downstream reader of the field
+names above. Renaming a consumed field (a skills.yaml key, a publications.yaml
+field, the resume's "Present"-role shape) can silently break the profile,
+because its marker lint only catches structural marker damage, not a field
+rename. If you rename a field the profile consumes, update `build_readme.py`
+in `zaherkarp/zaherkarp` in the same change. This is the project's one
+cross-repo coupling.
+
+---
+
 ## Site review workflow
 
 Multi-agent feedback + iterative implementation loop, separate from
