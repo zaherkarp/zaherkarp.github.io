@@ -205,6 +205,29 @@
       structured multi-camp design critique of the site against its own taste
       rules.</p>
 
+      <h2>Color</h2>
+      <p>The whole site draws its color from one place. A single file,
+      palette.yaml, names the brand colors, once for light mode and once for
+      dark, and a small generator writes those values into the color tokens of
+      every file that needs them: the homepage, the blog stylesheet, the error
+      page, the interactive subpages, the resume and CV templates, even the
+      favicon. Each file keeps its own local token names, so one source value
+      lands as one variable on the homepage and a differently named one in the
+      blog without my having to keep the two in my head.</p>
+      <p>This is deliberately not one of the build pipelines above. It generates
+      no page; it only keeps color in sync. Before it existed, the palette was
+      copied by hand across about a dozen files, which is exactly why changing
+      the accent once felt risky. Now it is one edit, and a linter refuses any
+      push where a file's tokens have drifted from the source, or where the
+      accent has been hardcoded off its token. The color on the page is
+      guaranteed to be the color the source defines, in both modes.</p>
+      <p>The figures play one small trick to keep up. Their SVGs hardcode a
+      sentinel color, and a CSS rule remaps that sentinel to the live accent, so
+      one piece of markup adapts to light and dark with no per-shape edits. A
+      few color systems sit outside this on purpose, like the Solarized theme on
+      code blocks and the near-black ink used only when printing, because they
+      answer to their own logic rather than the brand palette.</p>
+
       <h2>Why it is built this way</h2>
       <p>None of this is necessary for a personal website. I built it this way on
       purpose, because the habits are the same ones that matter in a production
