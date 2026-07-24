@@ -33,6 +33,18 @@ def _esc(s: str) -> str:
     return html_lib.escape(str(s), quote=False)
 
 
+def _render_venue(pub: dict) -> str:
+    """Escape the venue, then wrap any `venue_lang` terms in a lang span so
+    screen readers pronounce foreign proper nouns correctly (e.g. a French
+    city in an otherwise-English venue). `venue_lang` is an optional
+    {term: lang} map; the term is matched in the escaped text, which is safe
+    because html.escape leaves non-ASCII like "Montréal" intact."""
+    venue = _esc(pub["venue"])
+    for term, lang in (pub.get("venue_lang") or {}).items():
+        venue = venue.replace(_esc(term), f'<span lang="{_esc(lang)}">{_esc(term)}</span>')
+    return venue
+
+
 def load_publications(path: Path = PUBS_YAML) -> list[dict]:
     """Parse publications.yaml into a list of entry dicts, in file order."""
     with path.open(encoding="utf-8") as fh:
@@ -105,7 +117,7 @@ def render_homepage_entry(pub: dict) -> str:
         f'      </p>\n'
         f'      <p class="pub-meta">\n'
         f'        {_esc(pub["authors"])}<br>\n'
-        f'        <em>{_esc(pub["venue"])}</em>{detail_suffix}\n'
+        f'        <em>{_render_venue(pub)}</em>{detail_suffix}\n'
         f'      </p>\n'
         f'    </div>'
     )
@@ -134,7 +146,7 @@ def render_cv_entries(pubs: list[dict]) -> str:
         if not authors.endswith("."):
             authors += "."
         title = _esc(pub["title"]).rstrip(".")
-        venue = _esc(pub["venue"])
+        venue = _render_venue(pub)
         detail = (pub.get("detail") or "").strip().rstrip(".")
         year = pub["year"]
         if detail:

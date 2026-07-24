@@ -103,6 +103,7 @@
   title: "Approaches and challenges to optimizing the use of EHRs in primary care (preliminary findings)"
   authors: "Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P."
   venue: "Proceedings of World Conference on E-Learning, Montréal"
+  venue_lang: { "Montréal": "fr" }
   detail: ""
   toggle_aria: "Show full-text link for WCEL 2012 proceedings paper"
   links:
