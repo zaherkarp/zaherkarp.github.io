@@ -102,6 +102,88 @@ or fork the script.
 
 ## 2. Daily workflow
 
+### 2z. The pipeline in one picture
+
+Everything below operates on one ledger, `src/content/blog-ideas.yaml`. A row
+is created once, at capture, and carried through every stage. **An idea and a
+draft are the same row at different `status:` values, not two records:**
+
+```
+  blog idea add ─┐
+                 ├──▶  status: idea  ──▶  drafting  ──▶  published
+  the phone    ──┘     (no file yet)     (.md exists)   (draft: false)
+                             │                ▲
+                        blog promote          └── blog new / blog idea adopt
+```
+
+The `.md` file is the artifact that appears at the `drafting` stage, when the
+item earns a slug; `slug` is the join key. `added:` never changes, so a live
+post traces back to the day the idea landed. `lint_ideas.py` enforces the join
+in both directions.
+
+### 2a0. Capture an idea
+
+```bash
+blog idea add                             # interactive prompts
+blog idea add "Why cut points drift"      # title from argv
+blog idea add "Title" --note "the angle" --tags "stars,cms"
+
+blog idea list                            # the backlog
+blog idea list --all                      # every row, all stages
+blog idea drop <id>                       # retire it; the row survives as history
+blog idea restore <id>                    # put a dropped idea back
+```
+
+No file is created and no slug is spent. A slug is a URL commitment, and
+capture should not force you to invent a good one on a train.
+
+**From a phone:** GitHub app → Issues → New issue → **Blog idea**. The
+`blog-idea-intake.yml` workflow appends the row, commits it, comments the
+assigned id, and closes the issue. Em-dashes are stripped on the way in rather
+than rejected (a phone keyboard produces them readily; the ledger has to stay
+em-dash-clean because a promoted title reaches homepage chrome).
+
+### 2a1. See what is in flight
+
+```bash
+blog queue
+```
+
+One staged table, longest-stuck first — deliberately not an ideas list beside
+a drafts list, because the stages are one ledger and the view should say so.
+
+Drafts are aged from **the last commit touching the file, not `publishDate`**.
+publishDate is the *intended* date, so a draft dated in the future would read
+as permanently fresh; that is exactly how drafts go unnoticed. Buckets: fresh
+under 14d, aging under 45d, stale at 45d+.
+
+`blog queue` also flags any draft with no ledger row (invisible to the funnel)
+and tells you to run `blog idea adopt`.
+
+### 2a2. Promote an idea into a draft
+
+```bash
+blog promote <idea-id>                    # the idea -> drafting transition
+blog promote <idea-id> --no-editor
+```
+
+This is a transition, not a copy: the same row gains a slug and moves to
+`drafting`, keeping its original `added` date. It scaffolds
+`src/content/blog/<slug>.md` from the idea's title and tags, then opens
+`$EDITOR`. From here the flow is identical to a post started with `blog new`.
+
+### 2a3. Adopt a draft the ledger does not know about
+
+```bash
+blog idea adopt <slug>                    # register one draft
+blog idea adopt                           # register every unregistered draft
+```
+
+For drafts written before the ledger existed, or created by hand.
+`added` is backfilled from the file's first commit (falling back to its
+`publishDate`), so the row's age reflects the draft's real age rather than
+today.
+
 ### 2a. Start a draft
 
 ```bash
@@ -112,6 +194,11 @@ blog new "Title" --no-editor              # scaffold only; don't open $EDITOR
 
 Writes `src/content/blog/<slug>.md` with `draft: true`. Slug is derived
 from the title; conflicts abort.
+
+It also writes a `drafting` ledger row, so a directly-scaffolded post is
+inside the funnel rather than bypassing it. Starting here instead of with
+`blog idea add` is entering the pipeline one stage in, which is fine — the
+idea stage is for things you are not ready to write yet.
 
 **Title gotchas — read before naming a post:**
 
@@ -359,19 +446,27 @@ uv venv && uv pip install -r scripts/requirements.txt
 source .venv/bin/activate
 export EDITOR='code --wait'               # for VS Code users
 
+# Capture (no file, no slug spent)
+blog idea add "Why cut points drift" --note "the angle" --tags "stars,cms"
+blog idea list
+blog queue                                # the whole funnel, longest-stuck first
+
 # Day-to-day
-blog new "My Post Title"
+blog promote why-cut-points               # idea -> drafting
+blog new "My Post Title"                  # or start straight at drafting
 blog list --drafts
 blog edit my-post-title
 blog lint my-post-title
 blog preview my-post-title
 blog publish my-post-title --dry-run
-blog publish my-post-title
+blog publish my-post-title                # drafting -> published
 
 # Less common
 blog status
 blog rename old-slug new-slug
 blog draft my-post-title
+blog idea adopt                           # register drafts the ledger missed
+blog idea drop some-idea
 blog config show
 
 # Audit / inspect

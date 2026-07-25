@@ -31,6 +31,51 @@ If you forget and hit either error: `source .venv/bin/activate` and re-run.
 
 ## "I want to..."
 
+### ...jot down an idea I'm not ready to write
+
+```bash
+./scripts/blog idea add "Why cut points drift" --note "the angle in a sentence"
+```
+
+No file is created and no slug is spent, so you don't have to invent a good
+URL for something you may never write. When you're ready:
+`./scripts/blog promote <id>`.
+
+### ...capture an idea from my phone
+
+Open the GitHub app → **Issues → New issue → Blog idea**. Fill in the title
+(and the angle, if you have thirty seconds). Submit.
+
+A workflow appends it to `src/content/blog-ideas.yaml`, commits, replies with
+the id it assigned, and closes the issue. It shows up in `blog queue` next
+time you're at a terminal. Nothing is published; capture is just capture.
+
+### ...see what I've got in flight
+
+```bash
+./scripts/blog queue
+```
+
+One table, longest-stuck first: backlog ideas and in-progress drafts together,
+because they're stages of one pipeline, not two lists. Drafts are colour-coded
+by how long since you last touched them (green under 14d, yellow under 45d,
+red beyond).
+
+Every Monday the same view is refreshed into a rolling **Blog backlog** issue
+you can read on your phone. It only comments at you when something has *newly*
+gone stale, so a notification always means something changed.
+
+### ...deal with a draft I abandoned
+
+Two honest options, and picking one is the point:
+
+```bash
+./scripts/blog promote <id>       # ...or just go finish the draft
+./scripts/blog idea drop <id>     # retire it; the row stays as history
+```
+
+A backlog you never prune stops being a backlog and becomes a guilt list.
+
 ### ...start a new post
 
 ```bash
@@ -183,10 +228,16 @@ so it heals automatically. In-prose links from other posts, the rendered
 
 ---
 
-## The 10 commands at a glance
+## The commands at a glance
 
 | Command | What it does |
 |---|---|
+| `blog idea add "Title" [--note] [--tags]` | Capture an idea; no file, no slug spent |
+| `blog idea list [--all]` | The backlog (`--all` = every stage) |
+| `blog idea drop\|restore <id>` | Retire an idea / put it back |
+| `blog idea adopt [<slug>]` | Register draft(s) the ledger doesn't know about |
+| `blog promote <id>` | Idea → draft: scaffolds the `.md`, opens `$EDITOR` |
+| `blog queue` | The whole funnel, one table, longest-stuck first |
 | `blog new "Title"` | Scaffold draft, open in `$EDITOR` |
 | `blog list [--drafts\|--all]` | List posts with state |
 | `blog edit <slug>` | Open existing post in `$EDITOR` |

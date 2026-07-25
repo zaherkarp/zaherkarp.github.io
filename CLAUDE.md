@@ -1022,6 +1022,81 @@ update rule above for the marker contract.
 
 ---
 
+## Blog idea backlog
+
+The stage BEFORE drafting, added 2026-07-25. Source of truth:
+`src/content/blog-ideas.yaml`. Shared reader/writer: `scripts/_ideas.py`.
+Gate: `scripts/lint_ideas.py`.
+
+**The model, and the thing not to break.** An idea and a draft are the SAME
+ledger row at different `status:` values, not two records:
+
+```
+  blog idea add ─┐
+                 ├──▶ status: idea ──▶ drafting ──▶ published ( ──▶ dropped)
+  the phone    ──┘    (no file yet)   (.md exists)  (draft: false)
+```
+
+The `.md` file under `src/content/blog/` is not a parallel record; it is the
+ARTIFACT that appears at the `drafting` stage, when the item earns a slug.
+`slug` is the join key. `added:` never changes, so a live post traces back to
+the day the idea was captured. Ideas deliberately carry no file: a slug is a
+URL commitment that should not be spent on something that may never be
+written, and a file per idea would put every capture into the build, the
+linters, and the sitemap surface area.
+
+Do NOT "simplify" this into idea-files-with-a-flag under `src/content/blog/`,
+and do not add a second store for drafts. One ledger, one stage field.
+
+**Stages.** `idea` (captured, no slug) / `drafting` (file exists, `draft:
+true`) / `published` (file exists, `draft: false`) / `dropped` (retired, row
+kept as history). Field contract is documented in the YAML header; the header
+comment block above the first entry is preserved verbatim by
+`_ideas.save_ideas()` and everything below it is re-dumped, so per-entry
+inline comments do not survive a write. No section-divider comments: a stage
+changes over time, so any "# --- idea" banner would start lying.
+
+**Every draft must have a row.** Three mechanisms, because a file without a
+row is invisible to the funnel (the exact failure this pipeline exists to fix,
+after three drafts sat unnoticed for two months):
+  - `blog new` writes a `drafting` row as well as the file.
+  - `blog idea adopt <slug>` registers an existing draft, backfilling `added`
+    from its first commit.
+  - `lint_ideas` check 8 reports draft posts with no row. INFORMATIONAL, never
+    fails, and scoped to `draft: true`: the 60+ published historical posts
+    predate the ledger and must not be retro-registered. Same
+    hard-gate-one-way / report-the-other-way split as `lint_recognition.py`.
+
+**CLI** (`scripts/blog`, see scripts/blog.md): `idea add|list|drop|restore|
+adopt`, `promote <id>` (the idea→draft transition), `queue` (the funnel as ONE
+staged table, longest-stuck first). `publish` moves the row to `published` and
+stages `blog-ideas.yaml` in the SAME commit as the post, so the two halves can
+never be one commit out of step; `draft` walks it back.
+
+**Staleness is measured from the last commit touching the file, NOT
+`publishDate`.** publishDate is the intended date, so a draft dated in the
+future reads as permanently fresh. Buckets: fresh <14d, aging <45d, stale 45d+
+(`FRESH_DAYS` / `AGING_DAYS` in `_ideas.py`).
+
+**Mobile capture.** `.github/ISSUE_TEMPLATE/blog-idea.yml` is a GitHub issue
+form (a native form in the phone app). `.github/workflows/blog-idea-intake.yml`
+runs `scripts/blog_ideas_intake.py` to append the row, lints, commits, comments
+the assigned id, and closes the issue. Idempotent via `source: issue#N`, which
+matters because the `labeled` trigger fires on the template's own label.
+Em-dashes are stripped on the way in rather than rejected: a phone keyboard
+produces them readily and a capture is not worth failing CI over.
+
+**Weekly digest.** `.github/workflows/blog-backlog-digest.yml` (Mondays 13:00
+UTC) keeps ONE rolling issue labeled `blog-backlog`, body regenerated from
+`scripts/blog_backlog.py` (same `backlog_snapshot()` the CLI renders, so the
+two surfaces cannot disagree). The body refreshes silently; a COMMENT is posted
+only when an item NEWLY crosses a threshold (draft 30d untouched, idea 90d
+idle), with prior state stashed in a trailing `<!-- blog-backlog-state: -->`
+comment. Do not make it comment every week: a notification that always arrives
+is one you learn to ignore.
+
+---
+
 ## Resume and CV pipeline
 
 Two documents share one build: a 1-2 page **resume** and a comprehensive
@@ -1586,6 +1661,15 @@ Checks:
   `src/content/palette.yaml` renders; no `--accent:` is assigned outside a
   `palette:*` span in any managed file; and the two self-contained blog-post
   figures' accents match the canonical value. See §Palette pipeline)
+- `python scripts/lint_ideas.py` clean (blog idea ledger: schema for
+  `src/content/blog-ideas.yaml` (unique slug-form ids, valid stage, no
+  unknown keys, `added` not in the future, em-dash-clean title/note) plus
+  referential integrity against `src/content/blog/` -- a `drafting` row
+  must point at a real `draft: true` post, a `published` row at a live one,
+  an `idea` row must carry no slug, and no two rows may claim one post.
+  The reverse direction (draft posts with no ledger row) is an
+  informational report that never fails and prints on a manual run, since
+  the published historical posts predate the ledger. See §Blog idea backlog)
 - `grep -c '—'` returns 0 across index.html, resume.md, cv.md, and
   life-in-weeks/index.html (em-dash-clean chrome; life-in-weeks's generated
   blog "thoughts" are stripped at the source, this guards hand-authored
@@ -1611,7 +1695,7 @@ only fires for contributors who push from a machine that has run a project
 script (which installs it). Web-UI edits, fresh clones, the `draft: false`
 bypass, and the workflows' own bot commits all skip it, and the
 `Blog-CLI-Linted:` redundancy trailer can skip the two CI lints in
-`build_blog.yml`. So `lint.yml` runs the FULL suite above (all ten linters
+`build_blog.yml`. So `lint.yml` runs the FULL suite above (all twelve linters
 plus the five guard steps: four greps and the sim.py py_compile) on every
 `pull_request` and every `push` to the
 default branch, unconditionally, and never consults the redundancy trailer.
@@ -1636,7 +1720,7 @@ Its dev-only deps are pinned in `scripts/requirements-dev.in` /
 `scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
 CI.
 
-These are **characterization tests**, not a spec: each of the ten gate
+These are **characterization tests**, not a spec: each gate
 linters is exercised for both a pass case (against the clean repo tree) and a
 violation case, and the build scripts get smoke tests (build_blog pages +
 well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;

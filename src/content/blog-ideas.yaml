@@ -1,0 +1,101 @@
+# blog-ideas.yaml — single source of truth for the blog idea backlog.
+#
+# This is the LEDGER for the idea -> draft -> publish pipeline. One row per
+# item, created once at capture and carried through every stage. An idea and
+# a draft are the same row at different `status:` values, NOT two records.
+#
+#   status: idea       captured, no body written, no slug spent yet
+#   status: drafting   promoted; src/content/blog/<slug>.md exists, draft: true
+#   status: published  the post went live; draft: false
+#   status: dropped    killed, kept for the record
+#
+# The `.md` file is not a parallel record. It is the artifact that comes into
+# existence at the `drafting` stage, when the item earns a slug. Ideas carry
+# no file because they have no body, and because a slug is a URL commitment
+# that should not be spent on something that may never be written.
+# `slug` is the join key, and scripts/lint_ideas.py enforces referential
+# integrity in both directions.
+#
+# Consumed by:
+#   - scripts/_ideas.py         load/save + backlog_snapshot() (the shared reader)
+#   - scripts/blog              `blog idea ...`, `blog promote`, `blog queue`
+#   - scripts/lint_ideas.py     the pre-push / CI gate
+#   - scripts/blog_backlog.py   the weekly digest issue body
+#   - scripts/blog_ideas_intake.py  appends rows captured from the phone
+#
+# Field notes:
+#   id       required. slug-form ([a-z0-9-]+), unique, immutable. This is the
+#            item's identity for the whole of its life; renaming it breaks the
+#            provenance trail. Assigned by `blog idea add` / the intake script.
+#   title    required. Working title. Becomes the post's frontmatter title on
+#            promote, so keep it em-dash-clean (see below).
+#   note     optional. The angle in a sentence or two: why this is worth
+#            writing, what the argument is. This is the field that makes an
+#            idea recoverable months later.
+#   tags     optional list. Seeds the promoted post's frontmatter tags.
+#   added    required. Capture date (YYYY-MM-DD). NEVER changes, including on
+#            promote or publish, so a live post can always be traced back to
+#            the day the idea landed.
+#   status   required. One of the four values above.
+#   slug     required when status is drafting/published, and must be absent or
+#            empty otherwise. Matches src/content/blog/<slug>.md.
+#   source   optional provenance. "issue#42" for rows the intake workflow
+#            created from a mobile capture; omitted for rows added at a
+#            terminal.
+#
+# Em-dash policy (CLAUDE.md): keep this file em-dash-clean. A promoted idea's
+# title flows into post frontmatter and from there into homepage chrome via
+# build_portfolio, and lint_ideas fails the push on an em-dash here.
+#
+# Do not hand-edit `status`/`slug` to move an item between stages. Use the CLI
+# (`blog promote`, `blog publish`, `blog idea drop`) so the ledger row and the
+# posts directory move together.
+#
+# EVERYTHING ABOVE THE FIRST ENTRY IS PRESERVED VERBATIM by _ideas.save_ideas();
+# everything below it is re-dumped from the parsed list, so per-entry inline
+# comments do not survive a write. Section-divider comments are deliberately
+# absent: an item's stage changes over time, so any "# --- idea" banner would
+# start lying the first time something was promoted. `status:` is the divider.
+#
+# The three `drafting` rows below were adopted when the ledger was introduced.
+# Their `added` is backfilled from each post's publishDate; they predate the
+# pipeline, so there is no real capture date to recover.
+
+- id: how-this-site-builds-itself
+  title: How This Site Builds Itself
+  note: 'The build system behind a no-framework static site: five build scripts, the linter web, the self-installing pre-push hook, and the patterns that turn out to have textbook names.'
+  tags:
+  - portfolio
+  - static-site
+  - github-actions
+  - python
+  - ci-cd
+  - pipelines
+  - concurrency
+  added: 2026-05-19
+  status: drafting
+  slug: how-this-site-builds-itself
+
+- id: stars-final-rule-operational-ballast
+  title: Operational Measures Were the Ballast in Star Ratings. CMS Just Removed Them.
+  note: Part 1 of two. The CY2027 final rule retires eleven administrative and experience measures, concentrating weight in the scores plans find hardest to move.
+  tags:
+  - medicare-advantage
+  - stars
+  - quality-measurement
+  - health-policy
+  added: 2026-07-03
+  status: drafting
+  slug: stars-final-rule-operational-ballast
+
+- id: stars-three-live-rulebooks
+  title: Running Stars Analytics When Three Rulebooks Are All Live
+  note: Part 2 of two. The Clover ruling plus the phase-in means projections and cut points do not transfer across rulebooks; treat the rule layer as versioned configuration.
+  tags:
+  - medicare-advantage
+  - stars
+  - forecasting
+  - data-engineering
+  added: 2026-07-03
+  status: drafting
+  slug: stars-three-live-rulebooks

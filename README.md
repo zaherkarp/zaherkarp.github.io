@@ -28,6 +28,7 @@ life-in-weeks/              90-year life-in-weeks grid (inline vanilla JS)
 
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
+  blog-ideas.yaml           Idea ledger (idea -> drafting -> published)
   resume.md                 Resume source
   cv.md                     Comprehensive academic CV source
   publications.yaml         Publications (one source for homepage + CV)
@@ -36,7 +37,9 @@ src/data/
   cms-ma-pd-stars-*.csv     CMS Star Ratings distribution (cliff curve)
 
 scripts/
-  blog                      Authoring CLI (new/preview/publish; see blog.md)
+  blog                      Authoring CLI (idea/promote/queue/publish; blog.md)
+  blog_backlog.py           Renders the funnel as the weekly digest issue
+  blog_ideas_intake.py      Turns a "Blog idea" issue into a ledger row
   build_blog.py             Blog build pipeline
   build_resume.py           Resume + CV build pipeline (WeasyPrint)
   build_portfolio.py        Activity grid + writing list + citation counts
@@ -44,8 +47,9 @@ scripts/
   build_og.py               Open Graph card renderer (manual)
   build_jobsearch.py        Private, local-only job-search driver
   lint_*.py                 Guards (blog, vocab, facts, notes, recognition,
-                            gantt, markers, skills, jobfit) — see docs/pipelines.md
-  _common / _publications / _skills.py   Shared libraries
+                            gantt, markers, skills, links, html, palette,
+                            ideas, jobfit) — see docs/pipelines.md
+  _common / _publications / _skills / _ideas.py   Shared libraries
   hooks/pre-push            Self-installed lint gate
   requirements.txt
   fonts/et-book/            ETBook TTFs (MIT, roman + italic)
@@ -64,6 +68,10 @@ docs/
                             and citation counts (also runs weekly on a
                             schedule). Triggers on any blog post change so
                             new posts auto-populate on the homepage.
+  blog-idea-intake.yml      Ingests a "Blog idea" issue into blog-ideas.yaml
+                            (the phone capture path), then closes the issue
+  blog-backlog-digest.yml   Mondays: refreshes the rolling backlog issue,
+                            comments only on newly stale items
 
 archive/                    Historical reference (not served)
   redesign/                 Tufte rebuild rationale doc
@@ -103,10 +111,20 @@ job-search, and external GitHub-profile pipelines are documented in full in
                                                        writing list,
                                                        citations)
 
-  git push  ──▶  scripts/hooks/pre-push  ──▶ 10 linters + guard steps
+  blog-ideas.yaml (ledger) ─┐
+  src/content/blog/*.md   ──┴─────────────────────────▶ blog queue
+                                                        blog_backlog.py
+                                                          │
+                                                          ▼
+                                            idea → drafting → published
+                                            (one row per item; the weekly
+                                             digest issue is its phone view)
+
+  git push  ──▶  scripts/hooks/pre-push  ──▶ 12 linters + guard steps
                                               (blog, vocab, facts, notes,
                                                recognition, gantt, markers,
-                                               skills)
+                                               skills, links, html, palette,
+                                               ideas)
                  (self-installed via _common.install_git_hooks)
                  + .github/workflows/lint.yml runs the full suite in CI
                    unconditionally (PR + push + weekly)
@@ -199,7 +217,7 @@ Installed automatically by `scripts/_common.install_git_hooks()`, which
 runs at the top of every `build_*.py` and `lint_*.py` script. On first
 run after a clone the hook points git's `core.hooksPath` at
 `scripts/hooks/` and prints a one-line notice; subsequent runs are
-no-ops. The hook runs ten linters:
+no-ops. The hook runs twelve linters:
 
 - `lint_blog.py` — HTML comments leaking from non-draft posts, fenced
   code nested in an HTML comment, blockquote-as-Mermaid, blank lines
@@ -239,6 +257,15 @@ no-ops. The hook runs ten linters:
   content after `</body>`). Tokenizer nits — a bare `&` in KaTeX math, a
   `--` in a comment — are out of scope by design. Replaces the lenient
   `html.parser` balanced-tag smoke check.
+- `lint_ideas.py` — the blog idea ledger
+  (`src/content/blog-ideas.yaml`) vs the posts directory. Schema (unique
+  slug-form ids, valid stage, no unknown keys, em-dash-clean) plus
+  referential integrity: a `drafting` row must point at a real
+  `draft: true` post, a `published` row at a live one, and an `idea` row
+  must carry no slug. The reverse direction — draft posts with no ledger
+  row — prints as an informational report and never fails, since the
+  published historical posts predate the ledger. See
+  [§The idea → draft → publish pipeline](#the-idea--draft--publish-pipeline).
 
 Plus five guard steps: em-dash-clean chrome (`index.html`,
 `resume.md`, `cv.md`, life-in-weeks), accent discipline in
@@ -248,7 +275,7 @@ syntax-check of `epidemic-simulation/sim.py` (client-side Pyodide
 Python that no build imports — a syntax error would otherwise only
 surface in-browser). Note the scope difference from
 the CLI: `blog lint` / `blog publish` pre-flight run the **three**
-content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **ten**
+content linters (`lint_blog`, `lint_vocab`, `lint_facts`); the **twelve**
 above plus the guards run in the pre-push hook on every `git push`.
 
 **Server-side backstop.** The pre-push hook only fires for contributors
@@ -256,7 +283,7 @@ who push from a machine that has run a project script (which installs
 it); web-UI edits, fresh clones, the `draft: false` bypass, and the
 workflows' own bot commits all skip it. So
 [lint.yml](.github/workflows/lint.yml) runs the **full suite** (all
-ten linters + the five guard steps) on every `pull_request` and every
+twelve linters + the five guard steps) on every `pull_request` and every
 `push` to the default branch, unconditionally — it never consults the
 `Blog-CLI-Linted:` redundancy trailer. The hook is the fast local echo;
 `lint.yml` is the guarantee.
@@ -343,6 +370,116 @@ one terminal-side command. Two companion docs:
   architecture diagram, redundancy toggles, security footguns, file map.
 
 The section below is the one-paragraph orientation.
+
+### The idea → draft → publish pipeline
+
+Posts move through one ledger, `src/content/blog-ideas.yaml`. A row is created
+once, at capture, and carried through every stage. **An idea and a draft are
+the same row at different `status:` values, not two records:**
+
+```
+  blog idea add ─┐
+                 ├──▶  status: idea  ──▶  drafting  ──▶  published
+  the phone    ──┘     (no file yet)     (.md exists)   (draft: false)
+                             │                ▲
+                        blog promote          └── blog new / blog idea adopt
+```
+
+The `.md` file under `src/content/blog/` is not a parallel record. It is the
+**artifact that appears at the `drafting` stage**, when the item earns a slug,
+joined to its row by that slug. Ideas carry no file because they have no body,
+and because a slug is a URL commitment not worth spending on something you may
+never write. `added:` never changes, so a live post always traces back to the
+day the idea landed.
+
+`scripts/lint_ideas.py` enforces the join in both directions, so the ledger and
+the posts directory cannot drift apart.
+
+#### "I had an idea on the train"
+
+Open the GitHub mobile app → **Issues → New issue → Blog idea**. Fill in a
+title, and the angle if you have thirty seconds. Submit.
+
+`blog-idea-intake.yml` appends the row, commits it, comments the assigned id,
+and closes the issue:
+
+```yaml
+- id: why-cut-points-drift-faster-than-the-measures-do
+  title: Why cut-points drift faster than the measures do
+  note: CMS publishes cut points after the fact. Plans forecast against last year.
+  tags: [stars, cms, forecasting]
+  added: 2026-07-25
+  status: idea
+  source: issue#42
+```
+
+Nothing else happens until you promote it. Capture is meant to be cheap.
+
+#### "I'm at my desk and want to start writing"
+
+```bash
+blog queue                    # the whole funnel, longest-stuck first
+```
+
+```
+funnel  3 idea  →  2 drafting  →  41 published
+
+why-cut-points-drift…   idea      12d  in backlog   Why cut-points drift faster…
+stars-three-live-rule…  drafting  21d  untouched    Running Stars Analytics When…
+hedis-hybrid-chase      drafting   3d  untouched    Chasing HEDIS hybrid measures
+
+drafts: fresh <14d, aging <45d, stale 45d+
+```
+
+Then walk one item across the funnel. Watch the `status:` of that **same row**
+at each step:
+
+```bash
+blog promote why-cut-points-drift-faster-than-the-measures-do
+#   idea → drafting, scaffolds src/content/blog/<slug>.md, opens $EDITOR
+
+blog preview why-cut-points          # render to a tempfile, open in browser
+blog lint    why-cut-points          # scoped lint before you commit
+blog publish why-cut-points          # drafting → published, commits both
+                                     # the post and the ledger row together
+```
+
+`blog publish` stages the ledger change **in the same commit** as the post, so
+the two halves of the pipeline can never be one commit out of step.
+
+#### "It's been a month and I've written nothing"
+
+You get one comment on the rolling backlog issue — and only when something has
+**newly** gone stale, never just because a week passed:
+
+> 2 items have gone stale since the last digest:
+> - `stars-three-live-rulebooks`
+> - `hedis-hybrid-chase`
+
+Two honest exits. Move it forward, or clear the deck:
+
+```bash
+blog queue                  # confirm what is actually stuck
+blog promote <id>           # start something from the backlog
+blog idea drop <id>         # retire an idea; the row survives as history
+```
+
+Dropping is not failure bookkeeping. A backlog you never prune stops being a
+backlog and becomes a guilt list.
+
+#### Which command do I want?
+
+| I want to... | Command |
+| --- | --- |
+| Capture an idea, from anywhere | GitHub app → **Blog idea** issue |
+| Capture an idea, at a terminal | `blog idea add "Title" --note "the angle"` |
+| See the whole funnel | `blog queue` |
+| See just the backlog | `blog idea list` |
+| Start writing a backlog idea | `blog promote <id>` |
+| Start a post with no prior idea | `blog new "Title"` (also writes a row) |
+| Register a draft the ledger missed | `blog idea adopt <slug>` |
+| Retire an idea | `blog idea drop <id>` |
+| Ship it | `blog publish <slug>` |
 
 **One-time setup:**
 
@@ -508,6 +645,10 @@ python3 scripts/lint_blog.py
 # Internal link + anchor integrity (index.html anchors, /blog/ links, sitemap)
 python3 scripts/lint_links.py
 
+# Idea ledger vs posts directory (a `drafting` row must have a real draft
+# behind it; prints the orphan report for drafts with no ledger row)
+python3 scripts/lint_ideas.py
+
 # Syntax-check the client-side Pyodide simulator model
 python3 -m py_compile epidemic-simulation/sim.py
 
@@ -558,6 +699,14 @@ Serve locally (`python3 -m http.server 8765`) and check:
 
 ## Maintenance rhythm
 
+- Capture a blog idea: open a **Blog idea** issue from the GitHub mobile app,
+  or run `./scripts/blog idea add "Title"`. Either way it lands as a row in
+  `src/content/blog-ideas.yaml`; `blog-idea-intake.yml` handles the issue path
+  and closes the issue. See [§The idea → draft → publish pipeline](#the-idea--draft--publish-pipeline).
+- Weekly, Mondays 13:00 UTC: `blog-backlog-digest.yml` refreshes the rolling
+  "Blog backlog" tracking issue. It comments only when a draft newly passes 30
+  days untouched or an idea passes 90 days idle, so a notification always means
+  something changed. Nothing to do if it is quiet.
 - Write a blog post: use `./scripts/blog new "Title"` (see [§Writing blog posts](#writing-blog-posts)
   above; full playbook in [scripts/blog.md](./scripts/blog.md)). The CLI handles
   scaffolding, lint, preview, and the publish commit + push. Direct-edit fallback:
