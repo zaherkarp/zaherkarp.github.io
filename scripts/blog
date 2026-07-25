@@ -2,6 +2,9 @@
 """blog — terminal companion for src/content/blog/.
 
 Subcommands:
+  idea       capture / list / drop / adopt items in the idea backlog
+  promote    turn a backlog idea into a draft post (idea -> drafting)
+  queue      the whole funnel in one table, longest-stuck first
   new        scaffold a draft and open it in $EDITOR
   list       list posts with draft / publish state
   edit       open an existing post in $EDITOR
@@ -12,6 +15,22 @@ Subcommands:
   publish    lint, flip draft to false, commit, push to main
   rename     rename a post file (does not update inbound /blog/<old-slug>/ references)
   config     manage redundancy toggles for legacy lint paths
+
+The pipeline
+------------
+One ledger (src/content/blog-ideas.yaml), one row per item, carried through
+every stage. An idea and a draft are the SAME row at different `status:`
+values, not two records:
+
+    blog idea add ─┐
+                   ├─▶ status: idea ──▶ drafting ──▶ published
+    the phone    ──┘   (no file yet)   (.md exists)   (draft: false)
+                             │             ▲
+                        blog promote       └── blog new / blog idea adopt
+
+The .md file is the artifact that appears at the `drafting` stage, joined to
+its row by `slug`. scripts/lint_ideas.py enforces that join in both
+directions, so the ledger and src/content/blog/ cannot drift.
 
 Lives in scripts/ alongside the rest of the project tooling.
 Install path on the user's system: `ln -s "$(pwd)/scripts/blog" ~/.local/bin/blog`.
@@ -68,6 +87,26 @@ from redundancy import (  # noqa: E402
     VALID_VALUES,
     load_config as load_redundancy_config,
     toggle_value as redundancy_toggle_value,
+)
+
+# The idea ledger. `blog idea ...`, `blog promote`, `blog queue`, and the
+# ledger bookkeeping inside `new` / `publish` all go through this module, so
+# the CLI and the lint/digest surfaces can never read the funnel differently.
+from _ideas import (  # noqa: E402
+    AGING_DAYS,
+    FRESH_DAYS,
+    IDEAS_PATH,
+    backlog_snapshot,
+    bucket,
+    coerce_date,
+    find_idea,
+    first_commit_date,
+    idea_for_slug,
+    last_touched,
+    load_ideas,
+    new_id,
+    save_ideas,
+    unregistered_drafts,
 )
 
 install_git_hooks()
@@ -325,6 +364,397 @@ def build_frontmatter_block(
     return f"---\n{dumped}{hints}---\n"
 
 
+# --------------------------------------------------------------------------
+# ledger bookkeeping
+# --------------------------------------------------------------------------
+#
+# Every command that creates or moves a post touches the ledger through these
+# two helpers, so there is exactly one place where a stage transition is
+# written. A post that exists without a row is invisible to `blog queue` and
+# the weekly digest, which is the failure this pipeline exists to prevent.
+
+
+def ledger_register_draft(
+    slug: str,
+    title: str,
+    *,
+    note: str = "",
+    tags: Optional[list] = None,
+    added: Optional[date] = None,
+) -> bool:
+    """Ensure a `drafting` row exists for `slug`. True if one was added.
+
+    Idempotent: a slug that already has a row is left alone, so re-running
+    `blog idea adopt` or scaffolding over an adopted draft is safe.
+    """
+    ideas = load_ideas()
+    if idea_for_slug(ideas, slug):
+        return False
+    ideas.append(
+        {
+            "id": new_id(title or slug, ideas),
+            "title": title or slug,
+            "note": note,
+            "tags": tags or [],
+            "added": added or date.today(),
+            "status": "drafting",
+            "slug": slug,
+        }
+    )
+    save_ideas(ideas)
+    return True
+
+
+def ledger_set_status(slug: str, status: str) -> bool:
+    """Move the row owning `slug` to `status`. True if a row changed.
+
+    Returns False when no row owns the slug (a hand-created post that was
+    never registered), so callers can stay quiet rather than fail: the
+    orphan report in lint_ideas is what surfaces that case.
+    """
+    ideas = load_ideas()
+    entry = idea_for_slug(ideas, slug)
+    if entry is None or str(entry.get("status", "")) == status:
+        return False
+    entry["status"] = status
+    save_ideas(ideas)
+    return True
+
+
+def stage_style(stage: str) -> str:
+    return {
+        "idea": "cyan",
+        "drafting": "yellow",
+        "published": "green",
+        "dropped": "dim",
+    }.get(stage, "white")
+
+
+def bucket_style(bucket: str) -> str:
+    return {"fresh": "green", "aging": "yellow", "stale": "red"}.get(bucket, "dim")
+
+
+# --------------------------------------------------------------------------
+# idea
+# --------------------------------------------------------------------------
+
+idea_app = typer.Typer(
+    no_args_is_help=True,
+    help="capture and manage the idea backlog (src/content/blog-ideas.yaml)",
+)
+app.add_typer(idea_app, name="idea")
+
+
+@idea_app.command("add")
+def idea_add(
+    title: Optional[str] = typer.Argument(None, help="working title (prompt if omitted)"),
+    note: Optional[str] = typer.Option(None, "--note", help="the angle, in a sentence or two"),
+    tags: Optional[str] = typer.Option(None, "--tags", help="comma-separated"),
+) -> None:
+    """Capture an idea. No file is created and no slug is spent yet."""
+    if title is None:
+        title = Prompt.ask("[bold]Title[/bold]").strip()
+    if not title:
+        die("title is required")
+    if note is None:
+        note = Prompt.ask(
+            "[bold]Angle[/bold] [dim](why this is worth writing; enter to skip)[/dim]",
+            default="",
+        ).strip()
+    if tags is None:
+        tags = Prompt.ask("[bold]Tags[/bold] [dim](comma-separated)[/dim]", default="").strip()
+
+    ideas = load_ideas()
+    entry_id = new_id(title, ideas)
+    ideas.append(
+        {
+            "id": entry_id,
+            "title": title,
+            "note": note or "",
+            "tags": [t.strip() for t in (tags or "").split(",") if t.strip()],
+            "added": date.today(),
+            "status": "idea",
+        }
+    )
+    save_ideas(ideas)
+
+    console.print()
+    console.print(f"[green]✓[/green] captured [bold]{entry_id}[/bold]")
+    console.print(f"  {title}")
+    console.print(f"\n[dim]start writing it with:  blog promote {entry_id}[/dim]\n")
+
+
+@idea_app.command("list")
+def idea_list(
+    show_all: bool = typer.Option(
+        False, "--all", help="include drafting / published / dropped rows"
+    ),
+) -> None:
+    """List the backlog. By default only rows still at the idea stage."""
+    ideas = load_ideas()
+    rows = ideas if show_all else [e for e in ideas if str(e.get("status", "")) == "idea"]
+    if not rows:
+        console.print(
+            "\n[dim]no ideas in the backlog.[/dim]\n"
+            "[dim]capture one:  blog idea add \"Some title\"[/dim]\n"
+            "[dim]or from your phone: open a 'Blog idea' issue on GitHub[/dim]\n"
+        )
+        return
+
+    table = Table.grid(padding=(0, 2))
+    table.add_column(style="bold")     # id
+    table.add_column()                 # stage
+    table.add_column(style="dim")      # age
+    table.add_column()                 # title
+    for entry in rows:
+        stage = str(entry.get("status", "idea"))
+        added = coerce_date(entry.get("added"))
+        table.add_row(
+            str(entry.get("id", "")),
+            f"[{stage_style(stage)}]{stage}[/{stage_style(stage)}]",
+            relative_age(added),
+            str(entry.get("title", "")),
+        )
+    console.print()
+    console.print(table)
+    console.print(f"\n[dim]{len(rows)} row(s)[/dim]\n")
+
+
+@idea_app.command("drop")
+def idea_drop(entry_id: str = typer.Argument(..., help="idea id or fragment")) -> None:
+    """Retire an idea. The row is kept at status: dropped, not deleted, so the
+    record of having considered it survives."""
+    ideas = load_ideas()
+    entry = find_idea(ideas, entry_id)
+    if entry is None:
+        die(f"no idea matches {entry_id!r} (try: blog idea list --all)")
+    if str(entry.get("status", "")) in ("drafting", "published"):
+        die(
+            f"[bold]{entry['id']}[/bold] is at status "
+            f"[bold]{entry['status']}[/bold] with a post behind it. Drop the "
+            f"post first (delete src/content/blog/{entry.get('slug')}.md), or "
+            f"leave the row as history."
+        )
+    entry["status"] = "dropped"
+    entry.pop("slug", None)
+    save_ideas(ideas)
+    console.print(f"[green]✓[/green] [bold]{entry['id']}[/bold] is now [dim]dropped[/dim]")
+
+
+@idea_app.command("restore")
+def idea_restore(entry_id: str = typer.Argument(..., help="idea id or fragment")) -> None:
+    """Move a dropped idea back to the backlog."""
+    ideas = load_ideas()
+    entry = find_idea(ideas, entry_id)
+    if entry is None:
+        die(f"no idea matches {entry_id!r}")
+    if str(entry.get("status", "")) != "dropped":
+        die(f"{entry['id']} is at status {entry.get('status')}, not dropped")
+    entry["status"] = "idea"
+    save_ideas(ideas)
+    console.print(f"[green]✓[/green] [bold]{entry['id']}[/bold] is back in the backlog")
+
+
+@idea_app.command("adopt")
+def idea_adopt(
+    slug: Optional[str] = typer.Argument(
+        None, help="post slug to register; omit to adopt every unregistered draft"
+    ),
+) -> None:
+    """Register an existing draft file as a `drafting` ledger row.
+
+    For drafts written before the ledger existed, or created outside the CLI.
+    `added` is backfilled from the file's first commit, falling back to its
+    publishDate, so the row's age reflects the draft's real age.
+    """
+    ideas = load_ideas()
+    targets = [slug] if slug else unregistered_drafts(ideas)
+    if not targets:
+        console.print("[dim]every draft already has a ledger row[/dim]")
+        return
+
+    adopted = 0
+    for target in targets:
+        path = POSTS_DIR / f"{target}.md"
+        if not path.exists():
+            err_console.print(f"[red]✗[/red] no post at {path.relative_to(ROOT)}")
+            continue
+        post = load_post(path)
+        added = first_commit_date(path) or coerce_date(post.get("publishDate")) or date.today()
+        if ledger_register_draft(
+            target,
+            str(post.get("title", target)),
+            note=str(post.get("description", "") or ""),
+            tags=list(post.get("tags", []) or []),
+            added=added,
+        ):
+            console.print(
+                f"[green]✓[/green] adopted [bold]{target}[/bold] "
+                f"[dim](added {added})[/dim]"
+            )
+            adopted += 1
+        else:
+            console.print(f"[dim]{target} already registered[/dim]")
+
+    if adopted:
+        console.print(f"\n[dim]{adopted} draft(s) now visible to `blog queue`[/dim]")
+
+
+# --------------------------------------------------------------------------
+# promote
+# --------------------------------------------------------------------------
+
+
+@app.command()
+def promote(
+    entry_id: str = typer.Argument(..., help="idea id or fragment"),
+    no_editor: bool = typer.Option(
+        False, "--no-editor", help="skip opening $EDITOR after scaffold"
+    ),
+) -> None:
+    """Turn a backlog idea into a draft post (idea -> drafting).
+
+    This is the transition, not a copy: the SAME ledger row gains a slug and
+    moves to `drafting`. `added` is left untouched, so the post keeps the date
+    the idea was first captured.
+    """
+    ideas = load_ideas()
+    entry = find_idea(ideas, entry_id)
+    if entry is None:
+        die(f"no idea matches {entry_id!r} (try: blog idea list)")
+    status = str(entry.get("status", ""))
+    if status != "idea":
+        die(
+            f"[bold]{entry['id']}[/bold] is at status [bold]{status}[/bold], "
+            f"not idea. Only backlog ideas can be promoted."
+            + (f"\nits post is src/content/blog/{entry['slug']}.md"
+               if entry.get("slug") else "")
+        )
+
+    title = str(entry.get("title", entry["id"]))
+    slug = slugify(title)
+    path = POSTS_DIR / f"{slug}.md"
+    if path.exists():
+        die(
+            f"a post already exists at {path.relative_to(ROOT)}.\n"
+            f"if it is this idea's draft, run: blog idea adopt {slug}"
+        )
+
+    description = Prompt.ask(
+        "[bold]Description[/bold] [dim](one-line summary, shows on homepage)[/dim]",
+        default=str(entry.get("note", "") or ""),
+    ).strip()
+    publish_date = Prompt.ask(
+        "[bold]Publish date[/bold]", default=date.today().isoformat()
+    ).strip()
+
+    path.write_text(
+        build_frontmatter_block(
+            title=title,
+            description=description,
+            publish_date=publish_date,
+            tags=[str(t) for t in (entry.get("tags") or [])],
+            margin_note="",
+        )
+        + BODY_SKELETON,
+        encoding="utf-8",
+    )
+
+    entry["status"] = "drafting"
+    entry["slug"] = slug
+    save_ideas(ideas)
+
+    console.print()
+    console.print(f"[green]✓[/green] wrote [bold]{path.relative_to(ROOT)}[/bold]")
+    console.print(
+        f"  [bold]{entry['id']}[/bold]  "
+        f"[cyan]idea[/cyan] → [yellow]drafting[/yellow]  "
+        f"[dim](captured {fmt_date(entry.get('added'))})[/dim]"
+    )
+
+    if not no_editor:
+        console.print()
+        open_in_editor(path)
+
+
+# --------------------------------------------------------------------------
+# queue
+# --------------------------------------------------------------------------
+
+
+@app.command()
+def queue() -> None:
+    """The whole funnel in one table, longest-stuck first.
+
+    Deliberately ONE table with a stage column rather than an ideas list next
+    to a drafts list: the stages are one ledger, and the view should say so.
+    Drafts are aged from their last commit, not publishDate (a draft dated in
+    the future would otherwise look permanently fresh).
+    """
+    snap = backlog_snapshot()
+    counts = snap["counts"]
+
+    console.print(
+        f"\n[bold]funnel[/bold]  "
+        f"[cyan]{counts['idea']} idea[/cyan]  →  "
+        f"[yellow]{counts['drafting']} drafting[/yellow]  →  "
+        f"[green]{counts['published']} published[/green]"
+        + (f"   [dim]({counts['dropped']} dropped)[/dim]" if counts["dropped"] else "")
+    )
+
+    live = [r for r in snap["rows"] if r["stage"] in ("idea", "drafting")]
+    if not live:
+        console.print(
+            "\n[dim]nothing in flight.[/dim]\n"
+            "[dim]capture an idea:  blog idea add \"Some title\"[/dim]\n"
+        )
+    else:
+        table = Table.grid(padding=(0, 2))
+        table.add_column(style="bold")   # id
+        table.add_column()               # stage
+        table.add_column(justify="right")  # age
+        table.add_column(style="dim")    # what the age measures
+        table.add_column()               # title
+        for row in live:
+            stage = row["stage"]
+            days = row["days"]
+            age = f"{days}d" if days is not None else "?"
+            colour = bucket_style(row["bucket"]) if stage == "drafting" else "dim"
+            table.add_row(
+                row["id"],
+                f"[{stage_style(stage)}]{stage}[/{stage_style(stage)}]",
+                f"[{colour}]{age}[/{colour}]",
+                row["measure"],
+                row["title"][:64],
+            )
+        console.print()
+        console.print(table)
+        console.print(
+            f"\n[dim]drafts: [green]fresh[/green] <{FRESH_DAYS}d, "
+            f"[yellow]aging[/yellow] <{AGING_DAYS}d, "
+            f"[red]stale[/red] {AGING_DAYS}d+[/dim]"
+        )
+
+    stale = [r for r in snap["by_stage"]["drafting"] if r["bucket"] == "stale"]
+    if stale:
+        console.print(
+            f"\n[red]{len(stale)} draft(s) have gone stale.[/red] "
+            f"[dim]finish one, or `blog draft` it out of the way.[/dim]"
+        )
+    if snap["orphans"]:
+        console.print(
+            f"\n[yellow]{len(snap['orphans'])} draft(s) have no ledger row[/yellow] "
+            f"[dim]and are invisible here: {', '.join(snap['orphans'])}[/dim]\n"
+            f"[dim]register them:  blog idea adopt[/dim]"
+        )
+    console.print()
+
+
+# --------------------------------------------------------------------------
+# new
+# --------------------------------------------------------------------------
+
+
 @app.command()
 def new(
     title: Optional[str] = typer.Argument(None, help="post title (prompt if omitted)"),
@@ -369,10 +799,23 @@ def new(
     ) + BODY_SKELETON
     path.write_text(body, encoding="utf-8")
 
+    # Scaffolding directly is entering the funnel one stage in, not bypassing
+    # it. Without this row the draft would be invisible to `blog queue` and
+    # the weekly digest -- exactly the drift lint_ideas' orphan report exists
+    # to catch.
+    registered = ledger_register_draft(
+        slug, title, note=description, tags=tags, added=date.today()
+    )
+
     console.print()
     console.print(f"[green]✓[/green] wrote [bold]{path.relative_to(ROOT)}[/bold]")
     console.print(f"  slug:   [bold]{slug}[/bold]")
     console.print("  status: [yellow]draft[/yellow]")
+    if registered:
+        console.print(
+            f"  ledger: [yellow]drafting[/yellow] "
+            f"[dim](shows in `blog queue`)[/dim]"
+        )
 
     if not no_editor:
         console.print()
@@ -602,14 +1045,35 @@ def status() -> None:
     if not drafts:
         console.print("  [dim]none[/dim]")
     for slug, d, title in drafts:
+        # Aged from the last commit touching the file, NOT publishDate.
+        # publishDate is the intended date: a draft dated in the future would
+        # read as permanently fresh, which is how drafts go unnoticed.
+        touched = last_touched(POSTS_DIR / f"{slug}.md")
+        days = (date.today() - touched).days if touched else None
+        colour = bucket_style(bucket(days))
+        age = f"{days}d untouched" if days is not None else "age unknown"
         console.print(
-            f"  [yellow]~[/yellow] [bold]{slug}[/bold]  [dim]{relative_age(d) or fmt_date(d)}[/dim]  {title}"
+            f"  [yellow]~[/yellow] [bold]{slug}[/bold]  "
+            f"[{colour}]{age}[/{colour}]  [dim]{fmt_date(d)}[/dim]  {title}"
         )
 
     console.print(f"\n[bold]recently published[/bold] [dim](last 5)[/dim]")
     for slug, d, title in published[:5]:
         console.print(
             f"  [green]✓[/green] [bold]{slug}[/bold]  [dim]{fmt_date(d)}[/dim]  {title}"
+        )
+
+    ideas = load_ideas()
+    backlog = [e for e in ideas if str(e.get("status", "")) == "idea"]
+    orphans = unregistered_drafts(ideas)
+    console.print(
+        f"\n[bold]backlog[/bold] [dim]({len(backlog)} idea(s))[/dim]  "
+        f"[dim]see the whole funnel with `blog queue`[/dim]"
+    )
+    if orphans:
+        console.print(
+            f"  [yellow]{len(orphans)} draft(s) have no ledger row[/yellow] "
+            f"[dim](blog idea adopt)[/dim]"
         )
 
     console.print("\n[bold]git[/bold]")
@@ -664,6 +1128,13 @@ def draft(slug: str = typer.Argument(..., help="post slug to mark as draft")) ->
         f"[green]✓[/green] [bold]{path.stem}[/bold] is now [yellow]draft[/yellow] "
         f"[dim](next CI build will skip it)[/dim]"
     )
+    # Walk the ledger row back too, or lint_ideas would flag a `published`
+    # row pointing at a `draft: true` post.
+    if ledger_set_status(path.stem, "drafting"):
+        console.print(
+            "[green]✓[/green] ledger: [green]published[/green] → [yellow]drafting[/yellow] "
+            "[dim](not committed)[/dim]"
+        )
 
 
 @app.command()
@@ -722,11 +1193,22 @@ def publish(
     if changed:
         console.print("[green]✓[/green] flipped draft: false")
 
-    rel = str(path.relative_to(ROOT))
-    code, _, err = run_subprocess(["git", "add", rel])
+    # Move the ledger row in the SAME commit as the post. Done before the
+    # `git add` below so the two halves of the pipeline can never be one
+    # commit out of step. A post with no row (hand-created, never adopted)
+    # returns False and is simply left alone -- lint_ideas' orphan report is
+    # what surfaces that, not a failed publish.
+    paths_to_stage = [str(path.relative_to(ROOT))]
+    if ledger_set_status(real_slug, "published"):
+        paths_to_stage.append(str(IDEAS_PATH.relative_to(ROOT)))
+        console.print(
+            "[green]✓[/green] ledger: [yellow]drafting[/yellow] → [green]published[/green]"
+        )
+
+    code, _, err = run_subprocess(["git", "add", *paths_to_stage])
     if code != 0:
         die(f"git add failed: {err.strip()}")
-    console.print(f"[green]✓[/green] git add {rel}")
+    console.print(f"[green]✓[/green] git add {' '.join(paths_to_stage)}")
 
     base_msg = message or f"Publish: {title}"
     trailer = f"Blog-CLI-Linted: {datetime.now(timezone.utc).isoformat(timespec='seconds')}"

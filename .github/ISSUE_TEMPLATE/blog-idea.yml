@@ -1,0 +1,43 @@
+name: Blog idea
+description: Capture a blog post idea from anywhere, including your phone.
+title: "idea: "
+labels: ["blog-idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submitting this adds a row to the blog idea ledger
+        (`src/content/blog-ideas.yaml`) and closes the issue. Nothing else
+        happens until you run `blog promote <id>` at a terminal, which is
+        what turns the idea into a draft post.
+
+        Only the title is required. Capture is supposed to be cheap.
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: A working title. You can change it when you promote it.
+      placeholder: Why cut points drift faster than the measures do
+    validations:
+      required: true
+  - type: textarea
+    id: angle
+    attributes:
+      label: Angle
+      description: >
+        Why this is worth writing, in a sentence or two. This is the field
+        that makes an idea recoverable in three months, so it is worth the
+        extra ten seconds now.
+      placeholder: >
+        CMS publishes cut points after the fact, but plans forecast against
+        last year's. The gap between those two is the whole problem.
+    validations:
+      required: false
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Comma-separated. Seeds the post's frontmatter tags on promote.
+      placeholder: stars, cms, forecasting
+    validations:
+      required: false

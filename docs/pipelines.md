@@ -176,7 +176,7 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
   GUARDS (write nothing; fail the push / build)
   ─────────────────────────────────────────────
-  lint.yml (CI) ─▶ ALL ten linters + guard steps, on every PR + push,
+  lint.yml (CI) ─▶ ALL twelve linters + guard steps, on every PR + push,
                    unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
                    lint_recognition · lint_gantt · lint_markers ·
@@ -382,6 +382,54 @@ CLAUDE.md, "GitHub profile README (external consumer)").
 
 ---
 
+### 11. Blog ideas — `scripts/_ideas.py` + two workflows
+
+The stage before drafting. One ledger, `src/content/blog-ideas.yaml`, carries
+each item from capture to publication; an idea and a draft are the SAME row at
+different `status:` values, not two records. The `.md` file under
+`src/content/blog/` is the artifact that appears at the `drafting` stage, when
+the item earns a slug, joined to its row by that slug.
+
+```
+  GitHub issue form ──▶ blog-idea-intake.yml ──▶ blog_ideas_intake.py ──┐
+  (the phone)                                                           │
+                                                                        ▼
+  blog idea add ─────────────────────────────────▶  src/content/blog-ideas.yaml
+                                                                        │
+                     blog promote <id>  ──────────────────────────────  │
+                     (idea -> drafting, scaffolds the .md)              │
+                                                                        ▼
+  blog queue  ◀──── _ideas.backlog_snapshot() ────▶ blog_backlog.py ──▶ blog-backlog-digest.yml
+  (terminal)          (the one shared reader)                            (Mondays, rolling issue)
+```
+
+- **Source of truth:** `src/content/blog-ideas.yaml` (field contract in its
+  header). **Shared reader/writer:** `scripts/_ideas.py`. **Gate:**
+  `scripts/lint_ideas.py`, which enforces the ledger↔posts join in both
+  directions.
+- **Capture:** `blog idea add "Title"` at a terminal, or the **Blog idea**
+  issue form (`.github/ISSUE_TEMPLATE/blog-idea.yml`), which renders as a
+  native form in the GitHub phone app. `blog-idea-intake.yml` appends the row,
+  lints, commits, comments the assigned id, and closes the issue. Idempotent
+  via `source: issue#N` — the `labeled` trigger fires on the template's own
+  label, so a templated issue triggers it twice.
+- **Surfacing:** `blog queue` renders the funnel as one staged table,
+  longest-stuck first. `blog-backlog-digest.yml` (Mondays 13:00 UTC) keeps one
+  rolling issue labeled `blog-backlog` from the SAME `backlog_snapshot()`, so
+  the phone view and the terminal view cannot disagree. Its body refreshes
+  silently; a comment is posted only when an item newly crosses a threshold
+  (draft 30d untouched, idea 90d idle), with prior state stashed in a trailing
+  `<!-- blog-backlog-state: -->` comment.
+- **Staleness** is measured from each draft's last commit, not `publishDate` —
+  a draft dated in the future would otherwise read as permanently fresh, which
+  is precisely how three drafts went unnoticed for two months. This is why the
+  digest workflow checks out with `fetch-depth: 0`.
+- **Commits back:** only `src/content/blog-ideas.yaml`, and only from the
+  intake workflow. The digest workflow is read-only on the repo.
+
+See CLAUDE.md §Blog idea backlog for the model and the constraints not to
+break; README §The idea → draft → publish pipeline for worked walkthroughs.
+
 ## The linters (the integrity web)
 
 Guards write nothing; they fail the push or build. Three tiers by where they
@@ -402,6 +450,8 @@ run.
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
 | `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
 | `lint_html.py` | HTML structural well-formedness: `index.html` + generated `blog/` / `resume.html` / `cv.html` parse with tinyhtml5 (present via WeasyPrint) with no tree-builder structural errors (misnested/unclosed/orphan tags, loose table cells, content after `</body>`); tokenizer nits (bare `&` in KaTeX, `--` in a comment) out of scope by design |
+| `lint_palette.py` | every consuming file's `palette:*` block matches `src/content/palette.yaml`; no `--accent:` assigned outside a `palette:*` span; the two self-contained blog-post figures match the canonical accent |
+| `lint_ideas.py` | the blog idea ledger vs the posts directory: schema (unique slug-form ids, valid stage, no unknown keys, `added` not in the future, em-dash-clean title/note) plus referential integrity — a `drafting` row points at a real `draft: true` post, a `published` row at a live one, an `idea` row carries no slug, and no two rows claim one post. The reverse direction (draft posts with no row) is an informational report that never fails |
 
 Plus five guard steps: em-dash-clean chrome (`index.html`, `resume.md`,
 `cv.md`, life-in-weeks); accent discipline (`grep -cE -- '--accent|#7a0000'
@@ -412,7 +462,7 @@ model no build imports — a syntax error would otherwise only surface
 in-browser).
 
 **CI backstop** (`.github/workflows/lint.yml`): the **full** suite above
-(all ten linters + the five guard steps) runs on every `pull_request`,
+(all twelve linters + the five guard steps) runs on every `pull_request`,
 every `push` to the default branch, and on a **weekly `schedule:`**
 (auditing whatever bot commits have landed on `main`), **unconditionally** —
 it never consults the `Blog-CLI-Linted:` redundancy trailer. The pre-push
@@ -446,16 +496,42 @@ Each recipe names the **one source to edit** and what happens after. Unless
 noted, "push" means push to `main`; CI regenerates outputs and commits them
 back. Never hand-edit a generated file or a marked region.
 
+### Add a blog idea
+
+Capture is meant to be cheap; nothing is built until you promote it.
+
+```bash
+./scripts/blog idea add "Why cut points drift" --note "the angle in a sentence"
+./scripts/blog idea list                # the backlog
+./scripts/blog queue                    # the whole funnel, longest-stuck first
+```
+
+From a phone: GitHub app → Issues → New issue → **Blog idea**. The intake
+workflow appends the row, commits it, and closes the issue. Either way you get
+a `status: idea` row with no slug and no file. Promote it when you are ready
+to write (see below). To register a draft that predates the ledger or was
+created outside the CLI: `./scripts/blog idea adopt <slug>`.
+
 ### Add a blog post
 
-Use the CLI (full walkthrough in README §Writing blog posts and
-`scripts/blog.md`):
+Use the CLI (full walkthrough in README §The idea → draft → publish pipeline
+and `scripts/blog.md`). From a backlog idea:
+
+```bash
+./scripts/blog promote <idea-id>        # idea -> drafting, scaffolds the .md, opens $EDITOR
+```
+
+Or straight to a draft, skipping the idea stage (this still writes a
+`drafting` ledger row, so the post stays visible to `blog queue`):
 
 ```bash
 ./scripts/blog new "My Post Title"      # scaffolds src/content/blog/my-post-title.md, draft: true
 ./scripts/blog preview my-post          # browser preview
 ./scripts/blog publish my-post          # lint, flip draft:false, commit, push
 ```
+
+`publish` moves the ledger row to `published` and stages `blog-ideas.yaml` in
+the same commit as the post.
 
 `build_blog.yml` renders `/blog/<slug>/` + listing + sitemap + feed;
 `build_portfolio.yml` adds it to the homepage sparkline and writing list on

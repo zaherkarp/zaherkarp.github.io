@@ -1,0 +1,157 @@
+name: Blog backlog digest
+
+# Surfaces drafts and ideas over time, so a stalled draft cannot sit unnoticed
+# the way three of them did before this pipeline existed.
+#
+# Keeps ONE rolling tracking issue (label `blog-backlog`) whose body is
+# regenerated every Monday from scripts/blog_backlog.py -- the same
+# backlog_snapshot() that `blog queue` renders, so the phone view and the
+# terminal view cannot disagree. Same single-tracking-issue shape as
+# scripts/review/issue-lifecycle.cjs.
+#
+# Quiet unless something changed: the body refreshes silently, and a COMMENT
+# (the actual notification) is posted only when an item NEWLY crosses a
+# threshold -- a draft untouched 30d, an idea idle 90d. Prior state rides in a
+# trailing HTML comment in the issue body. A comment every week regardless of
+# change would train the reader to ignore it, which defeats the purpose.
+#
+# Read-only on the repo: this workflow commits nothing.
+
+on:
+  schedule:
+    # Mondays 13:00 UTC. Start of the week, and clear of the Sunday 06:00
+    # portfolio / 08:00 lint runs.
+    - cron: '0 13 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: blog-backlog-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Staleness is measured from each draft's last commit, so the full
+          # history has to be present. A shallow clone would make every draft
+          # look identically fresh.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Render the digest
+        id: render
+        run: |
+          set -euo pipefail
+          {
+            echo 'body<<DIGEST_EOF'
+            python scripts/blog_backlog.py --markdown
+            echo 'DIGEST_EOF'
+          } >> "$GITHUB_OUTPUT"
+          echo "state=$(python scripts/blog_backlog.py --state)" >> "$GITHUB_OUTPUT"
+
+      - name: Open or refresh the tracking issue
+        uses: actions/github-script@v7
+        env:
+          DIGEST_BODY: ${{ steps.render.outputs.body }}
+          DIGEST_STATE: ${{ steps.render.outputs.state }}
+        with:
+          script: |
+            const LABEL = 'blog-backlog';
+            const TITLE = 'Blog backlog: ideas and drafts in flight';
+            const MARKER = 'blog-backlog-state:';
+
+            const body = process.env.DIGEST_BODY || '';
+            const state = JSON.parse(process.env.DIGEST_STATE || '{"flagged":[]}');
+            const flagged = new Set(state.flagged || []);
+
+            const { owner, repo } = context.repo;
+
+            // Ensure the label exists; createLabel 422s if it already does.
+            try {
+              await github.rest.issues.createLabel({
+                owner, repo, name: LABEL, color: 'c5def5',
+                description: 'Rolling blog idea/draft backlog digest',
+              });
+            } catch (e) {
+              if (e.status !== 422) throw e;
+            }
+
+            const open = await github.rest.issues.listForRepo({
+              owner, repo, state: 'open', labels: LABEL, per_page: 10,
+            });
+            const existing = open.data.find(i => !i.pull_request) || null;
+
+            // Recover the previous run's flagged set from the marker comment
+            // in the old body, so we can comment on what is NEWLY stale.
+            let previous = new Set();
+            if (existing) {
+              const m = (existing.body || '').match(
+                new RegExp(`<!--\\s*${MARKER}\\s*(\\{.*?\\})\\s*-->`)
+              );
+              if (m) {
+                try {
+                  previous = new Set(JSON.parse(m[1]).flagged || []);
+                } catch (_) { /* unparseable marker: treat as empty */ }
+              }
+            }
+
+            const stamped =
+              `${body}\n\n<!-- ${MARKER} ${JSON.stringify(state)} -->\n`;
+
+            let issue = existing;
+            if (issue) {
+              await github.rest.issues.update({
+                owner, repo, issue_number: issue.number, body: stamped,
+              });
+              core.info(`refreshed #${issue.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner, repo, title: TITLE, body: stamped, labels: [LABEL],
+              });
+              issue = created.data;
+              core.info(`opened #${issue.number}`);
+            }
+
+            // Only NEWLY flagged items justify a notification.
+            const fresh = [...flagged].filter(id => !previous.has(id));
+            if (fresh.length === 0) {
+              core.info('nothing newly stale; body refreshed without a comment');
+              return;
+            }
+
+            const lines = [
+              fresh.length === 1
+                ? 'One item has gone stale since the last digest:'
+                : `${fresh.length} items have gone stale since the last digest:`,
+              '',
+              ...fresh.map(id => `- \`${id}\``),
+              '',
+              'Either move it forward or clear it:',
+              '',
+              '```bash',
+              'blog queue                 # see the whole funnel',
+              'blog promote <id>          # start writing a backlog idea',
+              'blog idea drop <id>        # retire an idea you will not write',
+              '```',
+            ];
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: issue.number, body: lines.join('\n'),
+            });
+            core.info(`commented on ${fresh.length} newly stale item(s)`);

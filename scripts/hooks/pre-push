@@ -217,6 +217,23 @@ if [ -f scripts/lint_palette.py ] && [ -f src/content/palette.yaml ]; then
   fi
 fi
 
+# 3j. Blog idea ledger lint (src/content/blog-ideas.yaml schema, plus
+#     referential integrity against src/content/blog/: a `drafting` row must
+#     point at a real draft post, a `published` row at a live one, and an
+#     `idea` row must carry no slug). The ledger and the posts directory are
+#     two halves of one pipeline; nothing else keeps them aligned. The
+#     reverse-direction orphan report (draft posts with no row) is
+#     informational and prints on a manual run. See CLAUDE.md
+#     §Blog idea backlog.
+if [ -f scripts/lint_ideas.py ] && [ -f src/content/blog-ideas.yaml ]; then
+  if output=$("$PY" scripts/lint_ideas.py 2>&1); then
+    ok "lint_ideas clean"
+  else
+    echo "$output" >&2
+    fail "lint_ideas"
+  fi
+fi
+
 # 4. Em-dash chrome cleanliness — index.html, resume.md, cv.md, and the
 #    life-in-weeks grid must be em-dash-clean. Blog markdown is exempt
 #    (preserves historical voice); resume + CV render to PDFs handed to
