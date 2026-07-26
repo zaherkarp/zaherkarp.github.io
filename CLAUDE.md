@@ -28,6 +28,25 @@ project card (a bounded data-ink exception). Design decisions below marked
 mockup family and rationale are in the plan for branch
 `claude/page-visual-design-mockups-dk17bc`.
 
+**Writing-led two-column iteration (2026-07-26, Direction B).** A same-day
+design-director refinement of the Timeline Split opening. The three-column
+`.split-hero` (writing / vertical rail / project scorecard) became a **two-column
+asymmetric grid** (recent writing ~62% / current work ~38%) under a new Tier-1
+`.proposition` line, with the **career timeline moved to a full-width band below
+the columns** (`figure.timeline.career-band`): a new wide HORIZONTAL SVG
+(`svg.tl-band`, viewBox 1000x250) on desktop, the vertical `svg.tl-rail` reused
+for mobile (<=760px), and `tl-compact` retired. The three-card `.teaser-row`
+collapsed to one restrained `.hero-more` line; the six-post writing index moved
+into the hero (surfaced as a dated title list, no longer folded); the project's
+accept-vs-reject scorecard became a small `funnel-figure`; the academic dot plot
+moved to a `#main` sibling before `#publications`; testimonials moved to the
+ending (Education/Service/Certifications -> Testimonials -> Contact); nav became
+`writing / work / about / contact`. `prefers-reduced-motion` was NOT restored
+(owner kept the 2026-06-13 no-gate policy). Where this paragraph and the
+sections below conflict on the OPENING, this iteration wins; full rationale +
+Council review in `docs/homepage-iteration-2026-07-26.md`. Design decisions
+below tagged "(Direction B, 2026-07-26)" mark the superseding wording.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -165,9 +184,10 @@ cream `#fffff8` / cool slate `#16191d` — from the Tufte rebuild until the
 
 **Accent discipline.** The Tufte rule is one or two accent uses per chart,
 never decoratively. On the homepage that's roughly: the 4.0 cliff line +
-$50M label in the cliff curve, the "after" bar in the Health Catalyst
-outcome figure, and the accept card in the news-triage scorecard (the
-alerted badge and its gauge fill). A handful of total uses on the page.
+$50M label in the cliff curve, and the "after" bars in the two Experience
+outcome figures. (The news-triage scorecard's two accent uses were removed
+2026-07-26 when it became the accent-free `funnel-figure`; the accent
+occurrence count dropped 18 -> 16.) A handful of total uses on the page.
 The career arc and the Education/Service Gantt deliberately use NO accent
 (see §Career arc). Subpages, blog post links, buttons, and other chrome use
 --ink or --muted, not --accent. The prior site used --accent 32+ times
@@ -257,60 +277,72 @@ The rebuild restored the Tufte three-zone layout because the sidenote
 system needs the margin to live in.
 
 Nav wraps on medium screens. Acceptable and intentional. No hamburger
-menu without discussion. **(Timeline Split)** Nav is now four items
-(writing, projects, publications, about) and spans full width, not the 60%
-column. The removed section ids (experience, speaking, education, service,
-contact) are still live anchors; do not delete them.
+menu without discussion. **(Direction B, 2026-07-26)** Nav is four items
+(writing, work, about, contact) and spans full width, not the 60% column.
+`work` targets a new empty `<span id="work" class="section-anchor">` placed just
+before `#experience` (which keeps its own id for `lint_facts`); `contact` is
+back in the bar. The un-navigated section ids (experience, projects,
+publications, speaking, education, service) are still live anchors, reached via
+the `.hero-more` "More:" line and the dot plot; do not delete them.
 
-**(Timeline Split) `.split-hero` is a sanctioned exception to the 60% column.**
-The writing-led hero is a `<div class="split-hero">` grid, deliberately NOT a
-`<section>`, so `section { width: 60% }` and the floating-note margin never
+**(Direction B, 2026-07-26) `.split-hero` is a sanctioned exception to the 60%
+column.** The writing-led hero is a `<div class="split-hero">` grid, deliberately
+NOT a `<section>`, so `section { width: 60% }` and the floating-note margin never
 apply to it. It carries no floating notes by design (see §Writing section
-update rule for the suppressed per-post note). Three columns above 1000px, two
-between 761 and 1000px (the intermediate stop resolves the 761-1000 squeeze the
-2026-07-19 critique left open), one below 760px. The rest of the page keeps the
-60% column. CSS lives in sections 19 / 20 / 20.1 of index.html.
+update rule for the suppressed per-post note). Now **two** columns (writing
+~1.6fr / current work ~1fr) above 760px, tightening to ~1.4fr/1fr at 761-1000px,
+one column below 760px. The full-width `figure.timeline.career-band` and the
+`.hero-more` line sit below the grid (also full-width exceptions). The rest of
+the page keeps the 60% column. CSS lives in sections 19 / 20 / 20.1 of
+index.html (§20 is now the `.hero-more` line, not the retired teaser row).
 
 ### Hero
 
-**(Timeline Split, 2026-07-26)** Sequence: nav, `.nameplate` (reduced h1 beside
-its subtitle on one baseline), then the `.split-hero` grid (recent writing /
-career rail / featured project 01), then the three-card `.teaser-row`. The
-subtitle text is still locked; do not edit without explicit instruction. The
-featured project 01 block is MOVED into the hero (not copied) so the project
-CSS counter still numbers it 01 in DOM order. No epigraph, no italic claim
-block, no manifesto framing.
+**(Direction B, 2026-07-26)** Sequence: nav, `.nameplate` (reduced h1 beside
+its subtitle on one baseline), a Tier-1 `<p class="proposition">` (a first-person
+claim, ETBook roman, sized between body and h1, additive to the locked
+subtitle), then the two-column `.split-hero` grid (recent writing ~62% / current
+work ~38%), then the full-width `figure.timeline.career-band`, then the
+`.hero-more` "More:" line. The subtitle text is still locked; do not edit
+without explicit instruction. The featured project 01 block is MOVED into the
+hero (not copied) so the project CSS counter still numbers it 01 in DOM order.
+No epigraph, no italic claim block, no manifesto framing.
 
-(Prior, pre-2026-07-26: nav, h1 name, single plain subtitle, full-width career
+(Prior Timeline Split, superseded: nav, nameplate, three-column split-hero
+[writing / vertical rail / project scorecard], three-card teaser row. Earlier
+still, pre-2026-07-26: nav, h1 name, single plain subtitle, full-width career
 arc figure; About-first section order.)
 
 ### Career arc SVG
 
-**(Timeline Split, 2026-07-26)** Two SVGs swap at 760px, both living inside the
-`.split-hero` centre column (`figure.timeline.hero-rail`):
-  - **Vertical `tl-rail` `viewBox="0 0 300 470"` for desktop (>760px).** Left
-    year axis, `y(year) = 25 + (year - 2007) * 21`. Three parallel bands at
-    increasing x show the career overlap: editorial (x=55, 2007-2014), research
-    (x=90, 2009-2018), and the continuous data-engineering line (x=125) split
-    into healthfinch / Health Catalyst / BHA segments. Bands are
-    `stroke-width="9"` (deliberately NOT 10) so the section-18.2 load-draw
-    selector `[stroke-width="10"]` misses them: the rail is peripheral to the
-    writing lede and gets NO first-paint motion (Val's call). The muted
-    "acquisition" annotation is kept; the crowded news-wire/MPH era notes are
-    dropped, as on the compact variant. Each band is an `<a href="#exp-...">`
-    (DIRECT child of `<svg>`, no wrapping `<g>`, so the `svg.tl-rail > a`
-    no-underline/hover/focus rules match) with a transparent `<rect>` touch
-    overlay and a `<title>`.
-  - Compact `viewBox="0 0 600 430"` for mobile (native single-frame
-    redesign, NOT a rotated copy). Same data, same calmed acquisition
-    annotation, era notes dropped. Keeps its time-based load-draw (section
-    18.2, compact-only now).
+**(Direction B, 2026-07-26)** The career timeline is a full-width band below the
+split hero (`figure.timeline.career-band`, NOT inside the grid). Two SVGs swap at
+760px:
+  - **Wide horizontal `tl-band` `viewBox="0 0 1000 250"` for desktop (>760px).**
+    `x(year) = 60 + (year - 2007) * 46`. Three qualitative lanes: editorial
+    (y=55, 2007-2014), research (y=110, 2009-2018), and the continuous
+    data-engineering line (y=165) split into healthfinch / Health Catalyst / BHA
+    segments; dated x-axis at y=215; muted 2020 "acquisition" annotation. Bands
+    are `stroke-width="14"` — the section-18.2 load-draw selector keys on that
+    width, so the band traces on load. NO accent. Coordinates were recomputed
+    from scratch for the band (do not reuse the retired `tl-horizontal` or
+    `tl-compact` geometry).
+  - **Vertical `tl-rail` `viewBox="0 0 300 470"` for mobile (<=760px).** Left
+    year axis, `y(year) = 25 + (year - 2007) * 21`; three parallel bands
+    (editorial x=55, research x=90, data-engineering x=125). Reused verbatim from
+    the prior desktop rail; now the intentional NARROW form (dates down the left,
+    bands flowing down), not a shrunk desktop. Bands `stroke-width="9"` — the
+    18.2 load-draw also keys on that width, so the rail traces on mobile too.
+  Each band in BOTH SVGs is an `<a href="#exp-...">` (DIRECT child of `<svg>`, no
+  wrapping `<g>`, so the `svg.tl-band > a` / `svg.tl-rail > a`
+  no-underline/hover/focus rules match) with a transparent `<rect>` touch overlay
+  and a `<title>`.
 
-The wide horizontal `viewBox="0 0 1200 440"` variant was RETIRED in the Timeline
-Split redesign: it cannot fit the narrow rail column, and shipping a hidden
-1200-wide SVG is dead weight. Its CSS selectors were renamed to `tl-rail`; the
-`:has(svg.tl-horizontal)` max-width cap was removed (the grid column bounds the
-figure now).
+The former mobile `tl-compact` (`viewBox="0 0 600 430"`) was RETIRED in this
+iteration (the horizontal band now serves desktop and the vertical rail serves
+mobile). The even-earlier wide `tl-horizontal` (`0 0 1200 440`) was already
+retired in the Timeline Split. The §11 swap rules and §18.2 load-draw selector
+were repointed to `tl-band` / `tl-rail` accordingly.
 
 The 2020 callout was demoted from a loud red dashed+circle+caption accent
 to the quiet muted annotation above (2026-06-07): the user wanted chart
@@ -426,13 +458,13 @@ Mechanism (CSS section "18. SCROLL-DRAWN FIGURES" in `index.html`):
   - Only `transform`/`opacity`/`stroke-dashoffset` animate (compositor-
     friendly, no layout cost, no LCP hit).
 
-Hero exception, draw-on-load (CSS section "18.2"): **(Timeline Split,
-2026-07-26)** the load-draw now runs ONLY on the compact (mobile) arc. The
-desktop `tl-rail` is peripheral to the writing lede and deliberately gets no
-first-paint motion (Val's call): its bands are `stroke-width="9"`, so the
-`[stroke-width="10"]`/`[stroke-width="11"]` load-draw selectors miss it and it
-renders static. The paragraph below describes the pre-2026-07-26 behavior; the
-`line[stroke-width="10"]` (desktop) branch no longer exists.
+Career-timeline draw-on-load (CSS section "18.2"): **(Direction B, 2026-07-26)**
+the timeline is now a full-width band (no longer a peripheral centre rail), so it
+earns the first-paint draw on EVERY viewport. The load-draw selector keys on both
+`svg.tl-band > a line[stroke-width="14"]` (desktop horizontal) and
+`svg.tl-rail > a line[stroke-width="9"]` (mobile vertical), so whichever SVG is
+displayed traces on load. The `tl-compact` selector was removed with the variant.
+The paragraph below describes the older per-variant behavior for context.
 The former hero career arc was
 the one figure that draws for EVERY browser, including Safari/Firefox, because
 it uses a plain time-based CSS animation (`animation-duration`), not the
@@ -610,7 +642,7 @@ the next CI run overwrites them. Two tiers:
 
   - **Featured** (`WRITING_FEATURED = 2`): the two most recent non-draft
     posts, between `<!-- writing-list:start --> ... <!-- writing-list:end -->`
-    markers. **(Timeline Split, 2026-07-26)** these markers now live in the
+    markers. **(Timeline Split, 2026-07-26)** these markers live in the
     `.split-hero` left column (`.hero-writing`), NOT inside `<section
     id="writing">`. Rendered as full `.entry` blocks (date + title +
     full-summary). **`homepageMarginnote` is NO LONGER RENDERED on the
@@ -621,21 +653,20 @@ the next CI run overwrites them. Two tiers:
     `test_writing_list_suppresses_hero_marginnote`). The frontmatter field is
     still read/preserved by the blog tooling; it just no longer surfaces here.
     `#writing` below now holds only the cadence sparkline (its `mn-cadence`
-    note still floats there) and, as a sibling, the writing-index fold.
+    note still floats there).
   - **Index** (`WRITING_TILES = 6`): the next six posts after the
     featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
-    markers, inside the sibling `<div class="writing-index">` grid (90%
-    max-width, `auto-fit minmax(240px, 1fr)`, collapses to 1 column at
-    760px, just like `.projects-index`). Rendered as compact
-    `.writing-tile` small multiples (date + smaller title + tile-summary).
-    `homepageMarginnote` is intentionally ignored on tiles. The grid is
-    wrapped in a `<details class="fold"><summary>More writing</summary>`
-    disclosure (hand-authored, outside the markers), mirroring
-    `.projects-index`'s "More projects" fold. An earlier
-    `<p class="index-label">` header served this role and was replaced
-    by the fold; its CSS was removed 2026-07-18 after a critique found
-    it orphaned. Note the collapse means six of eight posts are hidden
-    by default, flagged as a P1 in that critique and not yet resolved.
+    markers. **(Direction B, 2026-07-26)** these markers ALSO moved into the
+    hero `.hero-writing` column, below the featured pair, inside a
+    `<div class="writing-index hero-index">` (NOT a `<details>` fold anymore).
+    `.hero-index` compacts the tiles to a DATED TITLE LIST: `.tile-summary` is
+    hidden via CSS and the rows tighten, so the opening surfaces the two featured
+    summaries PLUS six more dated titles instead of hiding them behind a
+    disclosure (the P1 the 2026-07-19 critique flagged). The build still emits
+    full `.writing-tile` markup (date + title + tile-summary) between the
+    markers; only the hero CSS hides the summary. `homepageMarginnote` is still
+    ignored on tiles. The old sibling "More writing" fold in `#writing` was
+    removed when the markers moved.
 
 Deliberately NOT reused: `.project-tile` and the `project-num` CSS
 counter. Writing tiles use distinct `.writing-tile`/`.writing-index`
@@ -744,8 +775,9 @@ The section uses a featured + small-multiples-index pattern:
     The first two projects in DOM order — currently the Medicare
     Advantage Insight Engine and the Stars Cliff Simulator. Each
     renders as a `<div class="project">` with an inline figure
-    (an HTML/CSS scorecard on the Medicare card; cliff-figure SVG on
-    Stars), full prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
+    (a small `funnel-figure` SVG on the Medicare card, ~200 items/week ▸
+    ~5 that matter, since 2026-07-26; cliff-figure SVG on Stars), full
+    prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
   - **Index** (outside the section, as a sibling `<div
     class="projects-index">`, 90% max-width grid): The remaining
@@ -1803,8 +1835,9 @@ consolidation, new gates) is documented in
 - No 640px max-width regression and no removing the sidenote system. The
   60% column with 40% margin is a contract for the prose sections; the
   sidenotes need the margin. (The Timeline Split `.split-hero` and
-  `.teaser-row` are the sanctioned full-width exceptions above that column;
-  see §Layout. They host no floating notes, so the contract holds.)
+  full-width `figure.timeline.career-band`, and `.hero-more` line are the
+  sanctioned full-width exceptions above that column; see §Layout. They host
+  no floating notes, so the contract holds.)
 - No "By the Numbers" stats table. The chart inventory replaces it.
 - No sidenotes outside the homepage. Blog posts use KaTeX/Mermaid/Prism
   for technical depth.

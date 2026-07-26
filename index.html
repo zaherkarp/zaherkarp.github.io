@@ -326,6 +326,10 @@ a:hover {
    the heading element, so the facts linter's heading regex is
    unaffected. scroll-margin-top keeps the landing off the top edge. */
 .role-anchor { display: block; height: 0; scroll-margin-top: 2rem; }
+/* Empty jump target for the nav "work" item, placed before #experience
+   so the label lands on the combined experience -> projects area while
+   the section keeps its own id (lint_facts). Same zero-height pattern. */
+.section-anchor { display: block; height: 0; scroll-margin-top: 2rem; }
 
 /* Sidenote numbering: CSS counter increments on each .sidenote-number
    label, then both the inline superscript and the note prefix display
@@ -527,21 +531,21 @@ figure.timeline figcaption {
   margin-bottom: 0.8rem;
 }
 
-/* Career arc: vertical-rail / compact SVG swap at 760px.
-   The rail is the desktop default (it lives in the split-hero
-   centre column); the compact single-frame version serves narrow
-   viewports where the hero stacks to one column (NOT the tall
-   vertical reflow it replaced; see the .tl-compact note in the
-   markup). The former wide tl-horizontal variant was retired in
-   the Timeline Split redesign: it could not fit a rail column.
-   Note: selectors are compound (.timeline svg.tl-...) to beat
-   the specificity of the .timeline svg rule above, which
-   otherwise forced display:block on every SVG in the figure. */
-.timeline svg.tl-rail { display: block; overflow: visible; }
-.timeline svg.tl-compact {
+/* Career arc: horizontal-band / vertical-rail SVG swap at 760px
+   (2026-07-26 iteration). The wide horizontal band (.tl-band) is the
+   desktop default, sitting full-width below the split hero. The
+   vertical dated rail (.tl-rail) serves narrow viewports where a
+   horizontal band cannot fit; it is an intentional narrow form, not a
+   shrunk desktop. The former mobile .tl-compact (horizontal 600x430)
+   was retired. Selectors are compound (.timeline svg.tl-...) to beat
+   the specificity of the .timeline svg rule above, which otherwise
+   forced display:block on every SVG in the figure. */
+.timeline svg.tl-band { display: block; overflow: visible; }
+.timeline svg.tl-rail {
   display: none;
-  max-width: 480px;   /* prevent overgrowth on tablets */
-  margin: 0 auto;     /* center within the figure */
+  overflow: visible;
+  max-width: 320px;   /* the rail is a narrow vertical form */
+  margin: 0 auto;     /* center within the band figure */
 }
 
 /* Academic dot plot: wide/mobile SVG swap at 760px.
@@ -558,8 +562,8 @@ figure.timeline figcaption {
 }
 
 @media (max-width: 760px) {
-  .timeline svg.tl-rail    { display: none; }
-  .timeline svg.tl-compact { display: block; }
+  .timeline svg.tl-band    { display: none; }
+  .timeline svg.tl-rail    { display: block; }
   .timeline svg.dp-wide    { display: none; }
   .timeline svg.dp-mobile  { display: block; }
 }
@@ -956,55 +960,28 @@ figure.outcome-figure figcaption {
 }
 
 /* ============================================================
-   SCORING SCORECARD FIGURE (Projects: Medicare Advantage Insight
-   Engine). An HTML/CSS figure (not SVG): two item cards, each with
-   six per-feature score bars and a weighted-score gauge carrying a
-   threshold tick. Bars are divs sized by an inline --v custom
-   property; the gauge fill by --t. Colours resolve straight through
-   the palette custom properties, so it adapts to light/dark with no
-   sentinel-hex trick. Static (no scroll-draw). Two accent uses only,
-   both on the accept card (the "alerted" badge and its gauge fill),
-   per accent discipline; everything else is ink / muted / rule.
+   TRIAGE FUNNEL FIGURE (Current work: Medicare Advantage Insight
+   Engine). A small inline SVG that replaced the accept-vs-reject
+   scorecard (retired 2026-07-26): the homepage shows the shape of the
+   problem (volume in, few out), not the full scoring instrument. The
+   worked example moved to the methodology post. Accent-free;
+   presentation hexes remapped by section 17. Sizing follows the
+   outcome / cliff figure idiom.
    ============================================================ */
-figure.scorecard-figure {
-  margin: 1.3rem 0;
-  max-width: 600px;
+figure.funnel-figure {
+  margin: 1rem 0;
 }
-figure.scorecard-figure figcaption {
+figure.funnel-figure svg {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  display: block;
+}
+figure.funnel-figure figcaption {
   font-style: italic;
   color: var(--muted);
   font-size: 1.05rem;
-  margin-bottom: 0.7rem;
-}
-.scorecard { display: flex; gap: 1.1rem; flex-wrap: wrap; }
-.sc-card {
-  flex: 1 1 240px;
-  border: 1px solid var(--rule);
-  padding: 0.85rem 1rem 0.95rem;
-  display: flex;
-  flex-direction: column;
-}
-.sc-kicker { font-size: 0.82rem; color: var(--muted); font-style: italic; margin: 0 0 0.15rem 0; }
-.sc-card h4 { margin: 0 0 0.55rem 0; font-size: 1.05rem; font-weight: normal; line-height: 1.2; }
-.sc-badge { font-size: 0.85rem; margin: 0 0 0.8rem 0; color: var(--muted); }
-.sc-accept .sc-badge { color: var(--accent); }
-.sc-feats { list-style: none; margin: 0; padding: 0; }
-.sc-feats li { display: grid; grid-template-columns: 1fr 78px 1.8rem; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
-.sc-feats .fname { font-size: 0.82rem; color: var(--muted); }
-.sc-bar { height: 7px; background: var(--rule); }
-.sc-fill { display: block; height: 7px; width: calc(var(--v) * 100%); background: var(--ink); }
-.sc-val { font-size: 0.8rem; color: var(--muted); text-align: right; font-variant-numeric: oldstyle-nums; }
-.sc-feats li.sc-key .fname, .sc-feats li.sc-key .sc-val { color: var(--ink); }
-.sc-total { margin-top: auto; padding-top: 0.75rem; }
-.sc-tlabel { font-size: 0.8rem; color: var(--muted); margin: 0 0 0.3rem 0; }
-.sc-gauge { height: 10px; background: var(--rule); position: relative; }
-.sc-gfill { display: block; height: 10px; width: calc(var(--t) * 100%); background: var(--muted); }
-.sc-accept .sc-gfill { background: var(--accent); }
-.sc-gauge::after { content: ""; position: absolute; top: -3px; bottom: -3px; left: 60%; width: 2px; background: var(--ink); }
-.sc-verdict { font-size: 0.82rem; font-style: italic; color: var(--muted); margin: 0.35rem 0 0 0; }
-.sc-approx { font-style: normal; }
-@media (max-width: 760px) {
-  figure.scorecard-figure { max-width: 100%; }
+  margin-top: 0.6rem;
 }
 
 /* ============================================================
@@ -1450,19 +1427,23 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    with no per-band selectors. The arc unfolds as a story:
    editorial, then research, then the data-engineering trio.
 
-   Scope: the load-draw now runs ONLY on the compact (mobile)
-   variant. The desktop rail is peripheral to the writing lede and
-   deliberately gets no first-paint motion (Val, Timeline Split
-   review): its bands are stroke-width 9, so the [stroke-width="10"]
-   / [stroke-width="11"] selectors below never match the rail and it
-   renders static. */
-figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
+   Scope (2026-07-26 iteration): the career timeline is now a
+   full-width band below the writing lede, no longer a peripheral
+   centre rail, so it earns the first-paint draw for EVERY viewport.
+   Both the desktop horizontal band (.tl-band, stroke-width 14) and
+   the mobile vertical rail (.tl-rail, stroke-width 9) trace on load;
+   the stroke-width in the selector keys each to its own bands so no
+   other line matches. Whichever SVG is displayed at the current
+   viewport is the one the reader sees draw. */
+figure.timeline svg.tl-band > a line[stroke-width="14"],
+figure.timeline svg.tl-rail > a line[stroke-width="9"] {
   stroke-dasharray: var(--arc-len, 540);
   animation: arc-draw 0.85s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s);
 }
 /* Each role label fades in just after its band begins (delay + 0.45s). */
-figure.timeline svg.tl-compact   > a text {
+figure.timeline svg.tl-band > a text,
+figure.timeline svg.tl-rail > a text {
   animation: label-fade 0.5s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
 }
@@ -1491,14 +1472,14 @@ figure.timeline svg.tl-compact   > a text {
 
 /* Affordances + transitions on engageable marks. */
 figure.timeline svg.tl-rail > a,
-figure.timeline svg.tl-compact   > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
+figure.timeline svg.tl-band > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
 /* The band labels are <a> links to their role, but the global link
    underline reads as chartjunk on a chart axis. The pointer cursor and
    the hover dim/thicken are the affordance; no underline on the type. */
 figure.timeline svg.tl-rail > a text,
-figure.timeline svg.tl-compact   > a text { text-decoration: none; }
+figure.timeline svg.tl-band > a text { text-decoration: none; }
 figure.timeline svg.tl-rail > a line,
-figure.timeline svg.tl-compact   > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
+figure.timeline svg.tl-band > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
 figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
   transform-box: fill-box;
@@ -1542,11 +1523,11 @@ figure.timeline svg.dp-mobile a:focus circle.dp-ring { opacity: 1; transform: sc
    or keyboard focus) dims the other role groups and thickens the
    engaged band; clicking jumps to that role in Experience. */
 figure.timeline svg.tl-rail:has(a:hover) a:not(:hover),
-figure.timeline svg.tl-compact:has(a:hover)   a:not(:hover),
+figure.timeline svg.tl-band:has(a:hover) a:not(:hover),
 figure.timeline svg.tl-rail:has(a:focus) a:not(:focus),
-figure.timeline svg.tl-compact:has(a:focus)   a:not(:focus) { opacity: 0.3; }
+figure.timeline svg.tl-band:has(a:focus) a:not(:focus) { opacity: 0.3; }
 figure.timeline svg.tl-rail a:hover line, figure.timeline svg.tl-rail a:focus line { stroke-width: 13; }
-figure.timeline svg.tl-compact   a:hover line, figure.timeline svg.tl-compact   a:focus line { stroke-width: 14; }
+figure.timeline svg.tl-band a:hover line, figure.timeline svg.tl-band a:focus line { stroke-width: 18; }
 
 /* Experience outcome bars carry no hover reaction: the before/after
    pair is read at a glance, and the native <title> on each bar stays
@@ -1616,11 +1597,11 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     font-size: 11pt;
   }
   nav.top, .timeline, figure.timeline { display: none; }
-  /* Split hero collapses to a single column in print; the teaser
-     quick-jumps are useless on paper. */
+  /* Split hero collapses to a single column in print; the "More:"
+     jump line is useless on paper. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
-  nav.teaser-row { display: none; }
+  .hero-more { display: none; }
   hr { width: 100%; }
   details.fold, details.speaking-list { page-break-inside: avoid; }
   details.fold > summary, details.speaking-list > summary { display: none; }
@@ -1641,14 +1622,14 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 }
 
 /* ============================================================
-   19. TIMELINE SPLIT HERO
-   The writing-led opening: a full-width three-column grid
-   (writing / career rail / featured project) sitting above the
-   60% prose column that the rest of the page keeps. This region
-   is a <div>, not a <section>, so `section { width: 60% }` and
-   the floating-note margin never apply here; the hero carries no
-   floating notes by design (the per-post homepage note is
-   suppressed for the featured slot in the generator).
+   19. SPLIT HERO (Direction B: writing-led, two columns)
+   The opening: a Tier-1 proposition, then a full-width TWO-column
+   grid (recent writing ~62% / current work ~38%), then the career
+   timeline as a full-width band, then a one-line "More:" row. The
+   grid region is a <div>, not a <section>, so `section { width:
+   60% }` and the floating-note margin never apply here; the hero
+   carries no floating notes by design (the per-post homepage note
+   is suppressed for the featured slot in the generator).
    ============================================================ */
 
 /* Nameplate: the former 3.2rem hero h1, reduced and set beside
@@ -1673,14 +1654,31 @@ nav.top { width: 100%; }
   margin: 0;
 }
 
+/* Tier-1 proposition: one first-person claim, sized between body and
+   h1 (Massimo). ETBook roman, not italic (the italic reservation
+   does not list a proposition). Additive to the locked subtitle. */
+.proposition {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  color: var(--ink);
+  max-width: 34ch;
+  margin: 0 0 1.9rem 0;
+}
+
+/* Two-column asymmetric grid: recent writing leads (~62%), current
+   work is a compact secondary column (~38%). The career timeline is
+   NOT in this grid; it sits full-width below
+   (figure.timeline.career-band). DOM order is writing -> project ->
+   band -> more, which is also the stacked mobile order, so visual and
+   assistive-tech reading order agree. */
 .split-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) 250px minmax(0, 1fr);
-  gap: 0 2.4rem;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 0 2.8rem;
   align-items: start;
   border-top: 1px solid var(--rule);
   padding-top: 1.6rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 .split-hero > * { min-width: 0; }
 
@@ -1700,36 +1698,52 @@ h2.col-head {
   margin: 0 0 1rem 0;
 }
 
-/* Left: recent writing. Entries reuse the shared .entry styles. */
+/* Left: recent writing. The two featured entries reuse the shared
+   .entry styles. Below them, the writing-index grid (moved here from
+   the former "More writing" fold) is compacted to a DATED TITLE LIST:
+   tile summaries hidden, tighter rows, a top rule separating it from
+   the featured pair. So the opening surfaces two summaries plus six
+   more dated titles instead of hiding them behind a disclosure. */
 .hero-writing .entry { margin-bottom: 1.5rem; }
+.hero-index {
+  max-width: 100%;
+  margin: 0.2rem 0 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.55rem 1.6rem;
+}
+.hero-index .writing-tile { margin: 0; }
+.hero-index .tile-summary { display: none; }
+.hero-index .writing-tile .date { font-size: 0.82rem; margin-bottom: 0.1rem; }
+.hero-index h3.title { font-size: 1rem; line-height: 1.2; }
 .hero-viewall {
-  margin: 0.4rem 0 0 0;
+  margin: 1.1rem 0 0 0;
   font-size: 0.95rem;
 }
 .hero-viewall a { text-decoration-color: var(--rule); }
 
-/* Centre: the career rail. Bordered on both sides to read as a
-   spine between the two text columns. */
-figure.timeline.hero-rail {
-  margin: 0;
-  padding: 0 1rem;
-  border-left: 1px solid var(--rule);
-  border-right: 1px solid var(--rule);
+/* Career transition timeline: a full-width band BELOW the two-column
+   grid (moved out of the grid in Direction B). The horizontal band
+   (.tl-band) leads on desktop; the vertical rail (.tl-rail) centers
+   within it on mobile. A top rule sets it off from the columns. */
+figure.timeline.career-band {
+  width: 100%;
+  margin: 2.4rem 0 1.4rem 0;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
 }
-figure.timeline.hero-rail svg.tl-rail { max-width: 100%; }
-figure.timeline.hero-rail figcaption {
-  margin-top: 0.6rem;
+figure.timeline.career-band svg.tl-band { max-width: 100%; }
+figure.timeline.career-band figcaption {
+  margin-bottom: 1rem;
   text-align: left;
 }
 
-/* Right: featured project. The full project block moves here; in
-   the narrow column the scorecard's two cards stack (flex-wrap)
-   and the type steps down a little so the figure still breathes. */
+/* Right: current work. A compact project summary; the funnel figure
+   sits in the ~38% column, so the type steps down a little. */
 .hero-project { position: relative; }
 .hero-project .project { margin-bottom: 0; }
-.hero-project .scorecard { gap: 0.9rem; }
-.hero-project .sc-card { flex: 1 1 100%; min-width: 0; }
-.hero-project figure.scorecard-figure { font-size: 0.95rem; }
+.hero-project figure.funnel-figure { font-size: 0.95rem; }
 
 /* One botanical ornament, the page's single decorative mark: faint
    (var(--rule) via the #d0d0c8 sentinel), tucked at the card foot,
@@ -1745,89 +1759,44 @@ figure.timeline.hero-rail figcaption {
 }
 
 /* ============================================================
-   20. TEASER ROW
-   Three in-page quick-jumps to substance further down the page.
-   Arrows point down (same-page destinations). Real counts answer
-   the hidden-content critique. Targets are visible sections, so a
-   jump lands on readable content (no CSS-forced fold-open needed;
-   that would require JS the homepage does not ship).
+   20. MORE LINE
+   One restrained line replacing the three-card teaser row (which
+   read as a second navigation). Same-page jump links to the
+   sections the reduced top nav dropped, plus full experience. A top
+   rule sets it off from the timeline band above.
    ============================================================ */
-.teaser-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.hero-more {
   border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  margin: 2.2rem 0 2.8rem 0;
-}
-.teaser {
-  padding: 1.1rem 1.4rem;
-  border-right: 1px solid var(--rule);
-}
-.teaser:last-child { border-right: none; }
-.teaser-title {
-  font-size: 1.05rem;
-  margin: 0 0 0.3rem 0;
-}
-.teaser-count {
+  padding-top: 1rem;
+  margin: 1.4rem 0 2.8rem 0;
+  font-size: 0.95rem;
   color: var(--muted);
-  font-variant-numeric: oldstyle-nums;
-  font-size: 0.9rem;
 }
-.teaser p {
-  font-size: 0.9rem;
-  color: var(--muted);
-  line-height: 1.4;
-  margin: 0 0 0.5rem 0;
-}
-.teaser a {
-  font-size: 0.9rem;
-  text-decoration-color: var(--muted);
-}
+.hero-more a { text-decoration-color: var(--rule); }
 
 /* ============================================================
-   20.1. SPLIT HERO / TEASER BREAKPOINTS
-   Intermediate 1000px stop resolves the 761-1000px squeeze the
-   2026-07-19 critique left open (Luke): the rail keeps its column
-   while the project card drops full-width below, so neither text
-   column is crushed. Below 760px everything stacks and the rail
-   becomes a full-width band (the compact SVG takes over).
+   20.1. SPLIT HERO BREAKPOINTS (Direction B)
+   The two-column grid uses fr units, so it scales fluidly. The
+   1000px stop gives the writing column a little more room at mid
+   widths (resolving the 761-1000px squeeze the 2026-07-19 critique
+   flagged, now with a compact project column rather than the dense
+   scorecard). Below 760px the two columns stack (writing, then
+   current work), the timeline band swaps to the vertical rail, and
+   the "More:" line follows.
    ============================================================ */
 @media (max-width: 1000px) {
   .split-hero {
-    grid-template-columns: minmax(0, 1fr) 230px;
-  }
-  .hero-project {
-    grid-column: 1 / -1;
-    margin-top: 1.8rem;
-    border-top: 1px solid var(--rule);
-    padding-top: 1.4rem;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 0 2rem;
   }
 }
 @media (max-width: 760px) {
   .split-hero {
     grid-template-columns: 1fr;
-    gap: 1.6rem;
+    gap: 1.8rem;
   }
-  figure.timeline.hero-rail {
-    border-left: none;
-    border-right: none;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    padding: 1rem 0;
-  }
-  .hero-project {
-    margin-top: 0;
-    border-top: none;
-    padding-top: 0;
-  }
-  .teaser-row {
-    grid-template-columns: 1fr;
-  }
-  .teaser {
-    border-right: none;
-    border-bottom: 1px solid var(--rule);
-  }
-  .teaser:last-child { border-bottom: none; }
+  .proposition { font-size: 1.4rem; }
+  figure.timeline.career-band { margin-top: 1.8rem; }
 }
 </style>
 </head>
@@ -1842,9 +1811,9 @@ figure.timeline.hero-rail figcaption {
   <nav class="top">
     <ul>
       <li><a href="#writing">writing</a></li>
-      <li><a href="#projects">projects</a></li>
-      <li><a href="#publications">publications</a></li>
+      <li><a href="#work">work</a></li>
       <li><a href="#about">about</a></li>
+      <li><a href="#contact">contact</a></li>
     </ul>
   </nav>
 
@@ -1862,28 +1831,40 @@ figure.timeline.hero-rail figcaption {
   </div>
 
   <!-- ==========================================================
-       SPLIT HERO (Timeline Split)
-       A three-column grid, NOT a <section>, so the blanket
-       `section { width: 60% }` rule (which reserves the right
-       margin for floating sidenotes) never applies here. Left:
-       the two most-recent posts (writing-list markers, generator-
-       owned). Centre: the career arc as a vertical dated rail.
-       Right: the featured project, MOVED (not copied) from
-       #projects so the project CSS counter still reads 01 in DOM
-       order. Everything else on the page keeps its 60% column and
-       original markup below the teaser row.
+       PROPOSITION (Tier 1)
+       One first-person claim stating the through-line before the
+       evidence: writing + analytics systems + regulated healthcare
+       + auditability. A <p>, not a heading, so heading order stays
+       h1 -> h2 -> h3. Additive to the locked subtitle above (which
+       is a category label; this is the claim).
+       ========================================================== -->
+  <p class="proposition">I build and write about auditable analytics systems for regulated healthcare.</p>
 
-       DOM order is writing -> rail -> project, which is also the
-       stacked mobile order (Haben). No floating notes live in this
-       region; the per-post homepage margin note is suppressed in
-       the generator for the featured slot, so the floating note
+  <!-- ==========================================================
+       SPLIT HERO (Direction B: writing-led, two columns)
+       A TWO-column grid, NOT a <section>, so the blanket
+       `section { width: 60% }` rule (which reserves the right
+       margin for floating sidenotes) never applies here. Left
+       (~62%): recent writing, the page lede: two featured posts
+       (writing-list markers) plus the six-title index (writing-index
+       markers), both generator-owned. Right (~38%): current work,
+       the featured project MOVED (not copied) from #projects so the
+       project CSS counter still reads 01 in DOM order. The career
+       timeline is NOT in this grid; it sits full-width below (see
+       figure.timeline.career-band), then the "More:" line.
+
+       DOM order is writing -> project (-> band -> more), which is
+       also the stacked mobile order (Haben). No floating notes live
+       in this region; the per-post homepage margin note is suppressed
+       in the generator for the featured slot, so the floating note
        stays the page's sole note idiom everywhere else.
        ========================================================== -->
   <div class="split-hero">
 
-    <!-- LEFT: recent writing. The sparkline and the small-multiples
-         index stay below in #writing; only the two featured entries
-         lead here. -->
+    <!-- LEFT: recent writing. Two featured entries lead; the
+         six-title index (moved here from the former "More writing"
+         fold) follows, compacted to dated titles. The cadence
+         sparkline stays below in #writing. -->
     <div class="hero-writing">
       <h2 class="col-head">Recent writing</h2>
       <!-- writing-list:start -->
@@ -1903,125 +1884,60 @@ figure.timeline.hero-rail figcaption {
       <p class="summary">Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</p>
     </div>
     <!-- writing-list:end -->
-      <p class="hero-viewall"><a href="#writing">View all writing &rarr;</a></p>
+
+      <!-- More recent titles, surfaced (formerly the "More writing" fold in
+           #writing). The writing-index markers MOVED here; the build
+           repopulates them in place. Tile summaries are hidden in the hero
+           via CSS (.hero-index .tile-summary { display:none }) so this reads
+           as a compact dated title list, not a second summary block. -->
+      <div class="writing-index hero-index">
+        <!-- writing-index:start -->
+    <div class="writing-tile">
+      <span class="date">2026-07-09</span>
+      <h3 class="title"><a href="/blog/one-api-call-three-ways-to-split-it/">One API call, three ways to split it: a FRED case study</a></h3>
+      <p class="tile-summary">Pull five FRED series once, cache the raw pull, then fan it out into per-year-per-indicator files three different ways, plus a fourth example: keeping the local store current with real-time incremental pulls instead of re-running the big fetch.</p>
     </div>
 
-    <!-- CENTRE: the career rail. Same data as the former horizontal
-         arc (dated, clickable bands jumping to each role, the muted
-         2020 acquisition annotation), re-rendered vertically to fit
-         the narrow centre column. The wide tl-horizontal variant is
-         retired: it cannot fit a rail column and shipping a hidden
-         1200-wide SVG is dead weight. tl-compact still serves
-         mobile at <=760px. Rail bands are stroke-width 9 so the
-         18.2 load-draw selector ([stroke-width="10"]) misses them:
-         a peripheral figure gets no first-paint motion (Val). -->
-    <figure class="timeline hero-rail">
-      <figcaption id="tl-caption">
-        Three overlapping careers converge into one continuous data-engineering line.
-      </figcaption>
+    <div class="writing-tile">
+      <span class="date">2026-07-05</span>
+      <h3 class="title"><a href="/blog/should-i-buy-ram-now/">Should I Buy RAM Now?</a></h3>
+      <p class="tile-summary">A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit, built to be honest about how little it can forecast.</p>
+    </div>
 
-      <!-- Vertical rail. viewBox 300x470. Year axis on the left,
-           y(year) = 25 + (year - 2007) * 21. Three parallel bands
-           at increasing x show the overlap: editorial (x=55),
-           research (x=90), and the continuous data-engineering line
-           (x=125) split into healthfinch / Health Catalyst / BHA
-           segments. Presentation hexes (#111, #6a6a6a) are remapped
-           to the palette by the attribute selectors in section 17. -->
-      <svg class="tl-rail" viewBox="0 0 300 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-r-desc">
-        <desc id="tl-r-desc">Three overlapping career phases on a vertical timeline. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+    <div class="writing-tile">
+      <span class="date">2026-06-27</span>
+      <h3 class="title"><a href="/blog/governing-the-coverage-decision/">Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</a></h3>
+      <p class="tile-summary">A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders.</p>
+    </div>
 
-        <!-- Year axis -->
-        <line x1="22" y1="25" x2="22" y2="424" stroke="#111" stroke-width="1"/>
-        <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="end">
-          <g><line x1="18" y1="25"  x2="26" y2="25"  stroke="#6a6a6a"/><text x="14" y="29">2007</text></g>
-          <g><line x1="18" y1="172" x2="26" y2="172" stroke="#6a6a6a"/><text x="14" y="176">2014</text></g>
-          <g><line x1="18" y1="298" x2="26" y2="298" stroke="#6a6a6a"/><text x="14" y="302">2020</text></g>
-          <g><line x1="18" y1="424" x2="26" y2="424" stroke="#6a6a6a"/><text x="14" y="428">now</text></g>
-        </g>
+    <div class="writing-tile">
+      <span class="date">2026-06-26</span>
+      <h3 class="title"><a href="/blog/credentialing-validity/">Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</a></h3>
+      <p class="tile-summary">Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing.</p>
+    </div>
 
-        <!-- Bands: each a link to its role, with a transparent rect
-             touch overlay (WCAG 2.5.8) and a title for AT. The <a>s are
-             DIRECT children of <svg> (no wrapping <g>) so the section-18
-             `svg.tl-rail > a` rules (no-underline, hover thicken,
-             focus-plus-context dim) match, exactly as the retired
-             horizontal arc did. Font attributes therefore sit on each
-             <text>, not on a group. -->
-          <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="43" y="25" width="30" height="147" fill="transparent"/><line x1="55" y1="25" x2="55" y2="172" stroke="#111" stroke-width="9" style="--arc-len:147"><title>Editorial and writing, 2007 to 2014</title></line><text x="69" y="36" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Editorial and writing</text></a>
+    <div class="writing-tile">
+      <span class="date">2026-06-12</span>
+      <h3 class="title"><a href="/blog/lucas-critique-stars-forecasting/">Your Cut Point Forecast Has a Lucas Critique Problem</a></h3>
+      <p class="tile-summary">Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.</p>
+    </div>
 
-          <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="78" y="67" width="30" height="189" fill="transparent"/><line x1="90" y1="67" x2="90" y2="256" stroke="#111" stroke-width="9" style="--arc-len:189"><title>Research, UW-Madison, 2009 to 2018</title></line><text x="104" y="78" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Research, UW&ndash;Madison</text></a>
+    <div class="writing-tile">
+      <span class="date">2026-06-09</span>
+      <h3 class="title"><a href="/blog/medicaid-work-requirements-arkansas/">Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</a></h3>
+      <p class="tile-summary">Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work.</p>
+    </div>
+    <!-- writing-index:end -->
+      </div>
 
-          <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="113" y="235" width="30" height="63" fill="transparent"/><line x1="125" y1="235" x2="125" y2="298" stroke="#111" stroke-width="9" style="--arc-len:63"><title>healthfinch, 2017 to 2020</title></line><text x="139" y="242" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">healthfinch</text></a>
+      <p class="hero-viewall"><a href="/blog/">View all writing &rarr;</a></p>
+    </div>
 
-          <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="113" y="298" width="30" height="105" fill="transparent"/><line x1="125" y1="298" x2="125" y2="403" stroke="#111" stroke-width="9" style="--arc-len:105"><title>Health Catalyst, 2020 to 2025</title></line><text x="139" y="354" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Health Catalyst</text></a>
-
-          <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="113" y="403" width="30" height="21" fill="transparent"/><line x1="125" y1="403" x2="125" y2="424" stroke="#111" stroke-width="9" style="--arc-len:21"><title>Baltimore Health Analytics, 2025 to present</title></line><text x="139" y="410" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Baltimore Health</text><text x="139" y="423" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Analytics</text></a>
-
-        <!-- INFLECTION: acquisition 2020 (calmed, muted, no accent),
-             matching the retired horizontal arc's annotation. -->
-        <line x1="131" y1="298" x2="152" y2="298" stroke="#6a6a6a" stroke-width="0.7"/>
-        <text x="155" y="302" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a">acquisition</text>
-      </svg>
-
-    <!-- ==========================================================
-         COMPACT CAREER ARC (mobile)
-         Shown only at viewport widths <= 760px (via .tl-compact
-         display rule). NOT the tall vertical reflow it replaced:
-         this is a single-frame horizontal redesign that fits in
-         roughly one phone screen (~270px tall at 375px width vs
-         ~950px for the old vertical), conforming to the same-frame
-         rule the sibling dot plot already follows (see the
-         .dp-mobile note in the stylesheet). Same three rows as the
-         desktop arc, recomputed for a 600x430 viewBox so the type
-         reads larger relative to the frame than a scaled-down copy
-         of the 1200-wide desktop SVG would.
-
-         Linear year scale: x(year) = 40 + (year - 2007) * 28.5
-           2007->40, 2009->97, 2014->240, 2017->325, 2020->410,
-           2025->553, now (2026)->582
-         Rows: Editorial y=80, Research y=160, Data eng y=240,
-         year axis y=330. Era annotations (news-wire, MPH) are
-         dropped as on the prior mobile design; the single 2020
-         acquisition callout is kept as the one accent use. -->
-    <svg class="tl-compact" viewBox="0 0 600 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-c-desc">
-      <desc id="tl-c-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
-
-      <!-- ROW 1: Editorial and writing, 2007 to 2014. -->
-      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="40" y="59" width="200" height="42" fill="transparent"/><text x="40" y="58" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Editorial and writing</text><line x1="40" y1="80" x2="240" y2="80" stroke="#111" stroke-width="11" stroke-linecap="butt" style="--arc-len:200"/></a>
-
-      <!-- ROW 2: Research, UW-Madison, 2009 to 2018. -->
-      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="97" y="139" width="257" height="42" fill="transparent"/><text x="97" y="138" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="97" y1="160" x2="354" y2="160" stroke="#111" stroke-width="11" style="--arc-len:257"/></a>
-
-      <!-- ROW 3: Data engineering, 2017 to now. Three abutting
-           segments; labels centered over each at a smaller size so
-           they clear their neighbors in the narrow frame. -->
-      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="325" y="219" width="85" height="42" fill="transparent"/><text x="367" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="325" y1="240" x2="410" y2="240" stroke="#111" stroke-width="11" style="--arc-len:85"/></a>
-
-      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="410" y="219" width="143" height="42" fill="transparent"/><text x="481" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="410" y1="240" x2="553" y2="240" stroke="#111" stroke-width="11" style="--arc-len:143"/></a>
-
-      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="548" y="219" width="52" height="42" fill="transparent"/><text x="567" y="222" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="553" y1="240" x2="582" y2="240" stroke="#111" stroke-width="11" style="--arc-len:29"/></a>
-
-      <!-- YEAR AXIS at y=330. Two-digit year labels (matching the
-           dot plot's mobile axis) so the right-hand years do not
-           crowd in the narrow frame. -->
-      <line x1="30" y1="330" x2="590" y2="330" stroke="#111" stroke-width="1.2"/>
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="40"  y1="324" x2="40"  y2="336" stroke="#6a6a6a"/><text x="40"  y="355">'07</text></g>
-        <g><line x1="97"  y1="324" x2="97"  y2="336" stroke="#6a6a6a"/><text x="97"  y="355">'09</text></g>
-        <g><line x1="240" y1="324" x2="240" y2="336" stroke="#6a6a6a"/><text x="240" y="355">'14</text></g>
-        <g><line x1="325" y1="324" x2="325" y2="336" stroke="#6a6a6a"/><text x="325" y="355">'17</text></g>
-        <g><line x1="410" y1="324" x2="410" y2="336" stroke="#6a6a6a"/><text x="410" y="355">'20</text></g>
-        <g><line x1="553" y1="324" x2="553" y2="336" stroke="#6a6a6a"/><text x="553" y="355">'25</text></g>
-        <g><line x1="582" y1="324" x2="582" y2="336" stroke="#6a6a6a"/><text x="582" y="355">now</text></g>
-      </g>
-
-      <!-- INFLECTION: acquisition 2020 (calmed). Demoted from the
-           loud red callout to a quiet muted annotation matching the
-           desktop arc: thin solid connector, muted italic caption,
-           no accent, no circle. Caption drops "Catalyst". -->
-      <line x1="410" y1="240" x2="410" y2="324" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="410" y="392" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
-    </svg>
-  </figure>
+    <!-- The career timeline relocated OUT of this grid to a full-width
+         band below the two columns (see figure.timeline.career-band
+         after .split-hero). In Direction B the opening is two columns,
+         writing | current work, with the transition timeline given the
+         full page width beneath them. -->
 
     <!-- RIGHT: featured project. Moved (not copied) from #projects so
          the project CSS counter (reset on #main, incremented on each
@@ -2031,7 +1947,7 @@ figure.timeline.hero-rail figcaption {
          a signature, aria-hidden and drawn in var(--rule) via the
          #d0d0c8 palette sentinel, the page's single decorative mark. -->
     <div class="hero-project">
-      <h2 class="col-head">Featured project</h2>
+      <h2 class="col-head">Current work</h2>
     <div class="project">
       <span class="num"></span>
       <div class="body">
@@ -2041,63 +1957,28 @@ figure.timeline.hero-rail figcaption {
         </p>
 
         <!-- ==========================================================
-             SCORING SCORECARD FIGURE
-             Built from the two worked examples in the methodology
-             post: a CMS proposed rule (true positive) that clears the
-             alert threshold, beside a vendor press release (near-miss
-             false positive) that mirrors the same keywords but does
-             not. Six per-feature bars each; the decisive feature is
-             source authority (emphasised in ink, not accent). HTML/CSS,
-             not SVG: bars are divs sized by an inline --v custom
-             property, palette via the CSS variables directly.
-             Honesty: the CMS scores are the exact six values published
-             in the post; the vendor scores are labelled (approx.)
-             because the post gives only the qualitative pattern (low
-             source authority, high measure relevance and recency,
-             below threshold after the source-authority fix).
-             ========================================================== -->
-        <figure class="scorecard-figure">
+             TRIAGE FUNNEL FIGURE
+             Replaces the two-card accept-vs-reject scorecard (retired
+             in the 2026-07-26 iteration): the homepage no longer shows
+             the full scoring instrument. It shows the shape of the
+             problem, the volume reviewed narrowing to the few items
+             that matter; the worked accept/reject example and its
+             per-feature bars now live only in the methodology post
+             (linked below). Both numbers (~200/week, ~5) already appear
+             in the prose above. Accent-free by design (career/funnel
+             figures carry no accent). Presentation hexes (#6a6a6a,
+             #111, #d0d0c8) are remapped to the palette by section 17. -->
+        <figure class="funnel-figure">
+          <svg viewBox="0 0 260 118" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roughly 200 healthcare news items a week are scanned; about five clear the threshold and are posted.">
+            <text x="14" y="13" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a">~200 news items / week</text>
+            <rect x="14" y="18" width="232" height="22" fill="#6a6a6a"/>
+            <polygon points="14,40 246,40 156,82 104,82" fill="#d0d0c8" fill-opacity="0.4"/>
+            <rect x="104" y="82" width="52" height="20" fill="#111"/>
+            <text x="130" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#111" text-anchor="middle">~5 that matter</text>
+          </svg>
           <figcaption>
-            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them. The CMS feature scores are the post's; the composite gauge and its threshold are illustrative.
+            Six named features score each item; the few that clear the threshold post to a Teams channel, each with a per-feature breakdown for explainability. The worked accept-versus-reject example is in the methodology post.
           </figcaption>
-          <div class="scorecard">
-            <div class="sc-card sc-accept">
-              <p class="sc-kicker">true positive</p>
-              <h4>CMS proposed rule</h4>
-              <p class="sc-badge">alerted &#10003;</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
-                <p class="sc-verdict">well above threshold</p>
-              </div>
-            </div>
-            <div class="sc-card sc-reject">
-              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
-              <h4>Vendor press release</h4>
-              <p class="sc-badge">skipped</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
-                <p class="sc-verdict">below threshold, after the source-authority fix</p>
-              </div>
-            </div>
-          </div>
         </figure>
 
         <p class="links">
@@ -2134,30 +2015,97 @@ figure.timeline.hero-rail figcaption {
   </div><!-- /.split-hero -->
 
   <!-- ==========================================================
-       TEASER ROW
-       Three in-page quick-jumps to substance further down the SAME
-       page, so the arrows point DOWN, not right (Steve). Each names
-       a real count (the critique's cheapest fix for hidden content).
-       Targets are fully visible sections, not folds, so a jump lands
-       on readable content. The third card leads with experience, the
-       order a recruiter scans (Jess). -->
-  <nav class="teaser-row" aria-label="Jump to more of the site">
-    <div class="teaser">
-      <p class="teaser-title">Other projects <span class="teaser-count">(5)</span></p>
-      <p>Stars Cliff Simulator, healthcare workforce transition, ECDS shock index, a care-redesign interrupted time series, and practice-automation ROI.</p>
-      <a href="#projects">See all projects &darr;</a>
-    </div>
-    <div class="teaser">
-      <p class="teaser-title">Publications &amp; speaking <span class="teaser-count">(6 &middot; 17)</span></p>
-      <p>Peer-reviewed health-services research, plus conference talks and posters.</p>
-      <a href="#publications">See the record &darr;</a>
-    </div>
-    <div class="teaser">
-      <p class="teaser-title">Experience &amp; about</p>
-      <p>A decade and a half across editorial, health-services research, and the data-engineering work that followed.</p>
-      <a href="#experience">Read the background &darr;</a>
-    </div>
-  </nav>
+       CAREER TRANSITION TIMELINE (full-width band, Direction B)
+       Relocated out of the split-hero grid to the full page width
+       below the two columns. Two SVGs swap at 760px:
+         - svg.tl-band : wide HORIZONTAL band for desktop (>760px),
+           new geometry (viewBox 1000x250), three qualitative lanes
+           (editorial / research / data-engineering) on a dated
+           x-axis. Bands stroke-width 14, the section-18.2 load-draw
+           hook, so the band traces once on load for every reader
+           (no motion gate; the 2026-06-13 no-gate decision stands).
+           No accent.
+         - svg.tl-rail : the vertical dated rail, now the MOBILE view
+           (<=760px). Dates down the left, bands flowing down; an
+           intentional narrow form, not a shrunk desktop. Bands
+           stroke-width 9, static.
+       The former mobile tl-compact (horizontal 600x430) is retired.
+       All five #exp-* band links, transparent touch overlays, and
+       <title>s are preserved; presentation hexes remapped by §17. -->
+  <figure class="timeline career-band">
+    <figcaption id="tl-caption">
+      Three overlapping careers converge into one continuous data-engineering line.
+    </figcaption>
+
+    <!-- DESKTOP: wide horizontal band. x(year) = 60 + (year-2007)*46.
+         Lanes editorial y=55, research y=110, data-engineering y=165;
+         year axis y=215. Coordinates computed from scratch for the
+         full-width band. -->
+    <svg class="tl-band" viewBox="0 0 1000 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-b-desc">
+      <desc id="tl-b-desc">Three overlapping career phases on a horizontal timeline. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+
+      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="34" width="322" height="34" fill="transparent"/><text x="60" y="47" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="55" x2="382" y2="55" stroke="#111" stroke-width="14" style="--arc-len:322"><title>Editorial and writing, 2007 to 2014</title></line></a>
+
+      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="152" y="89" width="414" height="34" fill="transparent"/><text x="152" y="102" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="152" y1="110" x2="566" y2="110" stroke="#111" stroke-width="14" style="--arc-len:414"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
+
+      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="520" y="152" width="138" height="34" fill="transparent"/><line x1="520" y1="165" x2="658" y2="165" stroke="#111" stroke-width="14" style="--arc-len:138"><title>healthfinch, 2017 to 2020</title></line><text x="589" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text></a>
+
+      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="658" y="152" width="230" height="34" fill="transparent"/><line x1="658" y1="165" x2="888" y2="165" stroke="#111" stroke-width="14" style="--arc-len:230"><title>Health Catalyst, 2020 to 2025</title></line><text x="773" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text></a>
+
+      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="886" y="152" width="58" height="34" fill="transparent"/><line x1="888" y1="165" x2="934" y2="165" stroke="#111" stroke-width="14" style="--arc-len:46"><title>Baltimore Health Analytics, 2025 to present</title></line><text x="911" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">BHA</text></a>
+
+      <!-- INFLECTION: 2020 acquisition (calmed, muted, no accent). -->
+      <line x1="658" y1="158" x2="658" y2="143" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="658" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
+
+      <!-- YEAR AXIS at y=215. -->
+      <line x1="50" y1="215" x2="945" y2="215" stroke="#111" stroke-width="1.2"/>
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="60"  y1="209" x2="60"  y2="221" stroke="#6a6a6a"/><text x="60"  y="238">2007</text></g>
+        <g><line x1="152" y1="209" x2="152" y2="221" stroke="#6a6a6a"/><text x="152" y="238">2009</text></g>
+        <g><line x1="382" y1="209" x2="382" y2="221" stroke="#6a6a6a"/><text x="382" y="238">2014</text></g>
+        <g><line x1="520" y1="209" x2="520" y2="221" stroke="#6a6a6a"/><text x="520" y="238">2017</text></g>
+        <g><line x1="658" y1="209" x2="658" y2="221" stroke="#6a6a6a"/><text x="658" y="238">2020</text></g>
+        <g><line x1="888" y1="209" x2="888" y2="221" stroke="#6a6a6a"/><text x="888" y="238">2025</text></g>
+        <g><line x1="934" y1="209" x2="934" y2="221" stroke="#6a6a6a"/><text x="934" y="238">now</text></g>
+      </g>
+    </svg>
+
+    <!-- MOBILE (<=760px): the vertical dated rail. viewBox 300x470,
+         y(year) = 25 + (year-2007)*21. Reused verbatim from the prior
+         desktop rail; now serves narrow screens. -->
+    <svg class="tl-rail" viewBox="0 0 300 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-r-desc">
+      <desc id="tl-r-desc">Three overlapping career phases on a vertical timeline. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+
+      <line x1="22" y1="25" x2="22" y2="424" stroke="#111" stroke-width="1"/>
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="end">
+        <g><line x1="18" y1="25"  x2="26" y2="25"  stroke="#6a6a6a"/><text x="14" y="29">2007</text></g>
+        <g><line x1="18" y1="172" x2="26" y2="172" stroke="#6a6a6a"/><text x="14" y="176">2014</text></g>
+        <g><line x1="18" y1="298" x2="26" y2="298" stroke="#6a6a6a"/><text x="14" y="302">2020</text></g>
+        <g><line x1="18" y1="424" x2="26" y2="424" stroke="#6a6a6a"/><text x="14" y="428">now</text></g>
+      </g>
+
+        <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="43" y="25" width="30" height="147" fill="transparent"/><line x1="55" y1="25" x2="55" y2="172" stroke="#111" stroke-width="9" style="--arc-len:147"><title>Editorial and writing, 2007 to 2014</title></line><text x="69" y="36" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Editorial and writing</text></a>
+
+        <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="78" y="67" width="30" height="189" fill="transparent"/><line x1="90" y1="67" x2="90" y2="256" stroke="#111" stroke-width="9" style="--arc-len:189"><title>Research, UW-Madison, 2009 to 2018</title></line><text x="104" y="78" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Research, UW&ndash;Madison</text></a>
+
+        <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="113" y="235" width="30" height="63" fill="transparent"/><line x1="125" y1="235" x2="125" y2="298" stroke="#111" stroke-width="9" style="--arc-len:63"><title>healthfinch, 2017 to 2020</title></line><text x="139" y="242" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">healthfinch</text></a>
+
+        <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="113" y="298" width="30" height="105" fill="transparent"/><line x1="125" y1="298" x2="125" y2="403" stroke="#111" stroke-width="9" style="--arc-len:105"><title>Health Catalyst, 2020 to 2025</title></line><text x="139" y="354" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Health Catalyst</text></a>
+
+        <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="113" y="403" width="30" height="21" fill="transparent"/><line x1="125" y1="403" x2="125" y2="424" stroke="#111" stroke-width="9" style="--arc-len:21"><title>Baltimore Health Analytics, 2025 to present</title></line><text x="139" y="410" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Baltimore Health</text><text x="139" y="423" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Analytics</text></a>
+
+      <line x1="131" y1="298" x2="152" y2="298" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="155" y="302" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a">acquisition</text>
+    </svg>
+  </figure>
+
+  <!-- ==========================================================
+       MORE LINE
+       One restrained line replacing the three-card teaser row (a
+       second nav). Same-page destinations: the sections the reduced
+       top nav dropped, plus full experience. -->
+  <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">full experience</a></p>
 
   <section id="about">
     <h2>About</h2>
@@ -2167,225 +2115,6 @@ figure.timeline.hero-rail figcaption {
     <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS (Healthcare Effectiveness Data and Information Set) pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
     </p>
   </section>
-
-  <!-- ==========================================================
-       ACADEMIC ACTIVITY DOT PLOT
-       Year axis at y=140; publications above sized by citation
-       count; presentations below, stacked vertically per year.
-       ========================================================== -->
-  <figure class="fullwidth timeline">
-    <figcaption>
-      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count; open dots have no count on record.
-    </figcaption>
-
-    <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019" aria-describedby="dp-w-desc">
-      <desc id="dp-w-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
-
-      <!-- LANE LABELS (left side, vertically aligned with each lane) -->
-      <text x="40" y="70" font-family="et-book, Palatino, Georgia, serif" font-size="20" fill="#111">publications</text>
-      <text x="40" y="165" font-family="et-book, Palatino, Georgia, serif" font-size="20" fill="#111">presentations</text>
-
-      <!-- YEAR AXIS at y=140. The reference line dividing the two
-           lanes. Axis runs 2010 (x=200) to 2019 (x=1145), with
-           115-unit spacing per year. -->
-      <line x1="180" y1="140" x2="1160" y2="140" stroke="#111" stroke-width="1"/>
-
-      <!-- YEAR TICKS AND LABELS -->
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="200"  y1="136" x2="200"  y2="144" stroke="#6a6a6a"/><text x="200"  y="160">2010</text></g>
-        <g><line x1="305"  y1="136" x2="305"  y2="144" stroke="#6a6a6a"/><text x="305"  y="160">2011</text></g>
-        <g><line x1="410"  y1="136" x2="410"  y2="144" stroke="#6a6a6a"/><text x="410"  y="160">2012</text></g>
-        <g><line x1="515"  y1="136" x2="515"  y2="144" stroke="#6a6a6a"/><text x="515"  y="160">2013</text></g>
-        <g><line x1="620"  y1="136" x2="620"  y2="144" stroke="#6a6a6a"/><text x="620"  y="160">2014</text></g>
-        <g><line x1="725"  y1="136" x2="725"  y2="144" stroke="#6a6a6a"/><text x="725"  y="160">2015</text></g>
-        <g><line x1="830"  y1="136" x2="830"  y2="144" stroke="#6a6a6a"/><text x="830"  y="160">2016</text></g>
-        <g><line x1="935"  y1="136" x2="935"  y2="144" stroke="#6a6a6a"/><text x="935"  y="160">2017</text></g>
-        <g><line x1="1040" y1="136" x2="1040" y2="144" stroke="#6a6a6a"/><text x="1040" y="160">2018</text></g>
-        <g><line x1="1145" y1="136" x2="1145" y2="144" stroke="#6a6a6a"/><text x="1145" y="160">2019</text></g>
-      </g>
-
-      <!-- PUBLICATIONS (above the axis).
-           Each dot is a publication, y=95 (just above axis), sized
-           by citation count. Radii are ORDINAL, not a formula, and
-           carry no absolute count. Least to most cited:
-           none-on-record, low, high, most-cited (radii 4, 5, 7, 10).
-           Live counts live in src/content/publications.yaml, refreshed
-           by build_portfolio.py; do not hand-copy a number here, it
-           would drift against that source.
-           When two pubs in the same year, offset x by a few units
-           to prevent overlap (applies to 2019). -->
-
-      <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="transparent"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><circle cx="410" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
-
-      <!-- 2014: Pandhi et al JIHI, most-cited (largest radius) -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">JIHI 2014</text></a>
-
-      <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
-
-      <!-- 2018: Berkson et al IJHM, no count shown -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
-
-      <!-- 2019a: Karp et al HERD, high count (second-largest radius) -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1138" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">HERD 2019</text></a>
-      <!-- 2019b: Pandhi et al Acad Med, low count (slight x offset) -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
-
-      <!-- PRESENTATIONS (below the axis).
-           Each dot is a presentation, stacked vertically when a
-           year has more than one. First dot at y=185, each
-           subsequent dot at +14px. Uniform size r=3.2, muted grey
-           to visually de-emphasize relative to publications. -->
-
-      <!-- 2010: 1 presentation -->
-      <circle cx="200" cy="185" r="3.2" fill="#6a6a6a"/>
-
-      <!-- 2012: 2 presentations -->
-      <circle cx="410" cy="185" r="3.2" fill="#6a6a6a"/>
-      <circle cx="410" cy="199" r="3.2" fill="#6a6a6a"/>
-
-      <!-- 2014: 3 presentations -->
-      <circle cx="620" cy="185" r="3.2" fill="#6a6a6a"/>
-      <circle cx="620" cy="199" r="3.2" fill="#6a6a6a"/>
-      <circle cx="620" cy="213" r="3.2" fill="#6a6a6a"/>
-
-      <!-- 2015: 7 presentations (the peak year).
-           This visible tall column is the whole point of the plot:
-           it shows that academic output was not spread evenly, it
-           was concentrated in one extraordinary year. -->
-      <circle cx="725" cy="185" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="199" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="213" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="227" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="241" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="255" r="3.2" fill="#6a6a6a"/>
-      <circle cx="725" cy="269" r="3.2" fill="#6a6a6a"/>
-
-      <!-- 2016: 2 presentations -->
-      <circle cx="830" cy="185" r="3.2" fill="#6a6a6a"/>
-      <circle cx="830" cy="199" r="3.2" fill="#6a6a6a"/>
-
-      <!-- 2017: 2 presentations -->
-      <circle cx="935" cy="185" r="3.2" fill="#6a6a6a"/>
-      <circle cx="935" cy="199" r="3.2" fill="#6a6a6a"/>
-
-      <!-- ANNOTATION: the most-cited 2014 paper.
-           Relative label (not an absolute count) so the chart
-           does not drift against the live citation count that
-           build_portfolio.py updates inside the Publications
-           section. The dot size already carries the magnitude;
-           the annotation just identifies which dot it is. -->
-      <text x="620" y="60" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">most-cited</text>
-
-      <!-- ANNOTATION: Patient Choice Award 2015, tied to the peak -->
-      <text x="725" y="300" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">Patient Choice Award</text>
-    </svg>
-
-    <!-- ==========================================================
-         MOBILE DOT PLOT (Tufte proposal 1B: two-row split)
-         Native compressed version, NOT a rotated copy of the wide
-         chart. Whole figure visible in a phone screen at once,
-         which preserves the same-frame comparison Tufte cares
-         about most for this chart.
-
-         Structure:
-           - Year axis horizontal, y=85 (middle of the figure)
-           - Publications row above the axis (y=55, dots sized by
-             citation count, just like the wide version)
-           - Presentations row below the axis (y=110, single row,
-             single bar per year scaled to count rather than
-             stacking dots vertically)
-           - Lane labels on the left edge
-
-         Trade-offs vs the wide version:
-           - 2015's seven-presentation column becomes a wider bar
-             rather than a stack of seven dots. The shape (peak at
-             2015) is preserved; the literal countability is not.
-             At phone scale, seven stacked dots become illegible
-             smudges, so a clean bar is the better encoding.
-           - Dropped the citation-count and "Patient Choice Award"
-             annotations. The size of the 2014 publication dot
-             already encodes its citation count visually; an
-             explicit label at this scale would crowd. The Patient
-             Choice Award is a margin-note candidate but lives in
-             the Speaking section already.
-           - Year labels shortened to two-digit form ('10 to '19)
-             to fit the tight width.
-
-         Coordinate math:
-           - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
-             (10 years, 38px apart, 360-unit usable width)
-           ========================================================== -->
-    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout" aria-describedby="dp-m-desc">
-      <desc id="dp-m-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
-
-      <!-- LANE LABELS, left edge -->
-      <text x="6" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">pubs</text>
-      <text x="6" y="125" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">talks</text>
-
-      <!-- YEAR AXIS at y=85 -->
-      <line x1="40" y1="85" x2="425" y2="85" stroke="#111" stroke-width="0.8"/>
-
-      <!-- YEAR TICKS AND LABELS (two-digit form) -->
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="70"  y1="83" x2="70"  y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="70"  y="98">'10</text></g>
-        <g><line x1="108" y1="83" x2="108" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="108" y="98">'11</text></g>
-        <g><line x1="146" y1="83" x2="146" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="146" y="98">'12</text></g>
-        <g><line x1="184" y1="83" x2="184" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="184" y="98">'13</text></g>
-        <g><line x1="222" y1="83" x2="222" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="222" y="98">'14</text></g>
-        <g><line x1="260" y1="83" x2="260" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="260" y="98">'15</text></g>
-        <g><line x1="298" y1="83" x2="298" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="298" y="98">'16</text></g>
-        <g><line x1="336" y1="83" x2="336" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="336" y="98">'17</text></g>
-        <g><line x1="374" y1="83" x2="374" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="374" y="98">'18</text></g>
-        <g><line x1="412" y1="83" x2="412" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="412" y="98">'19</text></g>
-      </g>
-
-      <!-- PUBLICATIONS, above axis at y=55.
-           Same ordinal radius scale as wide (no absolute counts; see
-           the wide-chart note and publications.yaml). Least to most
-           cited: none-on-record 2.5, low 3, high 4, most-cited 5.5
-           (the 2014 standout). -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="transparent"/><circle cx="146" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2012 WCEL -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, most-cited -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="transparent"/><circle cx="298" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2016 ImplSci -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="transparent"/><circle cx="374" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2018 IJHM -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, high -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, low -->
-
-      <!-- PRESENTATIONS, below axis at y=85.
-           Stacked dots, one per presentation. First dot at cy=108,
-           each subsequent +6px (r=2). 2015's tall column of 7 dots
-           visually echoes the wide version's same-year peak while
-           staying legible at phone scale; the encoding is constant
-           across viewport sizes (countable dots, not aggregated
-           bars). -->
-
-      <!-- 2010: 1 talk -->
-      <circle cx="70"  cy="108" r="2" fill="#6a6a6a"/>
-      <!-- 2012: 2 talks -->
-      <circle cx="146" cy="108" r="2" fill="#6a6a6a"/>
-      <circle cx="146" cy="114" r="2" fill="#6a6a6a"/>
-      <!-- 2014: 3 talks -->
-      <circle cx="222" cy="108" r="2" fill="#6a6a6a"/>
-      <circle cx="222" cy="114" r="2" fill="#6a6a6a"/>
-      <circle cx="222" cy="120" r="2" fill="#6a6a6a"/>
-      <!-- 2015: 7 talks (the visual peak) -->
-      <circle cx="260" cy="108" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="114" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="120" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="126" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="132" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="138" r="2" fill="#6a6a6a"/>
-      <circle cx="260" cy="144" r="2" fill="#6a6a6a"/>
-      <!-- 2016: 2 talks -->
-      <circle cx="298" cy="108" r="2" fill="#6a6a6a"/>
-      <circle cx="298" cy="114" r="2" fill="#6a6a6a"/>
-      <!-- 2017: 2 talks -->
-      <circle cx="336" cy="108" r="2" fill="#6a6a6a"/>
-      <circle cx="336" cy="114" r="2" fill="#6a6a6a"/>
-    </svg>
-  </figure>
 
   <hr>
 
@@ -2442,62 +2171,11 @@ figure.timeline.hero-rail figcaption {
     </p>
     <!-- activity-grid:end -->
 
-    <!-- The two most-recent posts lead the split hero at the top of the
-         page (writing-list markers moved there). This section keeps the
-         cadence sparkline above and the small-multiples index below. -->
+    <!-- The recent-writing list (two featured posts + the small-multiples
+         index) leads the split hero at the top of the page; both marker
+         regions moved there in the 2026-07-26 iteration. This section now
+         keeps only the cadence sparkline and its tag-rollup margin note. -->
   </section>
-
-  <!-- WRITING INDEX (small multiples)
-       Sibling of section#writing, mirroring the projects-index grid: a
-       90%-width small-multiples grid of the next six posts after the two
-       featured entries above. Generated by scripts/build_portfolio.py
-       between the writing-index markers; do not hand-edit between them.
-       Uses .writing-tile (NOT .project-tile) so the project CSS counter
-       stays untouched, and keys each tile by date rather than a number. -->
-  <details class="fold">
-    <summary>More writing (6)</summary>
-  <div class="writing-index">
-    <!-- writing-index:start -->
-    <div class="writing-tile">
-      <span class="date">2026-07-09</span>
-      <h3 class="title"><a href="/blog/one-api-call-three-ways-to-split-it/">One API call, three ways to split it: a FRED case study</a></h3>
-      <p class="tile-summary">Pull five FRED series once, cache the raw pull, then fan it out into per-year-per-indicator files three different ways, plus a fourth example: keeping the local store current with real-time incremental pulls instead of re-running the big fetch.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-07-05</span>
-      <h3 class="title"><a href="/blog/should-i-buy-ram-now/">Should I Buy RAM Now?</a></h3>
-      <p class="tile-summary">A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit, built to be honest about how little it can forecast.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-27</span>
-      <h3 class="title"><a href="/blog/governing-the-coverage-decision/">Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</a></h3>
-      <p class="tile-summary">A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-26</span>
-      <h3 class="title"><a href="/blog/credentialing-validity/">Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</a></h3>
-      <p class="tile-summary">Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-12</span>
-      <h3 class="title"><a href="/blog/lucas-critique-stars-forecasting/">Your Cut Point Forecast Has a Lucas Critique Problem</a></h3>
-      <p class="tile-summary">Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-09</span>
-      <h3 class="title"><a href="/blog/medicaid-work-requirements-arkansas/">Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</a></h3>
-      <p class="tile-summary">Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work.</p>
-    </div>
-    <!-- writing-index:end -->
-
-    <p><a href="/blog/">View all writing</a></p>
-  </div>
-  </details>
 
   <hr>
 
@@ -2517,6 +2195,10 @@ figure.timeline.hero-rail figcaption {
        and the technical depth is right there in the margin for
        anyone who wants it.
        ========================================================== -->
+  <!-- #work anchor: the nav "work" item targets the combined
+       experience -> projects area. Kept as an empty span so the
+       Experience <section> retains its own id for lint_facts. -->
+  <span id="work" class="section-anchor"></span>
   <section id="experience" class="experience">
     <h2>Experience</h2>
 
@@ -2937,6 +2619,225 @@ figure.timeline.hero-rail figcaption {
   <hr>
 
   <!-- ==========================================================
+       ACADEMIC ACTIVITY DOT PLOT
+       Year axis at y=140; publications above sized by citation
+       count; presentations below, stacked vertically per year.
+       ========================================================== -->
+  <figure class="fullwidth timeline">
+    <figcaption>
+      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count; open dots have no count on record.
+    </figcaption>
+
+    <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019" aria-describedby="dp-w-desc">
+      <desc id="dp-w-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
+
+      <!-- LANE LABELS (left side, vertically aligned with each lane) -->
+      <text x="40" y="70" font-family="et-book, Palatino, Georgia, serif" font-size="20" fill="#111">publications</text>
+      <text x="40" y="165" font-family="et-book, Palatino, Georgia, serif" font-size="20" fill="#111">presentations</text>
+
+      <!-- YEAR AXIS at y=140. The reference line dividing the two
+           lanes. Axis runs 2010 (x=200) to 2019 (x=1145), with
+           115-unit spacing per year. -->
+      <line x1="180" y1="140" x2="1160" y2="140" stroke="#111" stroke-width="1"/>
+
+      <!-- YEAR TICKS AND LABELS -->
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="200"  y1="136" x2="200"  y2="144" stroke="#6a6a6a"/><text x="200"  y="160">2010</text></g>
+        <g><line x1="305"  y1="136" x2="305"  y2="144" stroke="#6a6a6a"/><text x="305"  y="160">2011</text></g>
+        <g><line x1="410"  y1="136" x2="410"  y2="144" stroke="#6a6a6a"/><text x="410"  y="160">2012</text></g>
+        <g><line x1="515"  y1="136" x2="515"  y2="144" stroke="#6a6a6a"/><text x="515"  y="160">2013</text></g>
+        <g><line x1="620"  y1="136" x2="620"  y2="144" stroke="#6a6a6a"/><text x="620"  y="160">2014</text></g>
+        <g><line x1="725"  y1="136" x2="725"  y2="144" stroke="#6a6a6a"/><text x="725"  y="160">2015</text></g>
+        <g><line x1="830"  y1="136" x2="830"  y2="144" stroke="#6a6a6a"/><text x="830"  y="160">2016</text></g>
+        <g><line x1="935"  y1="136" x2="935"  y2="144" stroke="#6a6a6a"/><text x="935"  y="160">2017</text></g>
+        <g><line x1="1040" y1="136" x2="1040" y2="144" stroke="#6a6a6a"/><text x="1040" y="160">2018</text></g>
+        <g><line x1="1145" y1="136" x2="1145" y2="144" stroke="#6a6a6a"/><text x="1145" y="160">2019</text></g>
+      </g>
+
+      <!-- PUBLICATIONS (above the axis).
+           Each dot is a publication, y=95 (just above axis), sized
+           by citation count. Radii are ORDINAL, not a formula, and
+           carry no absolute count. Least to most cited:
+           none-on-record, low, high, most-cited (radii 4, 5, 7, 10).
+           Live counts live in src/content/publications.yaml, refreshed
+           by build_portfolio.py; do not hand-copy a number here, it
+           would drift against that source.
+           When two pubs in the same year, offset x by a few units
+           to prevent overlap (applies to 2019). -->
+
+      <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="transparent"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><circle cx="410" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
+
+      <!-- 2014: Pandhi et al JIHI, most-cited (largest radius) -->
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">JIHI 2014</text></a>
+
+      <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
+
+      <!-- 2018: Berkson et al IJHM, no count shown -->
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
+
+      <!-- 2019a: Karp et al HERD, high count (second-largest radius) -->
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1138" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">HERD 2019</text></a>
+      <!-- 2019b: Pandhi et al Acad Med, low count (slight x offset) -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
+
+      <!-- PRESENTATIONS (below the axis).
+           Each dot is a presentation, stacked vertically when a
+           year has more than one. First dot at y=185, each
+           subsequent dot at +14px. Uniform size r=3.2, muted grey
+           to visually de-emphasize relative to publications. -->
+
+      <!-- 2010: 1 presentation -->
+      <circle cx="200" cy="185" r="3.2" fill="#6a6a6a"/>
+
+      <!-- 2012: 2 presentations -->
+      <circle cx="410" cy="185" r="3.2" fill="#6a6a6a"/>
+      <circle cx="410" cy="199" r="3.2" fill="#6a6a6a"/>
+
+      <!-- 2014: 3 presentations -->
+      <circle cx="620" cy="185" r="3.2" fill="#6a6a6a"/>
+      <circle cx="620" cy="199" r="3.2" fill="#6a6a6a"/>
+      <circle cx="620" cy="213" r="3.2" fill="#6a6a6a"/>
+
+      <!-- 2015: 7 presentations (the peak year).
+           This visible tall column is the whole point of the plot:
+           it shows that academic output was not spread evenly, it
+           was concentrated in one extraordinary year. -->
+      <circle cx="725" cy="185" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="199" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="213" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="227" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="241" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="255" r="3.2" fill="#6a6a6a"/>
+      <circle cx="725" cy="269" r="3.2" fill="#6a6a6a"/>
+
+      <!-- 2016: 2 presentations -->
+      <circle cx="830" cy="185" r="3.2" fill="#6a6a6a"/>
+      <circle cx="830" cy="199" r="3.2" fill="#6a6a6a"/>
+
+      <!-- 2017: 2 presentations -->
+      <circle cx="935" cy="185" r="3.2" fill="#6a6a6a"/>
+      <circle cx="935" cy="199" r="3.2" fill="#6a6a6a"/>
+
+      <!-- ANNOTATION: the most-cited 2014 paper.
+           Relative label (not an absolute count) so the chart
+           does not drift against the live citation count that
+           build_portfolio.py updates inside the Publications
+           section. The dot size already carries the magnitude;
+           the annotation just identifies which dot it is. -->
+      <text x="620" y="60" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">most-cited</text>
+
+      <!-- ANNOTATION: Patient Choice Award 2015, tied to the peak -->
+      <text x="725" y="300" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#6a6a6a" text-anchor="middle">Patient Choice Award</text>
+    </svg>
+
+    <!-- ==========================================================
+         MOBILE DOT PLOT (Tufte proposal 1B: two-row split)
+         Native compressed version, NOT a rotated copy of the wide
+         chart. Whole figure visible in a phone screen at once,
+         which preserves the same-frame comparison Tufte cares
+         about most for this chart.
+
+         Structure:
+           - Year axis horizontal, y=85 (middle of the figure)
+           - Publications row above the axis (y=55, dots sized by
+             citation count, just like the wide version)
+           - Presentations row below the axis (y=110, single row,
+             single bar per year scaled to count rather than
+             stacking dots vertically)
+           - Lane labels on the left edge
+
+         Trade-offs vs the wide version:
+           - 2015's seven-presentation column becomes a wider bar
+             rather than a stack of seven dots. The shape (peak at
+             2015) is preserved; the literal countability is not.
+             At phone scale, seven stacked dots become illegible
+             smudges, so a clean bar is the better encoding.
+           - Dropped the citation-count and "Patient Choice Award"
+             annotations. The size of the 2014 publication dot
+             already encodes its citation count visually; an
+             explicit label at this scale would crowd. The Patient
+             Choice Award is a margin-note candidate but lives in
+             the Speaking section already.
+           - Year labels shortened to two-digit form ('10 to '19)
+             to fit the tight width.
+
+         Coordinate math:
+           - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
+             (10 years, 38px apart, 360-unit usable width)
+           ========================================================== -->
+    <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout" aria-describedby="dp-m-desc">
+      <desc id="dp-m-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
+
+      <!-- LANE LABELS, left edge -->
+      <text x="6" y="50" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">pubs</text>
+      <text x="6" y="125" font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a">talks</text>
+
+      <!-- YEAR AXIS at y=85 -->
+      <line x1="40" y1="85" x2="425" y2="85" stroke="#111" stroke-width="0.8"/>
+
+      <!-- YEAR TICKS AND LABELS (two-digit form) -->
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="9" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="70"  y1="83" x2="70"  y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="70"  y="98">'10</text></g>
+        <g><line x1="108" y1="83" x2="108" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="108" y="98">'11</text></g>
+        <g><line x1="146" y1="83" x2="146" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="146" y="98">'12</text></g>
+        <g><line x1="184" y1="83" x2="184" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="184" y="98">'13</text></g>
+        <g><line x1="222" y1="83" x2="222" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="222" y="98">'14</text></g>
+        <g><line x1="260" y1="83" x2="260" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="260" y="98">'15</text></g>
+        <g><line x1="298" y1="83" x2="298" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="298" y="98">'16</text></g>
+        <g><line x1="336" y1="83" x2="336" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="336" y="98">'17</text></g>
+        <g><line x1="374" y1="83" x2="374" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="374" y="98">'18</text></g>
+        <g><line x1="412" y1="83" x2="412" y2="87" stroke="#6a6a6a" stroke-width="0.6"/><text x="412" y="98">'19</text></g>
+      </g>
+
+      <!-- PUBLICATIONS, above axis at y=55.
+           Same ordinal radius scale as wide (no absolute counts; see
+           the wide-chart note and publications.yaml). Least to most
+           cited: none-on-record 2.5, low 3, high 4, most-cited 5.5
+           (the 2014 standout). -->
+      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="transparent"/><circle cx="146" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2012 WCEL -->
+      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, most-cited -->
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="transparent"/><circle cx="298" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2016 ImplSci -->
+      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="transparent"/><circle cx="374" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2018 IJHM -->
+      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, high -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, low -->
+
+      <!-- PRESENTATIONS, below axis at y=85.
+           Stacked dots, one per presentation. First dot at cy=108,
+           each subsequent +6px (r=2). 2015's tall column of 7 dots
+           visually echoes the wide version's same-year peak while
+           staying legible at phone scale; the encoding is constant
+           across viewport sizes (countable dots, not aggregated
+           bars). -->
+
+      <!-- 2010: 1 talk -->
+      <circle cx="70"  cy="108" r="2" fill="#6a6a6a"/>
+      <!-- 2012: 2 talks -->
+      <circle cx="146" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="146" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2014: 3 talks -->
+      <circle cx="222" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="222" cy="120" r="2" fill="#6a6a6a"/>
+      <!-- 2015: 7 talks (the visual peak) -->
+      <circle cx="260" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="114" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="120" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="126" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="132" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="138" r="2" fill="#6a6a6a"/>
+      <circle cx="260" cy="144" r="2" fill="#6a6a6a"/>
+      <!-- 2016: 2 talks -->
+      <circle cx="298" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="298" cy="114" r="2" fill="#6a6a6a"/>
+      <!-- 2017: 2 talks -->
+      <circle cx="336" cy="108" r="2" fill="#6a6a6a"/>
+      <circle cx="336" cy="114" r="2" fill="#6a6a6a"/>
+    </svg>
+  </figure>
+
+  <!-- ==========================================================
        PUBLICATIONS
        One entry shown. The citation count and the PubMed / RG
        links that previously lived as inline pills are now margin
@@ -3094,64 +2995,6 @@ figure.timeline.hero-rail figcaption {
         <li><span class="year">2010</span><span class="venue">Wisconsin Primary Care Research and Quality Improvement Forum</span><span class="place">Middleton, WI</span></li>
       </ol>
     </details>
-  </section>
-
-  <hr>
-
-  <!-- ==========================================================
-       TESTIMONIALS
-       Three testimonials: two from Health Catalyst era
-       (downstream consumers) and one from Sustainable Clarity
-       era (direct report, copy editing practice). The HC pair
-       speaks to recent technical work; the Sustainable Clarity
-       quote speaks to the management craft already cited in the
-       Sustainable Clarity entry above (managed up to 8 copy
-       editors, graphic designers, and photographers).
-
-       Short and long versions are merged into one rendering:
-       short version shown inline, long version a fold toggle.
-       ========================================================== -->
-  <section id="testimonials">
-    <h2>Testimonials</h2>
-
-    <div class="testimonial">
-      <blockquote>
-        He consistently pushes himself to deliver thoughtful, high-quality work because he genuinely wants to make a difference, for the team, for the client, and for healthcare and patients.
-      </blockquote>
-      <div class="attribution">Joanna Laucirica, PMP, Director, Customer Operations, Health Catalyst</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          It's rare to come across someone like Zaher, not just for his intelligence, but for the care, curiosity, and sense of responsibility he brings to everything he does. Zaher has a natural ability to think deeply about problems, often catching nuances others miss, and he balances that with a strong commitment to execution. He leads with integrity and consistently aims to do what's right, even when it takes more effort.
-        </p>
-      </details>
-    </div>
-
-    <div class="testimonial">
-      <blockquote>
-        Despite being the only engineer on the team, Zaher consistently delivered high-quality work. He is intelligent, thorough, and deeply committed to understanding customer needs.
-      </blockquote>
-      <div class="attribution">Jessica McCay, Director of Customer Success, Health Catalyst</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          Zaher was solely responsible for ensuring timely, accurate data delivery across multiple Electronic Health Record environments: Cerner, Epic, athenahealth, and Veradigm. He successfully led the migration of analytics from Sisense to Pop Insights, and implemented automated weekly data refreshes for Cerner, significantly improving efficiency and reliability. He often joined client calls to clarify requests and wasn't afraid to push back when necessary to protect data integrity and long-term scalability.
-        </p>
-      </details>
-    </div>
-
-    <div class="testimonial">
-      <blockquote>
-        The feedback Zaher provides is always prompt and constructive, and he consistently assigns projects well suited to my abilities and to continuing their growth, maximizing my opportunities to learn.
-      </blockquote>
-      <div class="attribution">William Barber, copy editor reporting to Zaher at Sustainable Clarity, 2013</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          Zaher is an excellent supervisor and editing mentor. While I have worked for him, he has provided a wealth of support and knowledge, helping to drastically improve my proofreading and copy editing craft.
-        </p>
-      </details>
-    </div>
   </section>
 
   <hr>
@@ -3475,6 +3318,64 @@ figure.timeline.hero-rail figcaption {
   <section id="certifications">
     <h2>Certifications</h2>
     <p>Databricks Fundamentals accreditation (2024); Sumo Logic Search Mastery and Fundamentals certifications (2020); Certified Six Sigma Yellow Belt, American Society for Quality (2015).</p>
+  </section>
+
+  <hr>
+
+  <!-- ==========================================================
+       TESTIMONIALS
+       Three testimonials: two from Health Catalyst era
+       (downstream consumers) and one from Sustainable Clarity
+       era (direct report, copy editing practice). The HC pair
+       speaks to recent technical work; the Sustainable Clarity
+       quote speaks to the management craft already cited in the
+       Sustainable Clarity entry above (managed up to 8 copy
+       editors, graphic designers, and photographers).
+
+       Short and long versions are merged into one rendering:
+       short version shown inline, long version a fold toggle.
+       ========================================================== -->
+  <section id="testimonials">
+    <h2>Testimonials</h2>
+
+    <div class="testimonial">
+      <blockquote>
+        He consistently pushes himself to deliver thoughtful, high-quality work because he genuinely wants to make a difference, for the team, for the client, and for healthcare and patients.
+      </blockquote>
+      <div class="attribution">Joanna Laucirica, PMP, Director, Customer Operations, Health Catalyst</div>
+      <details class="fold">
+        <summary>More</summary>
+        <p>
+          It's rare to come across someone like Zaher, not just for his intelligence, but for the care, curiosity, and sense of responsibility he brings to everything he does. Zaher has a natural ability to think deeply about problems, often catching nuances others miss, and he balances that with a strong commitment to execution. He leads with integrity and consistently aims to do what's right, even when it takes more effort.
+        </p>
+      </details>
+    </div>
+
+    <div class="testimonial">
+      <blockquote>
+        Despite being the only engineer on the team, Zaher consistently delivered high-quality work. He is intelligent, thorough, and deeply committed to understanding customer needs.
+      </blockquote>
+      <div class="attribution">Jessica McCay, Director of Customer Success, Health Catalyst</div>
+      <details class="fold">
+        <summary>More</summary>
+        <p>
+          Zaher was solely responsible for ensuring timely, accurate data delivery across multiple Electronic Health Record environments: Cerner, Epic, athenahealth, and Veradigm. He successfully led the migration of analytics from Sisense to Pop Insights, and implemented automated weekly data refreshes for Cerner, significantly improving efficiency and reliability. He often joined client calls to clarify requests and wasn't afraid to push back when necessary to protect data integrity and long-term scalability.
+        </p>
+      </details>
+    </div>
+
+    <div class="testimonial">
+      <blockquote>
+        The feedback Zaher provides is always prompt and constructive, and he consistently assigns projects well suited to my abilities and to continuing their growth, maximizing my opportunities to learn.
+      </blockquote>
+      <div class="attribution">William Barber, copy editor reporting to Zaher at Sustainable Clarity, 2013</div>
+      <details class="fold">
+        <summary>More</summary>
+        <p>
+          Zaher is an excellent supervisor and editing mentor. While I have worked for him, he has provided a wealth of support and knowledge, helping to drastically improve my proofreading and copy editing craft.
+        </p>
+      </details>
+    </div>
   </section>
 
   <hr>
