@@ -193,6 +193,16 @@ HOMEPAGE_JOB_RE = re.compile(
     r'<p class="meta">(?P<meta>[^<]+)</p>',
     re.DOTALL,
 )
+# The job entries this linter cross-checks live in <section id="experience">.
+# Scope the h3+meta scan to that section so an <h3> appearing earlier in the
+# document (since the Timeline Split redesign a featured project's <h3> leads
+# the split hero, above Experience) cannot bridge to a later job's meta line
+# and hijack the "current role" match. Mirrors how lint_gantt / lint_recognition
+# slice their target sections. Falls back to the whole document if the section
+# marker is absent, preserving the prior behaviour.
+EXPERIENCE_SECTION_RE = re.compile(
+    r'<section id="experience"[^>]*>(?P<body>.*?)</section>', re.DOTALL
+)
 H3_TAG_STRIP_RE = re.compile(r"<label\b[^>]*>.*?</label>|<input\b[^>]*/?>", re.DOTALL)
 META_SPLIT_RE = re.compile(r"\s*·\s*")
 META_DATE_RE = re.compile(
@@ -202,7 +212,10 @@ META_DATE_RE = re.compile(
 
 def parse_homepage_jobs(text: str) -> list[Job]:
     jobs: list[Job] = []
-    for m in HOMEPAGE_JOB_RE.finditer(text):
+    sec = EXPERIENCE_SECTION_RE.search(text)
+    scope = sec.group("body") if sec else text
+    scope_offset = sec.start("body") if sec else 0
+    for m in HOMEPAGE_JOB_RE.finditer(scope):
         title_inner = H3_TAG_STRIP_RE.sub("", m.group("title"))
         title_inner = re.sub(r"<[^>]+>", "", title_inner).strip()
         title_inner = html_decode_minimal(title_inner)
@@ -216,7 +229,7 @@ def parse_homepage_jobs(text: str) -> list[Job]:
         date_match = META_DATE_RE.match(date_part)
         if not date_match:
             continue
-        line = text.count("\n", 0, m.start()) + 1
+        line = text.count("\n", 0, scope_offset + m.start()) + 1
         jobs.append(Job(
             org=canonical_org(org_raw),
             title=canonical_title(title_inner),

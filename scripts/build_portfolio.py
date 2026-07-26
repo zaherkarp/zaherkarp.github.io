@@ -277,9 +277,17 @@ def build_writing_list(posts: list[dict]) -> str:
     `description`, the same curated, standard-length blurb the tiles use,
     so featured and tile text stay visually uniform. The featured/tile
     distinction is carried by title size and layout, not blurb length.
-    Optional `homepageMarginnote` frontmatter renders an inline ⊕ margin
-    note next to the title; the toggle id is `mn-w-<slug>` so it stays
-    unique across entries.
+
+    `homepageMarginnote` is NO LONGER rendered. Since the Timeline Split
+    redesign (2026-07-26) the featured entries lead the split hero, a
+    three-column grid that opts out of the 60% prose column and therefore
+    has no right margin for a floating sidenote to live in. Running a
+    second, inline-toggle note idiom just in the hero was rejected by the
+    Design Council (Edward: "a fracture"; Haben: a comprehension cost), so
+    the per-post note is suppressed here and the floating note stays the
+    page's sole note idiom everywhere else. The frontmatter field is still
+    read and preserved by the blog tooling; it simply no longer surfaces on
+    the homepage.
     """
     recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
     blocks: list[str] = []
@@ -288,22 +296,11 @@ def build_writing_list(posts: list[dict]) -> str:
         title = _esc(_strip_em_dashes(p["title"]))
         summary = _esc(_strip_em_dashes(p["description"]))
         slug = p["slug"]
-        marginnote = _strip_em_dashes((p["marginnote"] or "").strip())
-        if marginnote:
-            mn_id = f"mn-w-{slug}"
-            margin_html = (
-                f'\n        <label for="{mn_id}" class="margin-toggle">&#8853;</label>'
-                f'<input type="checkbox" aria-label="Toggle margin note" id="{mn_id}" class="margin-toggle"/>'
-                f'<span class="marginnote">{_esc(marginnote)}</span>'
-            )
-        else:
-            margin_html = ""
         blocks.append(
             '    <div class="entry">\n'
             '      <div>\n'
             f'        <span class="date">{date_str}</span>\n'
-            f'        <h3 class="title"><a href="/blog/{slug}/">{title}</a></h3>'
-            f'{margin_html}\n'
+            f'        <h3 class="title"><a href="/blog/{slug}/">{title}</a></h3>\n'
             '      </div>\n'
             f'      <p class="summary">{summary}</p>\n'
             '    </div>'

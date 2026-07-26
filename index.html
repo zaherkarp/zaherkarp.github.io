@@ -527,25 +527,17 @@ figure.timeline figcaption {
   margin-bottom: 0.8rem;
 }
 
-/* Career arc figure: cap below fullwidth so it doesn't dominate
-   the fold. Targets only the career arc (via :has on the
-   horizontal SVG) so the dot plot keeps its true fullwidth
-   treatment, which it needs for the year axis to breathe. */
-figure.timeline:has(svg.tl-horizontal) {
-  max-width: 1000px;
-  margin-inline: auto;
-}
-
-/* Career arc: horizontal/compact SVG swap at 760px.
-   Horizontal version is the desktop default; compact version
-   is a single-frame redesign for narrow viewports that fits in
-   roughly one phone screen (NOT the tall vertical reflow it
-   replaced; see the .tl-compact note in the markup), conforming
-   to the same-frame rule the dot plot below already follows.
+/* Career arc: vertical-rail / compact SVG swap at 760px.
+   The rail is the desktop default (it lives in the split-hero
+   centre column); the compact single-frame version serves narrow
+   viewports where the hero stacks to one column (NOT the tall
+   vertical reflow it replaced; see the .tl-compact note in the
+   markup). The former wide tl-horizontal variant was retired in
+   the Timeline Split redesign: it could not fit a rail column.
    Note: selectors are compound (.timeline svg.tl-...) to beat
    the specificity of the .timeline svg rule above, which
    otherwise forced display:block on every SVG in the figure. */
-.timeline svg.tl-horizontal { display: block; overflow: visible; }
+.timeline svg.tl-rail { display: block; overflow: visible; }
 .timeline svg.tl-compact {
   display: none;
   max-width: 480px;   /* prevent overgrowth on tablets */
@@ -566,10 +558,10 @@ figure.timeline:has(svg.tl-horizontal) {
 }
 
 @media (max-width: 760px) {
-  .timeline svg.tl-horizontal { display: none; }
-  .timeline svg.tl-compact    { display: block; }
-  .timeline svg.dp-wide       { display: none; }
-  .timeline svg.dp-mobile     { display: block; }
+  .timeline svg.tl-rail    { display: none; }
+  .timeline svg.tl-compact { display: block; }
+  .timeline svg.dp-wide    { display: none; }
+  .timeline svg.dp-mobile  { display: block; }
 }
 
 /* ============================================================
@@ -1456,15 +1448,20 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    --seq inherits from the link to the line and the label text, so
    the band traces and its label fades on the same staggered beat,
    with no per-band selectors. The arc unfolds as a story:
-   editorial, then research, then the data-engineering trio. */
-figure.timeline svg.tl-horizontal > a line[stroke-width="10"],
+   editorial, then research, then the data-engineering trio.
+
+   Scope: the load-draw now runs ONLY on the compact (mobile)
+   variant. The desktop rail is peripheral to the writing lede and
+   deliberately gets no first-paint motion (Val, Timeline Split
+   review): its bands are stroke-width 9, so the [stroke-width="10"]
+   / [stroke-width="11"] selectors below never match the rail and it
+   renders static. */
 figure.timeline svg.tl-compact   > a line[stroke-width="11"] {
   stroke-dasharray: var(--arc-len, 540);
   animation: arc-draw 0.85s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s);
 }
 /* Each role label fades in just after its band begins (delay + 0.45s). */
-figure.timeline svg.tl-horizontal > a text,
 figure.timeline svg.tl-compact   > a text {
   animation: label-fade 0.5s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
@@ -1493,14 +1490,14 @@ figure.timeline svg.tl-compact   > a text {
    ============================================================ */
 
 /* Affordances + transitions on engageable marks. */
-figure.timeline svg.tl-horizontal > a,
+figure.timeline svg.tl-rail > a,
 figure.timeline svg.tl-compact   > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
 /* The band labels are <a> links to their role, but the global link
    underline reads as chartjunk on a chart axis. The pointer cursor and
    the hover dim/thicken are the affordance; no underline on the type. */
-figure.timeline svg.tl-horizontal > a text,
+figure.timeline svg.tl-rail > a text,
 figure.timeline svg.tl-compact   > a text { text-decoration: none; }
-figure.timeline svg.tl-horizontal > a line,
+figure.timeline svg.tl-rail > a line,
 figure.timeline svg.tl-compact   > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
 figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
@@ -1544,11 +1541,11 @@ figure.timeline svg.dp-mobile a:focus circle.dp-ring { opacity: 1; transform: sc
 /* Career arc: each band is a link to its role. Engaging one (hover
    or keyboard focus) dims the other role groups and thickens the
    engaged band; clicking jumps to that role in Experience. */
-figure.timeline svg.tl-horizontal:has(a:hover) a:not(:hover),
+figure.timeline svg.tl-rail:has(a:hover) a:not(:hover),
 figure.timeline svg.tl-compact:has(a:hover)   a:not(:hover),
-figure.timeline svg.tl-horizontal:has(a:focus) a:not(:focus),
+figure.timeline svg.tl-rail:has(a:focus) a:not(:focus),
 figure.timeline svg.tl-compact:has(a:focus)   a:not(:focus) { opacity: 0.3; }
-figure.timeline svg.tl-horizontal a:hover line, figure.timeline svg.tl-horizontal a:focus line { stroke-width: 13; }
+figure.timeline svg.tl-rail a:hover line, figure.timeline svg.tl-rail a:focus line { stroke-width: 13; }
 figure.timeline svg.tl-compact   a:hover line, figure.timeline svg.tl-compact   a:focus line { stroke-width: 14; }
 
 /* Experience outcome bars carry no hover reaction: the before/after
@@ -1619,6 +1616,11 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     font-size: 11pt;
   }
   nav.top, .timeline, figure.timeline { display: none; }
+  /* Split hero collapses to a single column in print; the teaser
+     quick-jumps are useless on paper. */
+  .split-hero { display: block; }
+  .split-hero > * { width: 100%; }
+  nav.teaser-row { display: none; }
   hr { width: 100%; }
   details.fold, details.speaking-list { page-break-inside: avoid; }
   details.fold > summary, details.speaking-list > summary { display: none; }
@@ -1637,6 +1639,196 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
   }
   label.margin-toggle, input.margin-toggle { display: none !important; }
 }
+
+/* ============================================================
+   19. TIMELINE SPLIT HERO
+   The writing-led opening: a full-width three-column grid
+   (writing / career rail / featured project) sitting above the
+   60% prose column that the rest of the page keeps. This region
+   is a <div>, not a <section>, so `section { width: 60% }` and
+   the floating-note margin never apply here; the hero carries no
+   floating notes by design (the per-post homepage note is
+   suppressed for the featured slot in the generator).
+   ============================================================ */
+
+/* Nameplate: the former 3.2rem hero h1, reduced and set beside
+   its subtitle on one baseline. The page lede is now the writing
+   column, not the name. */
+nav.top { width: 100%; }
+.nameplate {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-bottom: 1.8rem;
+}
+.nameplate h1 {
+  font-size: 2rem;
+  margin: 0;
+  line-height: 1.05;
+}
+.nameplate .subtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.split-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) 250px minmax(0, 1fr);
+  gap: 0 2.4rem;
+  align-items: start;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.6rem;
+  margin-bottom: 1rem;
+}
+.split-hero > * { min-width: 0; }
+
+/* Small-caps column headers cue the three lanes. These are <h2>
+   elements (so the hero's h3 entry/project titles have an h2 above
+   them and heading order stays sequential h1 -> h2 -> h3), styled
+   down from the default italic 2.2rem section-heading treatment to a
+   quiet label. */
+h2.col-head {
+  font-variant: small-caps;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: var(--muted);
+  margin: 0 0 1rem 0;
+}
+
+/* Left: recent writing. Entries reuse the shared .entry styles. */
+.hero-writing .entry { margin-bottom: 1.5rem; }
+.hero-viewall {
+  margin: 0.4rem 0 0 0;
+  font-size: 0.95rem;
+}
+.hero-viewall a { text-decoration-color: var(--rule); }
+
+/* Centre: the career rail. Bordered on both sides to read as a
+   spine between the two text columns. */
+figure.timeline.hero-rail {
+  margin: 0;
+  padding: 0 1rem;
+  border-left: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
+}
+figure.timeline.hero-rail svg.tl-rail { max-width: 100%; }
+figure.timeline.hero-rail figcaption {
+  margin-top: 0.6rem;
+  text-align: left;
+}
+
+/* Right: featured project. The full project block moves here; in
+   the narrow column the scorecard's two cards stack (flex-wrap)
+   and the type steps down a little so the figure still breathes. */
+.hero-project { position: relative; }
+.hero-project .project { margin-bottom: 0; }
+.hero-project .scorecard { gap: 0.9rem; }
+.hero-project .sc-card { flex: 1 1 100%; min-width: 0; }
+.hero-project figure.scorecard-figure { font-size: 0.95rem; }
+
+/* One botanical ornament, the page's single decorative mark: faint
+   (var(--rule) via the #d0d0c8 sentinel), tucked at the card foot,
+   aria-hidden, never near the rail axis (Edward/Massimo). */
+.hero-sprig {
+  position: absolute;
+  right: -6px;
+  bottom: -8px;
+  width: 130px;
+  max-width: 40%;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ============================================================
+   20. TEASER ROW
+   Three in-page quick-jumps to substance further down the page.
+   Arrows point down (same-page destinations). Real counts answer
+   the hidden-content critique. Targets are visible sections, so a
+   jump lands on readable content (no CSS-forced fold-open needed;
+   that would require JS the homepage does not ship).
+   ============================================================ */
+.teaser-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 2.2rem 0 2.8rem 0;
+}
+.teaser {
+  padding: 1.1rem 1.4rem;
+  border-right: 1px solid var(--rule);
+}
+.teaser:last-child { border-right: none; }
+.teaser-title {
+  font-size: 1.05rem;
+  margin: 0 0 0.3rem 0;
+}
+.teaser-count {
+  color: var(--muted);
+  font-variant-numeric: oldstyle-nums;
+  font-size: 0.9rem;
+}
+.teaser p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0 0 0.5rem 0;
+}
+.teaser a {
+  font-size: 0.9rem;
+  text-decoration-color: var(--muted);
+}
+
+/* ============================================================
+   20.1. SPLIT HERO / TEASER BREAKPOINTS
+   Intermediate 1000px stop resolves the 761-1000px squeeze the
+   2026-07-19 critique left open (Luke): the rail keeps its column
+   while the project card drops full-width below, so neither text
+   column is crushed. Below 760px everything stacks and the rail
+   becomes a full-width band (the compact SVG takes over).
+   ============================================================ */
+@media (max-width: 1000px) {
+  .split-hero {
+    grid-template-columns: minmax(0, 1fr) 230px;
+  }
+  .hero-project {
+    grid-column: 1 / -1;
+    margin-top: 1.8rem;
+    border-top: 1px solid var(--rule);
+    padding-top: 1.4rem;
+  }
+}
+@media (max-width: 760px) {
+  .split-hero {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+  figure.timeline.hero-rail {
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 0;
+  }
+  .hero-project {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+  .teaser-row {
+    grid-template-columns: 1fr;
+  }
+  .teaser {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+  .teaser:last-child { border-bottom: none; }
+}
 </style>
 </head>
 
@@ -1649,122 +1841,126 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
        ========================================================== -->
   <nav class="top">
     <ul>
-      <li><a href="#about">about</a></li>
       <li><a href="#writing">writing</a></li>
-      <li><a href="#experience">experience</a></li>
       <li><a href="#projects">projects</a></li>
       <li><a href="#publications">publications</a></li>
-      <li><a href="#speaking">speaking</a></li>
-      <li><a href="#education">education</a></li>
-      <li><a href="#service">service</a></li>
-      <li><a href="#contact">contact</a></li>
+      <li><a href="#about">about</a></li>
     </ul>
   </nav>
 
-  <h1>Zaher Karp</h1>
-  <p class="subtitle">Healthcare data engineering and Medicare Advantage analytics.</p>
+  <!-- ==========================================================
+       NAMEPLATE
+       Reduced from the former 3.2rem hero h1: the page lede is now
+       the Writing column in the split hero below, so the nameplate
+       sits beside its subtitle on one baseline rather than
+       dominating first paint. Subtitle text is locked (CLAUDE.md
+       Hero); only the surrounding structure changed.
+       ========================================================== -->
+  <div class="nameplate">
+    <h1>Zaher Karp</h1>
+    <p class="subtitle">Healthcare data engineering and Medicare Advantage analytics.</p>
+  </div>
 
   <!-- ==========================================================
-       CAREER ARC (hero figure)
-       The hero figure: a dense visual artifact at first scroll.
-       At hero size, the viewBox is 1200x440, stroke weights and
-       type sizes are sized to read at full column width, and
-       spacing between rows leaves clear breathing room.
+       SPLIT HERO (Timeline Split)
+       A three-column grid, NOT a <section>, so the blanket
+       `section { width: 60% }` rule (which reserves the right
+       margin for floating sidenotes) never applies here. Left:
+       the two most-recent posts (writing-list markers, generator-
+       owned). Centre: the career arc as a vertical dated rail.
+       Right: the featured project, MOVED (not copied) from
+       #projects so the project CSS counter still reads 01 in DOM
+       order. Everything else on the page keeps its 60% column and
+       original markup below the teaser row.
 
-       On Tufte's small multiples: small multiples are for showing
-       the SAME visual structure across different slices of data
-       (e.g. a sparkline per category). A career arc is one
-       continuous story, not multiple comparable panels, so the
-       right fix for illegibility is one bigger chart, not two.
+       DOM order is writing -> rail -> project, which is also the
+       stacked mobile order (Haben). No floating notes live in this
+       region; the per-post homepage margin note is suppressed in
+       the generator for the featured slot, so the floating note
+       stays the page's sole note idiom everywhere else.
        ========================================================== -->
-  <figure class="fullwidth timeline">
-    <figcaption id="tl-caption">
-      Three overlapping careers converge into one continuous data-engineering line.
-    </figcaption>
+  <div class="split-hero">
 
-    <!-- Wide-viewport SVG. viewBox 1200x440.
-         Each career phase gets its own row so overlapping time
-         spans do not collide. Label sits directly above its
-         band; labels are 22pt serif italic so they remain
-         legible even at reduced scale on smaller screens.
-         Band stroke-width 10 (bold but not heavy).
-         Axis rule 1.5pt, year labels 18pt. -->
-    <svg class="tl-horizontal" viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-h-desc">
-      <desc id="tl-h-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+    <!-- LEFT: recent writing. The sparkline and the small-multiples
+         index stay below in #writing; only the two featured entries
+         lead here. -->
+    <div class="hero-writing">
+      <h2 class="col-head">Recent writing</h2>
+      <!-- writing-list:start -->
+    <div class="entry">
+      <div>
+        <span class="date">2026-07-26</span>
+        <h3 class="title"><a href="/blog/bteq-still-has-a-job/">BTEQ Still Has a Job</a></h3>
+      </div>
+      <p class="summary">BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.</p>
+    </div>
 
-      <!-- ROW 1: Editorial and writing, 2007 to 2014.
-           Left-anchored label at (60, 55), band immediately below
-           at y=80 spanning x=60 to x=460. -->
-      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="64" width="400" height="32" fill="transparent"/><text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt" style="--arc-len:400"><title>Editorial and writing, 2007 to 2014</title></line></a>
+    <div class="entry">
+      <div>
+        <span class="date">2026-07-15</span>
+        <h3 class="title"><a href="/blog/what-the-metric-cannot-see/">The Metric Isn't Wrong. It's Just Not Where Quality Lives.</a></h3>
+      </div>
+      <p class="summary">Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</p>
+    </div>
+    <!-- writing-list:end -->
+      <p class="hero-viewall"><a href="#writing">View all writing &rarr;</a></p>
+    </div>
 
-      <!-- ROW 2: Research, UW-Madison, 2009 to 2018.
-           65 units below Row 1 to leave a clear gap. Label starts
-           at the band's left edge (x=175). En-dash, not em-dash. -->
-      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="175" y="154" width="510" height="32" fill="transparent"/><text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10" style="--arc-len:510"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
+    <!-- CENTRE: the career rail. Same data as the former horizontal
+         arc (dated, clickable bands jumping to each role, the muted
+         2020 acquisition annotation), re-rendered vertically to fit
+         the narrow centre column. The wide tl-horizontal variant is
+         retired: it cannot fit a rail column and shipping a hidden
+         1200-wide SVG is dead weight. tl-compact still serves
+         mobile at <=760px. Rail bands are stroke-width 9 so the
+         18.2 load-draw selector ([stroke-width="10"]) misses them:
+         a peripheral figure gets no first-paint motion (Val). -->
+    <figure class="timeline hero-rail">
+      <figcaption id="tl-caption">
+        Three overlapping careers converge into one continuous data-engineering line.
+      </figcaption>
 
-      <!-- ROW 3: Data engineering, 2017 to now.
-           Three abutting segments on a single row because the role
-           transitions were continuous in time. Labels centered
-           over each segment (text-anchor="middle"). BHA segment
-           is short so its label uses a smaller size to fit. -->
-      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="630" y="244" width="170" height="32" fill="transparent"/><text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10" style="--arc-len:170"><title>healthfinch, 2017 to 2020</title></line></a>
+      <!-- Vertical rail. viewBox 300x470. Year axis on the left,
+           y(year) = 25 + (year - 2007) * 21. Three parallel bands
+           at increasing x show the overlap: editorial (x=55),
+           research (x=90), and the continuous data-engineering line
+           (x=125) split into healthfinch / Health Catalyst / BHA
+           segments. Presentation hexes (#111, #6a6a6a) are remapped
+           to the palette by the attribute selectors in section 17. -->
+      <svg class="tl-rail" viewBox="0 0 300 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-r-desc">
+        <desc id="tl-r-desc">Three overlapping career phases on a vertical timeline. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
 
-      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="800" y="244" width="285" height="32" fill="transparent"/><text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10" style="--arc-len:285"><title>Health Catalyst, 2020 to 2025</title></line></a>
+        <!-- Year axis -->
+        <line x1="22" y1="25" x2="22" y2="424" stroke="#111" stroke-width="1"/>
+        <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="end">
+          <g><line x1="18" y1="25"  x2="26" y2="25"  stroke="#6a6a6a"/><text x="14" y="29">2007</text></g>
+          <g><line x1="18" y1="172" x2="26" y2="172" stroke="#6a6a6a"/><text x="14" y="176">2014</text></g>
+          <g><line x1="18" y1="298" x2="26" y2="298" stroke="#6a6a6a"/><text x="14" y="302">2020</text></g>
+          <g><line x1="18" y1="424" x2="26" y2="424" stroke="#6a6a6a"/><text x="14" y="428">now</text></g>
+        </g>
 
-      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="1085" y="244" width="55" height="32" fill="transparent"/><text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10" style="--arc-len:55"><title>Baltimore Health Analytics, 2025 to present</title></line></a>
+        <!-- Bands: each a link to its role, with a transparent rect
+             touch overlay (WCAG 2.5.8) and a title for AT. The <a>s are
+             DIRECT children of <svg> (no wrapping <g>) so the section-18
+             `svg.tl-rail > a` rules (no-underline, hover thicken,
+             focus-plus-context dim) match, exactly as the retired
+             horizontal arc did. Font attributes therefore sit on each
+             <text>, not on a group. -->
+          <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="43" y="25" width="30" height="147" fill="transparent"/><line x1="55" y1="25" x2="55" y2="172" stroke="#111" stroke-width="9" style="--arc-len:147"><title>Editorial and writing, 2007 to 2014</title></line><text x="69" y="36" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Editorial and writing</text></a>
 
-      <!-- YEAR AXIS at y=320. Axis rule slightly heavier (1.5pt)
-           than the earlier draft (1pt) so it reads at a distance
-           with the thicker bands above it. Short ticks above and
-           below each marked year. Year labels 35pt below axis. -->
-      <line x1="40" y1="320" x2="1160" y2="320" stroke="#111" stroke-width="1.5"/>
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="22" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="60"   y1="314" x2="60"   y2="326" stroke="#6a6a6a"/><text x="60"   y="355">2007</text></g>
-        <g><line x1="175"  y1="314" x2="175"  y2="326" stroke="#6a6a6a"/><text x="175"  y="355">2009</text></g>
-        <g><line x1="460"  y1="314" x2="460"  y2="326" stroke="#6a6a6a"/><text x="460"  y="355">2014</text></g>
-        <g><line x1="630"  y1="314" x2="630"  y2="326" stroke="#6a6a6a"/><text x="630"  y="355">2017</text></g>
-        <g><line x1="800"  y1="314" x2="800"  y2="326" stroke="#6a6a6a"/><text x="800"  y="355">2020</text></g>
-        <g><line x1="1085" y1="314" x2="1085" y2="326" stroke="#6a6a6a"/><text x="1085" y="355">2025</text></g>
-        <g><line x1="1140" y1="314" x2="1140" y2="326" stroke="#6a6a6a"/><text x="1140" y="355">now</text></g>
-      </g>
+          <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="78" y="67" width="30" height="189" fill="transparent"/><line x1="90" y1="67" x2="90" y2="256" stroke="#111" stroke-width="9" style="--arc-len:189"><title>Research, UW-Madison, 2009 to 2018</title></line><text x="104" y="78" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Research, UW&ndash;Madison</text></a>
 
-      <!-- INFLECTION: acquisition 2020 (calmed).
-           Formerly a loud red dashed callout; demoted to a quiet
-           muted annotation in the same style as the news-wire and
-           MPH era notes (thin solid connector, muted italic, no
-           accent, no circle). The 2020 acquisition is still marked
-           as the inflection but no longer shouts, and the caption
-           drops "Catalyst" so the only Catalyst mention on the
-           chart is the band label above. -->
-      <line x1="800" y1="260" x2="800" y2="314" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
+          <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="113" y="235" width="30" height="63" fill="transparent"/><line x1="125" y1="235" x2="125" y2="298" stroke="#111" stroke-width="9" style="--arc-len:63"><title>healthfinch, 2017 to 2020</title></line><text x="139" y="242" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">healthfinch</text></a>
 
-      <!-- ERA ANNOTATIONS (quiet)
-           One per pre-data-engineering era, positioned at the year
-           they describe. Deliberately understated: muted grey,
-           smaller type, short solid connector (not dashed, not
-           red). The 2020 acquisition annotation above now uses this
-           same calmed style; the arc has no high-contrast callout.
+          <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="113" y="298" width="30" height="105" fill="transparent"/><line x1="125" y1="298" x2="125" y2="403" stroke="#111" stroke-width="9" style="--arc-len:105"><title>Health Catalyst, 2020 to 2025</title></line><text x="139" y="354" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Health Catalyst</text></a>
 
-           RULE: no circles on the band, no dashed lines, no
-           accent colors. These are secondary data, not inflection
-           points. -->
+          <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="113" y="403" width="30" height="21" fill="transparent"/><line x1="125" y1="403" x2="125" y2="424" stroke="#111" stroke-width="9" style="--arc-len:21"><title>Baltimore Health Analytics, 2025 to present</title></line><text x="139" y="410" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Baltimore Health</text><text x="139" y="423" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#111">Analytics</text></a>
 
-      <!-- Editorial era: news-wire syndication, 2008.
-           x=117 is interpolated between 2007 (x=60) and 2009
-           (x=175). Short tick from band (y=85) down to y=98,
-           text baseline at y=115. -->
-      <line x1="117" y1="85" x2="117" y2="98" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="117" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">news-wire syndication</text>
-
-      <!-- UW research era: MPH in Biostatistics, 2013-2015.
-           Annotation placed at x=460 (the 2014 year tick, which
-           is the midpoint of the MPH window). Annotation sits
-           BELOW the Row 2 band at y=170, ticking down to y=188,
-           text at y=205. Clears Row 3 (which begins at x=630). -->
-      <line x1="460" y1="175" x2="460" y2="188" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="460" y="205" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">MPH, Biostatistics</text>
-    </svg>
+        <!-- INFLECTION: acquisition 2020 (calmed, muted, no accent),
+             matching the retired horizontal arc's annotation. -->
+        <line x1="131" y1="298" x2="152" y2="298" stroke="#6a6a6a" stroke-width="0.7"/>
+        <text x="155" y="302" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a">acquisition</text>
+      </svg>
 
     <!-- ==========================================================
          COMPACT CAREER ARC (mobile)
@@ -1826,6 +2022,142 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
       <text x="410" y="392" font-family="et-book, Palatino, Georgia, serif" font-size="14" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
     </svg>
   </figure>
+
+    <!-- RIGHT: featured project. Moved (not copied) from #projects so
+         the project CSS counter (reset on #main, incremented on each
+         .project .num in DOM order) still numbers this 01 and the
+         remaining projects 02+. The empty .num span is intentional;
+         the digit is generated. One botanical ornament lives here as
+         a signature, aria-hidden and drawn in var(--rule) via the
+         #d0d0c8 palette sentinel, the page's single decorative mark. -->
+    <div class="hero-project">
+      <h2 class="col-head">Featured project</h2>
+    <div class="project">
+      <span class="num"></span>
+      <div class="body">
+        <h3>Medicare Advantage Insight Engine</h3>
+        <p>
+          A Stars analyst skims about 200 healthcare news items a week; roughly five of them matter. This engine codifies that triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability.
+        </p>
+
+        <!-- ==========================================================
+             SCORING SCORECARD FIGURE
+             Built from the two worked examples in the methodology
+             post: a CMS proposed rule (true positive) that clears the
+             alert threshold, beside a vendor press release (near-miss
+             false positive) that mirrors the same keywords but does
+             not. Six per-feature bars each; the decisive feature is
+             source authority (emphasised in ink, not accent). HTML/CSS,
+             not SVG: bars are divs sized by an inline --v custom
+             property, palette via the CSS variables directly.
+             Honesty: the CMS scores are the exact six values published
+             in the post; the vendor scores are labelled (approx.)
+             because the post gives only the qualitative pattern (low
+             source authority, high measure relevance and recency,
+             below threshold after the source-authority fix).
+             ========================================================== -->
+        <figure class="scorecard-figure">
+          <figcaption>
+            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them. The CMS feature scores are the post's; the composite gauge and its threshold are illustrative.
+          </figcaption>
+          <div class="scorecard">
+            <div class="sc-card sc-accept">
+              <p class="sc-kicker">true positive</p>
+              <h4>CMS proposed rule</h4>
+              <p class="sc-badge">alerted &#10003;</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
+                <p class="sc-verdict">well above threshold</p>
+              </div>
+            </div>
+            <div class="sc-card sc-reject">
+              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
+              <h4>Vendor press release</h4>
+              <p class="sc-badge">skipped</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
+                <p class="sc-verdict">below threshold, after the source-authority fix</p>
+              </div>
+            </div>
+          </div>
+        </figure>
+
+        <p class="links">
+          <a href="/medicare-advantage-insight-engine/" aria-label="Live feed: Medicare Advantage Signal Feed">Live feed</a>
+          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
+          <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
+        </p>
+        <p class="stack">Python &middot; feature scoring &middot; Microsoft Teams webhook &middot; automation</p>
+      </div>
+    </div>
+
+      <svg class="hero-sprig" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <g stroke="#d0d0c8" fill="none" stroke-width="1.1">
+          <path d="M8 116 C 40 104, 62 84, 78 58 C 90 38, 104 24, 128 14"/>
+          <path d="M30 106 C 34 92, 30 82, 20 74"/>
+          <path d="M48 94 C 54 80, 52 68, 42 58"/>
+          <path d="M66 76 C 74 62, 74 50, 66 40"/>
+          <path d="M84 52 C 94 42, 98 30, 94 18"/>
+          <path d="M102 34 C 114 30, 122 22, 124 10"/>
+          <path d="M40 100 C 52 98, 62 90, 66 78"/>
+          <path d="M60 84 C 74 82, 84 74, 88 62"/>
+          <path d="M78 60 C 92 60, 102 52, 106 40"/>
+        </g>
+        <g fill="#d0d0c8">
+          <ellipse cx="22" cy="72" rx="5" ry="3" transform="rotate(-35 22 72)"/>
+          <ellipse cx="44" cy="56" rx="5" ry="3" transform="rotate(-40 44 56)"/>
+          <ellipse cx="67" cy="38" rx="5" ry="3" transform="rotate(-45 67 38)"/>
+          <ellipse cx="93" cy="16" rx="5" ry="3" transform="rotate(-30 93 16)"/>
+          <ellipse cx="125" cy="8"  rx="5" ry="3" transform="rotate(-20 125 8)"/>
+        </g>
+      </svg>
+    </div>
+
+  </div><!-- /.split-hero -->
+
+  <!-- ==========================================================
+       TEASER ROW
+       Three in-page quick-jumps to substance further down the SAME
+       page, so the arrows point DOWN, not right (Steve). Each names
+       a real count (the critique's cheapest fix for hidden content).
+       Targets are fully visible sections, not folds, so a jump lands
+       on readable content. The third card leads with experience, the
+       order a recruiter scans (Jess). -->
+  <nav class="teaser-row" aria-label="Jump to more of the site">
+    <div class="teaser">
+      <p class="teaser-title">Other projects <span class="teaser-count">(5)</span></p>
+      <p>Stars Cliff Simulator, healthcare workforce transition, ECDS shock index, a care-redesign interrupted time series, and practice-automation ROI.</p>
+      <a href="#projects">See all projects &darr;</a>
+    </div>
+    <div class="teaser">
+      <p class="teaser-title">Publications &amp; speaking <span class="teaser-count">(6 &middot; 17)</span></p>
+      <p>Peer-reviewed health-services research, plus conference talks and posters.</p>
+      <a href="#publications">See the record &darr;</a>
+    </div>
+    <div class="teaser">
+      <p class="teaser-title">Experience &amp; about</p>
+      <p>A decade and a half across editorial, health-services research, and the data-engineering work that followed.</p>
+      <a href="#experience">Read the background &darr;</a>
+    </div>
+  </nav>
 
   <section id="about">
     <h2>About</h2>
@@ -2110,26 +2442,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     </p>
     <!-- activity-grid:end -->
 
-    <p class="section-subhead">Featured</p>
-
-    <!-- writing-list:start -->
-    <div class="entry">
-      <div>
-        <span class="date">2026-07-26</span>
-        <h3 class="title"><a href="/blog/bteq-still-has-a-job/">BTEQ Still Has a Job</a></h3>
-      </div>
-      <p class="summary">BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.</p>
-    </div>
-
-    <div class="entry">
-      <div>
-        <span class="date">2026-07-15</span>
-        <h3 class="title"><a href="/blog/what-the-metric-cannot-see/">The Metric Isn't Wrong. It's Just Not Where Quality Lives.</a></h3>
-        <label for="mn-w-what-the-metric-cannot-see" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Toggle margin note" id="mn-w-what-the-metric-cannot-see" class="margin-toggle"/><span class="marginnote">The four hour antibiotic rule was loosened to six hours in 2007 and then retired outright, an unusually clean admission that a measure had failed.</span>
-      </div>
-      <p class="summary">Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</p>
-    </div>
-    <!-- writing-list:end -->
+    <!-- The two most-recent posts lead the split hero at the top of the
+         page (writing-list markers moved there). This section keeps the
+         cadence sparkline above and the small-multiples index below. -->
   </section>
 
   <!-- WRITING INDEX (small multiples)
@@ -2418,83 +2733,6 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <h2>Projects</h2>
 
     <p class="section-subhead">Featured</p>
-
-    <div class="project">
-      <span class="num"></span>
-      <div class="body">
-        <h3>Medicare Advantage Insight Engine</h3>
-        <p>
-          A Stars analyst skims about 200 healthcare news items a week; roughly five of them matter. This engine codifies that triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability.
-        </p>
-
-        <!-- ==========================================================
-             SCORING SCORECARD FIGURE
-             Built from the two worked examples in the methodology
-             post: a CMS proposed rule (true positive) that clears the
-             alert threshold, beside a vendor press release (near-miss
-             false positive) that mirrors the same keywords but does
-             not. Six per-feature bars each; the decisive feature is
-             source authority (emphasised in ink, not accent). HTML/CSS,
-             not SVG: bars are divs sized by an inline --v custom
-             property, palette via the CSS variables directly.
-             Honesty: the CMS scores are the exact six values published
-             in the post; the vendor scores are labelled (approx.)
-             because the post gives only the qualitative pattern (low
-             source authority, high measure relevance and recency,
-             below threshold after the source-authority fix).
-             ========================================================== -->
-        <figure class="scorecard-figure">
-          <figcaption>
-            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them. The CMS feature scores are the post's; the composite gauge and its threshold are illustrative.
-          </figcaption>
-          <div class="scorecard">
-            <div class="sc-card sc-accept">
-              <p class="sc-kicker">true positive</p>
-              <h4>CMS proposed rule</h4>
-              <p class="sc-badge">alerted &#10003;</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
-                <p class="sc-verdict">well above threshold</p>
-              </div>
-            </div>
-            <div class="sc-card sc-reject">
-              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
-              <h4>Vendor press release</h4>
-              <p class="sc-badge">skipped</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
-                <p class="sc-verdict">below threshold, after the source-authority fix</p>
-              </div>
-            </div>
-          </div>
-        </figure>
-
-        <p class="links">
-          <a href="/medicare-advantage-insight-engine/" aria-label="Live feed: Medicare Advantage Signal Feed">Live feed</a>
-          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
-          <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
-        </p>
-        <p class="stack">Python &middot; feature scoring &middot; Microsoft Teams webhook &middot; automation</p>
-      </div>
-    </div>
 
     <div class="project">
       <span class="num"></span>
@@ -3092,6 +3330,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
   <section id="education">
     <h2>Education</h2>
 
+    <details class="fold">
+      <summary>Degrees, certificates, and fellowships</summary>
+
     <div class="row-entry">
       <div class="row-date">2013 to 2015</div>
       <div class="row-body">
@@ -3135,6 +3376,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
         <span class="row-org">University of Wisconsin-Madison</span>
       </div>
     </div>
+    </details>
   </section>
 
   <hr>
@@ -3150,6 +3392,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
        ========================================================== -->
   <section id="service">
     <h2>Service and Recognition</h2>
+
+    <details class="fold">
+      <summary>Peer review, boards, mentoring, and awards</summary>
 
     <div class="row-entry">
       <div class="row-date">2019 to present</div>
@@ -3212,6 +3457,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
       </div>
     </div>
 
+    </details>
   </section>
 
   <hr>
