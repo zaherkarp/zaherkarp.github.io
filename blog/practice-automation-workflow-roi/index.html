@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp</title>
-<meta name="description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<meta name="description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch&#39;s Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
 <link rel="canonical" href="https://zaherkarp.com/blog/practice-automation-workflow-roi/">
 <link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -18,7 +18,7 @@
 
 
 <meta property="og:title" content="ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp">
-<meta property="og:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<meta property="og:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch&#39;s Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
 <meta property="og:url" content="https://zaherkarp.com/blog/practice-automation-workflow-roi/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Zaher Karp">
@@ -26,7 +26,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ROI Modeling from Clinical Workflow Data: A Case Study — Zaher Karp">
-<meta name="twitter:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
+<meta name="twitter:description" content="ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch&#39;s Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.">
 <meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
 
 <link rel="stylesheet" href="/fonts/et-book/et-book.css">
@@ -34,7 +34,7 @@
 
 
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ROI Modeling from Clinical Workflow Data: A Case Study", "description": "ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.", "url": "https://zaherkarp.com/blog/practice-automation-workflow-roi/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/practice-automation-workflow-roi/"}, "datePublished": "2026-04-26T00:00:00Z", "dateModified": "2026-07-05T00:02:50-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2951, "timeRequired": "PT12M", "inLanguage": "en-US", "keywords": "healthfinch, automation, linear-regression, epic-clarity, case-study"}
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ROI Modeling from Clinical Workflow Data: A Case Study", "description": "ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch's Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.", "url": "https://zaherkarp.com/blog/practice-automation-workflow-roi/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/practice-automation-workflow-roi/"}, "datePublished": "2026-04-26T00:00:00Z", "dateModified": "2026-07-05T00:02:50-05:00", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 2951, "timeRequired": "PT12M", "inLanguage": "en-US", "keywords": "healthfinch, automation, linear-regression, epic-clarity, case-study"}
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -88,7 +88,7 @@
   </header>
   <div class="blog-body">
     <h2>The setup</h2>
-<p>OCHIN runs the EHR for a network of federally qualified health centers across the western U.S. healthfinch Charlie is a prescription-refill automation tool that, at the time, sat inside Epic and processed inbound refill requests through a configurable protocol: route the auto-approvable ones through automatically, escalate the rest to a clinician with the protocol-relevant context attached. When OCHIN deployed Charlie across a subset of its member health centers, the question that came back to the analytics team was the question that comes back about every clinical-workflow tool: did it actually save clinician time, and if so, how much.</p>
+<p>OCHIN runs the EHR for a network of federally qualified health centers across the western U.S. Healthfinch's Charlie is a prescription-refill automation tool that, at the time, sat inside Epic and processed inbound refill requests through a configurable protocol: route the auto-approvable ones through automatically, escalate the rest to a clinician with the protocol-relevant context attached. When OCHIN deployed Charlie across a subset of its member health centers, the question that came back to the analytics team was the question that comes back about every clinical-workflow tool: did it actually save clinician time, and if so, how much.</p>
 <p>The temptation, when the question is &quot;did this save time,&quot; is to ask the clinicians. Surveys are cheap and produce numbers fast. The numbers from surveys tend to be either wildly optimistic (clinicians want the tool to work, want to support their colleagues' adoption decisions, want to be helpful in answering) or wildly pessimistic (clinicians had a bad week, the tool failed last Tuesday, the survey landed at the wrong time). Either way, the variance is high and the signal is contaminated with social and emotional factors that the question was not asking about.</p>
 <p>The workflow data Epic Clarity captures, by contrast, is unconcerned with how anyone feels about Charlie. It records when a refill request arrived, when it was processed, when it was forwarded to a clinician for review, when it was closed. The timestamps are not perfect, but they are independent of the clinician's after-the-fact recollection of how much time they spent on the encounter. They tell a quieter, more reliable story.</p>
 <p>This post is the case-study version of how we used that workflow data to estimate Charlie's effect on clinician time per refill, with linear regression as the analytic spine, and with a deliberate accounting of where the regression's clean estimate diverged from the metric the commercial team needed for renewal conversations.</p>
@@ -183,7 +183,7 @@
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/f9ec897">f9ec897</a>.</p>
+    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/1a46304">1a46304</a>.</p>
     
   </footer>
 
