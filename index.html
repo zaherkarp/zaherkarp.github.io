@@ -1684,11 +1684,18 @@ nav.top { width: 100%; }
 }
 .split-hero > * { min-width: 0; }
 
-/* Small-caps column headers cue the three lanes. */
-.col-head {
+/* Small-caps column headers cue the three lanes. These are <h2>
+   elements (so the hero's h3 entry/project titles have an h2 above
+   them and heading order stays sequential h1 -> h2 -> h3), styled
+   down from the default italic 2.2rem section-heading treatment to a
+   quiet label. */
+h2.col-head {
   font-variant: small-caps;
+  font-style: normal;
+  font-weight: 400;
   letter-spacing: 0.08em;
   font-size: 0.85rem;
+  line-height: 1.2;
   color: var(--muted);
   margin: 0 0 1rem 0;
 }
@@ -1878,7 +1885,7 @@ figure.timeline.hero-rail figcaption {
          index stay below in #writing; only the two featured entries
          lead here. -->
     <div class="hero-writing">
-      <p class="col-head">Recent writing</p>
+      <h2 class="col-head">Recent writing</h2>
       <!-- writing-list:start -->
     <div class="entry">
       <div>
@@ -2024,7 +2031,7 @@ figure.timeline.hero-rail figcaption {
          a signature, aria-hidden and drawn in var(--rule) via the
          #d0d0c8 palette sentinel, the page's single decorative mark. -->
     <div class="hero-project">
-      <p class="col-head">Featured project</p>
+      <h2 class="col-head">Featured project</h2>
     <div class="project">
       <span class="num"></span>
       <div class="body">
