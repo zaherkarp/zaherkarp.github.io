@@ -15,6 +15,19 @@ self-hosted, 1400px+60% column with sidenotes in the margin, h1 hero, six
 substantive figures, no stats table). The rationale doc for the current
 design lives at archive/redesign/zaherkarp-tufte-rationale.md.
 
+**Timeline Split redesign (2026-07-26, this branch).** The homepage opening was
+restructured from a single-column scroll (nameplate + subtitle + full-width
+career arc, then About-first section order) into a writing-led "Timeline Split":
+a full-width three-column `.split-hero` grid (recent writing / a vertical dated
+career rail / the featured project 01) above the usual 60% prose column, a
+three-card teaser row of in-page quick-jumps, and a reduced nameplate. Nav cut
+from nine items to four. Career arc re-rendered as a vertical `tl-rail` SVG (the
+wide `tl-horizontal` variant retired). One botanical ornament added to the
+project card (a bounded data-ink exception). Design decisions below marked
+"(Timeline Split)" supersede the pre-2026-07-26 wording. Council-reviewed; the
+mockup family and rationale are in the plan for branch
+`claude/page-visual-design-mockups-dk17bc`.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -161,6 +174,15 @@ The career arc and the Education/Service Gantt deliberately use NO accent
 across links/section labels/project numbers/details summaries/activity
 dots — that's the pattern to NOT re-grow.
 
+**(Timeline Split, 2026-07-26) One decorative ornament, bounded exception.**
+A single botanical sprig (`.hero-sprig`) sits at the foot of the featured-
+project card: `aria-hidden`, drawn in `var(--rule)` via the `#d0d0c8` palette
+sentinel (so it is faint and NOT an accent use), never near the rail axis. This
+is the page's ONLY decorative (non-data-ink) mark, a deliberate, discussed
+exception to the data-ink rule. Do not multiply it: no ornament in the rail,
+the teasers, the footer, or elsewhere without discussion. The pre-push accent
+grep is unaffected (the sprig uses `#d0d0c8`, not `--accent`/`#7a0000`).
+
 **SVG palette adaptation.** Figure SVGs hardcode hex values
 (fill="#111", "#6a6a6a", "#7a0000", "#d0d0c8") as presentation
 attributes. CSS attribute selectors at the bottom of the inline `<style>`
@@ -235,32 +257,60 @@ The rebuild restored the Tufte three-zone layout because the sidenote
 system needs the margin to live in.
 
 Nav wraps on medium screens. Acceptable and intentional. No hamburger
-menu without discussion.
+menu without discussion. **(Timeline Split)** Nav is now four items
+(writing, projects, publications, about) and spans full width, not the 60%
+column. The removed section ids (experience, speaking, education, service,
+contact) are still live anchors; do not delete them.
+
+**(Timeline Split) `.split-hero` is a sanctioned exception to the 60% column.**
+The writing-led hero is a `<div class="split-hero">` grid, deliberately NOT a
+`<section>`, so `section { width: 60% }` and the floating-note margin never
+apply to it. It carries no floating notes by design (see §Writing section
+update rule for the suppressed per-post note). Three columns above 1000px, two
+between 761 and 1000px (the intermediate stop resolves the 761-1000 squeeze the
+2026-07-19 critique left open), one below 760px. The rest of the page keeps the
+60% column. CSS lives in sections 19 / 20 / 20.1 of index.html.
 
 ### Hero
 
-Sequence: nav, h1 (name), single plain subtitle, career arc figure.
-The subtitle text itself is locked; do not edit without explicit instruction.
-No epigraph, no italic claim block, no rust border, no manifesto framing.
-The career arc carries the "what I do" visually and the About section
-carries the "who I am" narratively; two framing statements above the
-chart was self-absorbed (rationale doc §Hero).
+**(Timeline Split, 2026-07-26)** Sequence: nav, `.nameplate` (reduced h1 beside
+its subtitle on one baseline), then the `.split-hero` grid (recent writing /
+career rail / featured project 01), then the three-card `.teaser-row`. The
+subtitle text is still locked; do not edit without explicit instruction. The
+featured project 01 block is MOVED into the hero (not copied) so the project
+CSS counter still numbers it 01 in DOM order. No epigraph, no italic claim
+block, no manifesto framing.
+
+(Prior, pre-2026-07-26: nav, h1 name, single plain subtitle, full-width career
+arc figure; About-first section order.)
 
 ### Career arc SVG
 
-Two SVGs swap at 760px:
-  - Horizontal `viewBox="0 0 1200 440"` for desktop. Three rows: editorial
-    & writing 2007-2014, research UW-Madison 2009-2018, data engineering
-    sequence 2017-now (healthfinch / HC / BHA on a single row, abutting).
-    Three quiet annotations, all in the same muted style (thin solid
-    connector, muted italic, no accent, no circle): the 2020 acquisition
-    inflection (caption reads "acquisition", not "Health Catalyst" — the
-    band label is the only Catalyst mention on the chart), news-wire
-    syndication 2008, and MPH Biostatistics 2014.
+**(Timeline Split, 2026-07-26)** Two SVGs swap at 760px, both living inside the
+`.split-hero` centre column (`figure.timeline.hero-rail`):
+  - **Vertical `tl-rail` `viewBox="0 0 300 470"` for desktop (>760px).** Left
+    year axis, `y(year) = 25 + (year - 2007) * 21`. Three parallel bands at
+    increasing x show the career overlap: editorial (x=55, 2007-2014), research
+    (x=90, 2009-2018), and the continuous data-engineering line (x=125) split
+    into healthfinch / Health Catalyst / BHA segments. Bands are
+    `stroke-width="9"` (deliberately NOT 10) so the section-18.2 load-draw
+    selector `[stroke-width="10"]` misses them: the rail is peripheral to the
+    writing lede and gets NO first-paint motion (Val's call). The muted
+    "acquisition" annotation is kept; the crowded news-wire/MPH era notes are
+    dropped, as on the compact variant. Each band is an `<a href="#exp-...">`
+    (DIRECT child of `<svg>`, no wrapping `<g>`, so the `svg.tl-rail > a`
+    no-underline/hover/focus rules match) with a transparent `<rect>` touch
+    overlay and a `<title>`.
   - Compact `viewBox="0 0 600 430"` for mobile (native single-frame
     redesign, NOT a rotated copy). Same data, same calmed acquisition
-    annotation, but the news-wire/MPH era notes are dropped because they
-    crowd the narrower layout.
+    annotation, era notes dropped. Keeps its time-based load-draw (section
+    18.2, compact-only now).
+
+The wide horizontal `viewBox="0 0 1200 440"` variant was RETIRED in the Timeline
+Split redesign: it cannot fit the narrow rail column, and shipping a hidden
+1200-wide SVG is dead weight. Its CSS selectors were renamed to `tl-rail`; the
+`:has(svg.tl-horizontal)` max-width cap was removed (the grid column bounds the
+figure now).
 
 The 2020 callout was demoted from a loud red dashed+circle+caption accent
 to the quiet muted annotation above (2026-06-07): the user wanted chart
@@ -376,7 +426,14 @@ Mechanism (CSS section "18. SCROLL-DRAWN FIGURES" in `index.html`):
   - Only `transform`/`opacity`/`stroke-dashoffset` animate (compositor-
     friendly, no layout cost, no LCP hit).
 
-Hero exception, draw-on-load (CSS section "18.2"): the hero career arc is
+Hero exception, draw-on-load (CSS section "18.2"): **(Timeline Split,
+2026-07-26)** the load-draw now runs ONLY on the compact (mobile) arc. The
+desktop `tl-rail` is peripheral to the writing lede and deliberately gets no
+first-paint motion (Val's call): its bands are `stroke-width="9"`, so the
+`[stroke-width="10"]`/`[stroke-width="11"]` load-draw selectors miss it and it
+renders static. The paragraph below describes the pre-2026-07-26 behavior; the
+`line[stroke-width="10"]` (desktop) branch no longer exists.
+The former hero career arc was
 the one figure that draws for EVERY browser, including Safari/Firefox, because
 it uses a plain time-based CSS animation (`animation-duration`), not the
 scroll timeline. Its bands (`line[stroke-width="10"]` desktop /
@@ -553,12 +610,18 @@ the next CI run overwrites them. Two tiers:
 
   - **Featured** (`WRITING_FEATURED = 2`): the two most recent non-draft
     posts, between `<!-- writing-list:start --> ... <!-- writing-list:end -->`
-    markers, inside `<section id="writing">` (60% column). Rendered as
-    full `.entry` blocks (date + title + full-summary). To attach a
-    margin note to a featured entry, add an optional
-    `homepageMarginnote: "..."` field to that post's frontmatter; the
-    build wraps it in a ⊕ toggle next to the title with id `mn-w-<slug>`.
-    Margin notes are featured-only.
+    markers. **(Timeline Split, 2026-07-26)** these markers now live in the
+    `.split-hero` left column (`.hero-writing`), NOT inside `<section
+    id="writing">`. Rendered as full `.entry` blocks (date + title +
+    full-summary). **`homepageMarginnote` is NO LONGER RENDERED on the
+    homepage:** the featured entries lead the split hero, which has no floating
+    margin, and a second inline-toggle note idiom just in the hero was rejected
+    by the Design Council (Edward "a fracture"; Haben a comprehension cost). So
+    `build_writing_list()` suppresses the `mn-w-<slug>` note (test:
+    `test_writing_list_suppresses_hero_marginnote`). The frontmatter field is
+    still read/preserved by the blog tooling; it just no longer surfaces here.
+    `#writing` below now holds only the cadence sparkline (its `mn-cadence`
+    note still floats there) and, as a sibling, the writing-index fold.
   - **Index** (`WRITING_TILES = 6`): the next six posts after the
     featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
     markers, inside the sibling `<div class="writing-index">` grid (90%
@@ -1738,7 +1801,10 @@ consolidation, new gates) is documented in
 
 - No npm/node/JS build tooling, CSS frameworks, or frontend frameworks.
 - No 640px max-width regression and no removing the sidenote system. The
-  60% column with 40% margin is a contract; the sidenotes need the margin.
+  60% column with 40% margin is a contract for the prose sections; the
+  sidenotes need the margin. (The Timeline Split `.split-hero` and
+  `.teaser-row` are the sanctioned full-width exceptions above that column;
+  see §Layout. They host no floating notes, so the contract holds.)
 - No "By the Numbers" stats table. The chart inventory replaces it.
 - No sidenotes outside the homepage. Blog posts use KaTeX/Mermaid/Prism
   for technical depth.

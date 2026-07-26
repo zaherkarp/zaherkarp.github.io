@@ -112,6 +112,28 @@ def test_marker_injection_is_idempotent(portfolio_env):
     assert "blog-thoughts:start" in life_run1
 
 
+def test_writing_list_suppresses_hero_marginnote():
+    """Since the Timeline Split redesign the featured entries lead the split
+    hero, which has no floating-note margin, so build_writing_list must NOT
+    emit a per-post margin note even when homepageMarginnote is present."""
+    import datetime
+
+    posts = [
+        {
+            "date": datetime.date(2026, 7, 26),
+            "title": "A Featured Post",
+            "description": "Its blurb.",
+            "slug": "a-featured-post",
+            "marginnote": "This aside must never reach the hero.",
+        }
+    ]
+    html = build_portfolio.build_writing_list(posts)
+    assert "A Featured Post" in html
+    assert "marginnote" not in html
+    assert "mn-w-a-featured-post" not in html
+    assert "This aside must never reach the hero." not in html
+
+
 def test_citation_fetch_failure_preserves_cached_count(monkeypatch):
     fake_pubs = [
         {
