@@ -6,7 +6,7 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Jul 2026 07:51:34 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jul 2026 08:04:19 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
     
     <item>
@@ -338,7 +338,7 @@
       <link>https://zaherkarp.com/blog/practice-automation-workflow-roi/?utm_source=rss&amp;utm_medium=feed</link>
       <guid isPermaLink="true">https://zaherkarp.com/blog/practice-automation-workflow-roi/</guid>
       <pubDate>Sun, 26 Apr 2026 00:00:00 +0000</pubDate>
-      <description>ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.</description>
+      <description>ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch&#39;s Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one.</description>
       <category>healthfinch</category>
       <category>automation</category>
       <category>linear-regression</category>
