@@ -2422,6 +2422,83 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     <div class="project">
       <span class="num"></span>
       <div class="body">
+        <h3>Medicare Advantage Insight Engine</h3>
+        <p>
+          A Stars analyst skims about 200 healthcare news items a week; roughly five of them matter. This engine codifies that triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability.
+        </p>
+
+        <!-- ==========================================================
+             SCORING SCORECARD FIGURE
+             Built from the two worked examples in the methodology
+             post: a CMS proposed rule (true positive) that clears the
+             alert threshold, beside a vendor press release (near-miss
+             false positive) that mirrors the same keywords but does
+             not. Six per-feature bars each; the decisive feature is
+             source authority (emphasised in ink, not accent). HTML/CSS,
+             not SVG: bars are divs sized by an inline --v custom
+             property, palette via the CSS variables directly.
+             Honesty: the CMS scores are the exact six values published
+             in the post; the vendor scores are labelled (approx.)
+             because the post gives only the qualitative pattern (low
+             source authority, high measure relevance and recency,
+             below threshold after the source-authority fix).
+             ========================================================== -->
+        <figure class="scorecard-figure">
+          <figcaption>
+            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them. The CMS feature scores are the post's; the composite gauge and its threshold are illustrative.
+          </figcaption>
+          <div class="scorecard">
+            <div class="sc-card sc-accept">
+              <p class="sc-kicker">true positive</p>
+              <h4>CMS proposed rule</h4>
+              <p class="sc-badge">alerted &#10003;</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
+                <p class="sc-verdict">well above threshold</p>
+              </div>
+            </div>
+            <div class="sc-card sc-reject">
+              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
+              <h4>Vendor press release</h4>
+              <p class="sc-badge">skipped</p>
+              <ul class="sc-feats">
+                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
+                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
+                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
+                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
+                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
+                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
+              </ul>
+              <div class="sc-total">
+                <p class="sc-tlabel">weighted relevance score</p>
+                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
+                <p class="sc-verdict">below threshold, after the source-authority fix</p>
+              </div>
+            </div>
+          </div>
+        </figure>
+
+        <p class="links">
+          <a href="/medicare-advantage-insight-engine/" aria-label="Live feed: Medicare Advantage Signal Feed">Live feed</a>
+          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
+          <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
+        </p>
+        <p class="stack">Python &middot; feature scoring &middot; Microsoft Teams webhook &middot; automation</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <span class="num"></span>
+      <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
           A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP (Quality Bonus Payment) threshold, a tenth of a star can be worth $50 million for a mid-size contract. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser. No data leaves the user's machine.
@@ -2540,83 +2617,6 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
           <a href="/blog/star-rating-predictor-methodology/" aria-label="Methodology post: The Stars Cliff Simulator: Methodology &amp; Evidence">Methodology post</a>
         </p>
         <p class="stack">Ordinal logistic regression &middot; vanilla JS &middot; no dependencies &middot; client-side</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <span class="num"></span>
-      <div class="body">
-        <h3>Medicare Advantage Insight Engine</h3>
-        <p>
-          A Stars analyst skims about 200 healthcare news items a week; roughly five of them matter. This engine codifies that triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability.
-        </p>
-
-        <!-- ==========================================================
-             SCORING SCORECARD FIGURE
-             Built from the two worked examples in the methodology
-             post: a CMS proposed rule (true positive) that clears the
-             alert threshold, beside a vendor press release (near-miss
-             false positive) that mirrors the same keywords but does
-             not. Six per-feature bars each; the decisive feature is
-             source authority (emphasised in ink, not accent). HTML/CSS,
-             not SVG: bars are divs sized by an inline --v custom
-             property, palette via the CSS variables directly.
-             Honesty: the CMS scores are the exact six values published
-             in the post; the vendor scores are labelled (approx.)
-             because the post gives only the qualitative pattern (low
-             source authority, high measure relevance and recency,
-             below threshold after the source-authority fix).
-             ========================================================== -->
-        <figure class="scorecard-figure">
-          <figcaption>
-            Two calibration items scored on the six features. A CMS proposed rule clears the alert threshold; a vendor press release mirroring the same keywords does not. Source authority is what separates them. The CMS feature scores are the post's; the composite gauge and its threshold are illustrative.
-          </figcaption>
-          <div class="scorecard">
-            <div class="sc-card sc-accept">
-              <p class="sc-kicker">true positive</p>
-              <h4>CMS proposed rule</h4>
-              <p class="sc-badge">alerted &#10003;</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.85"></span></span><span class="sc-val">.85</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.8"></span></span><span class="sc-val">.80</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:1.0"></span></span><span class="sc-val">1.0</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.88"></span></div>
-                <p class="sc-verdict">well above threshold</p>
-              </div>
-            </div>
-            <div class="sc-card sc-reject">
-              <p class="sc-kicker">near-miss false positive <span class="sc-approx">(approx.)</span></p>
-              <h4>Vendor press release</h4>
-              <p class="sc-badge">skipped</p>
-              <ul class="sc-feats">
-                <li class="sc-key"><span class="fname">source authority</span><span class="sc-bar"><span class="sc-fill" style="--v:0.15"></span></span><span class="sc-val">.15</span></li>
-                <li><span class="fname">rulemaking stage</span><span class="sc-bar"><span class="sc-fill" style="--v:0.05"></span></span><span class="sc-val">.05</span></li>
-                <li><span class="fname">measure relevance</span><span class="sc-bar"><span class="sc-fill" style="--v:0.9"></span></span><span class="sc-val">.90</span></li>
-                <li><span class="fname">plan framing</span><span class="sc-bar"><span class="sc-fill" style="--v:0.25"></span></span><span class="sc-val">.25</span></li>
-                <li><span class="fname">structural signals</span><span class="sc-bar"><span class="sc-fill" style="--v:0.2"></span></span><span class="sc-val">.20</span></li>
-                <li><span class="fname">recency</span><span class="sc-bar"><span class="sc-fill" style="--v:0.95"></span></span><span class="sc-val">.95</span></li>
-              </ul>
-              <div class="sc-total">
-                <p class="sc-tlabel">weighted relevance score</p>
-                <div class="sc-gauge"><span class="sc-gfill" style="--t:0.42"></span></div>
-                <p class="sc-verdict">below threshold, after the source-authority fix</p>
-              </div>
-            </div>
-          </div>
-        </figure>
-
-        <p class="links">
-          <a href="/medicare-advantage-insight-engine/" aria-label="Live feed: Medicare Advantage Signal Feed">Live feed</a>
-          <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
-          <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
-        </p>
-        <p class="stack">Python &middot; feature scoring &middot; Microsoft Teams webhook &middot; automation</p>
       </div>
     </div>
 
