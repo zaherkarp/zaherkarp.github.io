@@ -1,13 +1,13 @@
 ---
 title: "ROI Modeling from Clinical Workflow Data: A Case Study"
-description: "ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of healthfinch Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one."
+description: "ROI for clinical automation is usually a regression problem disguised as a survey problem. A retrospective on the OCHIN deployment of Healthfinch's Charlie, what the workflow data could and could not tell us, and the gap between the renewal-conversation metric and the methodologically clean one."
 publishDate: 2026-04-26
 tags: ["healthfinch", "automation", "linear-regression", "epic-clarity", "case-study"]
 ---
 
 ## The setup
 
-OCHIN runs the EHR for a network of federally qualified health centers across the western U.S. healthfinch Charlie is a prescription-refill automation tool that, at the time, sat inside Epic and processed inbound refill requests through a configurable protocol: route the auto-approvable ones through automatically, escalate the rest to a clinician with the protocol-relevant context attached. When OCHIN deployed Charlie across a subset of its member health centers, the question that came back to the analytics team was the question that comes back about every clinical-workflow tool: did it actually save clinician time, and if so, how much.
+OCHIN runs the EHR for a network of federally qualified health centers across the western U.S. Healthfinch's Charlie is a prescription-refill automation tool that, at the time, sat inside Epic and processed inbound refill requests through a configurable protocol: route the auto-approvable ones through automatically, escalate the rest to a clinician with the protocol-relevant context attached. When OCHIN deployed Charlie across a subset of its member health centers, the question that came back to the analytics team was the question that comes back about every clinical-workflow tool: did it actually save clinician time, and if so, how much.
 
 The temptation, when the question is "did this save time," is to ask the clinicians. Surveys are cheap and produce numbers fast. The numbers from surveys tend to be either wildly optimistic (clinicians want the tool to work, want to support their colleagues' adoption decisions, want to be helpful in answering) or wildly pessimistic (clinicians had a bad week, the tool failed last Tuesday, the survey landed at the wrong time). Either way, the variance is high and the signal is contaminated with social and emotional factors that the question was not asking about.
 
