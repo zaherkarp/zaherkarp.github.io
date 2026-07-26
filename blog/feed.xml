@@ -6,8 +6,22 @@
     <atom:link href="https://zaherkarp.com/blog/feed.xml" rel="self" type="application/rss+xml" />
     <description>Healthcare data engineering, Medicare Advantage analytics, and adjacent things.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Jul 2026 20:12:03 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jul 2026 07:51:34 +0000</lastBuildDate>
     <generator>build_blog.py</generator>
+    
+    <item>
+      <title>BTEQ Still Has a Job</title>
+      <link>https://zaherkarp.com/blog/bteq-still-has-a-job/?utm_source=rss&amp;utm_medium=feed</link>
+      <guid isPermaLink="true">https://zaherkarp.com/blog/bteq-still-has-a-job/</guid>
+      <pubDate>Sun, 26 Jul 2026 00:00:00 +0000</pubDate>
+      <description>BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.</description>
+      <category>teradata</category>
+      <category>sql</category>
+      <category>bteq</category>
+      <category>data-engineering</category>
+      <category>workflow</category>
+      
+    </item>
     
     <item>
       <title>The Metric Isn&#39;t Wrong. It&#39;s Just Not Where Quality Lives.</title>
@@ -417,18 +431,6 @@
       <category>hedis</category>
       <category>ecds</category>
       <category>analytics</category>
-      
-    </item>
-    
-    <item>
-      <title>Concurrency: The Story We Tell vs. the System We Run</title>
-      <link>https://zaherkarp.com/blog/concurrency/?utm_source=rss&amp;utm_medium=feed</link>
-      <guid isPermaLink="true">https://zaherkarp.com/blog/concurrency/</guid>
-      <pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
-      <description>Concurrency sounds like “do more at once.” In real data systems it’s mostly coordination under constraint, and in healthcare analytics the constraints include trust, auditability, and deadlines.</description>
-      <category>concurrency</category>
-      <category>data-engineering</category>
-      <category>healthcare-analytics</category>
       
     </item>
     

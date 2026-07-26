@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTEQ Still Has a Job — Zaher Karp</title>
+<meta name="description" content="BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.">
+<link rel="canonical" href="https://zaherkarp.com/blog/bteq-still-has-a-job/">
+<link rel="alternate" type="application/rss+xml" title="Zaher Karp, Writing" href="/blog/feed.xml">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://gc.zgo.at">
+
+<meta name="google-site-verification" content="qjON_tVog4PEofv6GqW26zASrwOuVxjdjB0idQrZVyo">
+<!-- Bing Webmaster verification pending: paste the msvalidate.01 token from
+     https://www.bing.com/webmasters when ready. See TODO.md.
+<meta name="msvalidate.01" content="REPLACE_WITH_TOKEN">
+-->
+
+
+<meta property="og:title" content="BTEQ Still Has a Job — Zaher Karp">
+<meta property="og:description" content="BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.">
+<meta property="og:url" content="https://zaherkarp.com/blog/bteq-still-has-a-job/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zaher Karp">
+<meta property="og:image" content="https://zaherkarp.com/og-default.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BTEQ Still Has a Job — Zaher Karp">
+<meta name="twitter:description" content="BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.">
+<meta name="twitter:image" content="https://zaherkarp.com/og-default.png">
+
+<link rel="stylesheet" href="/fonts/et-book/et-book.css">
+<link rel="stylesheet" href="/blog.css">
+
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "BTEQ Still Has a Job", "description": "BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.", "url": "https://zaherkarp.com/blog/bteq-still-has-a-job/", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://zaherkarp.com/blog/bteq-still-has-a-job/"}, "datePublished": "2026-07-26T00:00:00Z", "dateModified": "2026-07-26T00:00:00Z", "author": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "publisher": {"@type": "Person", "name": "Zaher Karp", "url": "https://zaherkarp.com"}, "image": "https://zaherkarp.com/og-default.png", "wordCount": 1372, "timeRequired": "PT5M", "inLanguage": "en-US", "keywords": "teradata, sql, bteq, data-engineering, workflow"}
+</script>
+
+
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"
+        data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/"></script>
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="page">
+
+  <nav>
+    <a class="nav-name" href="/">Zaher Karp</a>
+    <ul class="nav-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/blog/">Writing</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#projects">Projects</a></li>
+      <li><a href="/#publications">Publications</a></li>
+      <li><a href="/#speaking">Speaking</a></li>
+      <li><a href="/#education">Education</a></li>
+      <li><a href="/#service">Service</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+  
+<article class="blog-article">
+  <a href="/blog/" class="back-link">&larr; Back to writing</a>
+  <header class="blog-header">
+    <h1 class="blog-title">BTEQ Still Has a Job</h1>
+    <div class="blog-meta">
+      <time datetime="2026-07-26" class="blog-date">July 26, 2026</time>
+      
+      <span class="blog-readtime">5 min read</span>
+      
+      
+      <ul class="blog-tags">
+        <li><a href="/blog/tags/teradata/">teradata</a></li><li><a href="/blog/tags/sql/">sql</a></li><li><a href="/blog/tags/bteq/">bteq</a></li><li><a href="/blog/tags/data-engineering/">data-engineering</a></li><li><a href="/blog/tags/workflow/">workflow</a></li>
+      </ul>
+      
+    </div>
+  </header>
+  <div class="blog-body">
+    <p>I came back to BTEQ because Teradata Studio was getting in the way.</p>
+<p>I had a workflow that needed to create a volatile table, load a value set, run several dependent SQL steps, and keep everything inside the same session. The SQL itself was manageable. The trouble was the execution environment: timeouts, uncertain session continuity, awkward file loading, and too much manual state.</p>
+<p>BTEQ solved the part I actually needed solved.</p>
+<p>That experience reminded me why it is still useful. BTEQ is old, limited, and sometimes unpleasant to look at, but it remains a very effective tool for a specific kind of Teradata work.</p>
+<p>The important question is not whether BTEQ feels modern. It is whether it provides a clean way to run a controlled, session-sensitive SQL workflow.</p>
+<p>In many cases, it does.</p>
+<h2>The workflow BTEQ handles well</h2>
+<p>A typical BTEQ use case looks something like this:</p>
+<ol>
+<li>Log on to Teradata.</li>
+<li>Create one or more volatile tables.</li>
+<li>Load a modest external file.</li>
+<li>Run SQL statements in a defined order.</li>
+<li>Check for errors after each important step.</li>
+<li>Export or validate the result.</li>
+<li>Return a useful status to PowerShell, a scheduler, or another process.</li>
+</ol>
+<p>That is a narrow job, but it is a common one.</p>
+<p>The main advantage is session continuity.</p>
+<p>A volatile table belongs to the session that created it. Once that session ends, the table disappears. That behavior is useful because it avoids permanent staging objects, cleanup scripts, and unnecessary database clutter. It also means the workflow must keep the same session alive from creation through final use.</p>
+<p>BTEQ makes that boundary clear. The script logs on, performs the work, logs off, and exits.</p>
+<p>There is less uncertainty about which connection owns the table or whether a later query is still operating inside the same session.</p>
+<h2>One connection, many steps</h2>
+<p>This matters when troubleshooting file imports.</p>
+<p>A BTEQ script using <code>.IMPORT</code> and <code>.REPEAT</code> does not reconnect for every imported row. It establishes the session at logon, reads the input records, and submits the repeated request through that session.</p>
+<p>The script may execute thousands of inserts, but that does not mean it is creating thousands of Teradata connections.</p>
+<p>That distinction is easy to lose when the only visible output is a long stream of repeated row counts or status messages. The process can look inefficient while still maintaining a single database session.</p>
+<p>The real performance question is how many requests are being submitted and how many records are included in each request.</p>
+<p>That is where <code>PACK</code> becomes useful.</p>
+<h2>Loading a modest value set</h2>
+<p>Suppose an analysis depends on 20,000 values from a CSV file.</p>
+<p>There are several possible approaches:</p>
+<ul>
+<li>Build a very large <code>IN</code> clause</li>
+<li>Load the values through Python</li>
+<li>Create a permanent staging table</li>
+<li>Use Teradata Parallel Transporter</li>
+<li>Load the file into a volatile table with BTEQ</li>
+</ul>
+<p>For a temporary, moderate-sized value set, BTEQ is often a reasonable choice.</p>
+<p>A simplified version might look like this:</p>
+<pre><code class="language-sql">.SET RETRY OFF
+.LOGON &lt;system&gt;/&lt;user&gt;,&lt;credential&gt;
+CREATE MULTISET VOLATILE TABLE vt_value_set
+(
+    value_txt VARCHAR(100)
+)
+PRIMARY INDEX (value_txt)
+ON COMMIT PRESERVE ROWS;
+.IF ERRORCODE &lt;&gt; 0 THEN .QUIT ERRORCODE
+.IMPORT VARTEXT ',' FILE='value_set.csv' SKIP=1
+.REPEAT * PACK 500
+USING
+(
+    value_txt VARCHAR(100)
+)
+INSERT INTO vt_value_set
+(
+    value_txt
+)
+VALUES
+(
+    :value_txt
+);
+.IF ERRORCODE &lt;&gt; 0 THEN .QUIT ERRORCODE
+SELECT COUNT(*) AS loaded_rows
+FROM vt_value_set;
+SELECT
+    f.*
+FROM production_fact AS f
+INNER JOIN vt_value_set AS v
+    ON f.business_key = v.value_txt;
+.IF ERRORCODE &lt;&gt; 0 THEN .QUIT ERRORCODE
+.LOGOFF
+.QUIT 0
+</code></pre>
+<p>The full operation remains inside one session.</p>
+<p>The table is created, the input file is loaded, the loaded row count can be checked, and the final query uses the temporary values directly.</p>
+<p><code>PACK 500</code> tells BTEQ to attempt to include multiple imported records in each request. The number is a tuning choice, not a rule. The right value depends on record width, request limits, file size, and the Teradata environment.</p>
+<p>The point is that BTEQ can batch a moderate import without requiring a full loading framework.</p>
+<h2>The script becomes the operational record</h2>
+<p>Interactive SQL tools are good places to develop queries. They are less effective at preserving the exact state of a multi-step workflow.</p>
+<p>A later reviewer may not know:</p>
+<ul>
+<li>Which statements were executed</li>
+<li>In what order they ran</li>
+<li>Which connection was active</li>
+<li>Whether a header row was skipped</li>
+<li>Whether a failed step was ignored</li>
+<li>Whether the final export came from the latest version of the query</li>
+</ul>
+<p>A BTEQ file puts those decisions in one place.</p>
+<p>The SQL, control flow, import configuration, output behavior, and error checks can be reviewed together. The script can be stored in version control and rerun without recreating a sequence of clicks.</p>
+<p>That matters during handoffs and troubleshooting. The executed file becomes the runbook.</p>
+<p>BTEQ run files can also separate reusable SQL from the controlling script. A wrapper can manage the login, logging, sequencing, and error behavior while individual SQL files contain the database work.</p>
+<p>For many small and medium Teradata processes, that is enough structure.</p>
+<h2>Error handling is part of the workflow</h2>
+<p>A repeatable process needs to communicate more than query results. It needs to tell the calling process whether it succeeded.</p>
+<p>BTEQ exposes values such as <code>ERRORCODE</code> and <code>ERRORLEVEL</code>, which can be used in conditional logic.</p>
+<p>A common pattern is:</p>
+<pre><code class="language-sql">.IF ERRORCODE &lt;&gt; 0 THEN .QUIT ERRORCODE
+</code></pre>
+<p>That prevents the script from continuing after a failed prerequisite.</p>
+<p>Without that check, a process may continue after a volatile table fails to create or a file load is incomplete. Later SQL may still execute and produce output, but the result may be meaningless.</p>
+<p>Returning a nonzero code allows PowerShell, a batch file, or a scheduler to detect the failure and stop the larger workflow.</p>
+<p>Retry behavior also deserves attention. Automatic retry is not always safe, particularly inside larger transactions. A failed statement may trigger rollback behavior that affects more than the client expects.</p>
+<p>For update workflows, transaction boundaries and retry rules should be explicit.</p>
+<h2>BTEQ works well with PowerShell</h2>
+<p>BTEQ becomes more useful when PowerShell handles the operating-system work around it.</p>
+<p>PowerShell can:</p>
+<ul>
+<li>Generate the BTEQ control file</li>
+<li>Invoke BTEQ</li>
+<li>Redirect the transcript to a log</li>
+<li>Check the exit code</li>
+<li>Validate output files</li>
+<li>Rename, move, or archive results</li>
+<li>Stop the larger process when the database step fails</li>
+</ul>
+<p>This division of labor works well.</p>
+<p>PowerShell manages files, parameters, logging, and process control. BTEQ manages the Teradata session and ordered SQL execution.</p>
+<p>The workflow remains understandable because each tool is doing the kind of work it handles well.</p>
+<h2>How BTEQ compares today</h2>
+<p>BTEQ overlaps with several newer or more capable tools, but it occupies a useful middle ground.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Best use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Teradata Studio</strong></td>
+<td>Interactive SQL development, exploration, and reviewing results</td>
+</tr>
+<tr>
+<td><strong>BTEQ</strong></td>
+<td>Ordered SQL workflows, volatile tables, modest imports, exports, and batch execution</td>
+</tr>
+<tr>
+<td><strong>Teradata Parallel Transporter</strong></td>
+<td>Large and performance-sensitive data movement</td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td>Complex logic, APIs, testing, reusable software, and multi-system workflows</td>
+</tr>
+<tr>
+<td><strong>Enterprise orchestration tools</strong></td>
+<td>Scheduling, dependencies, monitoring, ownership, and cross-platform pipelines</td>
+</tr>
+</tbody>
+</table>
+<p>Teradata Studio is usually the better place to write and test SQL.</p>
+<p>TPT is the better choice when throughput and parallel data movement are the main concerns.</p>
+<p>Python is the better choice when the workflow is becoming an application.</p>
+<p>BTEQ fits when SQL remains the center of the process, but the SQL needs to run in a controlled sequence with a stable session.</p>
+<h2>Where BTEQ stops being a good fit</h2>
+<p>BTEQ becomes less attractive when the workflow requires:</p>
+<ul>
+<li>Complex branching or state management</li>
+<li>API calls</li>
+<li>Significant file transformation</li>
+<li>Reusable software components</li>
+<li>Automated unit testing</li>
+<li>Very large data loads</li>
+<li>Cross-system observability</li>
+<li>Sophisticated application-level error handling</li>
+</ul>
+<p>Its export behavior also requires care. Delimiters, null handling, character sets, headings, quoting, and record widths should be configured explicitly.</p>
+<p>Credentials should be handled through the organization's approved authentication approach rather than embedded casually in reusable scripts.</p>
+<p>The fact that BTEQ can perform a task does not automatically make it the right tool.</p>
+<h2>Why it still matters</h2>
+<p>BTEQ remains useful because it makes several operational details explicit:</p>
+<ul>
+<li>The session has a clear beginning and end.</li>
+<li>Volatile tables remain available for the full workflow.</li>
+<li>External values can be loaded without creating permanent staging objects.</li>
+<li>SQL statements execute in a defined order.</li>
+<li>Failed steps can stop the process.</li>
+<li>The calling system receives a meaningful return code.</li>
+<li>The transcript shows what actually happened.</li>
+</ul>
+<p>For a SQL-centered Teradata workflow, that combination is often sufficient.</p>
+<p>There are plenty of cases where Python, TPT, or a larger orchestration platform is the better answer.</p>
+<p>There are also cases where replacing a BTEQ script adds dependencies, code, and operational surface area without improving the result.</p>
+<p>BTEQ still has a job because Teradata work still includes temporary tables, ordered SQL, moderate file loads, batch execution, and processes that need to fail clearly.</p>
+<p>That job is smaller than it used to be.</p>
+<p>It is still real.</p>
+
+  </div>
+</article>
+
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-nav" aria-label="Site footer">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/blog/">Blog</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/resume.html">Resume</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/colophon/">Colophon</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="/#contact">Contact</a>
+    </nav>
+    
+    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/f9ec897">f9ec897</a>.</p>
+    
+  </footer>
+
+  <script data-goatcounter="https://zaher-karp.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  <script>
+  // Auto-track outbound-link clicks as GoatCounter events.
+  window.addEventListener('load', function () {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    var host = location.hostname;
+    document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+      if (a.hasAttribute('data-goatcounter-click')) return;
+      var u;
+      try { u = new URL(a.href); } catch (e) { return; }
+      if (u.hostname === host) return;
+      a.addEventListener('click', function () {
+        window.goatcounter.count({
+          path: 'out-' + u.hostname + u.pathname,
+          title: (a.textContent || a.href).trim().slice(0, 200),
+          event: true,
+        });
+      });
+    });
+  });
+  </script>
+
+</div>
+</body>
+</html>
