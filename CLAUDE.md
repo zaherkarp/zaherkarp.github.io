@@ -678,11 +678,11 @@ appears alongside the counter-generated digit) and will look broken.
 The section uses a featured + small-multiples-index pattern:
 
   - **Featured** (inside `<section id="projects">`, 60% body column):
-    The first two projects in DOM order — currently Stars Cliff
-    Simulator and the Medicare Advantage Insight Engine. Each
+    The first two projects in DOM order — currently the Medicare
+    Advantage Insight Engine and the Stars Cliff Simulator. Each
     renders as a `<div class="project">` with an inline figure
-    (cliff-figure SVG on Stars; an HTML/CSS scorecard on the Medicare
-    card), full prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
+    (an HTML/CSS scorecard on the Medicare card; cliff-figure SVG on
+    Stars), full prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
   - **Index** (outside the section, as a sibling `<div
     class="projects-index">`, 90% max-width grid): The remaining
@@ -793,7 +793,7 @@ no-bundler discipline and what it shipped; removing it eliminated that.
 **Stars tools distinction — two tools, do not conflate:**
   1. Stars Cliff Simulator — public, at /star-rating-predictor/.
      Teaching-oriented, synthetic weights, 4.0★ QBP cliff focus.
-     The Stars Cliff Simulator is the first featured project on
+     The Stars Cliff Simulator is the second featured project on
      index.html. Both Stars Cliff Simulator methodology blog posts
      (star-rating-demo-methodology.md and
      star-rating-predictor-methodology.md) describe this tool.
