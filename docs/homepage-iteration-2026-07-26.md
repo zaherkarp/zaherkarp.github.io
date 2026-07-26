@@ -109,14 +109,19 @@ alternative; A the Council's weakest.
   methodology post (linked). Removing the scorecard freed its two accent uses
   (18 → 16 occurrences).
 - **Timeline full-width** — moved out of the centre rail to a
-  `figure.timeline.career-band` below the grid. **Desktop:** a new wide
-  horizontal SVG (`svg.tl-band`, viewBox 1000×250, three qualitative lanes,
-  dated x-axis, no accent, coordinates recomputed from scratch). **Mobile
-  (≤760px):** the existing vertical `svg.tl-rail`, reused. The former mobile
-  `tl-compact` was retired. All five `#exp-*` band links, touch overlays, and
-  `<title>`s preserved. The load-draw (§18.2) now traces both `tl-band`
-  (stroke-width 14) and `tl-rail` (stroke-width 9), so every viewport gets the
-  first-paint draw.
+  `figure.timeline.career-band` below the grid. **Desktop:** the wide horizontal
+  `svg.tl-horizontal` (viewBox 1200×440), **restored verbatim from the
+  pre-Timeline-Split hero arc** (`77db71e^`) rather than authored from scratch —
+  tested coordinates, 26pt italic labels, three qualitative lanes on a dated
+  x-axis, the calmed 2020 acquisition inflection, plus the two era annotations
+  (news-wire syndication 2008, MPH Biostatistics 2014) the narrow rail had
+  dropped; no accent. (An earlier from-scratch `tl-band` sketch was replaced by
+  the tested original at the owner's suggestion — reuse over reinvention.)
+  **Mobile (≤760px):** the vertical `svg.tl-rail`, reused (no era annotations,
+  matching the original narrow-frame rationale). The former mobile `tl-compact`
+  was retired. All five `#exp-*` band links, touch overlays, and `<title>`s
+  preserved. The load-draw (§18.2) traces both `tl-horizontal` (stroke-width 10)
+  and `tl-rail` (stroke-width 9), so every viewport gets the first-paint draw.
 - **Teaser row → "More:" line** — one restrained
   `More: projects · publications · presentations · full experience`.
 - **Dot plot moved** — the academic publication/presentation dot plot moved

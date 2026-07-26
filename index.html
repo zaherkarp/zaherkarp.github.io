@@ -532,15 +532,16 @@ figure.timeline figcaption {
 }
 
 /* Career arc: horizontal-band / vertical-rail SVG swap at 760px
-   (2026-07-26 iteration). The wide horizontal band (.tl-band) is the
-   desktop default, sitting full-width below the split hero. The
+   (2026-07-26 iteration). The wide horizontal band (.tl-horizontal,
+   viewBox 1200x440, restored from the pre-Timeline-Split hero arc) is
+   the desktop default, sitting full-width below the split hero. The
    vertical dated rail (.tl-rail) serves narrow viewports where a
    horizontal band cannot fit; it is an intentional narrow form, not a
    shrunk desktop. The former mobile .tl-compact (horizontal 600x430)
    was retired. Selectors are compound (.timeline svg.tl-...) to beat
    the specificity of the .timeline svg rule above, which otherwise
    forced display:block on every SVG in the figure. */
-.timeline svg.tl-band { display: block; overflow: visible; }
+.timeline svg.tl-horizontal { display: block; overflow: visible; }
 .timeline svg.tl-rail {
   display: none;
   overflow: visible;
@@ -562,7 +563,7 @@ figure.timeline figcaption {
 }
 
 @media (max-width: 760px) {
-  .timeline svg.tl-band    { display: none; }
+  .timeline svg.tl-horizontal    { display: none; }
   .timeline svg.tl-rail    { display: block; }
   .timeline svg.dp-wide    { display: none; }
   .timeline svg.dp-mobile  { display: block; }
@@ -1430,19 +1431,19 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    Scope (2026-07-26 iteration): the career timeline is now a
    full-width band below the writing lede, no longer a peripheral
    centre rail, so it earns the first-paint draw for EVERY viewport.
-   Both the desktop horizontal band (.tl-band, stroke-width 14) and
-   the mobile vertical rail (.tl-rail, stroke-width 9) trace on load;
-   the stroke-width in the selector keys each to its own bands so no
-   other line matches. Whichever SVG is displayed at the current
+   Both the desktop horizontal band (.tl-horizontal, stroke-width 10)
+   and the mobile vertical rail (.tl-rail, stroke-width 9) trace on
+   load; the stroke-width in the selector keys each to its own bands
+   so no other line matches. Whichever SVG is displayed at the current
    viewport is the one the reader sees draw. */
-figure.timeline svg.tl-band > a line[stroke-width="14"],
+figure.timeline svg.tl-horizontal > a line[stroke-width="10"],
 figure.timeline svg.tl-rail > a line[stroke-width="9"] {
   stroke-dasharray: var(--arc-len, 540);
   animation: arc-draw 0.85s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s);
 }
 /* Each role label fades in just after its band begins (delay + 0.45s). */
-figure.timeline svg.tl-band > a text,
+figure.timeline svg.tl-horizontal > a text,
 figure.timeline svg.tl-rail > a text {
   animation: label-fade 0.5s ease-out both;
   animation-delay: calc(var(--seq, 0) * 0.35s + 0.45s);
@@ -1472,14 +1473,14 @@ figure.timeline svg.tl-rail > a text {
 
 /* Affordances + transitions on engageable marks. */
 figure.timeline svg.tl-rail > a,
-figure.timeline svg.tl-band > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
+figure.timeline svg.tl-horizontal > a { cursor: pointer; text-decoration: none; transition: opacity 0.15s ease; }
 /* The band labels are <a> links to their role, but the global link
    underline reads as chartjunk on a chart axis. The pointer cursor and
    the hover dim/thicken are the affordance; no underline on the type. */
 figure.timeline svg.tl-rail > a text,
-figure.timeline svg.tl-band > a text { text-decoration: none; }
+figure.timeline svg.tl-horizontal > a text { text-decoration: none; }
 figure.timeline svg.tl-rail > a line,
-figure.timeline svg.tl-band > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
+figure.timeline svg.tl-horizontal > a line { transition: stroke-width 0.15s ease, opacity 0.15s ease; }
 figure.timeline svg.dp-wide circle,
 figure.timeline svg.dp-mobile circle {
   transform-box: fill-box;
@@ -1523,11 +1524,11 @@ figure.timeline svg.dp-mobile a:focus circle.dp-ring { opacity: 1; transform: sc
    or keyboard focus) dims the other role groups and thickens the
    engaged band; clicking jumps to that role in Experience. */
 figure.timeline svg.tl-rail:has(a:hover) a:not(:hover),
-figure.timeline svg.tl-band:has(a:hover) a:not(:hover),
+figure.timeline svg.tl-horizontal:has(a:hover) a:not(:hover),
 figure.timeline svg.tl-rail:has(a:focus) a:not(:focus),
-figure.timeline svg.tl-band:has(a:focus) a:not(:focus) { opacity: 0.3; }
+figure.timeline svg.tl-horizontal:has(a:focus) a:not(:focus) { opacity: 0.3; }
 figure.timeline svg.tl-rail a:hover line, figure.timeline svg.tl-rail a:focus line { stroke-width: 13; }
-figure.timeline svg.tl-band a:hover line, figure.timeline svg.tl-band a:focus line { stroke-width: 18; }
+figure.timeline svg.tl-horizontal a:hover line, figure.timeline svg.tl-horizontal a:focus line { stroke-width: 14; }
 
 /* Experience outcome bars carry no hover reaction: the before/after
    pair is read at a glance, and the native <title> on each bar stays
@@ -1725,15 +1726,15 @@ h2.col-head {
 
 /* Career transition timeline: a full-width band BELOW the two-column
    grid (moved out of the grid in Direction B). The horizontal band
-   (.tl-band) leads on desktop; the vertical rail (.tl-rail) centers
-   within it on mobile. A top rule sets it off from the columns. */
+   (.tl-horizontal) leads on desktop; the vertical rail (.tl-rail)
+   centers within it on mobile. A top rule sets it off from the columns. */
 figure.timeline.career-band {
   width: 100%;
   margin: 2.4rem 0 1.4rem 0;
   padding-top: 1.6rem;
   border-top: 1px solid var(--rule);
 }
-figure.timeline.career-band svg.tl-band { max-width: 100%; }
+figure.timeline.career-band svg.tl-horizontal { max-width: 100%; }
 figure.timeline.career-band figcaption {
   margin-bottom: 1rem;
   text-align: left;
@@ -2018,17 +2019,20 @@ figure.timeline.career-band figcaption {
        CAREER TRANSITION TIMELINE (full-width band, Direction B)
        Relocated out of the split-hero grid to the full page width
        below the two columns. Two SVGs swap at 760px:
-         - svg.tl-band : wide HORIZONTAL band for desktop (>760px),
-           new geometry (viewBox 1000x250), three qualitative lanes
-           (editorial / research / data-engineering) on a dated
-           x-axis. Bands stroke-width 14, the section-18.2 load-draw
-           hook, so the band traces once on load for every reader
-           (no motion gate; the 2026-06-13 no-gate decision stands).
-           No accent.
+         - svg.tl-horizontal : wide HORIZONTAL band for desktop (>760px),
+           RESTORED verbatim from the pre-Timeline-Split hero arc (viewBox
+           1200x440, tested coordinates): three qualitative lanes
+           (editorial / research / data-engineering) on a dated x-axis,
+           plus the two quiet era annotations (news-wire syndication 2008,
+           MPH Biostatistics 2014) the narrow rail had dropped. Bands
+           stroke-width 10, the section-18.2 load-draw hook, so the band
+           traces once on load for every reader (no motion gate; the
+           2026-06-13 no-gate decision stands). No accent.
          - svg.tl-rail : the vertical dated rail, now the MOBILE view
            (<=760px). Dates down the left, bands flowing down; an
            intentional narrow form, not a shrunk desktop. Bands
-           stroke-width 9, static.
+           stroke-width 9. (The rail carries no era annotations, matching
+           the original narrow-frame rationale.)
        The former mobile tl-compact (horizontal 600x430) is retired.
        All five #exp-* band links, transparent touch overlays, and
        <title>s are preserved; presentation hexes remapped by §17. -->
@@ -2037,38 +2041,85 @@ figure.timeline.career-band figcaption {
       Three overlapping careers converge into one continuous data-engineering line.
     </figcaption>
 
-    <!-- DESKTOP: wide horizontal band. x(year) = 60 + (year-2007)*46.
-         Lanes editorial y=55, research y=110, data-engineering y=165;
-         year axis y=215. Coordinates computed from scratch for the
-         full-width band. -->
-    <svg class="tl-band" viewBox="0 0 1000 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-b-desc">
-      <desc id="tl-b-desc">Three overlapping career phases on a horizontal timeline. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
+    <!-- DESKTOP: wide horizontal band (viewBox 1200x440), restored from
+         the pre-Timeline-Split hero arc. Lanes editorial y=80, research
+         y=170, data-engineering y=260; year axis y=320; 26pt italic
+         labels. The svg below is the original, tested markup verbatim. -->
+    <svg class="tl-horizontal" viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tl-caption" aria-describedby="tl-h-desc">
+      <desc id="tl-h-desc">Three overlapping career phases. Editorial and writing, 2007 to 2014. Health services research at the University of Wisconsin-Madison, 2009 to 2018. Data engineering across three roles: healthfinch from 2017, Health Catalyst following its 2020 acquisition of healthfinch, and Baltimore Health Analytics to the present.</desc>
 
-      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="34" width="322" height="34" fill="transparent"/><text x="60" y="47" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="55" x2="382" y2="55" stroke="#111" stroke-width="14" style="--arc-len:322"><title>Editorial and writing, 2007 to 2014</title></line></a>
+      <!-- ROW 1: Editorial and writing, 2007 to 2014.
+           Left-anchored label at (60, 55), band immediately below
+           at y=80 spanning x=60 to x=460. -->
+      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="64" width="400" height="32" fill="transparent"/><text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt" style="--arc-len:400"><title>Editorial and writing, 2007 to 2014</title></line></a>
 
-      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="152" y="89" width="414" height="34" fill="transparent"/><text x="152" y="102" font-family="et-book, Palatino, Georgia, serif" font-size="16" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="152" y1="110" x2="566" y2="110" stroke="#111" stroke-width="14" style="--arc-len:414"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
+      <!-- ROW 2: Research, UW-Madison, 2009 to 2018.
+           65 units below Row 1 to leave a clear gap. Label starts
+           at the band's left edge (x=175). En-dash, not em-dash. -->
+      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="175" y="154" width="510" height="32" fill="transparent"/><text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10" style="--arc-len:510"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
 
-      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="520" y="152" width="138" height="34" fill="transparent"/><line x1="520" y1="165" x2="658" y2="165" stroke="#111" stroke-width="14" style="--arc-len:138"><title>healthfinch, 2017 to 2020</title></line><text x="589" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text></a>
+      <!-- ROW 3: Data engineering, 2017 to now.
+           Three abutting segments on a single row because the role
+           transitions were continuous in time. Labels centered
+           over each segment (text-anchor="middle"). BHA segment
+           is short so its label uses a smaller size to fit. -->
+      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="630" y="244" width="170" height="32" fill="transparent"/><text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10" style="--arc-len:170"><title>healthfinch, 2017 to 2020</title></line></a>
 
-      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="658" y="152" width="230" height="34" fill="transparent"/><line x1="658" y1="165" x2="888" y2="165" stroke="#111" stroke-width="14" style="--arc-len:230"><title>Health Catalyst, 2020 to 2025</title></line><text x="773" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text></a>
+      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="800" y="244" width="285" height="32" fill="transparent"/><text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="26" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10" style="--arc-len:285"><title>Health Catalyst, 2020 to 2025</title></line></a>
 
-      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="886" y="152" width="58" height="34" fill="transparent"/><line x1="888" y1="165" x2="934" y2="165" stroke="#111" stroke-width="14" style="--arc-len:46"><title>Baltimore Health Analytics, 2025 to present</title></line><text x="911" y="190" font-family="et-book, Palatino, Georgia, serif" font-size="13" font-style="italic" fill="#111" text-anchor="middle">BHA</text></a>
+      <a href="#exp-bha" style="--seq:2.6" aria-label="Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="1085" y="244" width="55" height="32" fill="transparent"/><text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10" style="--arc-len:55"><title>Baltimore Health Analytics, 2025 to present</title></line></a>
 
-      <!-- INFLECTION: 2020 acquisition (calmed, muted, no accent). -->
-      <line x1="658" y1="158" x2="658" y2="143" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="658" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
-
-      <!-- YEAR AXIS at y=215. -->
-      <line x1="50" y1="215" x2="945" y2="215" stroke="#111" stroke-width="1.2"/>
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="60"  y1="209" x2="60"  y2="221" stroke="#6a6a6a"/><text x="60"  y="238">2007</text></g>
-        <g><line x1="152" y1="209" x2="152" y2="221" stroke="#6a6a6a"/><text x="152" y="238">2009</text></g>
-        <g><line x1="382" y1="209" x2="382" y2="221" stroke="#6a6a6a"/><text x="382" y="238">2014</text></g>
-        <g><line x1="520" y1="209" x2="520" y2="221" stroke="#6a6a6a"/><text x="520" y="238">2017</text></g>
-        <g><line x1="658" y1="209" x2="658" y2="221" stroke="#6a6a6a"/><text x="658" y="238">2020</text></g>
-        <g><line x1="888" y1="209" x2="888" y2="221" stroke="#6a6a6a"/><text x="888" y="238">2025</text></g>
-        <g><line x1="934" y1="209" x2="934" y2="221" stroke="#6a6a6a"/><text x="934" y="238">now</text></g>
+      <!-- YEAR AXIS at y=320. Axis rule slightly heavier (1.5pt)
+           than the earlier draft (1pt) so it reads at a distance
+           with the thicker bands above it. Short ticks above and
+           below each marked year. Year labels 35pt below axis. -->
+      <line x1="40" y1="320" x2="1160" y2="320" stroke="#111" stroke-width="1.5"/>
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="22" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="60"   y1="314" x2="60"   y2="326" stroke="#6a6a6a"/><text x="60"   y="355">2007</text></g>
+        <g><line x1="175"  y1="314" x2="175"  y2="326" stroke="#6a6a6a"/><text x="175"  y="355">2009</text></g>
+        <g><line x1="460"  y1="314" x2="460"  y2="326" stroke="#6a6a6a"/><text x="460"  y="355">2014</text></g>
+        <g><line x1="630"  y1="314" x2="630"  y2="326" stroke="#6a6a6a"/><text x="630"  y="355">2017</text></g>
+        <g><line x1="800"  y1="314" x2="800"  y2="326" stroke="#6a6a6a"/><text x="800"  y="355">2020</text></g>
+        <g><line x1="1085" y1="314" x2="1085" y2="326" stroke="#6a6a6a"/><text x="1085" y="355">2025</text></g>
+        <g><line x1="1140" y1="314" x2="1140" y2="326" stroke="#6a6a6a"/><text x="1140" y="355">now</text></g>
       </g>
+
+      <!-- INFLECTION: acquisition 2020 (calmed).
+           Formerly a loud red dashed callout; demoted to a quiet
+           muted annotation in the same style as the news-wire and
+           MPH era notes (thin solid connector, muted italic, no
+           accent, no circle). The 2020 acquisition is still marked
+           as the inflection but no longer shouts, and the caption
+           drops "Catalyst" so the only Catalyst mention on the
+           chart is the band label above. -->
+      <line x1="800" y1="260" x2="800" y2="314" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
+
+      <!-- ERA ANNOTATIONS (quiet)
+           One per pre-data-engineering era, positioned at the year
+           they describe. Deliberately understated: muted grey,
+           smaller type, short solid connector (not dashed, not
+           red). The 2020 acquisition annotation above now uses this
+           same calmed style; the arc has no high-contrast callout.
+
+           RULE: no circles on the band, no dashed lines, no
+           accent colors. These are secondary data, not inflection
+           points. -->
+
+      <!-- Editorial era: news-wire syndication, 2008.
+           x=117 is interpolated between 2007 (x=60) and 2009
+           (x=175). Short tick from band (y=85) down to y=98,
+           text baseline at y=115. -->
+      <line x1="117" y1="85" x2="117" y2="98" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="117" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">news-wire syndication</text>
+
+      <!-- UW research era: MPH in Biostatistics, 2013-2015.
+           Annotation placed at x=460 (the 2014 year tick, which
+           is the midpoint of the MPH window). Annotation sits
+           BELOW the Row 2 band at y=170, ticking down to y=188,
+           text at y=205. Clears Row 3 (which begins at x=630). -->
+      <line x1="460" y1="175" x2="460" y2="188" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="460" y="205" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">MPH, Biostatistics</text>
     </svg>
 
     <!-- MOBILE (<=760px): the vertical dated rail. viewBox 300x470,

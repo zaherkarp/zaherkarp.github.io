@@ -33,9 +33,10 @@ design-director refinement of the Timeline Split opening. The three-column
 `.split-hero` (writing / vertical rail / project scorecard) became a **two-column
 asymmetric grid** (recent writing ~62% / current work ~38%) under a new Tier-1
 `.proposition` line, with the **career timeline moved to a full-width band below
-the columns** (`figure.timeline.career-band`): a new wide HORIZONTAL SVG
-(`svg.tl-band`, viewBox 1000x250) on desktop, the vertical `svg.tl-rail` reused
-for mobile (<=760px), and `tl-compact` retired. The three-card `.teaser-row`
+the columns** (`figure.timeline.career-band`): the wide HORIZONTAL
+`svg.tl-horizontal` (viewBox 1200x440, RESTORED from the pre-Timeline-Split hero
+arc) on desktop, the vertical `svg.tl-rail` reused for mobile (<=760px), and
+`tl-compact` retired. The three-card `.teaser-row`
 collapsed to one restrained `.hero-more` line; the six-post writing index moved
 into the hero (surfaced as a dated title list, no longer folded); the project's
 accept-vs-reject scorecard became a small `funnel-figure`; the academic dot plot
@@ -318,31 +319,34 @@ arc figure; About-first section order.)
 **(Direction B, 2026-07-26)** The career timeline is a full-width band below the
 split hero (`figure.timeline.career-band`, NOT inside the grid). Two SVGs swap at
 760px:
-  - **Wide horizontal `tl-band` `viewBox="0 0 1000 250"` for desktop (>760px).**
-    `x(year) = 60 + (year - 2007) * 46`. Three qualitative lanes: editorial
-    (y=55, 2007-2014), research (y=110, 2009-2018), and the continuous
-    data-engineering line (y=165) split into healthfinch / Health Catalyst / BHA
-    segments; dated x-axis at y=215; muted 2020 "acquisition" annotation. Bands
-    are `stroke-width="14"` — the section-18.2 load-draw selector keys on that
-    width, so the band traces on load. NO accent. Coordinates were recomputed
-    from scratch for the band (do not reuse the retired `tl-horizontal` or
-    `tl-compact` geometry).
+  - **Wide horizontal `tl-horizontal` `viewBox="0 0 1200 440"` for desktop
+    (>760px).** RESTORED verbatim (from git, `77db71e^`) from the
+    pre-Timeline-Split hero arc rather than authored from scratch: three
+    qualitative lanes, editorial (y=80, 2007-2014), research (y=170, 2009-2018),
+    and the continuous data-engineering line (y=260) split into healthfinch /
+    Health Catalyst / BHA segments; dated x-axis at y=320; 26pt italic labels;
+    muted 2020 "acquisition" annotation PLUS the two quiet era annotations
+    (news-wire syndication 2008, MPH Biostatistics 2014) the narrow rail had
+    dropped. Bands are `stroke-width="10"` — the section-18.2 load-draw selector
+    keys on that width, so the band traces on load. NO accent. Tested
+    coordinates; do not change them without recalculating from scratch.
   - **Vertical `tl-rail` `viewBox="0 0 300 470"` for mobile (<=760px).** Left
     year axis, `y(year) = 25 + (year - 2007) * 21`; three parallel bands
     (editorial x=55, research x=90, data-engineering x=125). Reused verbatim from
     the prior desktop rail; now the intentional NARROW form (dates down the left,
     bands flowing down), not a shrunk desktop. Bands `stroke-width="9"` — the
     18.2 load-draw also keys on that width, so the rail traces on mobile too.
+    Carries no era annotations (matching the original narrow-frame rationale).
   Each band in BOTH SVGs is an `<a href="#exp-...">` (DIRECT child of `<svg>`, no
-  wrapping `<g>`, so the `svg.tl-band > a` / `svg.tl-rail > a`
+  wrapping `<g>`, so the `svg.tl-horizontal > a` / `svg.tl-rail > a`
   no-underline/hover/focus rules match) with a transparent `<rect>` touch overlay
   and a `<title>`.
 
 The former mobile `tl-compact` (`viewBox="0 0 600 430"`) was RETIRED in this
-iteration (the horizontal band now serves desktop and the vertical rail serves
-mobile). The even-earlier wide `tl-horizontal` (`0 0 1200 440`) was already
-retired in the Timeline Split. The §11 swap rules and §18.2 load-draw selector
-were repointed to `tl-band` / `tl-rail` accordingly.
+iteration; `tl-horizontal` was UN-retired (it was dropped in the Timeline Split
+for not fitting the narrow rail column, but the full-width band is exactly its
+native context, so the tested original came back). The §11 swap rules and §18.2
+load-draw selector key on `tl-horizontal` / `tl-rail`.
 
 The 2020 callout was demoted from a loud red dashed+circle+caption accent
 to the quiet muted annotation above (2026-06-07): the user wanted chart
@@ -461,7 +465,7 @@ Mechanism (CSS section "18. SCROLL-DRAWN FIGURES" in `index.html`):
 Career-timeline draw-on-load (CSS section "18.2"): **(Direction B, 2026-07-26)**
 the timeline is now a full-width band (no longer a peripheral centre rail), so it
 earns the first-paint draw on EVERY viewport. The load-draw selector keys on both
-`svg.tl-band > a line[stroke-width="14"]` (desktop horizontal) and
+`svg.tl-horizontal > a line[stroke-width="10"]` (desktop horizontal) and
 `svg.tl-rail > a line[stroke-width="9"]` (mobile vertical), so whichever SVG is
 displayed traces on load. The `tl-compact` selector was removed with the variant.
 The paragraph below describes the older per-variant behavior for context.
