@@ -309,21 +309,43 @@ to 20 / 21 / 21.1.
 
 **The `cv.md:58` Montréal residual** found in §1 is fixed.
 
-## Deliberately not done
+## Done after owner input
 
-Four items need a fact only the owner has, and guessing would be worse than
-leaving them:
+The four items that needed a fact rather than a judgment were put to the owner
+and resolved:
 
-- **The resume contact email** (§3.1). Two addresses are in play and which one
-  should be public on the resume is a preference, not an error to correct.
-- **The `$50M` denominators** (§3.3) and **the healthfinch numbers** (§3.4).
-  Both need the real figure and period; §Calibrated claims forbids picking the
-  more flattering one, and nothing in the repo says which is right.
-- **`robots.txt` coverage of `/critiques/`, `/evaluations/`, `/reviews/`,
-  `/docs/`** (§3.9). Whether these should be crawlable is a decision, not a
-  defect.
+- **§3.1, the resume contact email** — `me@zaherkarp.com` everywhere.
+  `resume.md` now matches the other four surfaces and CLAUDE.md;
+  `resume.html` / `resume.pdf` regenerate from it.
+- **§3.4, the healthfinch numbers** — **the resume is authoritative**: 7x user
+  growth, 400+ prep hours *per quarter*, $1M+ in *new* recurring revenue. The
+  homepage was rewritten to match, which forced a real change to the outcome
+  figure. It drew endpoints (~10 users to 100+), and that is a *tenfold*
+  multiple, so it could not simply be relabelled. The true endpoints are not on
+  record and the counts are client-private, so the figure now encodes the one
+  quantity that is on record: bar widths are exactly 1:7 and the labels read
+  `baseline` / `7x baseline`. The $1M was also mis-attributed, riding on the
+  adoption figcaption when the resume credits it to the sales-analytics ROI
+  dashboard; it now sits in the fold with that work.
+- **§3.3, the `$50M` denominators** — the two scoped claims are both true at
+  different scales and were kept: `$50M` to a mid-size contract, `$50-80M/yr`
+  for a 200,000-member plan. Only the unscoped ones were fixed: the simulator's
+  `meta` and `og:description` (bare `$50M+`), its JS tooltip (`~$50M+ for large
+  plans`), and the methodology post's L12, which contradicted its own L6 by
+  attaching the mid-size number to "large contracts."
+- **§3.9, `robots.txt`** — `/critiques/`, `/evaluations/`, `/reviews/`,
+  `/docs/`, `/data/`, `TODO.md`, `CLAUDE.md` and `README.md` are now
+  disallowed for general crawlers, with a comment recording why. The
+  AI-crawler blocks were already `Disallow: /` and are unchanged.
 
-One item is mechanical but has a large blast radius and was left for a separate
-change: **the em dashes in ~250 blog page titles** (§3.10). The fix is five
-f-strings in `build_blog.py`, but applying it regenerates every built page, which
-would bury a design diff.
+## Still not done
+
+**The em dashes in ~250 blog page titles** (§3.10) — the owner did not take
+this one. The fix is five f-strings in `build_blog.py`, but applying it
+regenerates every built page, so it wants its own change rather than being
+buried in a design diff. Still a real policy violation: chrome is supposed to be
+em-dash-clean and the pre-push grep covers only four files, so `blog/` output is
+unguarded.
+
+Everything under §2 that is gated on the audience question (§2.2) is also still
+open, by design.

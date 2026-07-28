@@ -732,13 +732,18 @@ math (no MathJax/KaTeX dependency for one short formula).
 `figure.outcome-figure` (before/after bar pair) between the lead paragraph
 and the fold, so the densest section shows data by default instead of pure
 prose: Health Catalyst (refill turnaround 72h to 12h) and healthfinch
-(dashboard adoption, roughly 10 users to 100+). Both use the same
+(dashboard user growth absorbed, a 1:7 ratio). Both use the same
 gray-before / accent-after pattern: the "after" bar is the `#7a0000`
 accent sentinel, the "before" bar is `#6a6a6a` muted. (The healthfinch
 figure was monochrome until 2026-07-23, when the owner chose visual parity
 with the Health Catalyst figure over the prior single-accent-per-section
-restraint; exact client numbers remain non-public, so both endpoints are
-still labeled as approximations.) They
+restraint.) The healthfinch figure drew endpoints (~10 to 100+) until
+2026-07-28; that is a TENFOLD multiple and contradicted `resume.md`'s
+`7x`, which the owner confirmed as correct. Since the true endpoints are
+not on record and the counts are client-private, the figure now encodes
+the multiple instead: bar widths are exactly 1:7 (50 and 350) and the
+labels read `baseline` / `7x baseline`. Do not reintroduce endpoints
+without a number that is both public-safe and on record. They
 reuse the `.cliff-figure` sizing idiom and the `#7a0000`
 accent-sentinel palette-adapter contract; a single viewBox scales each on
 mobile (no SVG swap). Numbers must match the role prose exactly. BHA gets no
@@ -847,7 +852,8 @@ attribution on the 373,000 care-gaps margin stat ("one of the platform's
 published outcomes"). The rule: scope every claim to what is verifiable,
 attribute platform/customer outcomes to the platform, and name the
 metric and denominator behind any ratio (no bare "7x"; client-private
-numbers are stated as labeled approximations, e.g. "~10 / 100+ users").
+numbers are stated as a labeled ratio rather than invented endpoints,
+e.g. the healthfinch figure's `baseline` / `7x baseline`).
 Do not edit these markers toward bigger or vaguer numbers, and hold new
 figures and stats to the same standard.
 

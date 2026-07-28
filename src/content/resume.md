@@ -1,6 +1,6 @@
 # Zaher Karp, M.P.H.
 
-zaherkarp@gmail.com  ·  Madison, WI  ·  linkedin.com/in/zkarp  ·  zaherkarp.com
+me@zaherkarp.com  ·  Madison, WI  ·  linkedin.com/in/zkarp  ·  zaherkarp.com
 
 Healthcare data and analytics leader with 15+ years in regulated healthcare data. Player-coach manager who builds and runs production pipelines and CMS Stars quality-measure systems while managing the engineers who own them.
 

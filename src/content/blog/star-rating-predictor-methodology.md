@@ -9,7 +9,7 @@ homepageMarginnote: "The 4.0 star Quality Bonus Payment threshold creates a shar
 ## TL;DR for Executives
 
 - **What it does:** The [Stars Cliff Simulator](/star-rating-predictor/) is an interactive, teaching-oriented demo focused on one number — the 4.0★ Quality Bonus Payment threshold. Move four quality inputs; watch the probability of clearing the 4.0★ cliff update in real time.
-- **Why it matters:** Plans at ≥4.0★ qualify for Quality Bonus Payments (QBPs) — a 5% premium increase worth $50M+ annually for large contracts. The 4.0★ threshold is the single most consequential cliff in managed care economics, and the 3.5–3.99★ "dead zone" is where quality-improvement ROI is most nonlinear.
+- **Why it matters:** Plans at ≥4.0★ qualify for Quality Bonus Payments (QBPs) — a 5% premium increase worth roughly $50M a year to a mid-size contract, and $50–80M to a plan of around 200,000 members. The 4.0★ threshold is the single most consequential cliff in managed care economics, and the 3.5–3.99★ "dead zone" is where quality-improvement ROI is most nonlinear.
 - **What it shows you:** The probability of clearing 4.0★, the distance from the cliff in expected stars, and which of the four quality levers — HEDIS, CAHPS, medication adherence, or readmission — delivers the most star improvement at your plan's current performance level.
 
 ---
