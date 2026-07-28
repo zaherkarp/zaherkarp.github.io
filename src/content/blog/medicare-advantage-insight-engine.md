@@ -7,7 +7,7 @@ tags: ["medicare-advantage", "stars", "automation", "python", "domain-knowledge"
 
 ## The triage problem
 
-A Stars analyst skims about 200 healthcare news items per week. Roughly five of them matter. The question is which five.
+A Stars analyst skims roughly 180 to 200 healthcare news items per week. About 20 clear a first relevance screen, and four or five of those matter. Those figures come from a three-tier model with assumed parameters rather than from measurement, but the question they frame is the real one: which five.
 
 "Matter" is not a vague word here. It has a specific meaning that the analyst could articulate if you asked them. A CMS rulemaking notice that changes a measure weight matters. A trade-press article that mentions Medicare Advantage in passing, while really reporting on a hospital system's earnings call, does not matter. A NCQA bulletin about a value-set update matters. A press release from a quality-improvement vendor reframing a CMS announcement as their product launch, also mentions Medicare Advantage, does not matter.
 
@@ -105,7 +105,7 @@ The features the tool scores against are features the analyst names. The weights
 
 An LLM-based triage tool can be more accurate. It can also be opaque in ways that the analyst cannot easily debug. The cost of a confused LLM triage classifier is the analyst losing trust in the tool, at which point the tool stops being useful. The cost of a misweighted heuristic is a five-minute conversation about which weight to tune.
 
-There is also a smaller, more boring reason. The scoring function fits in two hundred lines of Python and runs in under a millisecond per item. The infrastructure to run an LLM, even a small one, on each of 200 items per week, is more than this problem requires. Engineering parsimony is a real consideration when the alternative is a half-millisecond latency budget against a workflow that needs sub-second.
+There is also a smaller, more boring reason. The scoring function fits in two hundred lines of Python and runs in under a millisecond per item. The infrastructure to run an LLM, even a small one, on each of the roughly 200 items per week, is more than this problem requires. Engineering parsimony is a real consideration when the alternative is a half-millisecond latency budget against a workflow that needs sub-second.
 
 This is also not a general-purpose news triage. It is a Stars-analyst-shaped triage. Pointing it at a different domain would require relabeling the calibration set, renaming the features, and reweighting them. The structure carries over; the contents do not. That is true of any heuristic triage built from a domain expert's working knowledge, and treating it as a limitation would miss the point. The strength of the approach is that it is shaped to the actual user. A general-purpose tool would be shaped to nobody in particular and useful to nobody in particular as a result.
 

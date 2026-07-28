@@ -780,7 +780,8 @@ The section uses a featured + small-multiples-index pattern:
     Advantage Insight Engine and the Stars Cliff Simulator. Each
     renders as a `<div class="project">` with an inline figure
     (a small `funnel-figure` SVG on the Medicare card, ~200 items/week ▸
-    ~5 that matter, since 2026-07-26; cliff-figure SVG on Stars), full
+    ~20 screened ▸ ~5 that matter, since 2026-07-26 and three-tier since
+    2026-07-28; cliff-figure SVG on Stars), full
     prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
   - **Index** (outside the section, as a sibling `<div

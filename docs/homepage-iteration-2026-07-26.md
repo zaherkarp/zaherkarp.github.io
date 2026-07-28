@@ -168,3 +168,17 @@ This is the one part of the brief not implemented, recorded here deliberately.
 - **The "Work" nav target** lands on the Experience heading (via `#work`), which
   is followed by Projects; if a combined "Work" landing surface is ever wanted,
   the anchor is the place to grow it.
+
+---
+
+## Superseded 2026-07-28
+
+This record stands as written; the note below only marks what has since changed.
+
+The two-band funnel described at L106-110 and L166-167 is now three-band
+(`~200 news items / week` ▸ `~20 screened` ▸ `~5 that matter`), matching a prose
+rewrite that separates a three-tier simulation estimate from early production
+data and keeps a caveat on each. The numbers are still approximate and still
+match the adjacent prose, so the self-critique at L166-167 holds; what changed is
+that the figcaption now states outright that they are modeled rather than
+measured. The figure remains accent-free, so the accent count is unaffected.
