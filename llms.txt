@@ -17,7 +17,7 @@ The pre-2019 [archive (/blog/archive/)](https://zaherkarp.com/blog/archive/) pre
 ## Projects
 
 - [Stars Cliff Simulator (/star-rating-predictor/)](https://zaherkarp.com/star-rating-predictor/), a public teaching demo focused on the 4.0★ QBP cliff. Methodology at https://zaherkarp.com/blog/star-rating-demo-methodology/.
-- [SkillSprout (/skillsprout/)](https://zaherkarp.com/skillsprout/), a career trajectory explorer that ranks O*NET 28.3 occupations against a freeform skill query.
+- [SkillSprout (github.com/zaherkarp/skillsprout)](https://github.com/zaherkarp/skillsprout), a career trajectory explorer that ranks O*NET 28.3 occupations against a freeform skill query. The hosted subpage was retired; write-up at https://zaherkarp.com/blog/onet-reskilling-probabilities/.
 - [Life in Weeks (/life-in-weeks/)](https://zaherkarp.com/life-in-weeks/), a 90-year weekly grid in the Tim Urban tradition.
 - [Epidemic simulation (/epidemic-simulation/)](https://zaherkarp.com/epidemic-simulation/), a browser-side stochastic SEIRV simulator. Methodology at https://zaherkarp.com/blog/two-states-one-pathogen/.
 
