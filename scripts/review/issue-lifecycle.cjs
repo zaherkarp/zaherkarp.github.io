@@ -40,7 +40,23 @@ function reportPaths(date) {
   };
 }
 
-// Latest YYYY-MM-DD prefix found across the canonical directories.
+// Latest YYYY-MM-DD found across the canonical directories for which at
+// least one report path actually resolves.
+//
+// Scanning for any date-shaped filename is not enough. The critique
+// pipeline also emits standalone artifacts named
+// `critique-<target-slug>-<date>.md` (see CLAUDE.md §Critique pipeline),
+// which are not review batches and which reportPaths() cannot resolve.
+// Picking one of those dates failed the workflow outright with "No reports
+// found for date X" -- and had the path resolved instead, it would have
+// been worse: a new tracking issue for a batch that does not exist, and
+// the real open batch issue closed in its favour.
+//
+// Filtering by what reportPaths() can actually read keeps detection and
+// resolution in sync by construction, so a new artifact naming convention
+// can never again silently hijack the batch date. An explicit
+// workflow_dispatch date is deliberately NOT filtered: that path should
+// still fail loudly when the operator names a date with no reports.
 function detectLatestDate() {
   const dates = new Set();
   for (const dir of REPORT_DIRS) {
@@ -50,8 +66,11 @@ function detectLatestDate() {
       if (m) dates.add(m[1]);
     }
   }
-  if (dates.size === 0) return null;
-  return [...dates].sort().pop();
+  const batchDates = [...dates].filter((d) =>
+    Object.values(reportPaths(d)).some((p) => fs.existsSync(p))
+  );
+  if (batchDates.length === 0) return null;
+  return batchDates.sort().pop();
 }
 
 // Pull `- [ ]` (unchecked) lines from markdown, tagging each with the most
