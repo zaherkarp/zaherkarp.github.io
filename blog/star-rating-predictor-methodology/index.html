@@ -87,18 +87,18 @@
     </div>
   </header>
   <div class="blog-body">
-    <h2>TL;DR for Executives</h2>
+    <h2 id="tldr-for-executives">TL;DR for Executives</h2>
 <ul>
 <li><strong>What it does:</strong> The <a href="/star-rating-predictor/">Stars Cliff Simulator</a> is an interactive, teaching-oriented demo focused on one number — the 4.0★ Quality Bonus Payment threshold. Move four quality inputs; watch the probability of clearing the 4.0★ cliff update in real time.</li>
 <li><strong>Why it matters:</strong> Plans at ≥4.0★ qualify for Quality Bonus Payments (QBPs) — a 5% premium increase worth $50M+ annually for large contracts. The 4.0★ threshold is the single most consequential cliff in managed care economics, and the 3.5–3.99★ &quot;dead zone&quot; is where quality-improvement ROI is most nonlinear.</li>
 <li><strong>What it shows you:</strong> The probability of clearing 4.0★, the distance from the cliff in expected stars, and which of the four quality levers — HEDIS, CAHPS, medication adherence, or readmission — delivers the most star improvement at your plan's current performance level.</li>
 </ul>
 <hr />
-<h2>Scope: what this post documents (and what it does not)</h2>
+<h2 id="scope-what-this-post-documents-and-what-it-does-not">Scope: what this post documents (and what it does not)</h2>
 <p>This post is the methodology and evidence appendix for the <strong>Stars Cliff Simulator</strong>, the public interactive tool on this site at <a href="/star-rating-predictor/">/star-rating-predictor/</a>. The simulator is a single-page, browser-side demo built for a general audience — students, analysts new to Medicare Advantage, non-technical stakeholders who need to understand the shape of the cliff and the ordinal structure that produces it.</p>
 <p>It is <em>not</em> the same thing as the internal Client-Side Stars Rating Predictor I maintain at Baltimore Health Analytics. That internal tool is a cut-point dashboard that runs against live measure feeds to project contract-level cut-point crossings for remediation planning; its source is private, and this post does not describe it. The two tools share a statistical skeleton (ordinal logistic regression with cut-point visualization) because ordinal models are the right structural fit for Star Ratings — not because one is a rewrite of the other.</p>
 <p>With that distinction out of the way: the simulator lets visitors adjust four healthcare quality inputs and watch a predicted Medicare Star Rating update in real time, with the readouts focused on clearing the 4.0★ QBP cliff. This post documents the statistical approach, explains why ordinal logistic regression is the right tool for the job, and cites the CMS methodology and published research that inform the model's design.</p>
-<h2>What the Simulator Does</h2>
+<h2 id="what-the-simulator-does">What the Simulator Does</h2>
 <p>Four sliders control inputs that map to real CMS Star Rating domains:</p>
 <table>
 <thead>
@@ -147,7 +147,7 @@
 <li>A contextual callout that distinguishes three regimes: above the cliff, the 3.5–3.99★ &quot;dead zone,&quot; and below 3.5★</li>
 </ul>
 <p>An optional <strong>CMS Reward Factor</strong> toggle adds up to +0.4 stars, simulating the bonus CMS grants to plans maintaining ≥4 stars for 3+ consecutive years. When active, the distance-to-cliff readout incorporates the reward; the P(clearing) readout reports the raw ordinal probability, because the reward factor is a deterministic add-on rather than a shift in the underlying latent.</p>
-<h2>The Financial Stakes: Quality Bonus Payments</h2>
+<h2 id="the-financial-stakes-quality-bonus-payments">The Financial Stakes: Quality Bonus Payments</h2>
 <p>The 4-star threshold is the most consequential cliff in Medicare Advantage economics. Plans at ≥4 stars qualify for <strong>Quality Bonus Payments</strong> — a 5% increase in their CMS benchmark payment. For a plan with 200,000 members, this translates to roughly <strong>$50–80 million annually</strong> in additional revenue.</p>
 <p>The stakes are asymmetric:</p>
 <ul>
@@ -156,22 +156,22 @@
 <li><strong>≥4.0★</strong>: Full QBP eligibility. The reward factor can push plans that sustain 4★+ even higher.</li>
 </ul>
 <p>This cliff function is why quality improvement ROI is heavily nonlinear — a 0.1-star improvement from 3.9 to 4.0 can be worth tens of millions, while the same improvement from 4.3 to 4.4 has essentially zero marginal financial impact. The simulator is designed around this asymmetry: the hero readouts are about the cliff, not about the point estimate.</p>
-<h2>Why Ordinal Logistic Regression?</h2>
+<h2 id="why-ordinal-logistic-regression">Why Ordinal Logistic Regression?</h2>
 <p>Star Ratings are an <strong>ordinal outcome</strong>: 1 &lt; 2 &lt; 3 &lt; 4 &lt; 5, but the distances between levels are not equal. A plan jumping from 3 to 4 stars triggers quality bonus payments worth millions; 4 to 5 does not carry the same marginal financial impact.</p>
 <p>Standard linear regression treats the outcome as continuous and assumes equal spacing. Multinomial logistic regression ignores the ordering entirely. <strong>Ordinal (proportional odds) logistic regression</strong> respects both the ordering and the non-equal spacing by modeling cumulative probabilities:</p>
 <p>\[P(Y \geq k \mid X) = \sigma(\alpha_k + \beta^T X)\]</p>
 <p>where \(\sigma\) is the logistic function \(\sigma(x) = \frac{1}{1 + e^{-x}}\), \(\alpha_k\) are threshold parameters (intercepts) for each cumulative split, and \(\beta\) is a shared coefficient vector.</p>
 <p>This is the <strong>proportional odds model</strong> introduced by McCullagh (1980), the standard approach for ordinal outcomes in biomedical research.</p>
-<h3>Foundational Reference</h3>
+<h3 id="foundational-reference">Foundational Reference</h3>
 <blockquote>
 <p><strong>McCullagh, P.</strong> (1980). Regression Models for Ordinal Data. <em>Journal of the Royal Statistical Society, Series B</em>, 42(2), 109–142.
 <a href="https://rss.onlinelibrary.wiley.com/doi/10.1111/j.2517-6161.1980.tb01109.x">Wiley Online Library</a> ·
 <a href="https://www.stat.uchicago.edu/~pmcc/pubs/paper2.pdf">Author PDF</a></p>
 </blockquote>
 <p>McCullagh showed that the proportional odds model provides interpretable odds ratios that summarize the effect of each predictor across all threshold cutpoints, making it ideal for ordered rating scales.</p>
-<h2>CMS Star Ratings Methodology</h2>
+<h2 id="cms-star-ratings-methodology">CMS Star Ratings Methodology</h2>
 <p>CMS publishes annual Technical Notes that detail exactly how Star Ratings are calculated. The key points relevant to the simulator:</p>
-<h3>Measure Structure</h3>
+<h3 id="measure-structure">Measure Structure</h3>
 <p>The 2025 Star Ratings include up to <strong>42 measures</strong> across <strong>9 domains</strong> for MA-PD contracts. Each measure receives a weight from 1 to 5. CMS assigns individual measure stars using either clustering or relative distribution methods, then computes weighted summary ratings.</p>
 <blockquote>
 <p><strong>CMS</strong> (2024). Medicare 2025 Part C &amp; D Star Ratings Technical Notes (Updated 10/03/2024).
@@ -179,7 +179,7 @@
 <p><strong>CMS</strong> (2024). 2025 Medicare Advantage and Part D Star Ratings Fact Sheet.
 <a href="https://www.cms.gov/newsroom/fact-sheets/2025-medicare-advantage-part-d-star-ratings">CMS Newsroom</a></p>
 </blockquote>
-<h3>Medication Adherence: Triple-Weighted and Highly Sensitive</h3>
+<h3 id="medication-adherence-triple-weighted-and-highly-sensitive">Medication Adherence: Triple-Weighted and Highly Sensitive</h3>
 <p>Three medication adherence measures — for diabetes medications, RAS antagonists (hypertension), and statins (cholesterol) — each carry a <strong>weight of 3</strong> in the overall Star Rating. Together they account for 9 of 81 total weighted stars (11.1%) in the 2026 ratings cycle.</p>
 <p><strong>Key nuance:</strong> CMS measures the percentage of members achieving <strong>PDC ≥80%</strong> (Proportion of Days Covered at or above 80%), not the plan's mean PDC. This is a binary threshold applied at the member level, then aggregated. The three sub-measures have meaningfully different baseline performance profiles — statin adherence typically runs 5–8 percentage points higher than diabetes medication adherence across plans — so interventions should be targeted by measure, not treated as a monolith.</p>
 <p><strong>As little as 3 percentage points in PDC can separate a 3-star from a 5-star rating</strong> on the RAS antagonist adherence measure, making this the single most actionable lever for many plans.</p>
@@ -188,7 +188,7 @@
 <p><strong>Akinbosoye, O. E., et al.</strong> (2025). The influence of medication adherence on Medicare Star Ratings: A decade-long analysis of health plan performance. <em>Journal of Managed Care &amp; Specialty Pharmacy</em>, 31(5), 512.
 <a href="https://www.jmcp.org/doi/10.18553/jmcp.2025.31.5.512">JMCP</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12039503/">PMC</a></p>
 </blockquote>
-<h3>Plan All-Cause Readmissions Now Triple-Weighted</h3>
+<h3 id="plan-all-cause-readmissions-now-triple-weighted">Plan All-Cause Readmissions Now Triple-Weighted</h3>
 <p>For 2025, CMS increased the weight of the Plan All-Cause Readmissions (PCR) measure from <strong>1 to 3</strong>, making it one of the most heavily weighted Part C measures. PCR assesses the percentage of hospital stays followed by an unplanned readmission within 30 days.</p>
 <p>This change contributed to the average overall MA-PD Star Rating dropping to 3.92 (down 0.15 stars) — the lowest in four years — and the number of 5-star contracts falling from 38 to just 7.</p>
 <p><strong>Operational note for D-SNP plans:</strong> Readmission is driven heavily by social determinants of health — housing instability, food insecurity, lack of transportation — making it substantially harder to move than clinical quality or adherence measures for plans serving dual-eligible populations. The model's coefficients treat a percentage-point improvement in readmission equivalently to one in HEDIS, but the operational cost and difficulty of achieving that improvement can differ by an order of magnitude depending on population acuity.</p>
@@ -198,7 +198,7 @@
 <p><strong>AdhereHealth</strong> (2024). Conquering the Plan All-Cause Readmissions (PCR) Measure.
 <a href="https://adherehealth.com/blog-healthcare-quality-improvement-measures-plan-all-cause-readmission/">Article</a></p>
 </blockquote>
-<h3>CAHPS Patient Experience Measures</h3>
+<h3 id="cahps-patient-experience-measures">CAHPS Patient Experience Measures</h3>
 <p>CAHPS survey scores evaluate member satisfaction across dimensions like provider communication, access to care, and customer service. These measures have been weighted between 2× and 4× in recent years. For 2026, CMS reduced the weight from 4 back to 2, but CAHPS remains a significant contributor to overall ratings.</p>
 <p><strong>Measurement noise caveat:</strong> CAHPS scores are derived from a sample survey with response rates that vary widely across plans (typically 20–45%). Low response rates amplify sampling noise, meaning that a plan's true satisfaction level may differ meaningfully from its reported score. The model treats CAHPS as a precise input, but users should interpret the output with this measurement uncertainty in mind — particularly for plans with small enrollment or low response rates.</p>
 <blockquote>
@@ -207,14 +207,14 @@
 <p><strong>Health Management Associates</strong> (2024). HMA Analysis of Medicare Advantage Star Rating Challenges.
 <a href="https://www.healthmanagement.com/blog/hma-analysis-of-medicare-advantage-star-rating-challenges/">HMA Blog</a></p>
 </blockquote>
-<h3>Reward Factor</h3>
+<h3 id="reward-factor">Reward Factor</h3>
 <p>CMS applies a <strong>Reward Factor</strong> of up to +0.4 stars to plans that have maintained ≥4-star overall ratings for three or more consecutive years. This bonus is additive — applied to the weighted summary rating before final rounding — and can be the difference between a 3.5-star and a 4-star plan qualifying for quality bonus payments.</p>
 <p>The simulator includes a toggle to simulate this factor, reflecting its material impact on final ratings.</p>
-<h3>Improvement Measures</h3>
+<h3 id="improvement-measures">Improvement Measures</h3>
 <p>CMS also evaluates <strong>year-over-year improvement</strong> in certain measures. Plans showing statistically significant improvement may receive credit even if their absolute level remains below the top cut-point. The simulator does not model improvement measures, as they require longitudinal data (prior-year performance), but they represent a meaningful path to higher ratings for plans in the 3.0–3.5★ range that are on an upward trajectory.</p>
-<h2>Published Precedent: Ordinal Logistic Regression for Star Ratings</h2>
+<h2 id="published-precedent-ordinal-logistic-regression-for-star-ratings">Published Precedent: Ordinal Logistic Regression for Star Ratings</h2>
 <p>Multiple published studies have applied ordinal logistic regression to Medicare star ratings or closely related healthcare quality outcomes.</p>
-<h3>Kurian et al. (2021) — Hospital Star Ratings</h3>
+<h3 id="kurian-et-al-2021--hospital-star-ratings">Kurian et al. (2021) — Hospital Star Ratings</h3>
 <blockquote>
 <p><strong>Kurian, N., Maid, J., Mitra, S., Rhyne, L., Korvink, M., &amp; Gunn, L. H.</strong> (2021). Predicting Hospital Overall Quality Star Ratings in the USA. <em>Healthcare</em>, 9(4), 486.
 <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8074583/">PMC</a> · <a href="https://www.mdpi.com/2227-9032/9/4/486">MDPI</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/33924198/">PubMed</a></p>
@@ -225,31 +225,31 @@
 <li>Used multiple imputation to handle missing data, enabling inference even when not all measures are available</li>
 <li>Demonstrated that the proportional odds model provides <strong>interpretable odds ratios</strong> for the relationship between quality measures and star rating levels</li>
 </ul>
-<h3>Hohmann et al. (2018) — Part D Star Ratings</h3>
+<h3 id="hohmann-et-al-2018--part-d-star-ratings">Hohmann et al. (2018) — Part D Star Ratings</h3>
 <blockquote>
 <p><strong>Hohmann, N., Hansen, R., Garza, K. B., Harris, I., Kiptanui, Z., &amp; Qian, J.</strong> (2018). Association between Higher Generic Drug Use and Medicare Part D Star Ratings: An Observational Analysis. <em>Value in Health</em>, 21(10), 1186–1191.
 <a href="https://pubmed.ncbi.nlm.nih.gov/30314619/">PubMed</a> · <a href="https://www.sciencedirect.com/science/article/pii/S1098301518302766">ScienceDirect</a></p>
 </blockquote>
 <p>This is the most direct methodological precedent: Hohmann et al. <strong>explicitly used ordinal logistic regression</strong> to model Medicare Part D summary and domain star ratings (1–5) as a function of generic drug dispensing rates, controlling for contract type and enrollment. They found higher generic dispensing was associated with higher summary star ratings (adjusted OR 1.08, 95% CI 1.04–1.12).</p>
-<h3>Xie et al. (2023) — Adherence Predicts Clinical Outcomes</h3>
+<h3 id="xie-et-al-2023--adherence-predicts-clinical-outcomes">Xie et al. (2023) — Adherence Predicts Clinical Outcomes</h3>
 <blockquote>
 <p><strong>Xie, Z., St. Clair, P., Goldman, D. P., &amp; Joyce, G. F.</strong> (2023). Is There a Relationship Between Part D Medication Adherence and Part C Intermediate Outcomes Star Ratings Measures? <em>Journal of Managed Care &amp; Specialty Pharmacy</em>, 29(8), 918–925.
 <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10397682/">PMC</a></p>
 </blockquote>
 <p>Analyzed 366 contracts and found medication adherence measures explained <strong>27–29% of variance</strong> in related clinical outcomes (\(R^2\) = 0.27–0.29). Each unit increase in adherence increased odds of top-quartile performance by factors of 4.13–4.69, providing strong empirical support for adherence as a key predictor.</p>
-<h3>Lingsma et al. (2021) — Why Ordinal Beats Binary</h3>
+<h3 id="lingsma-et-al-2021--why-ordinal-beats-binary">Lingsma et al. (2021) — Why Ordinal Beats Binary</h3>
 <blockquote>
 <p><strong>Lingsma, H. F., Bottle, A., Middleton, S., Kievit, J., Steyerberg, E. W., &amp; Marang-van de Mheen, P. J.</strong> (2021). Ordinal Outcome Analysis Improves the Detection of Between-Hospital Differences in Outcome. <em>BMC Medical Research Methodology</em>, 21(1), 4.
 <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7788719/">PMC</a></p>
 </blockquote>
 <p>Demonstrated that ordinal outcome analysis substantially improves statistical power for detecting quality differences compared to dichotomizing outcomes (e.g., &quot;4+ stars vs. below&quot;). This provides methodological justification for treating star ratings as ordinal rather than collapsing them into binary categories.</p>
 <p>Together, these studies validate using a small number of composite quality inputs in an ordinal logistic framework to predict a 1–5 star outcome.</p>
-<h2>How the Simulator's Model Works</h2>
-<h3>Architecture</h3>
+<h2 id="how-the-simulators-model-works">How the Simulator's Model Works</h2>
+<h3 id="architecture">Architecture</h3>
 <p>The simulator implements a <strong>cumulative logit model</strong> (proportional odds) entirely in client-side JavaScript. The core equation:</p>
 <p>\[P(Y \geq k \mid X) = \sigma(\alpha_k + \beta_1 \cdot \text{HEDIS} + \beta_2 \cdot \text{CAHPS} + \beta_3 \cdot \text{MedAdherence} + \beta_4 \cdot \text{Readmission})\]</p>
 <p>Four threshold parameters (\(\alpha_2, \alpha_3, \alpha_4, \alpha_5\)) define the cumulative splits. The shared coefficient vector \(\beta\) captures each input's effect across all thresholds (the proportional odds assumption).</p>
-<h3>Converting Cumulative Probabilities to Category Probabilities</h3>
+<h3 id="converting-cumulative-probabilities-to-category-probabilities">Converting Cumulative Probabilities to Category Probabilities</h3>
 <p>The cumulative model yields \(P(Y \geq k)\) for each threshold. Individual category probabilities are obtained by differencing:</p>
 <p>\[P(Y = 1) = 1 - P(Y \geq 2)\]</p>
 <p>\[P(Y = 2) = P(Y \geq 2) - P(Y \geq 3)\]</p>
@@ -257,7 +257,7 @@
 <p>\[P(Y = 4) = P(Y \geq 4) - P(Y \geq 5)\]</p>
 <p>\[P(Y = 5) = P(Y \geq 5)\]</p>
 <p>The expected value \(E[Y] = \sum_{k=1}^{5} k \cdot P(Y = k)\) gives the predicted star rating displayed in the UI. The <strong>P(clearing 4.0★)</strong> hero statistic is simply \(P(Y = 4) + P(Y = 5)\) from this same distribution — a free statistic the ordinal model produces without any extra math, and the most policy-relevant scalar the model can report.</p>
-<h3>Coefficient Calibration</h3>
+<h3 id="coefficient-calibration">Coefficient Calibration</h3>
 <p>The synthetic coefficients are calibrated to satisfy two constraints simultaneously:</p>
 <ol>
 <li><strong>CMS weight proportionality</strong>: Each input's total contribution across its realistic slider range is proportional to its share of CMS weighted points.</li>
@@ -361,9 +361,9 @@
 <p>The four intercepts (\(\alpha_2 = -10.1\), \(\alpha_3 = -11.76\), \(\alpha_4 = -15.1\), \(\alpha_5 = -18.17\)) are set so that at median input values:</p>
 <p>\[P(Y \geq 2) \approx 0.99, \quad P(Y \geq 3) \approx 0.95, \quad P(Y \geq 4) \approx 0.40, \quad P(Y \geq 5) \approx 0.03\]</p>
 <p>This produces an expected rating of ~3.2★ at default slider positions (representing a middling plan), consistent with the real-world distribution where most plans cluster between 3.0 and 4.5 stars.</p>
-<h3>Reward Factor</h3>
+<h3 id="reward-factor-1">Reward Factor</h3>
 <p>When the CMS Reward Factor toggle is enabled, +0.4 is added to \(E[Y]\), capped at 5.0. This models the CMS mechanism where sustained high performance receives an additive bonus before final rounding.</p>
-<h3>Impact Guidance</h3>
+<h3 id="impact-guidance">Impact Guidance</h3>
 <p>The simulator computes <strong>scenario-based impact guidance</strong> for each input by simulating a feasible one-year improvement:</p>
 <table>
 <thead>
@@ -398,9 +398,9 @@
 </table>
 <p>For each input, the model computes \(E[Y \mid x_j + \Delta] - E[Y \mid x_j]\) and reports the two highest-impact levers in plain language (e.g., &quot;Improving medication adherence from 70% → 75% would shift the predicted rating by +0.3★&quot;).</p>
 <p>Because the logistic function is nonlinear, impact varies across the input space — it is largest near the ordinal cut-points and smallest in the tails. This means the highest-impact lever changes depending on where your plan currently sits.</p>
-<h3>Threshold Visualization</h3>
+<h3 id="threshold-visualization">Threshold Visualization</h3>
 <p>The ordinal threshold bar shows the four cut-points (\(-\alpha_2, -\alpha_3, -\alpha_4, -\alpha_5\)) on a linear predictor scale, with a moving indicator for the current \(z\) value. This makes visible the core mechanism of the proportional odds model: the linear predictor \(z\) crossing successive thresholds shifts probability mass from lower to higher star categories.</p>
-<h2>Limitations and Disclaimers</h2>
+<h2 id="limitations-and-disclaimers">Limitations and Disclaimers</h2>
 <p>The simulator uses <strong>synthetic weights</strong> that are not trained on actual CMS contract-level data. The model is illustrative — a teaching tool, not a production predictor:</p>
 <ol>
 <li>
@@ -436,7 +436,7 @@
 <li>The nonlinear sensitivity structure inherent in logistic models (impact varies by position on the curve)</li>
 <li>The material impact of CMS's reward factor and QBP threshold on plan economics</li>
 </ul>
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ol>
 <li>McCullagh, P. (1980). Regression Models for Ordinal Data. <em>JRSS Series B</em>, 42(2), 109–142.</li>
 <li>CMS (2024). Medicare 2025 Part C &amp; D Star Ratings Technical Notes.</li>
@@ -468,7 +468,7 @@
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

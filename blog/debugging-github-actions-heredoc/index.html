@@ -86,7 +86,7 @@
   <div class="blog-body">
     <p>I recently spent way too long debugging a GitHub Actions workflow that seemed simple: create a blog post file with frontmatter. The workflow would accept inputs like title, description, and tags, then generate a markdown file. What could go wrong?</p>
 <p>Everything, apparently.</p>
-<h2>The Setup</h2>
+<h2 id="the-setup">The Setup</h2>
 <p>The workflow used <code>workflow_dispatch</code> to accept user inputs and create a new blog post file:</p>
 <pre><code class="language-yaml">- name: Create Blog Post
   env:
@@ -108,7 +108,7 @@
     EOF
 </code></pre>
 <p>Simple, right? Wrong.</p>
-<h2>Error #1: The Heredoc Delimiter Mystery</h2>
+<h2 id="error-1-the-heredoc-delimiter-mystery">Error #1: The Heredoc Delimiter Mystery</h2>
 <p>The first error I encountered was cryptic:</p>
 <pre><code>warning: here-document at line 34 delimited by end-of-file (wanted `EOF')
 </code></pre>
@@ -123,13 +123,13 @@ publishDate: $TODAY
 EOF
 </code></pre>
 <p>This should work, right?</p>
-<h2>Error #2: The Same Error Again</h2>
+<h2 id="error-2-the-same-error-again">Error #2: The Same Error Again</h2>
 <p>Nope. Still got:</p>
 <pre><code>warning: here-document at line 34 delimited by end-of-file (wanted `EOF')
 </code></pre>
 <p><strong>The Root Cause:</strong> In GitHub Actions YAML, when you use <code>run: |</code>, everything in that block must be properly indented. The script commands were indented with spaces, but the heredoc content wasn't. This created a situation where bash couldn't properly parse the block because the indentation levels were inconsistent with the YAML structure.</p>
 <p>The <code>EOF</code> was at column 0, but bash expected it to be part of the indented script block.</p>
-<h2>Error #3: The Tab Character Trap</h2>
+<h2 id="error-3-the-tab-character-trap">Error #3: The Tab Character Trap</h2>
 <p>&quot;Okay,&quot; I thought, &quot;I'll use <code>&lt;&lt;-</code> which allows tabs before the delimiter!&quot;</p>
 <pre><code class="language-yaml">cat &gt; &quot;$POST_FILE&quot; &lt;&lt;-END_OF_POST
 	---
@@ -144,7 +144,7 @@ EOF
 </code></pre>
 <p><strong>The Root Cause:</strong> YAML forbids tab characters entirely. The <code>&lt;&lt;-</code> syntax in bash allows you to indent the heredoc content with tabs, which is great for shell scripts. But in a YAML file? Syntax error.</p>
 <p>The YAML parser saw those tabs and immediately rejected the entire file, preventing the workflow from even showing up in the GitHub Actions interface.</p>
-<h2>Error #4: The Document Separator</h2>
+<h2 id="error-4-the-document-separator">Error #4: The Document Separator</h2>
 <p>&quot;Fine,&quot; I said, &quot;I'll just not indent the heredoc content:&quot;</p>
 <pre><code class="language-yaml">cat &gt; &quot;$POST_FILE&quot; &lt;&lt;EOF
 ---
@@ -161,7 +161,7 @@ but found another document
 </code></pre>
 <p><strong>The Root Cause:</strong> In YAML, <code>---</code> at the beginning of a line (column 0) is the document separator. The YAML parser thought I was starting a new YAML document in the middle of my workflow file!</p>
 <p>The heredoc content's <code>---</code> frontmatter delimiter was being interpreted as a YAML document separator, not as content within a bash string.</p>
-<h2>Error #5: The Indented Delimiter Problem</h2>
+<h2 id="error-5-the-indented-delimiter-problem">Error #5: The Indented Delimiter Problem</h2>
 <p>&quot;What if I indent the heredoc content to avoid the <code>---</code> problem?&quot;</p>
 <pre><code class="language-yaml">cat &gt; &quot;$POST_FILE&quot; &lt;&lt;EOF
           ---
@@ -177,7 +177,7 @@ EOF
 <li>Tabs → YAML syntax error</li>
 <li><code>&lt;&lt;-</code> with tabs → YAML syntax error</li>
 </ul>
-<h2>The Solution: Abandon Heredoc</h2>
+<h2 id="the-solution-abandon-heredoc">The Solution: Abandon Heredoc</h2>
 <p>The final, working solution was to abandon heredoc entirely and use bash brace grouping with echo statements:</p>
 <pre><code class="language-yaml">- name: Create Blog Post
   env:
@@ -208,7 +208,7 @@ EOF
 <li><strong>Variable substitution works</strong> - Environment variables expand normally in echo statements</li>
 <li><strong>Conditional content</strong> - Easy to include/exclude lines with <code>[ -n &quot;$VAR&quot; ] &amp;&amp; echo</code></li>
 </ol>
-<h2>Key Takeaways</h2>
+<h2 id="key-takeaways">Key Takeaways</h2>
 <ol>
 <li>
 <p><strong>Heredoc in GitHub Actions YAML is a minefield</strong> - The intersection of YAML's indentation rules, bash's heredoc parsing, and YAML's special characters creates multiple failure modes.</p>
@@ -226,7 +226,7 @@ EOF
 <p><strong>Sometimes the simple solution is best</strong> - Echo statements are more verbose but far more reliable than heredoc in this context.</p>
 </li>
 </ol>
-<h2>When to Use Each Approach</h2>
+<h2 id="when-to-use-each-approach">When to Use Each Approach</h2>
 <p><strong>Use heredoc in regular shell scripts:</strong></p>
 <pre><code class="language-bash">cat &gt; file.txt &lt;&lt;EOF
 Content here
@@ -264,7 +264,7 @@ EOF
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

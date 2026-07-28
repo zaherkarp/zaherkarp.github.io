@@ -83,7 +83,7 @@
 <p>Somewhere between an EHR upgrade, a new quality reporting requirement, and a VP asking “can we get this by next quarter?”, you’re forced to answer a deceptively simple question:</p>
 <p><strong>Are we building a data warehouse, or are we building reports?</strong></p>
 <p>That’s where Kimball and Inmon stop being textbook names and start showing up in your Jira board.</p>
-<h2>Two Philosophies, One Waiting Room</h2>
+<h2 id="two-philosophies-one-waiting-room">Two Philosophies, One Waiting Room</h2>
 <p>At a high level, the contrast is familiar:</p>
 <ul>
 <li><strong>Kimball</strong> is bottom-up. Start with data marts, usually organized around business processes. Claims. Encounters. Quality measures. Let them accrete into something warehouse-shaped.</li>
@@ -92,7 +92,7 @@
 <p>In healthcare, this difference maps almost perfectly to <em>how close your data platform is to operational reality</em>.</p>
 <p>Kimball feels like a clinic. Inmon feels like a health system.</p>
 <p>Both matter. The trick is knowing which one you’re actually building.</p>
-<h2>Reporting Scope: Enterprise Truth vs. Local Utility</h2>
+<h2 id="reporting-scope-enterprise-truth-vs-local-utility">Reporting Scope: Enterprise Truth vs. Local Utility</h2>
 <p>If your goal is <strong>organization-wide, integrated reporting</strong>, Inmon is compelling. A single canonical model for members, providers, encounters, claims, and time sounds exactly like what healthcare has been missing for decades.</p>
 <p>But if your goal is <strong>answering questions for a specific team</strong>, Kimball tends to win by default.</p>
 <p>Most healthcare analytics starts life as:</p>
@@ -104,7 +104,7 @@
 </ul>
 <p>These are business-process-shaped questions. They want denormalized facts, clear grain, and predictable joins. Kimball was built for this.</p>
 <p>In practice, many healthcare orgs <em>aspire</em> to Inmon but <em>operate</em> like Kimball.</p>
-<h2>Time-to-Value: Or, “When Do We Need This?”</h2>
+<h2 id="time-to-value-or-when-do-we-need-this">Time-to-Value: Or, “When Do We Need This?”</h2>
 <p>Healthcare rarely has the luxury of long architectural runways.</p>
 <p>Normalized enterprise models are powerful, but they take time. Modeling every entity correctly across claims, clinical, eligibility, and reference data is slow, and the cost of getting it wrong is high.</p>
 <p>Kimball trades theoretical elegance for speed. You can stand up a claims mart, layer a quality mart on top, and be useful quickly.</p>
@@ -115,7 +115,7 @@
 <li>Executives expect visible progress</li>
 </ul>
 <p>In healthcare tech, <strong>shipping beats purity more often than we admit</strong>.</p>
-<h2>Staffing and Cognitive Load</h2>
+<h2 id="staffing-and-cognitive-load">Staffing and Cognitive Load</h2>
 <p>Inmon architectures demand:</p>
 <ul>
 <li>Strong data modeling discipline</li>
@@ -127,7 +127,7 @@
 <p>Kimball lowers the bar. You can onboard analysts and engineers faster because the models are closer to how people think about the business. A fact table with dimensions is easier to reason about than a deeply normalized enterprise schema.</p>
 <p>This isn’t about intelligence. It’s about cognitive overhead.</p>
 <p>Healthcare data is already hard. Architectures that amplify that difficulty should earn their keep.</p>
-<h2>Change and Volatility: The Healthcare Special</h2>
+<h2 id="change-and-volatility-the-healthcare-special">Change and Volatility: The Healthcare Special</h2>
 <p>Here’s where the common advice gets interesting.</p>
 <p>You’ll often hear that Inmon is better for <strong>frequent change</strong>. In theory, that’s true. Normalized models can absorb new attributes and relationships more gracefully.</p>
 <p>But healthcare change is not abstract. It’s messy:</p>
@@ -140,7 +140,7 @@
 <p>In these environments, centralized models can become chokepoints.</p>
 <p>Kimball-style marts, especially when treated as <em>products</em>, can evolve independently. You can version them. You can deprecate them. You can build new ones without destabilizing the entire platform.</p>
 <p>That flexibility matters when healthcare reality refuses to sit still.</p>
-<h2>APIs as the Missing Layer</h2>
+<h2 id="apis-as-the-missing-layer">APIs as the Missing Layer</h2>
 <p>Here’s where this stops being just a warehouse debate.</p>
 <p>Modern healthcare platforms increasingly expose <strong>analytics via APIs</strong>:</p>
 <ul>
@@ -158,7 +158,7 @@
 </ul>
 <p>Inmon-style enterprise models often live <em>behind</em> those APIs, if they exist at all.</p>
 <p>Seen this way, Kimball is not anti-architecture. It’s <strong>API-friendly architecture</strong>.</p>
-<h2>Organizational Readiness Is the Real Decision</h2>
+<h2 id="organizational-readiness-is-the-real-decision">Organizational Readiness Is the Real Decision</h2>
 <p>The deciding factor is rarely technical.</p>
 <p>If leadership:</p>
 <ul>
@@ -180,7 +180,7 @@
 <li>Kimball-like marts and APIs for consumption</li>
 </ul>
 <p>They just stop arguing about which one is “right” and start asking which one solves today’s problem without blocking tomorrow.</p>
-<h2>The Takeaway</h2>
+<h2 id="the-takeaway">The Takeaway</h2>
 <p>Kimball and Inmon aren’t rivals. They’re lenses.</p>
 <p>Healthcare data engineering fails when it treats architecture as ideology instead of strategy.</p>
 <p>The right question isn’t <em>which approach is better</em>.</p>
@@ -208,7 +208,7 @@
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

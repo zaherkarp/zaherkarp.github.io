@@ -85,7 +85,7 @@
   </header>
   <div class="blog-body">
     <p>I spent a weekend writing a particle visualizer for jemalloc<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>, not because the docs are inadequate, but because watching the allocator behave under load is a different kind of understanding than reading about it. The project, jemallocviz, became a teaching tool I now reach for when explaining why memory pressure in healthcare data systems looks the way it does. Three patterns in particular punish a general-purpose allocator: long-lived denominator populations sitting under millions of transient measure objects, request-per-thread concurrency under latency contracts, and batch loads where every record is a different shape. jemalloc's design answers all three.</p>
-<h2>Mixed lifetimes in HEDIS measure calculation</h2>
+<h2 id="mixed-lifetimes-in-hedis-measure-calculation">Mixed lifetimes in HEDIS measure calculation</h2>
 <p>A HEDIS measure run starts with a denominator load. For a commercial book, that is somewhere between two and ten million member-year rows, each carrying enrollment intervals, demographics, and a pointer into the claims index. Call it three to eight gigabytes resident, allocated once per pipeline invocation, kept stable for the entire run. Then for each of the forty or so measures, I allocate and free millions of small transient objects: exclusion-check structs, event-lookup tuples, date-range comparators, intermediate result rows. Each transient object is somewhere between thirty-two bytes and a few kilobytes, and they churn at perhaps a hundred thousand allocations per second per measure thread.</p>
 <p>Under glibc malloc, the long-lived denominator and the short-lived transient garbage interleave on the same heap. After a few measures, the heap looks like a Swiss cheese: stable rows pinned in place, freed transient holes scattered between them, and the resident set size keeps climbing because the freed pages cannot be returned to the OS without compaction. jemalloc's arenas<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> solve this directly. I pin the denominator allocation to one arena and let the measure logic churn through a second. The stable arena stays packed and never sees a free until pipeline teardown. The churn arena cycles through dirty pages and returns them to the OS on a regular cadence. Fragmentation stops being a function of how long the pipeline has been running.</p>
 <figure>
@@ -124,7 +124,7 @@
 </svg>
 <figcaption>Arena isolation for mixed-lifetime data. Stable rows live in one arena and never see a free until pipeline teardown; transient measure logic churns through a second arena whose dirty pages return to the OS on a fixed cadence.</figcaption>
 </figure>
-<h2>Concurrency in claims adjudication</h2>
+<h2 id="concurrency-in-claims-adjudication">Concurrency in claims adjudication</h2>
 <p>A claims adjudication service has the opposite shape. There is no long-lived working set worth talking about. Every request is its own short-lived universe: parse the 837, look up eligibility, run the benefit grid, build a response, free everything. Two hundred threads doing this in parallel under a sub-fifty-millisecond contract will allocate and free working memory hundreds of thousands of times per second across the process. The bottleneck is not throughput in any single thread. It is contention on the allocator's lock when two hundred threads all try to claim from the same arena at the same time.</p>
 <p>jemalloc's tcache<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> sidesteps this. Each thread holds its own cache of recently-freed regions, organized by size class, and the fast path for both <code>malloc</code> and <code>free</code> lives entirely inside the thread. No atomics, no mutex, no cache-line bouncing. The shared arena is touched only when the tcache needs a refill or a flush, which happens on the order of one access per few thousand allocations rather than one per allocation. For a 200-thread service this is the difference between linear scaling and a thundering herd.</p>
 <figure>
@@ -176,10 +176,10 @@
 </svg>
 <figcaption>The tcache absorbs the overwhelming majority of allocations and frees with no synchronization. The shared arena is touched only when a thread's cache needs to be refilled or drained, which is rare relative to the per-request allocation rate.</figcaption>
 </figure>
-<h2>Variable-width records in batch ETL</h2>
+<h2 id="variable-width-records-in-batch-etl">Variable-width records in batch ETL</h2>
 <p>A claims extract is the canonical example of allocation-size chaos. One row carries a single diagnosis code and no modifiers; the next carries twenty-three diagnoses, six procedure codes, four modifier fields, and a long free-text remark. The struct I am building per row might be 256 bytes for a clean professional claim and 4 kilobytes for a complex inpatient one. A general-purpose allocator looking at this stream serves each request with whatever-fits, which means the heap accumulates oddly-sized free regions that nothing else asks for at exactly the right size.</p>
 <p>jemalloc rounds every request up to the nearest size class<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> and serves it from a slab<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup> of fixed-size regions. There are around forty size classes spanning eight bytes to four megabytes, geometrically spaced. A 256-byte struct lives in the 256-byte slab; a 4096-byte struct lives in the 4096-byte slab; a 312-byte struct rounds up to 320 and lives in that slab. The internal waste from rounding is bounded at roughly twelve percent on average, and the external fragmentation that kills glibc on this workload is gone, because everything in a given slab is the same size. When a slab empties it returns to the arena and is reused for the next request in that class.</p>
-<h2>jemallocviz</h2>
+<h2 id="jemallocviz">jemallocviz</h2>
 <p>I built jemallocviz to make these behaviors legible. Particles in the simulation are transient allocations; the cursor seeds new ones; pressing a number key shifts the active size class so I can watch the slab system pick up a new bin; an arena-isolation toggle splits the field into two regions to simulate the HEDIS pipeline shape; a thread mode spawns independent emitters with their own tcaches to simulate the claims-adjudication shape. The numbers driving the visuals are pulled from the running allocator over <code>mallctl</code><sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup>, jemalloc's runtime control API, on a hundred-millisecond cadence.</p>
 <pre><code class="language-c">size_t sz = sizeof(uint64_t);
 uint64_t epoch = 1;
@@ -198,7 +198,7 @@ while (running) {
 }
 </code></pre>
 <p>Bumping <code>epoch</code> is what makes the next four reads coherent: jemalloc caches its statistics between epochs, so without that write the four counters would drift relative to each other. <code>allocated</code> is bytes the program asked for; <code>active</code> is bytes in pages backing live allocations; <code>mapped</code> is bytes the allocator has from the OS; <code>resident</code> is bytes physically in RAM. The gap between <code>allocated</code> and <code>resident</code> is where fragmentation hides.</p>
-<h2>What I want to do next</h2>
+<h2 id="what-i-want-to-do-next">What I want to do next</h2>
 <p>The honest version of this post lands a year from now with numbers attached. The next step is to profile a real HEDIS measure run, first against glibc and then against jemalloc with two arenas pinned per the pattern above, and report resident set size, peak allocation rate, and ninety-fifth-percentile measure runtime side by side. The architectural argument is uncontroversial. The size of the win on a specific workload is the part worth measuring.</p>
 <hr class="footnotes-sep" />
 <section class="footnotes">
@@ -236,7 +236,7 @@ while (running) {
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

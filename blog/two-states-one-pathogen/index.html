@@ -87,7 +87,7 @@
     </div>
   </header>
   <div class="blog-body">
-    <h2>TL;DR</h2>
+    <h2 id="tldr">TL;DR</h2>
 <ul>
 <li><strong>What it does:</strong> The <a href="/epidemic-simulation/">interactive simulator</a> runs a stochastic SEIRV outbreak in the browser for any two US states, seeded with state-level vaccination coverage for either measles or seasonal flu.</li>
 <li><strong>Why it matters:</strong> Same virus, same seeds, same population — different coverage. The curves diverge, and the gap between them is what coverage thresholds actually buy you.</li>
@@ -96,7 +96,7 @@
 <hr />
 <p>A claim that sounds too strong, but isn't: in one US state a measles introduction smolders out in a week, and in another state two weeks later it has infected thirty thousand people. Same virus, same five index cases, same population. The only difference is the fraction of the population that carries protective immunity. The simulator on this site runs that experiment live, in your browser, using a stochastic compartment model seeded with state-level vaccination coverage data.</p>
 <p>This post documents the model, the arithmetic behind the <code>R_eff</code> number printed under each curve, and the honest caveats that come with a well-mixed population model.</p>
-<h2>The Model</h2>
+<h2 id="the-model">The Model</h2>
 <p>The engine is a discrete-time stochastic <strong>SEIRV</strong> model simulated by <strong>Poisson tau-leaping</strong>. Each person in the simulated population lives in one of five compartments:</p>
 <ul>
 <li><strong>S</strong> — susceptible</li>
@@ -106,7 +106,7 @@
 <li><strong>V</strong> — vaccinated (immune by prior immunization)</li>
 </ul>
 <p>At each short time step \(\tau\), the model draws Poisson random numbers for the count of new exposures, new infections, and new recoveries given the current state, then updates the compartments. We run the same outbreak a hundred times by default and plot the <strong>median</strong> and the <strong>95% band</strong> across replicates. The ribbon is what most matters. A single stochastic run is a coin flip wearing a lab coat; an ensemble of runs is the distribution itself.</p>
-<h2>Measles versus Flu</h2>
+<h2 id="measles-versus-flu">Measles versus Flu</h2>
 <p>Measles is the most contagious infectious disease in routine circulation. Its basic reproduction number is around 15, meaning that in a fully susceptible population one case seeds roughly fifteen more. The herd-immunity threshold implied by that number is about 93%, which is why MMR coverage in the mid-80s is a genuine public health alarm and coverage above 95% is a hard-won victory.</p>
 <p>Seasonal flu sits at the other end. With an R of about 1.5 and a vaccine that prevents roughly 45% of infections in a typical year, flu fades out on its own in small populations more often than not. The interactive makes those statements visual rather than numerical: in a low-coverage state a measles introduction explodes; in the same state a flu introduction usually dies quietly.</p>
 <p>Parameters used in the simulator:</p>
@@ -138,7 +138,7 @@
 </tbody>
 </table>
 <p>These are textbook values. Real estimates vary by strain, season, and study, and a defensible range for each is easy to find in the literature; these are chosen because they reproduce the qualitative shape correctly.</p>
-<h2>Deterministic Skeleton</h2>
+<h2 id="deterministic-skeleton">Deterministic Skeleton</h2>
 <p>The deterministic analog of this model is the standard SEIR ODE with a pre-vaccinated subpopulation:</p>
 <p>\[
 \begin{aligned}
@@ -149,7 +149,7 @@
 \end{aligned}
 \]</p>
 <p>\(V\) is constant. \(N = S + E + I + R + V\). We use frequency-dependent mixing — dividing the hazard by the full population \(N\), including \(V\). Vaccinated individuals do not participate in infection events but they still occupy the mixing pool, so their presence dilutes the per-contact hazard on the susceptibles. <strong>That dilution is the mechanical origin of herd immunity in this formulation.</strong></p>
-<h2>Stochastic Tau-Leaping</h2>
+<h2 id="stochastic-tau-leaping">Stochastic Tau-Leaping</h2>
 <p>The stochastic version replaces each rate with a Poisson-distributed count of events in a short window \(\tau\):</p>
 <p>\[
 \begin{aligned}
@@ -163,7 +163,7 @@ S \mathrel{-}= n_{SE}, \quad E \mathrel{+}= n_{SE} - n_{EI}, \quad I \mathrel{+}
 \]</p>
 <p>Each count is clamped to the current compartment size before applying, so tau-leaping cannot take more people from a compartment than are in it. The integration step is fixed at \(\tau = 0.1\) days, short enough that the Poisson approximation to the event-driven Gillespie trajectory is tight for the \(R\)-values we run.</p>
 <p>Why tau-leaping and not an exact Gillespie algorithm? Gillespie is the gold standard — it advances time to the next event — but for a population of \(10^5\) and an \(R_0\) of 15, &quot;the next event&quot; happens roughly every second of simulated time, and running 100 replicates to 180 days inside a Pyodide kernel inside a browser tab is not a fight worth picking. Tau-leaping trades exactness for two orders of magnitude of speedup, and at \(\tau = 0.1\) days the bias is well below the stochastic variance across replicates. The ribbon absorbs it.</p>
-<h2>The \(R_{\text{eff}}(0)\) Printed Under Each Curve</h2>
+<h2 id="the-mathstash18-printed-under-each-curve">The \(R_{\text{eff}}(0)\) Printed Under Each Curve</h2>
 <p>The effective reproduction number at the start of the outbreak, given pre-existing vaccinated protection, is:</p>
 <p>\[
 R_{\text{eff}}(0) = R_0 \cdot \frac{S(0)}{N} \approx R_0 \cdot (1 - \text{coverage} \cdot \text{ve})
@@ -175,15 +175,15 @@ R_{\text{eff}}(0) = R_0 \cdot \frac{S(0)}{N} \approx R_0 \cdot (1 - \text{covera
 <li><strong>\(R_{\text{eff}}(0) \gg 1\)</strong> — almost every introduction produces an outbreak, and the only remaining question is how large. The histogram concentrates around the \(R\)-dependent final-size threshold.</li>
 </ul>
 <p>The measles-vs-flu contrast is essentially this: in the same state, measles lands solidly in the third regime while flu lands in the first or second. One pathogen, one population, one picture of coverage — three different dynamical regimes.</p>
-<h2>Reading the Ensemble</h2>
+<h2 id="reading-the-ensemble">Reading the Ensemble</h2>
 <p>The <strong>epidemic curve</strong> shows the number of currently infectious people across the outbreak, per state. The solid line is the median across replicates at each day, and the shaded ribbon is the central 95% band. When two states' ribbons barely overlap, that gap is the signal: their outbreaks really are different, not just noise. When the ribbon is very wide and starts near zero, the state is in the fade-out regime; many runs never produced an outbreak at all.</p>
 <p>The <strong>attack-rate histogram</strong> shows the final share of the population that was ever infected, across replicates. A narrow spike near zero means most runs fizzled. A broad mass near the \(R\)-dependent attack-rate threshold means almost every seeded introduction became an outbreak. A bimodal distribution — spike at zero plus mass at high attack rates — is the signature of a pathogen near its takeoff threshold.</p>
 <p>The order here matters. Summary → distribution → threshold. Anyone who reports only &quot;the curve&quot; from a single stochastic run and calls it a forecast is reporting one sample from the ribbon.</p>
-<h2>Honest Caveats</h2>
+<h2 id="honest-caveats">Honest Caveats</h2>
 <p>The model is <strong>well-mixed</strong>. Everyone in a state contacts everyone else with equal probability, which is wrong in ways that matter. Real outbreaks propagate through households, schools, workplaces, and commuting networks, and unvaccinated people cluster within those structures. A state-average coverage of 94% can coexist with schools at 70%, and that is usually where measles outbreaks actually start. A well-mixed model with the state-average coverage will systematically understate the risk in a state with high between-school variance.</p>
 <p>The model has no age structure, no waning immunity, no imported cases beyond the initial seed, and no behavior change in response to an outbreak. The coverage numbers are approximate 2022–2023 CDC figures (SchoolVaxView for MMR; FluVaxView for flu) and will drift as new seasons are reported.</p>
 <p>Treat the interactive as a <strong>teaching tool</strong> for why coverage thresholds matter — not as a forecast for any particular state. The value it delivers is the shape of the response: how the ensemble changes when you move from 96% coverage to 88%, holding everything else fixed.</p>
-<h2>Why a Browser</h2>
+<h2 id="why-a-browser">Why a Browser</h2>
 <p>The simulator runs entirely in the user's browser via <a href="https://pyodide.org/">Pyodide</a>, with <a href="https://plotly.com/javascript/">Plotly.js</a> rendering the charts. No server, no API, no data leaves the machine. That's partly a privacy posture and partly a statement about what the tool is for: a public-facing explainer that should survive any future of this website — including the future in which there is no server behind it at all — is best built with the scientific Python stack shipped as WebAssembly.</p>
 <p>A hundred tau-leaped SEIRV replicates to day 180 for two states completes in a few seconds on a laptop. That's fast enough that the interaction loop — click two states, toggle the disease, run again — feels like an experiment rather than a render.</p>
 <hr />
@@ -207,7 +207,7 @@ R_{\text{eff}}(0) = R_0 \cdot \frac{S(0)}{N} \approx R_0 \cdot (1 - \text{covera
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

@@ -84,18 +84,18 @@
     </div>
   </header>
   <div class="blog-body">
-    <h2>The Problem: Silent Connection Failure</h2>
+    <h2 id="the-problem-silent-connection-failure">The Problem: Silent Connection Failure</h2>
 <p>PostgreSQL connections often fail quietly rather than catastrophically.</p>
 <p>Firewalls, NAT devices, and load balancers routinely terminate idle TCP connections without notifying either side. PostgreSQL still believes the client exists, and the client still believes it is connected until the next query fails in a confusing and disruptive way.</p>
 <p>TCP keepalive exists to prevent exactly this class of failure.</p>
-<h2>What TCP Keepalive Does</h2>
+<h2 id="what-tcp-keepalive-does">What TCP Keepalive Does</h2>
 <p>TCP keepalive sends lightweight probe packets on idle connections. If the peer responds, the connection remains open. If the peer does not respond, the operating system marks the socket as dead.</p>
 <p>This serves two purposes:</p>
 <ul>
 <li>It prevents network equipment from dropping idle connections</li>
 <li>It allows dead peers to be detected earlier and more reliably</li>
 </ul>
-<h2>Visualization 1: Failure Without Keepalive</h2>
+<h2 id="visualization-1-failure-without-keepalive">Visualization 1: Failure Without Keepalive</h2>
 <pre class="mermaid">sequenceDiagram
     participant App
     participant Network
@@ -109,7 +109,7 @@
     PostgreSQL-->>App: Connection error
 </pre>
 <p>In this scenario, the failure only becomes visible when work resumes long after the real cause.</p>
-<h2>Visualization 2: Stability With Keepalive</h2>
+<h2 id="visualization-2-stability-with-keepalive">Visualization 2: Stability With Keepalive</h2>
 <pre class="mermaid">sequenceDiagram
     participant App
     participant Network
@@ -123,7 +123,7 @@
     Note over Network: Connection remains active
 </pre>
 <p>Small, periodic probes keep the connection visible and verifiable.</p>
-<h2>PostgreSQL Keepalive Parameters</h2>
+<h2 id="postgresql-keepalive-parameters">PostgreSQL Keepalive Parameters</h2>
 <p>PostgreSQL exposes TCP keepalive tuning through three parameters:</p>
 <table>
 <thead>
@@ -148,20 +148,20 @@
 </tbody>
 </table>
 <p>These are typically configured in <code>postgresql.conf</code>.</p>
-<h2>Why Defaults Often Fail</h2>
+<h2 id="why-defaults-often-fail">Why Defaults Often Fail</h2>
 <p>On many systems, the default idle time before keepalive probes begin is measured in hours.
 Many firewalls expire idle connections in minutes.</p>
 <p>This mismatch is one of the most common causes of intermittent PostgreSQL disconnects in real-world environments.</p>
-<h2>Client and OS-Level Configuration</h2>
+<h2 id="client-and-os-level-configuration">Client and OS-Level Configuration</h2>
 <p>Some PostgreSQL clients allow keepalive tuning directly. Others only allow enabling keepalive without control over timing.</p>
 <p>When client-level tuning is unavailable, adjusting operating system TCP defaults ensures consistent behavior across all PostgreSQL connections on the host.</p>
-<h2>Long-Running Queries and Lost Clients</h2>
+<h2 id="long-running-queries-and-lost-clients">Long-Running Queries and Lost Clients</h2>
 <p>Even if the operating system detects a dead socket, PostgreSQL may continue executing a query that has already started.</p>
 <p>PostgreSQL 14 introduced the following setting:</p>
 <pre><code>client_connection_check_interval
 </code></pre>
 <p>This causes PostgreSQL to periodically verify that the client connection still exists and to cancel work if it does not.</p>
-<h2>When Keepalive Tuning Is Necessary</h2>
+<h2 id="when-keepalive-tuning-is-necessary">When Keepalive Tuning Is Necessary</h2>
 <p>Keepalive tuning is particularly important when:</p>
 <ul>
 <li>Connections pass through firewalls or load balancers</li>
@@ -169,7 +169,7 @@ Many firewalls expire idle connections in minutes.</p>
 <li>Unexplained connection resets occur</li>
 <li>Fast cleanup of dead sessions matters</li>
 </ul>
-<h2>Takeaway</h2>
+<h2 id="takeaway">Takeaway</h2>
 <p>TCP keepalive does not make PostgreSQL faster.</p>
 <p>It makes PostgreSQL more predictable.</p>
 <p>By aligning PostgreSQL, the operating system, and the network’s expectations of connection liveness, you avoid silent failures and late surprises and gain calmer, more reliable database behavior.</p>
@@ -192,7 +192,7 @@ Many firewalls expire idle connections in minutes.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

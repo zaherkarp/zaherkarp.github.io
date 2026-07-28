@@ -83,12 +83,12 @@
 <p>What has received less attention is the structural effect ECDS adoption can have on the competitive distribution underlying Medicare Advantage Star Ratings.</p>
 <p>Stars is not an absolute scoring system. It is comparative. Cutpoints are derived from national performance distributions. That means when measurement mechanics change for a meaningful subset of contracts, the distribution can shift. When the distribution shifts, cutpoints move. When cutpoints move, contracts migrate between star categories even if underlying care delivery has not materially changed.</p>
 <p>This is not a critique of ECDS. It is an observation about market dynamics.</p>
-<h2>Why ECDS Can Create Distribution Volatility</h2>
+<h2 id="why-ecds-can-create-distribution-volatility">Why ECDS Can Create Distribution Volatility</h2>
 <p>ECDS increases the ability to capture numerator events that do not appear in claims. Screening measures such as breast and colorectal cancer screening are the clearest examples. Plans with stronger EHR integration, HIE connectivity, and structured clinical ingestion pipelines can surface events that would otherwise remain invisible.</p>
 <p>If adoption and data maturity were uniform across all contracts, the effect would be mostly neutral. But adoption is uneven. Some plans are highly integrated. Others remain largely claims-anchored. That unevenness introduces variance into the national rate distribution.</p>
 <p>Because cutpoints are sensitive to clustering around thresholds, even modest numerator uplift in a subset of plans can compress or stretch the distribution enough to move 3–4 or 4–5 thresholds.</p>
 <p>In other words, ECDS does not simply raise rates. It can alter the geometry of competition.</p>
-<h2>Introducing the ECDS Shock Index</h2>
+<h2 id="introducing-the-ecds-shock-index">Introducing the ECDS Shock Index</h2>
 <p>To quantify this risk, I developed a simple composite metric: the <a href="https://github.com/zaherkarp/ecds-shock-index">ECDS Shock Index</a> (ESI).</p>
 <p>The goal is not to predict rates. It is to estimate how vulnerable a measure is to distribution instability resulting from ECDS-driven capture differences.</p>
 <p>The index combines four components:</p>
@@ -113,7 +113,7 @@ Normalized Stars weight. Higher-weight measures amplify distribution shifts.</p>
 <p>The formula:</p>
 <p>ESI = CCS × EAV × CPR × WM</p>
 <p>The output ranges from 0 to 1. Higher values indicate greater systemic volatility risk.</p>
-<h2>Where the Risk Concentrates</h2>
+<h2 id="where-the-risk-concentrates">Where the Risk Concentrates</h2>
 <p>Applying this framework conceptually to the 2026 measure set, the highest ECDS-related exposure tends to sit in:</p>
 <ul>
 <li>Colorectal Cancer Screening</li>
@@ -123,7 +123,7 @@ Normalized Stars weight. Higher-weight measures amplify distribution shifts.</p>
 </ul>
 <p>Pharmacy adherence and CAHPS measures are largely insulated. They are anchored in claims or survey methodology and are not materially affected by ECDS capture mechanics.</p>
 <p>The critical insight is that a measure with moderate clinical sensitivity but high weight and tight clustering may represent greater structural risk than a highly sensitive measure with low weight.</p>
-<h2>Strategic Implications</h2>
+<h2 id="strategic-implications">Strategic Implications</h2>
 <p>There are three implications for analytics teams and executive leadership:</p>
 <ol>
 <li>
@@ -160,7 +160,7 @@ Normalized Stars weight. Higher-weight measures amplify distribution shifts.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

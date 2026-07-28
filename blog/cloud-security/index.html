@@ -98,7 +98,7 @@ All important. None of them are the starting point.</p>
 <li>Limiting operational and reputational damage when something goes wrong</li>
 </ul>
 <p>Security is not about eliminating risk. It’s about <strong>managing failure responsibly</strong>.</p>
-<h2>Prevention vs Containment (and Why Healthcare Needs Both)</h2>
+<h2 id="prevention-vs-containment-and-why-healthcare-needs-both">Prevention vs Containment (and Why Healthcare Needs Both)</h2>
 <p>At a high level, security work falls into two buckets:</p>
 <ol>
 <li><strong>Reducing the likelihood of compromise</strong></li>
@@ -114,7 +114,7 @@ All important. None of them are the starting point.</p>
 </ul>
 <p>The better question is:</p>
 <p><strong>If this component is compromised, what else can it reach?</strong></p>
-<h2>Risk Acceptance Is Architecture (Especially for Vendors)</h2>
+<h2 id="risk-acceptance-is-architecture-especially-for-vendors">Risk Acceptance Is Architecture (Especially for Vendors)</h2>
 <p>Every architecture embeds a risk decision.</p>
 <p>As a healthcare analytics vendor, those decisions often look like this:</p>
 <ul>
@@ -135,7 +135,7 @@ All important. None of them are the starting point.</p>
 <p>But none of it answers the most important downstream question:</p>
 <p><strong>Does a compromise in one client context increase risk for another?</strong></p>
 <p>If the answer is “yes,” then you’ve accepted cross-client blast radius, whether you intended to or not.</p>
-<h2>Where Network Segmentation Fits for Healthcare Analytics</h2>
+<h2 id="where-network-segmentation-fits-for-healthcare-analytics">Where Network Segmentation Fits for Healthcare Analytics</h2>
 <p>Network segmentation (VPCs, subnets, VLANs, security groups) is not inherently “more secure.”</p>
 <p>It becomes meaningful <strong>when combined with policy enforcement</strong> that limits communication paths.</p>
 <p>In a healthcare analytics context, segmentation is typically used to enforce boundaries like:</p>
@@ -150,7 +150,7 @@ All important. None of them are the starting point.</p>
 <p>“A compromise of this reporting service cannot access raw claims data.”</p>
 </blockquote>
 <p>That statement only becomes true when the network enforces it.</p>
-<h2>An Example in Healthcare: Reporting UI Compromise</h2>
+<h2 id="an-example-in-healthcare-reporting-ui-compromise">An Example in Healthcare: Reporting UI Compromise</h2>
 <p>Imagine a vendor-hosted reporting application:</p>
 <ul>
 <li>Internet-facing</li>
@@ -181,7 +181,7 @@ All important. None of them are the starting point.</p>
 <li>A survivable compliance event</li>
 </ul>
 <hr />
-<h2>VPNs, Private Access, and False Comfort</h2>
+<h2 id="vpns-private-access-and-false-comfort">VPNs, Private Access, and False Comfort</h2>
 <p>Many vendors rely heavily on VPNs or private access layers and feel comfortable skipping deeper segmentation.</p>
 <p>That can be reasonable, but it’s still a risk decision.</p>
 <p>VPNs answer:</p>
@@ -194,7 +194,7 @@ All important. None of them are the starting point.</p>
 </blockquote>
 <p>“No known vulnerabilities” in VPN protocols is not a guarantee. It’s an assumption. Assumptions are fine, as long as they’re explicit and revisited.</p>
 <hr />
-<h2>Security Layers Solve Different Healthcare Problems</h2>
+<h2 id="security-layers-solve-different-healthcare-problems">Security Layers Solve Different Healthcare Problems</h2>
 <p>Each security layer addresses a specific failure mode:</p>
 <ul>
 <li>Reverse proxy: limits exposed endpoints</li>
@@ -208,7 +208,7 @@ All important. None of them are the starting point.</p>
 <p>None of these replace the others. And none are universally required.</p>
 <p>They answer <strong>different questions</strong>.</p>
 <hr />
-<h2>Visualizing Attack Surface vs Blast Radius (Healthcare Context)</h2>
+<h2 id="visualizing-attack-surface-vs-blast-radius-healthcare-context">Visualizing Attack Surface vs Blast Radius (Healthcare Context)</h2>
 <pre class="mermaid">flowchart LR
     Internet -->|TLS / MFA| RP[Reverse Proxy]
     RP --> App[Client Reporting App]
@@ -254,7 +254,7 @@ All important. None of them are the starting point.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

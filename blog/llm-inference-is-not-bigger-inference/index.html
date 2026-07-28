@@ -84,7 +84,7 @@
     </div>
   </header>
   <div class="blog-body">
-    <h2>Introduction</h2>
+    <h2 id="introduction">Introduction</h2>
 <p>In healthcare analytics, we’ve lived with “inference” for years.</p>
 <p>HEDIS gap closure models. Risk adjustment predictors. Fraud detection. CNNs on imaging. Gradient boosting on claims.</p>
 <p>Those systems assume something very stable:</p>
@@ -97,8 +97,8 @@
 <p>It’s clean. Deterministic. Boring in a good way.</p>
 <p>LLMs break almost all of that.</p>
 <hr />
-<h2>Main Content</h2>
-<h3>1. Variable-Length Computation Changes Everything</h3>
+<h2 id="main-content">Main Content</h2>
+<h3 id="1-variable-length-computation-changes-everything">1. Variable-Length Computation Changes Everything</h3>
 <p>Traditional inference assumes uniform work per request.</p>
 <p>LLMs don’t.</p>
 <ul>
@@ -122,7 +122,7 @@
 <p>The batch is fluid, not fixed.</p>
 <p>In healthcare IT terms: this is the difference between a nightly HEDIS job and a real-time clinical documentation assistant.</p>
 <hr />
-<h3>2. Prefill vs Decode: Two Different Workloads</h3>
+<h3 id="2-prefill-vs-decode-two-different-workloads">2. Prefill vs Decode: Two Different Workloads</h3>
 <p>LLM inference splits into:</p>
 <ul>
 <li><strong>Prefill</strong>: process the full prompt</li>
@@ -145,7 +145,7 @@
 Decode is writing the note sentence by sentence.</p>
 <p>Treating them as identical workloads is architectural laziness.</p>
 <hr />
-<h3>3. KV Cache Is a Systems Problem</h3>
+<h3 id="3-kv-cache-is-a-systems-problem">3. KV Cache Is a Systems Problem</h3>
 <p>LLMs rely on a <strong>KV cache</strong> to store attention state.</p>
 <p>In multi-turn healthcare conversations:</p>
 <ul>
@@ -164,7 +164,7 @@ Decode is writing the note sentence by sentence.</p>
 LLMs persist.</p>
 <p>That changes infrastructure design.</p>
 <hr />
-<h3>4. Routing Stops Being Stateless</h3>
+<h3 id="4-routing-stops-being-stateless">4. Routing Stops Being Stateless</h3>
 <p>Traditional scaling:</p>
 <ul>
 <li>Replicate the model</li>
@@ -181,7 +181,7 @@ LLMs persist.</p>
 </pre>
 <p>In applied healthcare IT, this mirrors longitudinal care systems. Context matters. Routing must respect state.</p>
 <hr />
-<h3>5. Mixture-of-Experts Is Not Replication</h3>
+<h3 id="5-mixture-of-experts-is-not-replication">5. Mixture-of-Experts Is Not Replication</h3>
 <p>LLMs increasingly use <strong>Mixture-of-Experts (MoE)</strong>:</p>
 <ul>
 <li>Shared attention layers</li>
@@ -197,7 +197,7 @@ LLMs persist.</p>
 <p>This is one distributed model with dynamic internal traffic.</p>
 <p>Not just more replicas.</p>
 <hr />
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>LLM inference is not interesting because the models are large.</p>
 <p>It is interesting because the systems problem is different:</p>
 <ul>
@@ -229,7 +229,7 @@ LLMs persist.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

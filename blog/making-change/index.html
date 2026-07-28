@@ -88,12 +88,12 @@
 <p>What I care about is why the <em>same problem</em> feels almost self-evident in one language, procedural in another, and strangely structural in a third. That difference ends up being far more instructive than the numeric answer.</p>
 <p>The change-making problem is a familiar one. It shows up in interviews, coding exercises, and textbooks. Most people solve it once, recognize the pattern, and move on.</p>
 <p>I didn’t. Not because the problem itself is especially interesting, but because solving it in <strong>Haskell</strong>, then <strong>Python</strong>, then <strong>SQL</strong> exposed something subtle but important: programming languages don’t just offer tools. They nudge you toward particular ways of reasoning.</p>
-<h2>The Problem (Briefly)</h2>
+<h2 id="the-problem-briefly">The Problem (Briefly)</h2>
 <p>Given a target amount and a set of coin denominations, how many <em>unique combinations</em> of coins sum to that amount?</p>
 <p>Order does not matter.<br />
 <code>1 + 5</code> is the same as <code>5 + 1</code>.</p>
 <p>That’s the entire problem. It looks trivial. It isn’t.</p>
-<h2>Haskell: State the Definition and Let It Work</h2>
+<h2 id="haskell-state-the-definition-and-let-it-work">Haskell: State the Definition and Let It Work</h2>
 <p>When I solve this problem in Haskell, it doesn’t feel like I’m writing an algorithm. It feels like I’m writing down a definition and trusting it.</p>
 <pre><code class="language-haskell">countChange :: Int -&gt; [Int] -&gt; Int
 countChange 0 _      = 1
@@ -110,7 +110,7 @@ If there are no coins left, it isn’t.<br />
 Otherwise, the answer is the sum of solutions that include the current coin and solutions that exclude it.</p>
 <p>What stands out isn’t just concision. It’s how directly the code mirrors the underlying logic. The function reads like a recursive definition rather than a sequence of steps.</p>
 <p>This version is inefficient without memoization. Haskell doesn’t remove the need to think about performance, but it cleanly separates <em>correctness</em> from <em>optimization</em>.</p>
-<h2>Python: Make the Process Explicit</h2>
+<h2 id="python-make-the-process-explicit">Python: Make the Process Explicit</h2>
 <p>Python pulls me in the opposite direction. Here, I’m very aware of execution.</p>
 <pre><code class="language-python">def count_change(amount, coins):
     dp = [0] * (amount + 1)
@@ -127,7 +127,7 @@ Otherwise, the answer is the sum of solutions that include the current coin and 
 Each coin extends existing partial solutions.<br />
 The loop order enforces uniqueness by construction.</p>
 <p>State is visible. Performance characteristics are obvious. Python trades elegance for explicitness, and in many production settings that’s the right trade.</p>
-<h2>SQL: Reframe the Problem as Data</h2>
+<h2 id="sql-reframe-the-problem-as-data">SQL: Reframe the Problem as Data</h2>
 <p>Solving this problem in SQL requires a different mental model.</p>
 <p>SQL doesn’t want loops or mutable state. It wants to know what a <em>valid row</em> looks like.</p>
 <p>Using a recursive CTE, the problem becomes: what does a partial solution look like, and how can it be extended?</p>
@@ -150,13 +150,13 @@ WHERE amount = 100;
 Each join represents a legal transition.<br />
 Constraints replace control flow.</p>
 <p>This doesn’t feel like an algorithm. It feels like modeling a space of valid states and letting the engine explore it.</p>
-<h2>Same Answer, Different Emphases</h2>
+<h2 id="same-answer-different-emphases">Same Answer, Different Emphases</h2>
 <p>All three approaches are correct, but they emphasize different things.</p>
 <p>Haskell emphasizes definitions and exhaustiveness.<br />
 Python emphasizes process and accumulation.<br />
 SQL emphasizes structure and constraints.</p>
 <p>The problem stays the same. The thinking changes.</p>
-<h2>Closing</h2>
+<h2 id="closing">Closing</h2>
 <p>I still don’t care about making change for a dollar.</p>
 <p>But I care a lot about what a language asks me to be explicit about, and what it allows me to abstract away. Solving the same problem three ways made that impossible to ignore.</p>
 <p>If you haven’t taken a familiar problem and solved it in an unfamiliar paradigm, it’s worth doing. You may not learn a new trick.</p>
@@ -180,7 +180,7 @@ SQL emphasizes structure and constraints.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

@@ -88,7 +88,7 @@
 <p>Production hears “more” and replies: <strong>shared resources, contention, queues, retries, and somebody waiting</strong>.</p>
 <p>Concurrency in practice is not “how many things can run.”
 It’s <strong>which things are allowed to make progress when everything is busy</strong>.</p>
-<h2>The perception gap</h2>
+<h2 id="the-perception-gap">The perception gap</h2>
 <p>What we imagine:</p>
 <ul>
 <li>Work fans out cleanly</li>
@@ -102,7 +102,7 @@ It’s <strong>which things are allowed to make progress when everything is busy
 <li>Retries that multiply load</li>
 <li>Backfills that collide with “today’s run”</li>
 </ul>
-<h2>A realistic data pipeline view</h2>
+<h2 id="a-realistic-data-pipeline-view">A realistic data pipeline view</h2>
 <pre class="mermaid">flowchart LR
   P[Producers<br/>events • batches • backfills] --> Q[Bounded Queue]
   Q --> O[Orchestrator / Scheduler]
@@ -129,7 +129,7 @@ It’s <strong>which things are allowed to make progress when everything is busy
   B --> Q
 </pre>
 <p>If you’re “scaling” without <strong>bounded queues + per-sink concurrency caps + sane retry policy</strong>, you’re usually just speeding up your failure mode.</p>
-<h2>What changes in healthcare analytics</h2>
+<h2 id="what-changes-in-healthcare-analytics">What changes in healthcare analytics</h2>
 <p>Same concurrency mechanics, higher stakes:</p>
 <ul>
 <li><strong>Auditability</strong>: you must prove what inputs produced what outputs</li>
@@ -138,7 +138,7 @@ It’s <strong>which things are allowed to make progress when everything is busy
 <li><strong>Regulatory timelines</strong>: “late” is a business event</li>
 </ul>
 <p>So the goal isn’t max throughput. It’s <strong>predictable truth</strong>.</p>
-<h2>The only definition that consistently helps</h2>
+<h2 id="the-only-definition-that-consistently-helps">The only definition that consistently helps</h2>
 <p>Concurrency is <strong>shared progress under contention</strong>.</p>
 <p>Ask these instead of “how many workers”:</p>
 <ul>
@@ -166,7 +166,7 @@ It’s <strong>which things are allowed to make progress when everything is busy
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

@@ -86,7 +86,7 @@
   <div class="blog-body">
     <p>Every data pipeline eventually hits the same fork in the road: you've pulled a pile of records from somewhere expensive to query, and now you need to turn that pile into many small files, one per combination of dimensions. A reporting job that needs one file per region per month. A batch export that needs one file per customer per product. An economic dashboard that needs one file per year per indicator.</p>
 <p>The pull itself is usually the easy part. It's what happens <em>after</em> the pull that tends to get messy, because there are a few genuinely different ways to fan one cache file out into many outputs, and each one trades a different resource for a different guarantee. This post walks through three of them, using the Federal Reserve's FRED API as a concrete example: we'll pull five economic indicators across their full history, cache the raw pull once, split it into per-year-per-indicator files three different ways, load the result into SQLite, add a fourth example for real-time API access so the local store stays current without re-running the big fetch, and finish with a small trend forecast.</p>
-<h2>The problem shape</h2>
+<h2 id="the-problem-shape">The problem shape</h2>
 <p>FRED (Federal Reserve Economic Data) publishes thousands of time series through a free public API. We'll use five well-known ones:</p>
 <ul>
 <li><code>UNRATE</code> — unemployment rate</li>
@@ -97,7 +97,7 @@
 </ul>
 <p>Each series comes back as a list of <code>(date, value)</code> observations, monthly or daily depending on the series, going back decades. If we treat the <em>year</em> as the period dimension and the <em>series id</em> as the measure dimension, we land on exactly the same shape as the general problem: a big flat pull, and a need to split it into files keyed by <code>period|measure</code> — <code>2010_UNRATE.csv</code>, <code>2010_CPIAUCSL.csv</code>, <code>2011_UNRATE.csv</code>, and so on.</p>
 <p>You'll need a free FRED API key (instant signup, no cost) to run this yourself: https://fred.stlouisfed.org/docs/api/api_key.html</p>
-<h2>Step 0: pull once, cache to a flat file</h2>
+<h2 id="step-0-pull-once-cache-to-a-flat-file">Step 0: pull once, cache to a flat file</h2>
 <p>This step is identical no matter which splitting approach you use afterward, so it's worth pulling out on its own. Hit the API once per series, write every observation to one local file, and don't try to be clever about organization yet. Just get everything onto disk in a shape you can reread cheaply.</p>
 <pre><code class="language-python">import requests
 import csv
@@ -140,7 +140,7 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
 <p>Five series, most going back 10-60 years, comes out to a modest cache file, maybe a few thousand rows. Small enough that any of the three approaches below will run in well under a second on this dataset — but the <em>pattern</em> is what matters, because the same three approaches behave very differently once you're pulling hundreds of series across decades of daily data instead of five series of mostly-monthly data.</p>
 <p>Every row already carries its <code>year</code> (period) and <code>series_id</code> (measure), exactly like a warehouse export that includes its own partition keys. That's what makes the three splitting strategies below possible without a second trip to the API.</p>
-<h2>Approach 1: single pass, many open writers</h2>
+<h2 id="approach-1-single-pass-many-open-writers">Approach 1: single pass, many open writers</h2>
 <p>The simplest strategy: read the cache once, and for every row, look up (or create) a file handle keyed by <code>period|measure</code>. Keep every writer open until the whole file has been read, then close everything at once.</p>
 <pre><code class="language-python">import csv
 import os
@@ -168,7 +168,7 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
 <p>With five series across, say, 60 years of history, that's at most a few hundred distinct <code>period|measure</code> keys, and therefore a few hundred file handles open at once. Comfortably under any operating system's default limit (typically 1024+ open files per process). One clean read of the cache, done.</p>
 <p>The catch shows up at scale. If you were doing this against hundreds of FRED series across a century of daily data, you could be looking at tens of thousands of distinct keys, and the &quot;keep every writer open&quot; strategy runs into <code>OSError: Too many open files</code> well before you finish the loop.</p>
-<h2>Approach 2: batched — discover first, write in waves</h2>
+<h2 id="approach-2-batched--discover-first-write-in-waves">Approach 2: batched — discover first, write in waves</h2>
 <p>Approach 2 trades a single read of the cache for several reads, in exchange for a hard ceiling on how many file handles are ever open at once.</p>
 <p>The first pass touches the cache but doesn't write anything — it just figures out which <code>period|measure</code> keys exist and how big each one is. That gives you a plan before you commit any disk I/O.</p>
 <pre><code class="language-python">import csv
@@ -216,7 +216,7 @@ if __name__ == &quot;__main__&quot;:
     split_batched()
 </code></pre>
 <p>Now no more than <code>BATCH_SIZE</code> files are ever open simultaneously, and the discovery pass gives you a plan you can print, log, or use to size the batches before committing to anything. It's also naturally resumable — a &quot;batch N done&quot; marker after each wave, and a crash partway through only costs you the current batch, not the whole job. The price is that the cache gets reread once per batch: with our five-series example that's a handful of rereads of a small file, trivial; at hundreds of series and a large batch count, that's hundreds of full passes over a potentially large cache.</p>
-<h2>Approach 3: index and seek</h2>
+<h2 id="approach-3-index-and-seek">Approach 3: index and seek</h2>
 <p>The third strategy tries to get both a single read of the cache <em>and</em> a bounded number of open handles, by paying for it with an index and random-access reads.</p>
 <p>The first pass builds a map from <code>period|measure</code> to the exact byte offsets where that key's rows live in the cache file. The second pass never scans linearly at all — it seeks directly to each recorded offset and reads just that line.</p>
 <pre><code class="language-python">import csv
@@ -259,7 +259,7 @@ if __name__ == &quot;__main__&quot;:
     split_indexed()
 </code></pre>
 <p>Only one output file is ever open at a time, and the cache itself is read exactly once in terms of total bytes touched — but &quot;read once&quot; is doing some hand-waving here, because the reads are scattered across the file in whatever order the rows for a given key happen to appear. If a series' rows are clustered together in the cache (say, because the cache was written series-by-series, as ours is), the seeks are cheap. If they were interleaved — imagine pulling all series for 2020, then all series for 2021, then... — the seeks jump all over the file and disk I/O dominates. This approach only pays off when the data is already sorted or naturally clustered by the key you're splitting on; forcing that clustering usually means sorting the cache first, which just moves the cost rather than removing it.</p>
-<h2>The trade-off, side by side</h2>
+<h2 id="the-trade-off-side-by-side">The trade-off, side by side</h2>
 <table>
 <thead>
 <tr>
@@ -295,7 +295,7 @@ if __name__ == &quot;__main__&quot;:
 </tbody>
 </table>
 <p>For five FRED series over a few decades — a few hundred keys at most — approach 1 is more than sufficient and is the simplest code to read, debug, and maintain. The other two only start earning their complexity once the key count climbs into the thousands or the cache itself becomes too large to reread cheaply.</p>
-<h2>Loading the split into SQLite</h2>
+<h2 id="loading-the-split-into-sqlite">Loading the split into SQLite</h2>
 <p>Flat files are a fine intermediate format, but once you want to actually query across periods and measures, SQLite earns its keep. Rather than reading all those small files back in, we load directly from the original cache — the split files above exist to demonstrate the three strategies, but SQLite's own indexing does the same job of &quot;get me the rows for this key&quot; without the file-per-key overhead at all.</p>
 <pre><code class="language-python">import csv
 import sqlite3
@@ -334,7 +334,7 @@ if __name__ == &quot;__main__&quot;:
     load_into_sqlite()
 </code></pre>
 <p>One table, one index on <code>(measure, period)</code>, and every one of those <code>period|measure</code> slices from before is now just a <code>WHERE measure = ? AND period = ?</code> away, no file lookups needed.</p>
-<h2>The fourth example: real-time access without a re-pull</h2>
+<h2 id="the-fourth-example-real-time-access-without-a-re-pull">The fourth example: real-time access without a re-pull</h2>
 <p>Everything so far treats the pull as a one-time event: history lands once, and all the interesting work happens offline. But FRED keeps publishing — <code>DGS10</code> gets a new observation every trading day, <code>UNRATE</code> every month. The moment this pipeline is more than a demo, a new question appears alongside the splitting one: how do you keep the local store current without re-paying for the entire pull? Re-running Step 0 downloads decades of history to pick up a handful of new rows, which is exactly the kind of expensive round trip the cache existed to avoid.</p>
 <p>The answer is to make the API do the filtering. The observations endpoint accepts an <code>observation_start</code> parameter, so the refresh becomes a two-step conversation: ask SQLite for the newest date it already holds per series, then ask the API only for observations after that date.</p>
 <pre><code class="language-python">import datetime
@@ -389,7 +389,7 @@ if __name__ == &quot;__main__&quot;:
 <p>Each run makes one bounded API call per series and appends only what's new — most days that's zero or one row per series, a response measured in bytes rather than decades. Because the request window always starts strictly after the local maximum date, rerunning it is harmless: a second run finds nothing new and inserts nothing. Put it on a scheduler at whatever cadence &quot;real time&quot; means for your data (hourly is plenty for economic series that update daily at most) and the store stays current for the cost of five tiny requests.</p>
 <p>One honest caveat: incremental append catches new observations, not revisions. FRED revises history — payroll numbers get restated, index series get re-benchmarked — and the API exposes those vintages through its <code>realtime_start</code> / <code>realtime_end</code> parameters. An append-only refresh never sees a revision to a date it already holds. The pragmatic pattern is to run both loops: the incremental refresh on a tight schedule for freshness, and the full Step 0 re-pull on a slow one (weekly or monthly) to reconcile whatever history moved underneath you.</p>
 <p>And if what you actually need is the single freshest value at request time — a dashboard tile showing today's 10-year yield — skip the pipeline entirely for that one read: <code>sort_order=desc&amp;limit=1</code> on the same endpoint returns just the latest observation in one tiny response. Wrap it in a short TTL cache (even sixty seconds) so a page full of tiles doesn't turn into a request storm, and let the SQLite store keep serving everything historical.</p>
-<h2>The finale: a small trend forecast</h2>
+<h2 id="the-finale-a-small-trend-forecast">The finale: a small trend forecast</h2>
 <p>With the data sitting in SQLite, the last step is to do something with it. We'll keep it simple and honest: a naive linear trend per series, fit on yearly averages, projected one year forward. This isn't a serious forecasting method — real economic series have seasonality, structural breaks, and plenty of nonlinearity — but it's a clean demonstration of going from raw pull to a derived insight entirely offline, no further API calls required.</p>
 <pre><code class="language-python">import sqlite3
 import numpy as np
@@ -423,7 +423,7 @@ if __name__ == &quot;__main__&quot;:
         print(f&quot;{measure}: projected {year} average = {value}&quot;)
 </code></pre>
 <p>Running that prints one naive projection per series, entirely from data that's already sitting on local disk. No further network calls, no reprocessing of the original cache — everything downstream of the SQLite load runs against an indexed local table.</p>
-<h2>Visualizing the forecast, three ways</h2>
+<h2 id="visualizing-the-forecast-three-ways">Visualizing the forecast, three ways</h2>
 <p>A number in a terminal is fine for a script, but if this forecast is going in front of anyone who isn't going to read the SQL, the visualization matters as much as the math. Three styles that consistently work for non-technical audiences:</p>
 <ul>
 <li><strong>Trend line with a shaded projection band</strong> — shows the shape of the history and signals &quot;this next bit is an estimate&quot; without saying so in words.</li>
@@ -527,7 +527,7 @@ if __name__ == &quot;__main__&quot;:
     build_all_visuals()
 </code></pre>
 <p>Run that after the forecast step and you get three PNGs per series, no extra queries and no extra API calls. In practice, the annotated line works well as the main chart, with a KPI card pulled out as a supporting tile for whichever series matters most to the audience in the room.</p>
-<h2>The shape of the lesson</h2>
+<h2 id="the-shape-of-the-lesson">The shape of the lesson</h2>
 <p>Zoom out and the whole pipeline is really just three decisions, made once each:</p>
 <ol>
 <li><strong>How do I get the data locally with the fewest expensive round trips?</strong> One pull per series, cached to flat file, is as cheap as it gets.</li>
@@ -554,7 +554,7 @@ if __name__ == &quot;__main__&quot;:
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

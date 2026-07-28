@@ -90,7 +90,7 @@
 <p>That experience reminded me why it is still useful. BTEQ is old, limited, and sometimes unpleasant to look at, but it remains a very effective tool for a specific kind of Teradata work.</p>
 <p>The important question is not whether BTEQ feels modern. It is whether it provides a clean way to run a controlled, session-sensitive SQL workflow.</p>
 <p>In many cases, it does.</p>
-<h2>The workflow BTEQ handles well</h2>
+<h2 id="the-workflow-bteq-handles-well">The workflow BTEQ handles well</h2>
 <p>A typical BTEQ use case looks something like this:</p>
 <ol>
 <li>Log on to Teradata.</li>
@@ -106,14 +106,14 @@
 <p>A volatile table belongs to the session that created it. Once that session ends, the table disappears. That behavior is useful because it avoids permanent staging objects, cleanup scripts, and unnecessary database clutter. It also means the workflow must keep the same session alive from creation through final use.</p>
 <p>BTEQ makes that boundary clear. The script logs on, performs the work, logs off, and exits.</p>
 <p>There is less uncertainty about which connection owns the table or whether a later query is still operating inside the same session.</p>
-<h2>One connection, many steps</h2>
+<h2 id="one-connection-many-steps">One connection, many steps</h2>
 <p>This matters when troubleshooting file imports.</p>
 <p>A BTEQ script using <code>.IMPORT</code> and <code>.REPEAT</code> does not reconnect for every imported row. It establishes the session at logon, reads the input records, and submits the repeated request through that session.</p>
 <p>The script may execute thousands of inserts, but that does not mean it is creating thousands of Teradata connections.</p>
 <p>That distinction is easy to lose when the only visible output is a long stream of repeated row counts or status messages. The process can look inefficient while still maintaining a single database session.</p>
 <p>The real performance question is how many requests are being submitted and how many records are included in each request.</p>
 <p>That is where <code>PACK</code> becomes useful.</p>
-<h2>Loading a modest value set</h2>
+<h2 id="loading-a-modest-value-set">Loading a modest value set</h2>
 <p>Suppose an analysis depends on 20,000 values from a CSV file.</p>
 <p>There are several possible approaches:</p>
 <ul>
@@ -164,7 +164,7 @@ INNER JOIN vt_value_set AS v
 <p>The table is created, the input file is loaded, the loaded row count can be checked, and the final query uses the temporary values directly.</p>
 <p><code>PACK 500</code> tells BTEQ to attempt to include multiple imported records in each request. The number is a tuning choice, not a rule. The right value depends on record width, request limits, file size, and the Teradata environment.</p>
 <p>The point is that BTEQ can batch a moderate import without requiring a full loading framework.</p>
-<h2>The script becomes the operational record</h2>
+<h2 id="the-script-becomes-the-operational-record">The script becomes the operational record</h2>
 <p>Interactive SQL tools are good places to develop queries. They are less effective at preserving the exact state of a multi-step workflow.</p>
 <p>A later reviewer may not know:</p>
 <ul>
@@ -180,7 +180,7 @@ INNER JOIN vt_value_set AS v
 <p>That matters during handoffs and troubleshooting. The executed file becomes the runbook.</p>
 <p>BTEQ run files can also separate reusable SQL from the controlling script. A wrapper can manage the login, logging, sequencing, and error behavior while individual SQL files contain the database work.</p>
 <p>For many small and medium Teradata processes, that is enough structure.</p>
-<h2>Error handling is part of the workflow</h2>
+<h2 id="error-handling-is-part-of-the-workflow">Error handling is part of the workflow</h2>
 <p>A repeatable process needs to communicate more than query results. It needs to tell the calling process whether it succeeded.</p>
 <p>BTEQ exposes values such as <code>ERRORCODE</code> and <code>ERRORLEVEL</code>, which can be used in conditional logic.</p>
 <p>A common pattern is:</p>
@@ -191,7 +191,7 @@ INNER JOIN vt_value_set AS v
 <p>Returning a nonzero code allows PowerShell, a batch file, or a scheduler to detect the failure and stop the larger workflow.</p>
 <p>Retry behavior also deserves attention. Automatic retry is not always safe, particularly inside larger transactions. A failed statement may trigger rollback behavior that affects more than the client expects.</p>
 <p>For update workflows, transaction boundaries and retry rules should be explicit.</p>
-<h2>BTEQ works well with PowerShell</h2>
+<h2 id="bteq-works-well-with-powershell">BTEQ works well with PowerShell</h2>
 <p>BTEQ becomes more useful when PowerShell handles the operating-system work around it.</p>
 <p>PowerShell can:</p>
 <ul>
@@ -206,7 +206,7 @@ INNER JOIN vt_value_set AS v
 <p>This division of labor works well.</p>
 <p>PowerShell manages files, parameters, logging, and process control. BTEQ manages the Teradata session and ordered SQL execution.</p>
 <p>The workflow remains understandable because each tool is doing the kind of work it handles well.</p>
-<h2>How BTEQ compares today</h2>
+<h2 id="how-bteq-compares-today">How BTEQ compares today</h2>
 <p>BTEQ overlaps with several newer or more capable tools, but it occupies a useful middle ground.</p>
 <table>
 <thead>
@@ -242,7 +242,7 @@ INNER JOIN vt_value_set AS v
 <p>TPT is the better choice when throughput and parallel data movement are the main concerns.</p>
 <p>Python is the better choice when the workflow is becoming an application.</p>
 <p>BTEQ fits when SQL remains the center of the process, but the SQL needs to run in a controlled sequence with a stable session.</p>
-<h2>Where BTEQ stops being a good fit</h2>
+<h2 id="where-bteq-stops-being-a-good-fit">Where BTEQ stops being a good fit</h2>
 <p>BTEQ becomes less attractive when the workflow requires:</p>
 <ul>
 <li>Complex branching or state management</li>
@@ -257,7 +257,7 @@ INNER JOIN vt_value_set AS v
 <p>Its export behavior also requires care. Delimiters, null handling, character sets, headings, quoting, and record widths should be configured explicitly.</p>
 <p>Credentials should be handled through the organization's approved authentication approach rather than embedded casually in reusable scripts.</p>
 <p>The fact that BTEQ can perform a task does not automatically make it the right tool.</p>
-<h2>Why it still matters</h2>
+<h2 id="why-it-still-matters">Why it still matters</h2>
 <p>BTEQ remains useful because it makes several operational details explicit:</p>
 <ul>
 <li>The session has a clear beginning and end.</li>
@@ -293,7 +293,7 @@ INNER JOIN vt_value_set AS v
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 

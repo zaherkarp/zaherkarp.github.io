@@ -86,7 +86,7 @@ Now we’re told we live in a <strong>Kappa world</strong>.</p>
 <p>In healthcare technology especially, where data is regulated, late, corrected, re-sent, and occasionally haunted, this shift deserves a closer look.</p>
 <p>Let’s talk about what actually changed, why it matters, and why neither architecture survives first contact with a healthcare API without compromise.</p>
 <hr />
-<h2>The Lambda Era: Two Pipelines Enter, No One Leaves Happy</h2>
+<h2 id="the-lambda-era-two-pipelines-enter-no-one-leaves-happy">The Lambda Era: Two Pipelines Enter, No One Leaves Happy</h2>
 <p>Lambda architecture promised something elegant:</p>
 <ul>
 <li>A <strong>batch layer</strong> for correctness and completeness</li>
@@ -112,7 +112,7 @@ In practice, it gave you <strong>two versions of the truth</strong>.</p>
 <p>The real failure of Lambda wasn’t conceptual. It was <strong>operational</strong>.<br />
 The cost of reconciliation became higher than the value of real-time insight.</p>
 <hr />
-<h2>Enter Kappa: One Stream to Rule Them All</h2>
+<h2 id="enter-kappa-one-stream-to-rule-them-all">Enter Kappa: One Stream to Rule Them All</h2>
 <p>Kappa architecture responds with a blunt but appealing idea:</p>
 <blockquote>
 <p>What if <em>everything</em> were a stream?</p>
@@ -142,9 +142,9 @@ Correct forward instead of reconciling sideways.</p>
 </ul>
 <p>On paper, Kappa feels like maturity.</p>
 <hr />
-<h2>The Part Where Reality Shows Up With a Clipboard</h2>
+<h2 id="the-part-where-reality-shows-up-with-a-clipboard">The Part Where Reality Shows Up With a Clipboard</h2>
 <p>Kappa architecture, especially in healthcare, has two problems that are rarely discussed honestly.</p>
-<h3>1. Streaming Is Still Harder Than We Admit</h3>
+<h3 id="1-streaming-is-still-harder-than-we-admit">1. Streaming Is Still Harder Than We Admit</h3>
 <p>Most organizations can <em>talk</em> about streaming.</p>
 <p>Far fewer can:</p>
 <ul>
@@ -159,7 +159,7 @@ It is <strong>highly exception-driven</strong>.</p>
 One eligibility correction can ripple across downstream risk models.</p>
 <p>Streaming systems can do this.<br />
 But they require expertise, discipline, and tooling that many teams don’t yet have.</p>
-<h3>2. History Is Still Cheaper in Batches</h3>
+<h3 id="2-history-is-still-cheaper-in-batches">2. History Is Still Cheaper in Batches</h3>
 <p>Here’s the quiet truth:</p>
 <p>For enormous historical datasets, <strong>batch is still king</strong>.</p>
 <p>Storing ten years of claims in a streaming platform is:</p>
@@ -179,7 +179,7 @@ But they require expertise, discipline, and tooling that many teams don’t yet 
 <p>So teams quietly reintroduce batch.
 And now we’re back where we started, just with better vocabulary.</p>
 <hr />
-<h2>The API Layer Changes the Conversation</h2>
+<h2 id="the-api-layer-changes-the-conversation">The API Layer Changes the Conversation</h2>
 <p>Where this gets interesting is at the <strong>API boundary</strong>.</p>
 <p>Modern healthcare platforms increasingly expose:</p>
 <ul>
@@ -205,7 +205,7 @@ And now we’re back where we started, just with better vocabulary.</p>
 </blockquote>
 <p>That’s a better question for healthcare.</p>
 <hr />
-<h2>Where I’ve Landed</h2>
+<h2 id="where-ive-landed">Where I’ve Landed</h2>
 <p>Lambda failed because it duplicated effort.<br />
 Kappa struggles because it assumes infinite expertise and infinite budget.</p>
 <p>Healthcare data doesn’t reward purity.<br />
@@ -239,7 +239,7 @@ It’s pragmatic, replayable, and deeply suspicious of absolutes.</p>
       <a href="/#contact">Contact</a>
     </nav>
     
-    <p class="footer-meta">Built 2026-07-26 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/320d1e0">320d1e0</a>.</p>
+    <p class="footer-meta">Built 2026-07-28 from <a href="https://github.com/zaherkarp/zaherkarp.github.io/commit/771c216c">771c216c</a>.</p>
     
   </footer>
 
