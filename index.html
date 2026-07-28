@@ -116,8 +116,8 @@
    ============================================================ */
 /* Palette tokens are GENERATED from src/content/palette.yaml by
    scripts/build_palette.py. Edit the YAML and rebuild, not the block
-   below. Light mode keeps the Tufte cream; dark is cooled to a neutral
-   slate, both sharing the constant accent. NOTE: the figure SVGs
+   below. Light mode is a pale moss-gray ("Lichen"); dark is a deep
+   moss-slate, both sharing the constant green accent. NOTE: the figure SVGs
    hardcode #7a0000 as the accent *sentinel* (remapped to var(--accent)
    by the attribute selectors below); it renders as the accent, not red. */
 :root {
@@ -2278,12 +2278,13 @@ figure.timeline.career-band figcaption {
        that hides an entire paragraph about the medallion
        architecture, RxNorm validation, and HIPAA framing.
 
-       Here, the expanded detail is NOT expand-collapsed. It is
-       pulled inline where it belongs, with the most detailed
-       technical passes demoted to sidenotes so they don't
-       crowd the main reading line.
+       Here, the lead paragraph always stays visible and the
+       most detailed technical passes are demoted to sidenotes so
+       they don't crowd the main reading line. The remaining depth
+       does sit behind a "More detail" fold (details.fold), per
+       CLAUDE.md §Experience entry expand rule.
 
-       Effect: the reader gets the full story without clicking,
+       Effect: the reader gets the shape of the role without clicking,
        and the technical depth is right there in the margin for
        anyone who wants it.
        ========================================================== -->
@@ -2368,7 +2369,8 @@ figure.timeline.career-band figcaption {
          below) as a before/after bar pair so the Experience lead
          carries a visible figure, not pure prose. The "after" bar
          is the section's single accent use (the accent sentinel
-         renders petrol teal via the palette selectors); the "before"
+         renders the accent, moss green, via the palette selectors);
+         the "before"
          bar is muted grey. "6x faster" is the direct label (72/12).
          Numbers match the fold prose exactly; no SVG swap, the
          viewBox scales the lone copy on mobile.
