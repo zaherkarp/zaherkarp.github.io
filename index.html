@@ -1955,7 +1955,7 @@ figure.timeline.career-band figcaption {
       <div class="body">
         <h3>Medicare Advantage Insight Engine</h3>
         <p>
-          A three-tier simulation of a Stars analyst's triage, modeling raw exposure, a relevance screen, and a scoring threshold, put the load near 180 to 200 items a week, with about 20 clearing the screen and four or five clearing the threshold. That is a reasoned model with assumed parameters, not measured data. This engine codifies the triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability. Early production data shows a low single digit number of alerts a week against a low double digit number of deduplicated stories, over too short a run to establish a stable baseline.
+          A modeled funnel puts a Stars analyst near 200 news items a week, about 20 clearing a relevance screen, four or five worth acting on. Those numbers come from a reasoned model, not measurement. The engine scores each item on six named features, from source authority to recency, and posts what clears the threshold to a Teams webhook with a per-feature breakdown.
         </p>
 
         <!-- ==========================================================
@@ -1966,9 +1966,10 @@ figure.timeline.career-band figcaption {
              relevance screen to the few items that matter; the worked
              accept/reject example and its per-feature bars now live
              only in the methodology post (linked below). The three
-             figures (~200/week, ~20, ~5) are the simulation's, and all
+             figures (~200/week, ~20, ~5) are the model's, and all
              three already appear in the prose above; the figcaption
-             carries the caveat that they are modeled, not measured.
+             repeats the modeled-not-measured caveat deliberately, so
+             the numbers keep their scope if the figure is read alone.
              Accent-free by design (career/funnel figures carry no
              accent). Presentation hexes (#6a6a6a, #111, #d0d0c8) are
              remapped to the palette by section 17. -->
@@ -1984,7 +1985,7 @@ figure.timeline.career-band figcaption {
             <text x="130" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#111" text-anchor="middle">~5 that matter</text>
           </svg>
           <figcaption>
-            Modeled weekly volume narrowing through a relevance screen to the items that clear the scoring threshold. The three figures come from a reasoned model with assumed parameters, not from measurement. The worked accept-versus-reject example is in the methodology post.
+            Modeled weekly volume narrowing through a relevance screen to the items that clear the scoring threshold. The three figures are modeled, not measured. The worked accept-versus-reject example is in the methodology post.
           </figcaption>
         </figure>
 
