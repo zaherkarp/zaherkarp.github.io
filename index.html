@@ -408,7 +408,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    zoom a 1280px viewport resolves to ~320 CSS px and falls under the
    <=760px block below, where the labels re-display and the toggles
    work, so the 1.4.10 Reflow path is untouched. */
-@media (min-width: 761px) {
+@media (min-width: 851px) {
   input.margin-toggle { display: none; }
 }
 
@@ -416,8 +416,29 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    Toggle label uses --muted with an underline for affordance.
    The accent color is reserved for chart callouts; using it on
    chrome (which the toggle becomes at narrow widths) re-grows
-   the accent into decoration that CLAUDE.md §Palette warns against. */
-@media (max-width: 760px) {
+   the accent into decoration that CLAUDE.md §Palette warns against.
+
+   The threshold is 850px, NOT the 760px used by the rest of the
+   page's breakpoints. Deliberate, and the resolution of the one
+   formally unresolved Design Council disagreement (§3.4 of the
+   2026-07-19 critique). Measured, the floating band runs 43ch at
+   1400px, 31ch at 1000px, 28ch at 900px, 26ch at 850px, and 23ch at
+   761px. Nothing overflows anywhere, so the band was never broken,
+   but below ~26ch a ragged two-sentence note stops being worth the
+   margin it sits in, and the inline form at that width is ~52ch.
+   850 is Edward's own stated line, and it covers Luke's case (iPad
+   portrait, 768px) which sits inside it.
+
+   Note this decouples the note breakpoint from the ~10 other media
+   queries at 760px (SVG swaps, grid collapse). Between 761 and 850px
+   you get the inline note treatment with the desktop layout
+   otherwise; measure and figure-swap are independent concerns.
+
+   The width/margin-right pair is deliberately NOT touched. Widening
+   `width` while `margin-right: -60%` stays fixed moves the note's
+   LEFT edge into the body column, because the negative margin pins
+   the right edge. Moving the threshold sidesteps that coupling. */
+@media (max-width: 850px) {
   label.margin-toggle:not(.sidenote-number) {
     display: inline;
     color: var(--muted);

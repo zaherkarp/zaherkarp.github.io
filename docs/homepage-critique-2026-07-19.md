@@ -175,14 +175,47 @@ All ten media queries sit at 760px; nothing handles 761–1000px.
   "stopped being a margin and become a gutter." Holds that only sub-850px is
   genuinely degraded, and that collapsing the whole band over-corrects.
 
-**Status: unresolved.** Luke and Edward disagree about a number, not a principle,
-and neither moved. All three reject do-nothing.
+**Status: RESOLVED 2026-07-28. Threshold moved to 850px.**
 
-**Engineering caution if this is actioned:** widening `width` toward 60–65% while
-`margin-right: -60%` stays fixed moves the note's *left* edge toward the body
-column — the float is pulled right by the negative margin, so the right edge is
-what is pinned. The two values are coupled and must be retuned together. This was
-flagged without being rendered; verify visually.
+The disagreement was blocked on its own §7 caveat, that none of this had been
+seen in a rendered browser. Measured in headless Chromium, the table above is
+accurate, and two things it could not know decided the question:
+
+| Viewport | Note width | Real measure | Overflow |
+|---|---|---|---|
+| 1400px | 386px | 43.3ch | none |
+| 1000px | 276px | 30.9ch | none |
+| 900px | 248px | 27.8ch | none |
+| 850px | 235px | 26.3ch | none |
+| 800px | 220px | 24.6ch | none |
+| 761px | 208px | 23.3ch | none |
+
+1. **Nothing breaks.** Zero box overflow at any width across all 16 notes; the
+   worst-case word (`medicare-advantage`) takes 69% of the band at its tightest,
+   and every `.stat-num` numeral fits. "The whole band is broken" overstates it:
+   this is a comfort problem, not a layout failure, which is the substance of
+   Edward's objection that collapsing 761–1000px over-corrects.
+2. **The two positions overlapped.** Luke's concrete case is iPad portrait at
+   768px, which sits *inside* Edward's sub-850px concession. They were arguing
+   about the range while agreeing about the example.
+
+**Resolution: collapse below 850px**, Edward's own stated line, which covers
+Luke's case. Above it the float is tight but reads and stays visible without
+interaction, which is the point of a margin; below ~26ch the inline form (~52ch
+at that width) is simply better.
+
+**Luke's second point was dropped, not actioned.** He argued the hover-only
+focus-plus-context reveals are dead on touch in that band. They fire on `:focus`
+as well, and every mark that carries a reveal is an `<a>`, so a tap focuses it
+and the reveal runs. No work needed.
+
+**The engineering caution below was sidestepped rather than managed.** It warned
+that widening `width` toward 60–65% while `margin-right: -60%` stays fixed moves
+the note's *left* edge toward the body column, because the negative margin pins
+the right edge, so the two values are coupled and must be retuned together.
+Moving the collapse threshold touches neither value, so the coupling never comes
+into play. The safer intervention was available the whole time; the proposal that
+made this look risky was the one nobody needed.
 
 ---
 
@@ -390,7 +423,7 @@ None of this has been seen in a browser. Before trusting §2:
 - [ ] Same at 700px. Confirm `⊕` toggles work and reveal notes inline.
 - [ ] 400% browser zoom at 1280px. Confirm the mobile block engages and toggles
       function (this is the path §2.2's media query depends on).
-- [ ] Render at 761px, 800px, 1000px. Judge the sidenote measure against the
+- [x] Render at 761px, 800px, 1000px. Judge the sidenote measure against the
       table in §3.4 and decide the Luke/Edward threshold question.
 - [ ] Light and dark mode on the writing index, confirming the removed
       `.index-label` CSS left no visual gap.

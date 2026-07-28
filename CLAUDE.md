@@ -270,8 +270,10 @@ else.
 
 Article max-width 1400px, body column at 60% (~840px on a wide viewport),
 leaves 40% for floating sidenotes and margin notes. Below 760px the
-column collapses to 100% and sidenotes become inline toggles via the
-checkbox-hack pattern.
+column collapses to 100%. Sidenotes become inline toggles at a DIFFERENT
+breakpoint, **850px**, deliberately decoupled from the 760px family (see
+§Sidenote system); between 761 and 850px you get the inline note
+treatment with the desktop layout otherwise.
 
 The prior site used a 640px Yau-pivot column (single column, no margin).
 The rebuild restored the Tufte three-zone layout because the sidenote
@@ -384,8 +386,29 @@ Focus from the (invisible) checkbox is projected onto the visible label
 via `label:has(+ input:focus-visible) { outline: ... }`. Without this,
 keyboard users couldn't reach or activate sidenote toggles.
 
-Mobile (≤760px): the sidenote/margin-note span hides; tapping the label
-reveals it as an indented inline block with a left rule.
+Mobile (≤850px, NOT 760px): the sidenote/margin-note span hides; tapping
+the label reveals it as an indented inline block with a left rule. The
+850px threshold resolves the one formally unresolved Design Council
+disagreement (§3.4 of the 2026-07-19 critique), settled 2026-07-28 by
+measuring rather than arguing: the floating band runs 43ch at 1400px,
+31ch at 1000px, 28ch at 900px, 26ch at 850px and 23ch at 761px, with no
+overflow at any width. So the band was never broken, but below ~26ch a
+two-sentence note stops earning the margin, and the inline form at that
+width is ~52ch. Do not "fix" this back to 760px for consistency.
+
+Two carve-outs inside that block:
+  - The three `.stat-num` margin stats do NOT collapse. They exist to
+    surface a buried number, so hiding them behind a tap inverts their
+    purpose; they render in flow and their toggle (label and checkbox)
+    is retired so no dead control sits in the tab order.
+  - Every remaining toggle label carries a centered 24x24 hit area via
+    an absolutely positioned `::before` (WCAG 2.2 §2.5.8), the same
+    technique as the SVG rect overlays. `::before` rather than `::after`
+    because `.sidenote-number` already spends `::after` on its counter.
+    Verify this by hit-testing with `elementsFromPoint`, not by reading
+    the pseudo-element's computed width: that read is flaky on inline
+    elements and will intermittently report 0px on a target that is in
+    fact fully clickable.
 
 Margin block discipline: marginnote spans must contain inline-only
 content (no `<p>`, `<ul>`, `<ol>`, `<blockquote>`, `<table>`, `<div>`,
@@ -1928,6 +1951,30 @@ name surfaces with a high-confidence wrong rendering in the corpus.
 Two verbal-invocation simulation patterns. Both propose changes
 keyed to line ranges; neither edits without approval.
 
+**Convene them TOGETHER, always (owner decision, 2026-07-28.)** Any
+question that reaches either panel goes to both. This supersedes the
+previous practice of routing a question to one panel and away from the
+other, which parked at least one finding for months: the "audience
+question" in `docs/homepage-critique-2026-07-19.md` §4 was labeled a
+Focus Group question and not a Design Council one, and then nobody
+convened the Focus Group, so it sat.
+
+What the pairing does NOT change:
+  - **Lanes.** The persona lists below still say who LEADS on what.
+    Reception findings are the Focus Group's; taste calls are the
+    Council's. Joint convening decides who is in the room, not whose
+    judgment carries on a given point.
+  - **Vetoes.** Haben keeps the soft veto on AA regressions and remains
+    the only persona with one. Val keeps the motion-vocabulary lane.
+  - **The "do NOT convene for" lists.** Those govern whether to convene
+    at ALL (copy edits inside an entry, build-script changes, routine
+    content updates still need no panel), not which panel.
+
+The point of pairing is the conflict between the two readings, so report
+it. A reception objection is not answered by a design rationale, and a
+design principle is not overturned by one panelist's discomfort. Where
+they disagree, say so and hold both.
+
 **Focus Group** — reader-reception evaluation. 3 rounds of ~4
 panelists (hiring managers, peers, recruiters, UX reviewers, named
 archetypes like "Director of Quality Analytics at a regional MA
@@ -1987,6 +2034,18 @@ specific artifact (file path, line range, live URL). Then points of
 agreement, points of contention with the pairing. Recommendation
 ONLY if asked; otherwise present the disagreement and stop. Do not
 collapse disagreement into consensus unless explicitly asked.
+
+Because the panels convene jointly, the synthesis has three parts, in
+this order: reception findings, design findings, then the points where
+the two conflict. Do not merge the first two into a single verdict.
+
+**Render before arguing about a rendered thing.** The one formally
+unresolved disagreement in this repo (the sidenote band, §3.4 of the
+2026-07-19 critique) stayed open for months over a number that a
+headless-browser measurement settled in one pass, and the measurement
+showed both sides had partly overlapping positions and that "broken"
+overstated the defect. If a question is about what something looks like
+at a given viewport, measure it first and bring the numbers.
 
 Constraints for both panels: do not propose changes that violate
 §What NOT to do or the locked design tokens above. The current

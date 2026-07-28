@@ -81,22 +81,37 @@ measurements instead of argument, and the same harness answers §3.4.
 - **Haben:** explicitly **no veto** — 1.4.8's 80ch is a maximum and AAA, so this
   is a taste call, not a compliance one.
 
-**Recommendation:** stop arguing the threshold and measure it. Render the
-sidenote band at 761 / 800 / 900 / 1000px and read the actual ch count, then
-pick the breakpoint from the number. Carry the doc's engineering caution into
-the fix: `width` and `margin-right: -60%` are **coupled** — widening one moves
-the note's left edge into the body column — so they must be retuned together and
-verified visually, not computed.
+**RESOLVED 2026-07-28.** Measured, then decided with both panels convened
+together. The band runs 43ch at 1400px, 31ch at 1000px, 28ch at 900px, 26ch at
+850px and 23ch at 761px, with **zero overflow at any width** across all 16
+notes. So the band was never broken, which is Edward's point; but below ~26ch a
+two-sentence note stops earning the margin, and Luke's concrete case (iPad
+portrait, 768px) turned out to sit *inside* Edward's own sub-850px concession.
+They had been arguing about the range while agreeing about the example.
 
-### 2.2 The audience question — route it to the Focus Group, not here
+The collapse threshold moved from 760px to **850px**. Luke's second argument,
+that the hover reveals are dead on touch in that band, was dropped rather than
+actioned: they fire on `:focus` too, and every mark carrying one is an `<a>`, so
+a tap runs the reveal.
+
+The engineering caution was **sidestepped, not managed**. It applied to widening
+`width` against a fixed `margin-right: -60%`; moving the threshold touches
+neither value. The safer intervention existed the whole time, and the proposal
+that made this look risky was the one nobody needed. Worth remembering: that
+caution was written without rendering, and it deterred action for months on a
+change nobody had to make.
+
+### 2.2 The audience question — now simply on the joint agenda
 
 §4 Tier 1: *"Tufte designed for a reader with an hour. `CLAUDE.md` names an
 audience that includes recruiters. Nearly every Tier 2 item resolves differently
 depending on which reader wins."*
 
 The doc explicitly routes this to the **Focus Group** (reader reception), not
-the Design Council. **Recommendation:** honor that routing, and settle it before
-spending council time on §2.5 and §2.6 below, both of which it gates.
+the Design Council. That routing is why it sat: it was assigned to a panel
+nobody then convened. **As of 2026-07-28 the two panels are always convened
+together** (CLAUDE.md §Agent panels), so the routing question dissolves and this
+becomes the next joint agenda item. It still gates §2.5 and §2.6.
 
 ### 2.3 Mobile: two concrete defects — the strongest ship-now candidates
 
