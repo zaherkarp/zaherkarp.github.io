@@ -288,7 +288,7 @@ def build_article_jsonld(post: dict) -> str:
 def render_post(env: Environment, post: dict, current_year: int, build_info: dict) -> str:
     template = env.get_template("blog/post.html")
     return template.render(
-        page_title=f"{post['title']} — Zaher Karp",
+        page_title=f"{post['title']}, Zaher Karp",
         page_description=post["description"],
         canonical_url=f"{SITE_URL}/blog/{post['slug']}/",
         og_type="article",
@@ -340,7 +340,7 @@ def render_current_index(env: Environment, posts: list[dict], archive_count: int
             "label": f"Earlier writing ({archive_count} posts, 2009–2011) →",
         }
     return template.render(
-        page_title="Writing — Zaher Karp",
+        page_title="Writing, Zaher Karp",
         page_description="Long-form writing on healthcare data engineering, Medicare Advantage Stars methodology, and production analytics.",
         canonical_url=f"{SITE_URL}/blog/",
         section_label="Writing",
@@ -358,11 +358,11 @@ def render_current_index(env: Environment, posts: list[dict], archive_count: int
 def render_archive_index(env: Environment, posts: list[dict], current_year: int, build_info: dict) -> str:
     template = env.get_template("blog/list.html")
     return template.render(
-        page_title="Archive — Zaher Karp",
+        page_title="Archive, Zaher Karp",
         page_description="Earlier writing from 2009–2011, before the healthcare data engineering focus. Green building, education, and interviews.",
         canonical_url=f"{SITE_URL}/blog/archive/",
         section_label="Archive",
-        intro="Earlier writing from 2009–2011. Green building, education, interviews — kept online for provenance, not portfolio.",
+        intro="Earlier writing from 2009–2011. Green building, education, interviews, kept online for provenance, not portfolio.",
         posts=posts,
         back_link={"url": "/blog/", "label": "← Current writing"},
         current_year=current_year,
@@ -411,7 +411,7 @@ def render_tag_page(env: Environment, tag: dict, current_year: int, build_info: 
     template = env.get_template("blog/list.html")
     plural = "s" if tag["count"] != 1 else ""
     return template.render(
-        page_title=f"{tag['label']} — Writing — Zaher Karp",
+        page_title=f"Writing tagged {tag['label']}, Zaher Karp",
         page_description=f"Writing tagged {tag['label']}.",
         canonical_url=f"{SITE_URL}/blog/tags/{tag['slug']}/",
         section_label=f"Tagged {tag['label']}",
@@ -426,7 +426,7 @@ def render_tag_page(env: Environment, tag: dict, current_year: int, build_info: 
 def render_tags_index(env: Environment, tags: list[dict], current_year: int, build_info: dict) -> str:
     template = env.get_template("blog/tags.html")
     return template.render(
-        page_title="Tags — Zaher Karp",
+        page_title="Tags, Zaher Karp",
         page_description="Browse writing by tag.",
         canonical_url=f"{SITE_URL}/blog/tags/",
         section_label="Tags",
