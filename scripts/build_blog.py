@@ -35,6 +35,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown_it import MarkdownIt
 from mdit_py_plugins.footnote import footnote_plugin
 from mdit_py_plugins.deflist import deflist_plugin
+from mdit_py_plugins.anchors import anchors_plugin
 
 from _common import install_git_hooks, iter_post_paths, slugify_tag
 
@@ -114,6 +115,11 @@ def make_markdown() -> MarkdownIt:
     md.enable(["table", "strikethrough"])
     md.use(footnote_plugin)
     md.use(deflist_plugin)
+    # Heading ids, so cross-post links can target a section. Without this no
+    # built post emitted any heading id, and every /blog/<slug>/#<heading>
+    # link landed at the top of the target post. h2-h3 only: the page <h1>
+    # comes from the template, not the markdown body.
+    md.use(anchors_plugin, min_level=2, max_level=3)
     return md
 
 
