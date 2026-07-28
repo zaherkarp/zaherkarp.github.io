@@ -210,27 +210,37 @@ commits.
   (prefers-reduced-motion: reduce)` declared, descriptive aria-labels
   on all sidenote/marginnote toggles.
 
-### Tier 3 — still deferred
+### Tier 3 — resolved by the owner 2026-06-08
 
-Each touches a locked design token or sits in an "explicit author
-go-ahead" zone. Full per-item rationale and recommendation in
+All eight were decided in a comment on issue #43 and the decisions were
+propagated here on 2026-07-28. Six are closed; two are deferred options
+with trigger conditions, not queued work. Per-item reasons in
 `reviews/2026-05-23-synthesis.md`:
 
+**Closed (`wontfix`):**
+
 - Subtitle rewrite (locked text in CLAUDE.md §Hero)
-- Career arc redesign (locked coordinates)
-- Delete "Featured" / "More projects" subhead labels
-- Hand-shaped marks on career arc
-- Replace dot-area citation encoding
-- Full data-driven build pipeline for every figure
-- Interactive slope-graph widget
-- Current-section nav indicator
+- Career arc redesign (locked, tested coordinates)
+- Delete "Featured" / "More projects" subhead labels (kept as wayfinding)
+- Hand-shaped marks on career arc (ink without data)
+- Replace dot-area citation encoding (the encoding is intentional)
+- Interactive slope-graph widget (no-JS rule; also moot since the slope
+  graph was removed on 2026-07-01)
+
+**Deferred, trigger not yet fired:**
+
+- Full data-driven build pipeline for every figure — revisit when a
+  second chart visibly drifts out of truth
+- Current-section nav indicator — a `:target`-based fallback stays a
+  live option; only the scrollspy was rejected
 
 ### Tier 1 — single item pending input
 
 - Add one production-system anchor with a real number (volume, schema
   count, DAG size, freshness SLO) inside the BHA or Health Catalyst
   fold. Deferred because no number safe for public surface was on hand
-  at the time of Iteration 4.
+  at the time of Iteration 4. Still open as of 2026-07-28; issue #43
+  shows it checked, which is wrong.
 
 ---
 

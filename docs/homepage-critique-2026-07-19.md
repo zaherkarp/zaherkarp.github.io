@@ -261,8 +261,19 @@ so a `<span>` there is text. Same word, two pipelines, opposite handling.
 3. **Leave it.** One French city in one folded 2012 citation; a screen reader
    anglicizes one vowel. Genuinely marginal cost/benefit.
 
-**Status:** deferred. Preferred path is option 1, homepage-only unless the CV
-scope question is answered otherwise. Not urgent.
+**Status: SHIPPED 2026-07-23** (commit `6f7bea8`), via option 1. A
+`venue_lang` mapping in `src/content/publications.yaml` is applied at render
+time by `scripts/_publications.py`, after escaping. The CV scope question was
+answered implicitly: the wrapper feeds `render_cv_entries` too, so `cv.html`
+got it as well.
+
+**One residual, found and fixed 2026-07-28.** The YAML-driven path covered the
+publications entry on both the homepage and `cv.html`, but the CV's
+*presentations* list is hand-authored markdown, so `cv.md:58` still carried a
+bare `Montréal` while the generated entry two sections away was wrapped. It is
+now wrapped by hand to match. The general lesson: a render-time fix keyed to one
+source of truth leaves any hand-authored surface of the same fact untouched, and
+nothing checks the two against each other.
 
 ### Explicitly out of scope
 
@@ -389,7 +400,20 @@ None of this has been seen in a browser. Before trusting §2:
 
 ## 8. Palette reopening — decision record (exploratory)
 
-**Status: proposal, not a change. Nothing was written to `index.html`.** The
+**Status: ADOPTED 2026-07-23. This section is now a historical record.** Board
+entry #1, "Lichen at First Light" (`seed-122`), was chosen by the owner, and its
+values are live in `index.html` and `src/content/palette.yaml`. The text below is
+preserved as written, so it still describes the pre-adoption cream/slate +
+petrol-teal palette as current; read it as of its own date.
+
+**Two follow-ups survive the adoption and are still open.** The hand-tuning pass
+this section asks for at the end (tuning the five roles against the real page,
+plus a full-council convening, rather than a find-and-replace of the tokens)
+does not appear to have happened: the shipped hexes are the board values
+verbatim. And the nudge-vs-statement vote it asks to be held explicitly, if a
+single winner were ever forced, was not held. A single winner was forced.
+
+The original framing follows. The
 current cream/slate + petrol-teal palette is a locked design token; this section
 records an exploration of alternatives, not a decision to adopt one. Adopting any
 palette is a separate, deliberate step and a full-council convening.

@@ -103,7 +103,7 @@ comment on the tracking issue starting with `defer: <reason>` or
 
 Single item pending author input.
 
-- [ ] Add one production-system anchor with a number (volume, schema count, DAG size, freshness SLO) inside the BHA or Health Catalyst fold. Author has not yet shared a number safe for public surface; deferred from Iteration 4's Tier 1.
+- [ ] Add one production-system anchor with a number (volume, schema count, DAG size, freshness SLO) inside the BHA or Health Catalyst fold. Author has not yet shared a number safe for public surface; deferred from Iteration 4's Tier 1. *(Shows `[x]` on issue #43 but is still genuinely open: no public-safe number appears in the BHA fold as of 2026-07-28. Trust this line, not the issue.)*
 
 ### Tier 2 (queue)
 
@@ -114,15 +114,18 @@ items (Tier 3).
 
 ### Tier 3 (defer or discuss)
 
-Each of these touches a locked design token or sits in an "explicit
-author go-ahead" zone. Not iteration candidates without a separate
-conversation.
+**All eight were resolved by the owner on 2026-06-08** in a comment on issue
+#43 (six `wontfix:`, two `defer:`). The decisions were never written back here,
+so this list read as open for seven weeks and the items kept reappearing in the
+carry-forward block. Recorded below with each decision and its stated reason.
+Nothing here is an iteration candidate; the two `defer:` items are options with
+trigger conditions, not queued work.
 
-- [ ] Subtitle rewrite (line 1253). Editorial-clarity and hiring-panel both flagged it. `CLAUDE.md` §Hero: "The subtitle text itself is locked; do not edit without explicit instruction."
-- [ ] Career arc redesign (Encoding rigorists' structural critique). `CLAUDE.md` marks the coordinate system as locked.
-- [ ] Delete "Featured" / "More projects" subhead labels (lines 1996, 2283) — Editorial clarity wants delete, System designers cite as wayfinding
-- [ ] Hand-shaped marks / per-byline glyphs on career arc — Data humanists; Encoding, Pipeline, and Access floor opposed
-- [ ] Replace dot-area citation encoding with a numeric y-axis or printed integers — Encoding rigorists; System and Data humanists opposed
-- [ ] Full data-driven build pipeline for every figure (`scripts/build_figures.py` from YAML/CSV) — Pipeline's hill-to-die. The cliff figure proved the pattern; revisit when a second chart visibly drifts out of truth.
-- [ ] Interactive slope-graph widget (CSS `:checked` multi-state) — touches the locked "no JavaScript anywhere else without discussion" rule in spirit
-- [ ] Add current-section nav indicator — `IntersectionObserver` scrollspy violates "no JS" rule; `:target` fallback only fires on hash-link navigation
+- [x] **wontfix** — Subtitle rewrite (line 1253). "Locked per CLAUDE.md §Hero; rewriting reopens a settled framing, not a defect."
+- [x] **wontfix** — Career arc redesign. "SVG coordinate system is locked and tested; a structural redesign invalidates tested coordinates for no identified reader problem." *(Partly overtaken: the arc was restructured into `tl-horizontal` / `tl-rail` on 2026-07-26, but the coordinates were restored verbatim rather than redrawn, so the reason holds.)*
+- [x] **wontfix** — Delete "Featured" / "More projects" subhead labels. "Kept as wayfinding; resolving the tie toward keeping the cue." *(CLAUDE.md §Project numbering was corrected on 2026-07-28 to stop inviting the opposite.)*
+- [x] **wontfix** — Hand-shaped marks / per-byline glyphs on career arc. "Add ink without data and complicate the SVG palette-adapter contract."
+- [x] **wontfix** — Replace dot-area citation encoding with a numeric y-axis or printed integers. "Dot-area encoding is intentional; keep the figure a glanceable distribution, not a table."
+- [x] **wontfix** — Interactive slope-graph widget (CSS `:checked` multi-state). No-JS rule. *(Also moot: the slope graph was removed when SkillSprout was demoted to a tile on 2026-07-01.)*
+- [ ] **defer, trigger not yet fired** — Full data-driven build pipeline for every figure (`scripts/build_figures.py`). "Revisit when a second chart visibly drifts out of truth. The cliff figure proved the pattern, but one instance doesn't justify the abstraction yet."
+- [ ] **defer, still a live option** — Add current-section nav indicator. "An IntersectionObserver scrollspy violates the no-JS rule, but a `:target`-based fallback stays a possible future option, so hold rather than reject outright." 

@@ -17,10 +17,12 @@ Google Search Console verification is live (token in `index.html` and
 4. Bing returns a tag of the form:
    `<meta name="msvalidate.01" content="ABC123...">`.
 5. Copy the `content` value (the token, not the full tag).
-6. Paste it into BOTH places where the placeholder lives, replacing
+6. Paste it into the one place the placeholder still lives, replacing
    `REPLACE_WITH_TOKEN` and removing the surrounding `<!-- ... -->`:
-   - `index.html` (around line 12)
-   - `scripts/templates/blog/base.html` (around line 12)
+   - `scripts/templates/blog/base.html` (around line 14)
+   It was removed from `index.html`, so the homepage needs no edit. The
+   commented-out placeholder in the template does ship (inert) into every
+   built blog page.
 7. Commit and push. Wait for GitHub Pages to redeploy (~1 minute).
 8. Return to Bing Webmaster Tools and click **Verify**.
 9. Once verified, submit `https://zaherkarp.com/sitemap.xml` under
@@ -76,11 +78,12 @@ mailto. Useful for IndieWeb identity-graph propagation. Five minutes.
 to a `data/citations.json` sidecar on each Sunday cron run. Over months
 this becomes a citation-growth time series per publication.
 
-### Custom 404.html for inbound dead-link tracking (#17)
+### ~~Custom 404.html for inbound dead-link tracking (#17)~~ DONE
 
-Currently GitHub Pages serves its generic 404, which doesn't load the
-GoatCounter tag. A site-styled 404.html would log the missed paths and
-referrers — useful for catching dead inbound links.
+Shipped. `404.html` exists, is site-styled, and carries the GoatCounter
+tag with the 404-prefix callback, so missed paths and referrers are
+logged. Kept here struck through rather than deleted so the item is not
+re-proposed.
 
 ---
 

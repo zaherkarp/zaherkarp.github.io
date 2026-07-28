@@ -264,3 +264,66 @@ Three things, in order:
 §2.1 is the most interesting item and is now unblocked, but it is a taste call
 with no user complaint behind it. §3.1-4 are the ones with actual real-world
 cost and no design content at all.
+
+---
+
+# ACTIONED — 2026-07-28
+
+Recommendations 1 and 2 were carried out in the same pass that produced this
+document. What follows is what changed; everything not listed is still open.
+
+## Done
+
+**§2.3, both mobile defects** (Luke, Haben, Edward concurring; no dissent):
+- The three `.stat-num` margin stats now render in flow at ≤760px instead of
+  collapsing behind a tap, styled like an expanded note. Their toggles (label
+  *and* checkbox) are retired so no dead control is left in the tab order.
+  Verified: all three visible at 600px, three toggles correctly removed.
+- All remaining toggle labels get a centered 24×24 hit area via an absolutely
+  positioned `::before`, clearing WCAG 2.2 §2.5.8 without moving a visible pixel
+  or changing the line box. `::before` rather than `::after` because
+  `.sidenote-number` already spends `::after` on its counter. Verified: 13 live
+  toggles, all 24×24.
+
+**§1, all five stale records** — `homepage-critique-2026-07-19.md` §4.1 (shipped
+`6f7bea8`) and §8 (palette adopted 2026-07-23), `TODO.md` (404 done, Bing token
+location), and the issue #43 decisions propagated into
+`reviews/2026-05-23-synthesis.md` and `reviews/README.md` with each `wontfix:` /
+`defer:` reason recorded per item. The Tier-1 `[x]`/`[ ]` split is reconciled in
+favour of "still open", which is what the source says.
+
+**§3.2, the colophon** — six count references corrected to twelve, including the
+visible SVG text, and the missing twelfth linter (`lint_ideas.py`) added to the
+list it names. The page had been describing eleven while naming eleven, so both
+halves were wrong together.
+
+**§3.7-8, documentation drift and dead code** — `README.md` (linter count, fold
+count 7→11, the removed SkillSprout slope graph, the Gantt's position),
+`CLAUDE.md` (inline-CSS line count, the retired `tl-compact`, the dead
+`.sankey-figure` idiom, the section renumber, and the "Featured" label
+contradiction), `docs/pipelines.md` (nine→eleven, with the CI/manual/external
+split counted rather than estimated). The dead `.sankey-figure` CSS block and
+its two stale in-file references are removed from `index.html`, and the
+duplicate section number **19** is resolved by renumbering the split-hero family
+to 20 / 21 / 21.1.
+
+**The `cv.md:58` Montréal residual** found in §1 is fixed.
+
+## Deliberately not done
+
+Four items need a fact only the owner has, and guessing would be worse than
+leaving them:
+
+- **The resume contact email** (§3.1). Two addresses are in play and which one
+  should be public on the resume is a preference, not an error to correct.
+- **The `$50M` denominators** (§3.3) and **the healthfinch numbers** (§3.4).
+  Both need the real figure and period; §Calibrated claims forbids picking the
+  more flattering one, and nothing in the repo says which is right.
+- **`robots.txt` coverage of `/critiques/`, `/evaluations/`, `/reviews/`,
+  `/docs/`** (§3.9). Whether these should be crawlable is a decision, not a
+  defect.
+
+One item is mechanical but has a large blast radius and was left for a separate
+change: **the em dashes in ~250 blog page titles** (§3.10). The fix is five
+f-strings in `build_blog.py`, but applying it regenerates every built page, which
+would bury a design diff.

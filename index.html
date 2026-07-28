@@ -426,7 +426,45 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
     text-underline-offset: 0.18em;
     cursor: pointer;
   }
+  /* Touch targets for the note toggles. The arc bands and publication
+     dots got transparent overlays sized past the WCAG 2.2 2.5.8 floor;
+     the 12 toggle labels never did, so a tap target here was the glyph
+     itself (a ~14px circled plus, or a 0.9rem superscript numeral).
+     Same technique as the SVG overlays: a centered, absolutely
+     positioned 24px box that expands the hit area without moving a
+     visible pixel or changing the line box. ::before is used because
+     .sidenote-number already spends ::after on the counter. */
+  label.margin-toggle { position: relative; }
+  label.margin-toggle::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+  }
   .sidenote, .marginnote {
+    display: none;
+  }
+  /* Margin stats are the exception to the collapse. They exist to pull
+     a buried headline number into view, so hiding all three behind a
+     tap on the majority-traffic viewport inverts the reason they were
+     added. Render them in flow, styled like an expanded note, and
+     retire their toggle (label and checkbox both) so no dead control
+     is left in the tab order. */
+  .marginnote:has(.stat-num) {
+    display: block;
+    float: none;
+    clear: both;
+    width: auto;
+    margin: 1.2rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 3px solid var(--rule);
+    background: color-mix(in srgb, var(--ink) 2%, transparent);
+  }
+  label.margin-toggle:has(+ input + .marginnote .stat-num),
+  input.margin-toggle:has(+ .marginnote .stat-num) {
     display: none;
   }
   .margin-toggle:checked + .sidenote,
@@ -521,9 +559,9 @@ nav.top a:hover { color: var(--ink); text-decoration: underline; }
 }
 /* Unified figcaption styling for hero-width timeline figures
    (career arc, dot plot). Matches the .gantt-figure /
-   .cliff-figure / .sankey-figure figcaption rules so all five
-   figures on the page have consistent caption typography
-   instead of two slightly different sizes. */
+   .cliff-figure figcaption rules so the figures on the page have
+   consistent caption typography instead of two slightly
+   different sizes. */
 figure.timeline figcaption {
   font-style: italic;
   color: var(--muted);
@@ -911,35 +949,10 @@ figure.gantt-figure figcaption {
 }
 
 /* ============================================================
-   SANKEY-STYLE TRANSITION FIGURE
-   The SkillSprout worked example. Same sizing pattern as
-   cliff-figure: inline inside a project body, max-width 600px.
-   ============================================================ */
-figure.sankey-figure {
-  margin: 1.2rem 0;
-  max-width: 760px;     /* viewBox extended to 700-wide so the
-                           rightmost target labels (Health Info Tech,
-                           associate's degree) fit without clipping;
-                           max-width bumped to keep the rendered size
-                           close to the prior 640/600 = 1.067x scale. */
-}
-figure.sankey-figure svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-figure.sankey-figure figcaption {
-  font-style: italic;
-  color: var(--muted);
-  font-size: 1.05rem;
-  margin-bottom: 0.5rem;
-}
-
-/* ============================================================
    OUTCOME FIGURES (Experience section)
    Small before/after bar figures that surface the quantitative
    outcomes otherwise buried in the role prose. Same sizing
-   idiom as cliff-figure / sankey-figure, but narrower, since
+   idiom as cliff-figure, but narrower, since
    they sit inline in the 60% body column beside a role lead.
    Pure SVG; the hex presentation attributes adapt to light/dark
    via the palette selectors lower in this stylesheet, and the
@@ -1624,7 +1637,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 }
 
 /* ============================================================
-   19. SPLIT HERO (Direction B: writing-led, two columns)
+   20. SPLIT HERO (Direction B: writing-led, two columns)
    The opening: a Tier-1 proposition, then a full-width TWO-column
    grid (recent writing ~62% / current work ~38%), then the career
    timeline as a full-width band, then a one-line "More:" row. The
@@ -1761,7 +1774,7 @@ figure.timeline.career-band figcaption {
 }
 
 /* ============================================================
-   20. MORE LINE
+   21. MORE LINE
    One restrained line replacing the three-card teaser row (which
    read as a second navigation). Same-page jump links to the
    sections the reduced top nav dropped, plus full experience. A top
@@ -1777,7 +1790,7 @@ figure.timeline.career-band figcaption {
 .hero-more a { text-decoration-color: var(--rule); }
 
 /* ============================================================
-   20.1. SPLIT HERO BREAKPOINTS (Direction B)
+   21.1. SPLIT HERO BREAKPOINTS (Direction B)
    The two-column grid uses fr units, so it scales fluidly. The
    1000px stop gives the writing column a little more room at mid
    widths (resolving the 761-1000px squeeze the 2026-07-19 critique

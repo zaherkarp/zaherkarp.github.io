@@ -132,7 +132,7 @@ The repo layout is conventional; `find` or [README.md](README.md) is
 authoritative on the tree. Things not obvious from the filesystem:
 
 - `.claude/` is gitignored — local agent settings only, never tracked.
-- `index.html` carries inline CSS (~2,570 lines). Do not extract.
+- `index.html` carries inline CSS (~1,740 lines, the `<style>` block). Do not extract.
 - `/blog/`, `/blog/archive/`, `resume.pdf`, `sitemap.xml` are GENERATED.
   Sources at `src/content/`. Do not hand-edit the generated outputs.
 - Interactive subpages (`star-rating-predictor/`, `life-in-weeks/`,
@@ -294,7 +294,7 @@ update rule for the suppressed per-post note). Now **two** columns (writing
 ~1.6fr / current work ~1fr) above 760px, tightening to ~1.4fr/1fr at 761-1000px,
 one column below 760px. The full-width `figure.timeline.career-band` and the
 `.hero-more` line sit below the grid (also full-width exceptions). The rest of
-the page keeps the 60% column. CSS lives in sections 19 / 20 / 20.1 of
+the page keeps the 60% column. CSS lives in sections 20 / 21 / 21.1 of
 index.html (§20 is now the `.hero-more` line, not the retired teaser row).
 
 ### Hero
@@ -495,7 +495,7 @@ the link to both the line (band draw delay = `--seq * 0.35s`) and the label
 `:nth-of-type` addressing; the per-band values live on the markup.
 
 Clickable bands (added 2026-06-09): each career-arc band, in BOTH
-`tl-horizontal` and `tl-compact`, is wrapped in `<a href="#exp-...">` that
+`tl-horizontal` and `tl-rail` (`tl-compact` was retired 2026-07-26), is wrapped in `<a href="#exp-...">` that
 jumps to its role in Experience: `#exp-bha`, `#exp-catalyst`,
 `#exp-healthfinch`, `#exp-uw`, `#exp-sustainable`. Those ids sit on empty
 `.role-anchor` spans placed just before each role `<h3>`, NOT on the `<h3>`
@@ -739,7 +739,7 @@ figure was monochrome until 2026-07-23, when the owner chose visual parity
 with the Health Catalyst figure over the prior single-accent-per-section
 restraint; exact client numbers remain non-public, so both endpoints are
 still labeled as approximations.) They
-reuse the `.cliff-figure`/`.sankey-figure` sizing idiom and the `#7a0000`
+reuse the `.cliff-figure` sizing idiom and the `#7a0000`
 accent-sentinel palette-adapter contract; a single viewBox scales each on
 mobile (no SVG swap). Numbers must match the role prose exactly. BHA gets no
 figure on purpose: it is a scope role too new for a headline outcome, and a
@@ -797,8 +797,10 @@ The section uses a featured + small-multiples-index pattern:
 
 A small italic `<p class="section-subhead">Featured</p>` label sits
 between the H2 and the first featured project to cue the two-tier
-structure. This label can be removed in a later pass if the visual
-contrast between featured and index is sufficient on its own.
+structure. **Keep it.** Its removal was proposed in the 2026-05-23 review
+and the owner resolved it `wontfix:` on 2026-06-08 (issue #43): the label
+is wayfinding, and the visual contrast alone was judged insufficient. Do
+not re-propose without reopening that decision.
 
 **Promotion/demotion rules**: a featured project compressed to a
 tile gets its prose trimmed to 30-50 words, its link labels
