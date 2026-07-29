@@ -335,9 +335,8 @@ Known cost, accepted: the lede pushes `.split-hero` down ~160px and the career
 band with it, so the timeline sits further below the fold. That compounds the
 §6 writing-column-length item in `docs/homepage-iteration-2026-07-26.md`.
 
-Not updated with this change: `scripts/build_og.py` still renders the retired
-subtitle onto `og-default.png`. It is a manual, Pillow-dependent pipeline, so
-the social card and the page now disagree until someone regenerates it.
+`scripts/build_og.py` and `og-default.png` were updated to match in the same
+pass, so the social card and the page agree.
 
 (Prior Timeline Split, superseded: nav, nameplate, three-column split-hero
 [writing / vertical rail / project scorecard], three-card teaser row. Earlier
@@ -1641,6 +1640,15 @@ How the generator maps roles to each file (`TARGETS` in build_palette.py):
   - Single-mode spans: `palette:print` for the PDF templates' accent and the
     index.html `@media print` accent (kind `accent_only`); `palette:start`
     (XML) for the favicon fill.
+
+`scripts/build_og.py` READS `palette.yaml` directly (light `bg`/`ink`/`muted`)
+rather than carrying its own copy. It used to inline them "because this is a
+one-off renderer" and duly went stale, painting Tufte cream onto the social card
+for months after the Lichen move, invisible to `lint_palette` because that only
+inspects files carrying `palette:*` marker spans. Reading the source makes the
+drift impossible rather than merely detectable, which is why no lint was added
+for it. Re-run `python scripts/build_og.py` after a palette change and commit
+the PNG; it is not wired to CI.
 
 Deliberately NOT pipeline-managed (documented in the YAML header):
   - blog.css's Solarized code-block palette (separate, mode-symmetric system).

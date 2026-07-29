@@ -6,33 +6,53 @@ Renders /og-default.png from a small composition rule. Run once locally
 when the card content changes; commit the resulting PNG. Not wired to
 CI, the card is essentially static.
 
-Design tokens are inlined because this is a one-off renderer, not the
-canonical declaration. Locked tokens live in CLAUDE.md §Palette.
+Colors are READ from src/content/palette.yaml, not inlined. They used to be
+inlined "because this is a one-off renderer", and they duly went stale: the
+card was still painting Tufte cream months after the site moved to the Lichen
+palette, and nothing caught it because lint_palette only inspects the CSS-ish
+files carrying palette:* marker spans. Reading the source makes that class of
+drift impossible here rather than merely detectable.
 
 Local dev:
-    pip install Pillow
+    pip install Pillow PyYAML
     python scripts/build_og.py
 """
 
 from pathlib import Path
 
+import yaml
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "og-default.png"
 FONT_DIR = Path(__file__).resolve().parent / "fonts" / "et-book"
 ROMAN = FONT_DIR / "et-book-roman-line-figures.ttf"
+PALETTE = ROOT / "src" / "content" / "palette.yaml"
 
-# Locked palette (CLAUDE.md §Palette). Light-mode tokens.
-PAPER = (255, 255, 248)
-INK = (17, 17, 17)
-MUTED = (106, 106, 106)
+
+def _rgb(hex_string: str) -> tuple:
+    """'#f3f6f0' -> (243, 246, 240)."""
+    h = hex_string.lstrip("#")
+    return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+
+
+def _light_tokens() -> dict:
+    """The screen light-mode roles, straight from the palette source."""
+    light = yaml.safe_load(PALETTE.read_text(encoding="utf-8"))["screen"]["light"]
+    return {role: _rgb(light[role]) for role in ("bg", "ink", "muted")}
+
+
+_T = _light_tokens()
+PAPER, INK, MUTED = _T["bg"], _T["ink"], _T["muted"]
 
 # Open Graph canonical size.
 W, H = 1200, 630
 
 NAME = "Zaher Karp"
-SUBTITLE = "Healthcare data engineering and Medicare Advantage analytics."
+# Matches the homepage proposition. The former category-label subtitle
+# ("Healthcare data engineering and Medicare Advantage analytics.") was
+# retired from the page on 2026-07-29; the card follows it.
+SUBTITLE = "I work in healthcare data engineering and analytics."
 DOMAIN = "zaherkarp.com"
 
 
