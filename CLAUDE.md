@@ -17,7 +17,9 @@ design lives at archive/redesign/zaherkarp-tufte-rationale.md.
 
 **Timeline Split redesign (2026-07-26, this branch).** The homepage opening was
 restructured from a single-column scroll (nameplate + subtitle + full-width
-career arc, then About-first section order) into a writing-led "Timeline Split":
+career arc, then About-first section order; About-first survived this iteration
+and every later one, ending only with the 2026-07-29 text-ordering pass above)
+into a writing-led "Timeline Split":
 a full-width three-column `.split-hero` grid (recent writing / a vertical dated
 career rail / the featured project 01) above the usual 60% prose column, a
 three-card teaser row of in-page quick-jumps, and a reduced nameplate. Nav cut
@@ -47,6 +49,34 @@ ending (Education/Service/Certifications -> Testimonials -> Contact); nav became
 sections below conflict on the OPENING, this iteration wins; full rationale +
 Council review in `docs/homepage-iteration-2026-07-26.md`. Design decisions
 below tagged "(Direction B, 2026-07-26)" mark the superseding wording.
+
+**Text-ordering pass (2026-07-29, this branch).** The opening was rebuilt three
+times in four days (Timeline Split, Direction B, the owner hero rewrite) and no
+pass re-stitched the prose around the blocks each one moved, so paragraphs,
+figures, and labels kept referring to a layout no longer around them. This pass
+fixed the reading order rather than the layout. Two approved structural moves:
+**G1**, `#about` moved from directly under the hero to between the "More
+projects" fold and the academic dot plot, so the four nav targets appear in
+exactly nav order and About's methodology paragraph prefaces the academic
+record it describes; **G2**, the nav's `writing` item retargeted at the hero
+writing column via a new `id="writing-hero"`, since it previously scrolled PAST
+the writing to a stub. `#writing` keeps its id, is retitled **"Writing
+cadence"**, and gains a one-line lead. The nav also moved OUT of `<main>` into
+`<header class="site-header">` so "Skip to main content" actually bypasses it
+(WCAG 2.4.1); the header replicates the centering box `main` provided and the
+nav renders pixel-identically at 1400/1000/761/600px. Plus: Education and
+Service gained leads consistent to-the-word with the Gantt's "2014-15: three
+credentials, two roles" annotation, the dot plot's figcaption now points at
+Speaking for the Patient Choice Award, the Publications lead acknowledges the
+figure above it, `#projects` explains why "Featured" opens at 02, and the hero
+lede's two career nouns were swapped to match the chronology the career band
+and About both tell. Design decisions below tagged "(Text ordering,
+2026-07-29)" mark the superseding wording. Full findings, panel review, and
+decision record in `docs/homepage-ordering-review-2026-07-29.md`. One fix
+came out of verifying rather than planning: the desktop career arc's "BHA"
+band carried an accessible name that never contained the abbreviation it
+displays, so speech input could not activate it; see §Career arc SVG for the
+band `aria-label` contract that now governs it.
 
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
@@ -288,6 +318,16 @@ back in the bar. The un-navigated section ids (experience, projects,
 publications, speaking, education, service) are still live anchors, reached via
 the `.hero-more` "More:" line and the dot plot; do not delete them.
 
+**(Text ordering, 2026-07-29)** `writing` targets `#writing-hero`, the id on the
+hero's `.hero-writing` column, NOT `#writing` (which it scrolled past, landing
+on the cadence stub below the writing). `#writing` still exists and is still a
+live anchor. All four nav targets now appear in nav order down the page
+(`#writing-hero` < `#work` < `#about` < `#contact`), which is what the `#about`
+move (G1) bought; keep that property when reordering anything. The nav element
+itself lives in `<header class="site-header">` OUTSIDE `<main>` so the skip link
+bypasses it; `nav.top` rules and the print rule are selector-scoped and did not
+change.
+
 **(Direction B, 2026-07-26) `.split-hero` is a sanctioned exception to the 60%
 column.** The writing-led hero is a `<div class="split-hero">` grid, deliberately
 NOT a `<section>`, so `section { width: 60% }` and the floating-note margin never
@@ -338,10 +378,16 @@ band with it, so the timeline sits further below the fold. That compounds the
 `scripts/build_og.py` and `og-default.png` were updated to match in the same
 pass, so the social card and the page agree.
 
+**(Text ordering, 2026-07-29.)** The nav is no longer part of the hero
+sequence: it moved out of `<main>` into `<header class="site-header">` so the
+skip link works, and now sits above the `<main>` that opens at the nameplate.
+Everything from `.nameplate` onward is unchanged.
+
 (Prior Timeline Split, superseded: nav, nameplate, three-column split-hero
 [writing / vertical rail / project scorecard], three-card teaser row. Earlier
 still, pre-2026-07-26: nav, h1 name, single plain subtitle, full-width career
-arc figure; About-first section order.)
+arc figure; About-first section order, which outlived that layout and ended
+with the 2026-07-29 text-ordering pass.)
 
 ### Career arc SVG
 
@@ -561,6 +607,30 @@ dots overlap hit areas (centers 8 units apart on mobile); the spacing
 exception covers them, and moving dots is off the table (locked
 coordinates).
 
+**Band `aria-label` contract (2026-07-29, WCAG 2.5.3 Label in Name).** Every
+band `<a>`'s `aria-label` must CONTAIN that band's visible `<text>` label
+verbatim, because speech-input users activate a control by speaking the label
+they can see. The desktop arc labels the current role "BHA" while its
+accessible name read "Baltimore Health Analytics, ..."; saying "click BHA"
+matched nothing, so the abbreviation was fronted (`"BHA, Baltimore Health
+Analytics, 2025 to present. Jump to the current role."`). The mobile `tl-rail`
+needed no change: it labels that band "Baltimore Health", which the name
+already contains. If you rename a visible band label, update its `aria-label`
+in the same edit. This is an attribute-only contract; it touches no
+coordinate, no `<title>`, and no rendered pixel.
+
+**Do not chase Lighthouse's `label-content-name-mismatch` on these bands.** It
+flags all five, before and after the fix above, and always will: axe reads
+"text inside the element" as `textContent`, which concatenates the visible
+`<text>` label with the `<title>` nested in the band line ("BHABaltimore
+Health Analytics, 2025 to present"), and that mashed string appears in no
+accessible name. Four of the five bands had clean prefix labels the whole
+time. Silencing it would mean moving `<title>` out of the link, which is the
+documented all-browser accessible layer for these marks (see the hover/focus
+section below). The audit carries weight 0, so accessibility scores 100 in
+both modes with it present. Verify Label in Name by checking containment
+directly, not by reading that audit.
+
 Hover / focus, focus-plus-context + typeset reveal (CSS section "18.3"):
 a Design Council pass replaced the dead native-tooltip *feel* with the chart
 reacting. The native `<title>` stays on every titled mark (all-browser,
@@ -734,7 +804,13 @@ the next CI run overwrites them. Two tiers:
     `test_writing_list_suppresses_hero_marginnote`). The frontmatter field is
     still read/preserved by the blog tooling; it just no longer surfaces here.
     `#writing` below now holds only the cadence sparkline (its `mn-cadence`
-    note still floats there).
+    note still floats there). **(Text ordering, 2026-07-29)** that section is
+    retitled **"Writing cadence"** and carries a one-line lead above the
+    sparkline, so the heading is honest about its content and does not compete
+    with the hero's "Recent writing" column head. The lead sits BEFORE
+    `<!-- activity-grid:start -->`, outside the generated region; keep it there
+    or the next build overwrites it. `.hero-writing` also carries
+    `id="writing-hero"`, the nav's `writing` target.
   - **Index** (`WRITING_TILES = 6`): the next six posts after the
     featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
     markers. **(Direction B, 2026-07-26)** these markers ALSO moved into the
