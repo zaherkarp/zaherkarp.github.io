@@ -1553,6 +1553,21 @@ figure.timeline svg.dp-mobile a circle.dp-ring {
   stroke-width: 1.2;
 }
 figure.timeline svg.dp-mobile a circle.dp-ring { stroke-width: 0.8; }
+/* The two 2019 publications sit inside a single year. On the mobile
+   chart a year is only 38 units wide, so the shared 40-unit touch
+   stroke made each dot's hit area swallow the other's centre and the
+   later one in source order won: HERD was unreachable by pointer and
+   hovering it revealed the Academic Medicine label. Full WCAG 2.5.8
+   compliance is not reachable for this pair here, because the
+   separation it would require (47 units) exceeds the width of a year,
+   so the dots would misstate their own date. These two therefore carry
+   a narrower stroke, sized so neither reaches the other's centre at
+   the 20-unit separation the year axis can absorb. Both are reachable;
+   both are under the 24px floor below a 440px viewport. Documented
+   trade, not an oversight. The wide chart needs no equivalent: a year
+   is 105 units there, so moving the pair to 1118/1172 clears the
+   overlap with the full stroke intact. */
+figure.timeline svg.dp-mobile a circle.dp-tight { stroke-width: 12; }
 /* Keep the engaged ring bright and enlarged, not dimmed, when its
    link is hovered or focused (overrides the field-dim rule below). */
 figure.timeline svg.dp-wide a:hover circle.dp-ring,
@@ -2801,7 +2816,7 @@ figure.timeline.career-band figcaption {
       <!-- YEAR AXIS at y=140. The reference line dividing the two
            lanes. Axis runs 2010 (x=200) to 2019 (x=1145), with
            115-unit spacing per year. -->
-      <line x1="180" y1="140" x2="1160" y2="140" stroke="#111" stroke-width="1"/>
+      <line x1="180" y1="140" x2="1180" y2="140" stroke="#111" stroke-width="1"/>
 
       <!-- YEAR TICKS AND LABELS -->
       <g font-family="et-book, Palatino, Georgia, serif" font-size="18" fill="#6a6a6a" text-anchor="middle">
@@ -2829,21 +2844,21 @@ figure.timeline.career-band figcaption {
            to prevent overlap (applies to 2019). -->
 
       <!-- 2012: Yang et al (WCEL proceedings), no citations shown -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="410" cy="95" r="4" fill="transparent"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><circle cx="410" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WCEL 2012</text></a>
+      <a href="#pub-wcel" aria-label="Jump to World Conference on E-Learning 2012 publication entry"><circle cx="410" cy="95" r="4" fill="transparent"><title>Approaches and challenges to optimizing the use of EHRs in primary care, preliminary findings (WCEL proceedings, 2012)</title></circle><circle cx="410" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="410" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">World Conference on E-Learning 2012</text></a>
 
       <!-- 2014: Pandhi et al JIHI, most-cited (largest radius) -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">JIHI 2014</text></a>
+      <a href="#pub-jihi" aria-label="Jump to Journal of Innovation in Health Informatics 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Journal of Innovation in Health Informatics 2014</text></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
       <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1040" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">IJHM 2018</text></a>
+      <a href="#pub-acos" aria-label="Jump to International Journal of Healthcare Management 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">International Journal of Healthcare Management 2018</text></a>
 
       <!-- 2019a: Karp et al HERD, high count (second-largest radius) -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="1138" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1138" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">HERD 2019</text></a>
+      <a href="#pub-herd" aria-label="Jump to Health Environments Research &amp; Design 2019 publication entry"><circle cx="1118" cy="95" r="7" fill="#111"><title>Influence of environmental design on team interactions across 3 family medicine clinics (HERD, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Health Environments Research &amp; Design 2019</text></a>
       <!-- 2019b: Pandhi et al Acad Med, low count (slight x offset) -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1156" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="1172" cy="95" r="5" fill="#111"><title>Broadening medical students' exposure to the range of illness experiences: a pilot experimental curriculum trial (Academic Medicine, 2019)</title></circle><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Academic Medicine 2019</text></a>
 
       <!-- PRESENTATIONS (below the axis).
            Each dot is a presentation, stacked vertically when a
@@ -2959,12 +2974,12 @@ figure.timeline.career-band figcaption {
            the wide-chart note and publications.yaml). Least to most
            cited: none-on-record 2.5, low 3, high 4, most-cited 5.5
            (the 2014 standout). -->
-      <a href="#pub-wcel" aria-label="Jump to WCEL 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="transparent"/><circle cx="146" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2012 WCEL -->
-      <a href="#pub-jihi" aria-label="Jump to JIHI 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, most-cited -->
+      <a href="#pub-wcel" aria-label="Jump to World Conference on E-Learning 2012 publication entry"><circle cx="146" cy="55" r="2.5" fill="transparent"/><circle cx="146" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2012 WCEL -->
+      <a href="#pub-jihi" aria-label="Jump to Journal of Innovation in Health Informatics 2014 publication entry"><circle cx="222" cy="55" r="5.5" fill="#111"/></a>     <!-- 2014 JIHI, most-cited -->
       <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="298" cy="55" r="2.5" fill="transparent"/><circle cx="298" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2016 ImplSci -->
-      <a href="#pub-acos" aria-label="Jump to IJHM 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="transparent"/><circle cx="374" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2018 IJHM -->
-      <a href="#pub-herd" aria-label="Jump to HERD 2019 publication entry"><circle cx="408" cy="55" r="4"   fill="#111"/></a>     <!-- 2019 HERD, high -->
-      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="416" cy="55" r="3"   fill="#111"/></a>     <!-- 2019 AcadMed, low -->
+      <a href="#pub-acos" aria-label="Jump to International Journal of Healthcare Management 2018 publication entry"><circle cx="374" cy="55" r="2.5" fill="transparent"/><circle cx="374" cy="55" r="2.5" class="dp-ring" pointer-events="none"/></a>     <!-- 2018 IJHM -->
+      <a href="#pub-herd" aria-label="Jump to Health Environments Research &amp; Design 2019 publication entry"><circle cx="402" cy="55" r="4"   fill="#111" class="dp-tight"/></a>     <!-- 2019 HERD, high -->
+      <a href="#pub-acadmed" aria-label="Jump to Academic Medicine 2019 publication entry"><circle cx="422" cy="55" r="3"   fill="#111" class="dp-tight"/></a>     <!-- 2019 AcadMed, low -->
 
       <!-- PRESENTATIONS, below axis at y=85.
            Stacked dots, one per presentation. First dot at cy=108,
@@ -3002,10 +3017,27 @@ figure.timeline.career-band figcaption {
 
   <!-- ==========================================================
        PUBLICATIONS
-       One entry shown. The citation count and the PubMed / RG
-       links that previously lived as inline pills are now margin
-       notes, which is their natural home: secondary metadata
-       placed next to the primary claim without interrupting it.
+       The citation count and the PubMed / RG links that
+       previously lived as inline pills are now margin notes,
+       which is their natural home: secondary metadata placed
+       next to the primary claim without interrupting it.
+
+       The six entries sit behind a details.fold (2026-07-29).
+       The summary is deliberately NOT "More": it names all six
+       venues, so a practitioner reader gets the credibility
+       signal (where the work landed) without opening the fold,
+       while a scanning reader spends one line instead of a
+       screen. Author lists and volume numbers are what the fold
+       actually hides; those were never the signal.
+
+       The dot plot above is the visible layer and stays outside
+       the fold. Its twelve dot links target #pub-* ids INSIDE
+       the fold; browsers auto-expand a <details> when navigating
+       to a fragment within it, verified in Chromium 141 for
+       same-page clicks, cold deep-links, and mobile. Re-verify
+       in Firefox and Safari before assuming it holds there.
+       Note that lint_links.py will NOT catch a regression here:
+       an id inside a closed <details> is still a real id.
        ========================================================== -->
   <section id="publications">
     <h2>Publications</h2>
@@ -3014,6 +3046,8 @@ figure.timeline.career-band figcaption {
       <span class="newthought">Six peer-reviewed papers</span> in health services research, 2012 to 2019, the most-cited of them on primary care teams and electronic health records. The dot plot above charts these papers beside the presentation record.
     </p>
 
+    <details class="fold pub-fold">
+      <summary>Full list: Health Environments Research &amp; Design, Academic Medicine, International Journal of Healthcare Management, Implementation Science, Journal of Innovation in Health Informatics, and World Conference on E-Learning proceedings</summary>
     <!-- pub-list:start -->
     <div class="entry pub-entry" id="pub-herd" data-sid="PMID:30913920">
       <p style="margin-bottom: 0.3rem;">
@@ -3118,6 +3152,7 @@ figure.timeline.career-band figcaption {
       </p>
     </div>
     <!-- pub-list:end -->
+    </details>
   </section>
 
   <hr>
