@@ -8,13 +8,23 @@ not two records. The `.md` file under src/content/blog/ is the artifact that
 appears at the `drafting` stage, joined to its row by `slug`.
 
 This module is the single reader/writer, mirroring the role _publications.py
-plays for publications.yaml. Four consumers share it, so the ledger can never
+plays for publications.yaml. Five consumers share it, so the ledger can never
 be interpreted two different ways:
 
     scripts/blog                `blog idea ...` / `blog promote` / `blog queue`
+                                 / `blog draft` / `blog publish`
     scripts/lint_ideas.py       the pre-push + CI gate
     scripts/blog_backlog.py     the weekly digest issue body
-    scripts/blog_ideas_intake.py  rows captured from the phone
+    scripts/blog_ideas_intake.py       rows captured from the phone
+    scripts/blog_draft_edit_intake.py  draft edits + publishes from the phone
+
+It also owns the `draft:` frontmatter line's write side (flip_draft_false /
+flip_draft_true), alongside the read side it already had (_post_is_draft),
+and the ledger stage-transition helper (ledger_set_status) that both
+`scripts/blog` and `scripts/blog_draft_edit_intake.py` use to keep a post's
+draft flag and its ledger row moving in lockstep. Neither `scripts/blog`
+(no `.py` extension, not importable as a module) nor the intake script can
+share code any other way.
 
 backlog_snapshot() in particular is deliberately shared: the terminal view and
 the digest issue render the SAME snapshot, so the two surfaces cannot disagree
@@ -291,10 +301,16 @@ def post_path(slug: str) -> Path:
     return POSTS_DIR / f"{slug}.md"
 
 
+# The `draft:` frontmatter line. Shared by the read side below and the write
+# side further down, so both halves of "is this post live" agree on exactly
+# what they're looking for.
+DRAFT_LINE_RE = re.compile(r"^draft:\s*(true|false)\s*$", re.MULTILINE)
+
+
 def _post_is_draft(path: Path) -> bool | None:
     """Read just the `draft:` flag without importing frontmatter.
 
-    Deliberately dependency-free: lint_ideas and the intake script run in CI
+    Deliberately dependency-free: lint_ideas and the intake scripts run in CI
     jobs that should not need the full markdown toolchain to answer a
     yes/no question about one frontmatter line.
     """
@@ -304,10 +320,47 @@ def _post_is_draft(path: Path) -> bool | None:
         text = path.read_text(encoding="utf-8")
     except OSError:
         return None
-    m = re.search(r"^draft:\s*(true|false)\s*$", text, re.MULTILINE)
+    m = DRAFT_LINE_RE.search(text)
     if not m:
         return False
     return m.group(1) == "true"
+
+
+def flip_draft_false(path: Path) -> bool:
+    """Rewrite `draft: true` to `draft: false` in the YAML block. Returns
+    True if a change was written."""
+    text = path.read_text(encoding="utf-8")
+    new_text, n = DRAFT_LINE_RE.subn("draft: false", text, count=1)
+    if n == 0 or new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+def flip_draft_true(path: Path) -> bool:
+    """Mirror of flip_draft_false."""
+    text = path.read_text(encoding="utf-8")
+    new_text, n = DRAFT_LINE_RE.subn("draft: true", text, count=1)
+    if n == 0 or new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+def ledger_set_status(slug: str, status: str) -> bool:
+    """Move the row owning `slug` to `status`. True if a row changed.
+
+    Returns False when no row owns the slug (a hand-created post that was
+    never registered), so callers can stay quiet rather than fail: the
+    orphan report in lint_ideas is what surfaces that case.
+    """
+    ideas = load_ideas()
+    entry = idea_for_slug(ideas, slug)
+    if entry is None or str(entry.get("status", "")) == status:
+        return False
+    entry["status"] = status
+    save_ideas(ideas)
+    return True
 
 
 def unregistered_drafts(ideas: list[dict]) -> list[str]:

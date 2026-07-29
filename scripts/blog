@@ -101,8 +101,11 @@ from _ideas import (  # noqa: E402
     coerce_date,
     find_idea,
     first_commit_date,
+    flip_draft_false,
+    flip_draft_true,
     idea_for_slug,
     last_touched,
+    ledger_set_status,
     load_ideas,
     new_id,
     save_ideas,
@@ -126,7 +129,6 @@ err_console = Console(stderr=True)
 # --------------------------------------------------------------------------
 
 SLUG_RE = re.compile(r"[^a-z0-9]+")
-DRAFT_LINE_RE = re.compile(r"^draft:\s*(true|false)\s*$", re.MULTILINE)
 
 
 def slugify(title: str) -> str:
@@ -368,10 +370,12 @@ def build_frontmatter_block(
 # ledger bookkeeping
 # --------------------------------------------------------------------------
 #
-# Every command that creates or moves a post touches the ledger through these
-# two helpers, so there is exactly one place where a stage transition is
-# written. A post that exists without a row is invisible to `blog queue` and
-# the weekly digest, which is the failure this pipeline exists to prevent.
+# Every command that creates or moves a post touches the ledger through
+# ledger_register_draft (here) or ledger_set_status (_ideas.py, shared with
+# scripts/blog_draft_edit_intake.py), so there is exactly one place where
+# each kind of stage transition is written. A post that exists without a row
+# is invisible to `blog queue` and the weekly digest, which is the failure
+# this pipeline exists to prevent.
 
 
 def ledger_register_draft(
@@ -401,22 +405,6 @@ def ledger_register_draft(
             "slug": slug,
         }
     )
-    save_ideas(ideas)
-    return True
-
-
-def ledger_set_status(slug: str, status: str) -> bool:
-    """Move the row owning `slug` to `status`. True if a row changed.
-
-    Returns False when no row owns the slug (a hand-created post that was
-    never registered), so callers can stay quiet rather than fail: the
-    orphan report in lint_ideas is what surfaces that case.
-    """
-    ideas = load_ideas()
-    entry = idea_for_slug(ideas, slug)
-    if entry is None or str(entry.get("status", "")) == status:
-        return False
-    entry["status"] = status
     save_ideas(ideas)
     return True
 
@@ -1089,27 +1077,6 @@ def status() -> None:
 # --------------------------------------------------------------------------
 # publish
 # --------------------------------------------------------------------------
-
-
-def flip_draft_false(path: Path) -> bool:
-    """Rewrite `draft: true` to `draft: false` in the YAML block. Returns
-    True if a change was written."""
-    text = path.read_text(encoding="utf-8")
-    new_text, n = DRAFT_LINE_RE.subn("draft: false", text, count=1)
-    if n == 0 or new_text == text:
-        return False
-    path.write_text(new_text, encoding="utf-8")
-    return True
-
-
-def flip_draft_true(path: Path) -> bool:
-    """Mirror of flip_draft_false."""
-    text = path.read_text(encoding="utf-8")
-    new_text, n = DRAFT_LINE_RE.subn("draft: true", text, count=1)
-    if n == 0 or new_text == text:
-        return False
-    path.write_text(new_text, encoding="utf-8")
-    return True
 
 
 @app.command()

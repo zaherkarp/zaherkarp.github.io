@@ -189,9 +189,9 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
 ## The build pipelines
 
-Eleven pipelines stand behind the static surface. Seven are wired to CI in
-this repo (1, 2, 3, 6, 7, 8, 11); three are run by hand (4, 5, 9); one runs
-from an external repo's own CI (10). Each section gives source → output → trigger → what it does.
+Twelve pipelines stand behind the static surface. Eight are wired to CI in
+this repo (1, 2, 3, 6, 7, 8, 11, 12); three are run by hand (4, 5, 9); one
+runs from an external repo's own CI (10). Each section gives source → output → trigger → what it does.
 
 ### 1. Blog — `scripts/build_blog.py`
 
@@ -431,6 +431,62 @@ the item earns a slug, joined to its row by that slug.
 See CLAUDE.md §Blog idea backlog for the model and the constraints not to
 break; README §The idea → draft → publish pipeline for worked walkthroughs.
 
+### 12. Blog draft editing — `scripts/blog_draft_edit_intake.py` + one workflow
+
+One stage past pipeline 11: edits an EXISTING `drafting`-stage post's body
+(plus optional frontmatter overrides), and — an explicit opt-in checkbox —
+can carry it all the way to `published` in the same commit. The phone
+equivalent of `blog edit <slug>` followed by `blog publish <slug>`.
+
+```
+  GitHub issue form ──▶ blog-draft-edit-intake.yml ──▶ blog_draft_edit_intake.py
+  (the phone)                                                    │
+                                                                  ▼
+                                            src/content/blog/<slug>.md (body +
+                                            optional title/description/tags)
+                                                                  │
+                                            [Publish this now checked?] ──▶ draft: false
+                                                                  │         + ledger row
+                                                                  ▼           -> published
+                                                    commit, comment, close issue
+```
+
+- **Source of truth:** the same two surfaces pipeline 11 already owns —
+  `src/content/blog/<slug>.md` and `src/content/blog-ideas.yaml`. No new
+  store.
+- **Capture surface:** the **Blog draft edit** issue form
+  (`.github/ISSUE_TEMPLATE/blog-draft-edit.yml`). Fields: an exact slug, a
+  full replacement body, optional title/description/tags overrides, and a
+  "Publish this now" checkbox.
+- **Mechanics:** frontmatter fields are replaced via targeted regex line
+  substitution scoped to the isolated `---`/`---` block (not a full
+  `frontmatter.dump` re-serialize), so a hand-written
+  `# homepageMarginnote: "..."` / `# vocab_exempt: []` comment line survives
+  untouched. `scripts/_ideas.py` supplies the shared `flip_draft_false` /
+  `ledger_set_status` helpers, the same ones `scripts/blog`'s own `draft` /
+  `publish` commands use, so the post file and the ledger row move together
+  in exactly one place.
+- **Refuses loudly** to touch a post that isn't currently `draft: true` — a
+  typo'd slug or an attempt to edit an already-published post gets a comment
+  on the issue, not silent no-op or (worse) a new file. One narrow
+  exception: the guaranteed `opened`+`labeled` double fire every templated
+  issue causes is tolerated when the second run would produce byte-identical
+  output to the first.
+- **Publish-only pre-flight:** `lint_ideas` + `lint_facts` +
+  full-repo `lint_blog` + `lint_vocab`, mirroring `blog publish`'s own
+  `run_all_linters()` rigor for the higher-consequence path. Edit-only runs
+  get the intake script's own scoped `lint_blog.check_post` /
+  `lint_vocab.check_text` call, which is a documented no-op while the post
+  stays `draft: true` (see the `lint_blog.py` row in the linters table
+  below).
+- **Commits back:** the post file always; `blog-ideas.yaml` only when
+  publishing.
+- **Known limitation:** no mobile "unpublish." Recover an accidental publish
+  with `blog draft <slug>` at a terminal.
+
+See CLAUDE.md §Mobile draft editing for the model and the constraints not to
+break; `scripts/blog.md` §2b for the phone-callout mechanics.
+
 ## The linters (the integrity web)
 
 Guards write nothing; they fail the push or build. Three tiers by where they
@@ -441,7 +497,7 @@ run.
 
 | Linter | Guards |
 | --- | --- |
-| `lint_blog.py` | HTML-comment leaks in non-draft posts, fenced code nested in a comment, blockquote-as-Mermaid, blank line inside `<svg>` |
+| `lint_blog.py` | HTML-comment leaks in non-draft posts, fenced code nested in a comment, blockquote-as-Mermaid, blank line inside `<svg>` (non-draft only — `check_post`/`check_text` both unconditionally skip `draft: true` posts, which is why pipeline 12's edit-only path treats its own scoped lint call as a documented no-op) |
 | `lint_vocab.py` | canonical CMS program-name casing (Star Ratings, Medicare Advantage, HEDIS…) across blog, resume, cv, homepage |
 | `lint_facts.py` | cross-surface fact drift between `resume.md`, `cv.md`, `index.html` h3+meta, and JSON-LD (playbook: `scripts/lint_facts.md`) |
 | `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats; margin block discipline (no block-level tags inside a note span) |
@@ -541,6 +597,15 @@ featured homepage entry, must be additive to title+description),
 `lifeweek_topic` (label for the life-in-weeks 💭 dot), `vocab_exempt` (per-
 post non-canonical literals). Direct-edit fallback: drop the `.md` with
 `draft: false` and push — CI runs the same linters.
+
+### Edit a draft (from a phone)
+
+GitHub app → Issues → New issue → **Blog draft edit**. Paste the corrected
+body, optionally override title/description/tags, and tick **Publish this
+now** to also flip `draft: false` and move the ledger row in the same
+commit. Terminal equivalent: `./scripts/blog edit <slug>` (opens `$EDITOR`)
+then `./scripts/blog publish <slug>`. Refuses (with a comment on the issue)
+if the slug doesn't resolve to an existing `draft: true` post.
 
 ### Add a publication
 
