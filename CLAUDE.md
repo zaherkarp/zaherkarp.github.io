@@ -651,6 +651,33 @@ from now.yaml was removed (#7, 2026-04-26). There is no current
 "now / reading / building" surface; a replacement is a fresh design
 decision, not a restoration.
 
+### Page title convention
+
+Comma separator, name last: `<Page>, Zaher Karp`. Applies to every page
+except the homepage. Used by `404.html`, `/colophon/`,
+`/star-rating-predictor/`, `/life-in-weeks/`, `/epidemic-simulation/`,
+and all generated blog output (`build_blog.py`, which emits
+`f"{title}, Zaher Karp"` and `f"Writing tagged {tag}, Zaher Karp"`).
+
+**The homepage is deliberately name-FIRST** (`Zaher Karp, Healthcare Data
+Engineering`), and this is not drift. The homepage IS the person; every
+other page is a topic within the site. Name-first also puts the search
+term at the front of the one result that should rank for it. A 2026-07-28
+QA audit counted this as one of "four title variants" and it is not:
+name-first-on-home plus name-last-elsewhere is a single coherent rule.
+Do not "fix" the homepage to match the subpages.
+
+Two forms were retired 2026-07-28: an em dash in all ~250 generated blog
+titles (the em-dash-clean chrome rule, and the pre-push grep does not
+reach `blog/`, so it went unguarded), and a pipe on
+`/epidemic-simulation/`, the site's only one. That page's title was
+trimmed rather than comma-joined, because it already contains a comma and
+a colon and a fourth clause read as a run-on.
+
+`resume.html` / `cv.html` keep their own credential form
+(`Zaher Karp, M.P.H., Resume`), which is a document title, not a page
+title.
+
 ### Tool vs method
 
 Tools are software, platforms, languages, and libraries. Methods are
