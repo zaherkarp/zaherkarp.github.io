@@ -696,6 +696,13 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Lighthouse accessibility ≥ 90 in both modes.
 - Keyboard Tab: focus outline visible on each sidenote label and each
   fold summary as you traverse.
+- Keyboard skip link: Tab once from page load, press Enter, then Tab again.
+  Focus must land on page content, not back on the nav. (The nav lives in
+  `<header class="site-header">` outside `<main>` for exactly this reason;
+  moving it back inside silently breaks the skip link.)
+- Nav links land in page order: writing (the hero writing column,
+  `#writing-hero`), work (Experience), about, contact. Each target must sit
+  further down the page than the one before it.
 
 ## Maintenance rhythm
 

@@ -199,3 +199,30 @@ This is the first concrete instance of the §6 writing-column-length item
 column being too tall, and the balance is in fact set by whichever column is
 allowed to grow unchecked. The ~38% column is the constrained one and should be
 treated as having a prose budget.
+
+---
+
+## Superseded 2026-07-29
+
+This record stands as written; the note below only marks what has since changed.
+
+The §6 item asking what the thinned `#writing` section is for is **resolved**.
+The answer, recorded in `docs/homepage-ordering-review-2026-07-29.md`: it is the
+cadence strip, and it now says so. The section keeps `id="writing"`, is retitled
+"Writing cadence", and carries a one-line lead above the sparkline. The nav's
+`writing` item no longer points at it; that item was retargeted at the hero
+writing column (`id="writing-hero"`), because clicking "writing" and landing
+below the writing was the page's most reportable defect.
+
+The §4 in-main section order is superseded where it conflicts. Two moves:
+`#about` left its position directly under the hero and now sits between the
+"More projects" fold and the academic dot plot, so the four nav targets appear
+in nav order and the methodology paragraph prefaces the academic record; and the
+nav element moved out of `<main>` into `<header class="site-header">`, so
+"Skip to main content" bypasses it rather than landing on it. Everything from
+`.nameplate` down through the career band and the "More:" line is unchanged, as
+are positions from `#publications` to the footer.
+
+The accepted cost this iteration booked at §6, the hero writing column's length
+pushing the career band below the fold, is untouched and still open. The
+2026-07-29 antagonist round predicted it will be back.
