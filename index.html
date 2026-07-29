@@ -3002,10 +3002,27 @@ figure.timeline.career-band figcaption {
 
   <!-- ==========================================================
        PUBLICATIONS
-       One entry shown. The citation count and the PubMed / RG
-       links that previously lived as inline pills are now margin
-       notes, which is their natural home: secondary metadata
-       placed next to the primary claim without interrupting it.
+       The citation count and the PubMed / RG links that
+       previously lived as inline pills are now margin notes,
+       which is their natural home: secondary metadata placed
+       next to the primary claim without interrupting it.
+
+       The six entries sit behind a details.fold (2026-07-29).
+       The summary is deliberately NOT "More": it names all six
+       venues, so a practitioner reader gets the credibility
+       signal (where the work landed) without opening the fold,
+       while a scanning reader spends one line instead of a
+       screen. Author lists and volume numbers are what the fold
+       actually hides; those were never the signal.
+
+       The dot plot above is the visible layer and stays outside
+       the fold. Its twelve dot links target #pub-* ids INSIDE
+       the fold; browsers auto-expand a <details> when navigating
+       to a fragment within it, verified in Chromium 141 for
+       same-page clicks, cold deep-links, and mobile. Re-verify
+       in Firefox and Safari before assuming it holds there.
+       Note that lint_links.py will NOT catch a regression here:
+       an id inside a closed <details> is still a real id.
        ========================================================== -->
   <section id="publications">
     <h2>Publications</h2>
@@ -3014,6 +3031,8 @@ figure.timeline.career-band figcaption {
       <span class="newthought">Six peer-reviewed papers</span> in health services research, 2012 to 2019, the most-cited of them on primary care teams and electronic health records. The dot plot above charts these papers beside the presentation record.
     </p>
 
+    <details class="fold pub-fold">
+      <summary>Full list: Health Environments Research &amp; Design, Academic Medicine, International Journal of Healthcare Management, Implementation Science, Journal of Innovation in Health Informatics, and World Conference on E-Learning proceedings</summary>
     <!-- pub-list:start -->
     <div class="entry pub-entry" id="pub-herd" data-sid="PMID:30913920">
       <p style="margin-bottom: 0.3rem;">
@@ -3118,6 +3137,7 @@ figure.timeline.career-band figcaption {
       </p>
     </div>
     <!-- pub-list:end -->
+    </details>
   </section>
 
   <hr>
