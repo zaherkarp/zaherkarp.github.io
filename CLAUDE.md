@@ -602,10 +602,41 @@ are keyboard-focusable, so the focus-plus-context hover below fires on
 overlay sized to ~24px+ rendered height, and the publication-dot links get
 a transparent 40-unit CSS stroke, so the targets clear WCAG 2.2 §2.5.8 on
 touch without changing a visible pixel or any tested coordinate. Keep the
-overlays when editing band markup. Known limit: the two adjacent 2019
-dots overlap hit areas (centers 8 units apart on mobile); the spacing
-exception covers them, and moving dots is off the table (locked
-coordinates).
+overlays when editing band markup.
+
+**The two 2019 dots were separated 2026-07-29; the old "spacing exception"
+note here was wrong.** It described them as merely overlapping hit areas.
+They did not overlap, they OCCLUDED: at 18 units apart under the shared
+40-unit stroke, Academic Medicine's hit area covered HERD's centre entirely,
+and being later in source order it won. HERD was unreachable by pointer at
+every viewport, clicking it navigated to `#pub-acadmed`, and hovering it
+revealed the Academic Medicine label. Measure this kind of claim with
+`elementsFromPoint` at the mark's centre, not by eye.
+
+The arithmetic that governs any future edit: with the 40-unit stroke the two
+hit circles have radii of 27 and 25 units, so centres must be **>= 52 units
+apart** or one swallows the other. The wide chart has 105 units per year, so
+the pair now straddles the 2019 tick (x=1145) at 1118 and 1172, and the axis
+terminus moved 1160 -> 1180 to still run past the rightmost dot. Every wide-
+chart dot now clears 24 CSS px from 1400px down to 761px.
+
+**The mobile chart cannot match this, and that is permanent, not a TODO.** A
+year is 38 units there while the full stroke needs 47 units of separation, so
+compliance would require the dots to misstate their own date. They sit at
+402/422 (the widest the year axis absorbs) with a narrower 12-unit stroke via
+`.dp-tight`, so both are reachable but both fall under the 24px floor below a
+440px viewport. Do not "fix" this by widening the gap; that trades a target-
+size miss for a data error. Do not widen `.dp-tight` either, it is sized to
+exactly not reach the neighbouring centre.
+
+Measure hit areas by probing outward from a centre with `elementsFromPoint`,
+NOT with `getBoundingClientRect`: the transparent stroke is excluded from the
+box, so a 46px target reads as 8px and every dot looks broken.
+
+Dot coordinates remain otherwise locked. This move was owner-approved after
+the panels deadlocked (Haben refused to leave a control unreachable; the
+alternative, shrinking strokes, left a target that degrades as the viewport
+narrows).
 
 **Band `aria-label` contract (2026-07-29, WCAG 2.5.3 Label in Name).** Every
 band `<a>`'s `aria-label` must CONTAIN that band's visible `<text>` label
@@ -646,7 +677,24 @@ of it, CSS-only `:hover`/`:focus` adds, via `:has()` (Safari 15.4+):
     carries a hidden `.dp-label` `<text>` (journal + year, `fill="#111"` so it
     adapts via the palette selectors) that fades in on hover/focus as the
     VISUAL layer; the full paper title (sourced from `publications.yaml`)
-    stays in `<title>`.
+    stays in `<title>`. **Labels are spelled out, not acronyms (2026-07-29):**
+    the old `WCEL` / `JIHI` / `IJHM` / `HERD` were unreadable and contradicted
+    the Publications fold summary below, which names every venue. Where a real
+    short name exists it is used ("World Conference on E-Learning" drops a
+    conference title's trailing sectors; "Health Environments Research &
+    Design" drops HERD's trailing "Journal"); the rest are the shortest
+    correct form. Do NOT switch to NLM style: it would regress Implementation
+    Science to "Implement Sci" and Academic Medicine to "Acad Med", and HERD's
+    registered NLM abbreviation is literally "HERD".
+    Length is free here because `.dp-label` is `pointer-events: none` and only
+    the hovered label is ever visible, so text never collides and no hit area
+    moves. The ONLY constraint is the 1200-unit viewBox edge: a label centred
+    on a right-side dot clips, so the three at x>=1040 use `text-anchor="end"`
+    at x=1188. Measure with `getComputedTextLength()` before changing wording.
+    Each dot `<a>`'s `aria-label` must CONTAIN its visible label verbatim
+    (WCAG 2.5.3), the same contract the career-arc bands carry; the mobile
+    chart has no visible labels but its `aria-label`s were spelled out in the
+    same pass.
 Triggered on `:hover` AND `:focus` (the publication dots are `<a>` links, so
 keyboard users get the reveal; the title text covers the non-focusable marks).
 Presentation dots stay unlabeled (de-emphasized) but share the dim/scale.
@@ -857,6 +905,57 @@ This pipeline replaced a hand-maintained list that drifted twice
 output). The build_portfolio workflow already triggers on
 `src/content/blog/**.md`, so new posts populate the homepage on the
 same CI run that publishes them.
+
+### Publications fold (2026-07-29)
+
+The six publication entries live inside a `<details class="fold pub-fold">`,
+closed by default. The `<details>` and `<summary>` sit OUTSIDE the
+`pub-list:start/end` markers, so `build_portfolio.py` still rewrites the
+entries and the fold survives regeneration; verified by simulating
+`replace_between`. Do not move the markers inside the summary.
+
+**The summary is deliberately not "More".** It names all six venues, so a
+reader who judges the record by where the work landed never has to open the
+fold, while a scanning reader spends one line instead of a screen. Author
+lists and volume numbers are what the fold hides; those were never the
+credibility signal. A shorter dot-plot-mirroring variant (`HERD 2019, IJHM
+2018, ...`) was built, rendered side by side, and rejected: an abbreviation
+the reader cannot decode does not transmit standing, which is the line's only
+job. It would have saved at most 92px. Keep the venue names spelled out here
+and in the dot plot; the two surfaces must agree.
+
+Section height at 1400px: 1277px -> 254px. The summary runs 3 lines at
+1400px and 6 at 390px. Note the column width is NOT monotonic in viewport:
+773px at 1400, 552 at 1000, **416 at 761** (narrowest, still yielding 40% to
+the sidenote margin), then 532 at 600 once the column goes full width.
+
+**The dot plot stays OUTSIDE the fold** as the visible layer. Its twelve dot
+links target `#pub-*` ids now inside it. Browsers auto-expand a `<details>`
+when navigating to a fragment within it: verified in Chromium 141 for
+same-page clicks, cold deep-links, and mobile. **Firefox and Safari remain
+unverified** (not installable in the CI sandbox); auto-expand shipped at
+different times per engine, so re-check there before treating it as settled.
+
+**`lint_links.py` cannot guard this.** An id inside a closed `<details>` is
+still a real id, so that gate stays green whether or not the jump works. A
+regression here is invisible to CI by construction.
+
+### Section lead paragraphs
+
+The four `.newthought` section leads (About, Experience, Publications,
+Speaking) are plain `<p>` and inherit body type: 1.4rem, `--ink`, 1.4rem
+bottom margin. **No inline styles.** Publications carried
+`style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem"`
+until 2026-07-29, which rendered its lead at 17.85px muted while the other
+three sat at 23.8px in ink; the `margin-bottom` was a no-op duplicating the
+`p` default. Removed. If you add a section lead, leave it unstyled.
+
+Two paragraphs still carry that inline style and are NOT leads, so do not
+sweep them in: the writing-cadence sparkline caption (inside the generated
+`activity-grid` markers, so a hand edit is overwritten anyway; change the
+generator if it ever needs to move) and the Projects note under the
+`section-subhead` "Featured" explaining why the featured list opens at 02.
+Both are secondary annotations where muted small type is doing real work.
 
 ### Testimonials
 
