@@ -301,15 +301,43 @@ index.html (§20 is now the `.hero-more` line, not the retired teaser row).
 
 ### Hero
 
-**(Direction B, 2026-07-26)** Sequence: nav, `.nameplate` (reduced h1 beside
-its subtitle on one baseline), a Tier-1 `<p class="proposition">` (a first-person
-claim, ETBook roman, sized between body and h1, additive to the locked
-subtitle), then the two-column `.split-hero` grid (recent writing ~62% / current
-work ~38%), then the full-width `figure.timeline.career-band`, then the
-`.hero-more` "More:" line. The subtitle text is still locked; do not edit
-without explicit instruction. The featured project 01 block is MOVED into the
-hero (not copied) so the project CSS counter still numbers it 01 in DOM order.
-No epigraph, no italic claim block, no manifesto framing.
+**(Owner rewrite, 2026-07-29.)** Sequence: nav, `.nameplate` (h1 alone), a
+Tier-1 `<p class="proposition">`, a two-paragraph `.hero-lede`, then the
+two-column `.split-hero` grid (recent writing ~62% / current work ~38%), then
+the full-width `figure.timeline.career-band`, then the `.hero-more` "More:"
+line. The featured project 01 block is MOVED into the hero (not copied) so the
+project CSS counter still numbers it 01 in DOM order. No epigraph, no italic
+claim block, no manifesto framing.
+
+**The `.subtitle` category label was REMOVED and its lock lifted.** It read
+"Healthcare data engineering and Medicare Advantage analytics." and had been
+marked do-not-edit-without-explicit-instruction; the owner gave that
+instruction. The proposition now says the same thing in the first person
+("I work in healthcare data engineering and analytics."), so keeping both
+opened the page on one fact stated twice, which is the additivity rule the rest
+of the page is held to. The `p.subtitle` CSS went with it; `.nameplate` keeps
+its flex baseline layout so something can sit beside the name again without
+re-deriving it.
+
+The proposition is no longer a claim ("I build and write about auditable
+analytics systems for regulated healthcare") but a plain self-introduction, and
+is now the page's only category statement rather than an addition to one. Its
+`max-width` is **54ch, not 34ch**: the shorter line broke after "engineering",
+splitting a noun phrase, so do not tighten it back without re-checking the wrap.
+
+`.hero-lede` is the two-paragraph introduction beneath it: the prior-career
+thread (public-health research, editorial production) that the career band
+states qualitatively but never in words, then one line of expectation-setting.
+Held to a ~62ch measure because the hero region is a full-width exception to the
+60% column and would otherwise set body paragraphs at 1400px.
+
+Known cost, accepted: the lede pushes `.split-hero` down ~160px and the career
+band with it, so the timeline sits further below the fold. That compounds the
+§6 writing-column-length item in `docs/homepage-iteration-2026-07-26.md`.
+
+Not updated with this change: `scripts/build_og.py` still renders the retired
+subtitle onto `og-default.png`. It is a manual, Pillow-dependent pipeline, so
+the social card and the page now disagree until someone regenerates it.
 
 (Prior Timeline Split, superseded: nav, nameplate, three-column split-hero
 [writing / vertical rail / project scorecard], three-card teaser row. Earlier

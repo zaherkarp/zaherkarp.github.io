@@ -238,16 +238,6 @@ h3 {
   text-wrap: balance;
 }
 
-p.subtitle {
-  font-size: 1.35rem;
-  margin-top: 0.5rem;
-  margin-bottom: 2.5rem;
-  color: var(--ink);
-  display: block;
-  line-height: 1.3;
-  text-wrap: balance;
-}
-
 p { margin: 0 0 1.4rem 0; text-wrap: pretty; }
 
 /* ============================================================
@@ -1450,7 +1440,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
    Runs for every reader (the prefers-reduced-motion gate was
    removed 2026-06-13, owner decision). Only stroke-dashoffset
-   animates: no layout, no LCP cost on the h1/subtitle above it.
+   animates: no layout, no LCP cost on the h1 and lede above it.
    ============================================================ */
 @keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
 @keyframes label-fade { from { opacity: 0; } }
@@ -1668,9 +1658,12 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    is suppressed for the featured slot in the generator).
    ============================================================ */
 
-/* Nameplate: the former 3.2rem hero h1, reduced and set beside
-   its subtitle on one baseline. The page lede is now the writing
-   column, not the name. */
+/* Nameplate: the former 3.2rem hero h1, reduced. It carried a
+   muted category-label subtitle beside it on one baseline until
+   2026-07-29; that text was removed when the proposition was
+   rewritten to say the same thing in the first person. The flex
+   baseline layout is kept so a second element can sit beside the
+   name again without re-deriving it. */
 nav.top { width: 100%; }
 .nameplate {
   display: flex;
@@ -1684,21 +1677,36 @@ nav.top { width: 100%; }
   margin: 0;
   line-height: 1.05;
 }
-.nameplate .subtitle {
-  font-size: 1rem;
-  color: var(--muted);
-  margin: 0;
+/* Lede: the two-paragraph introduction under the proposition.
+   Body size, held to a ~62ch measure because the hero region is
+   full-width and would otherwise set these at 1400px. */
+.hero-lede {
+  max-width: 62ch;
+  margin: 0 0 2.2rem 0;
+}
+.hero-lede p {
+  margin: 0 0 0.9rem 0;
+}
+.hero-lede p:last-child {
+  margin-bottom: 0;
 }
 
-/* Tier-1 proposition: one first-person claim, sized between body and
+/* Tier-1 proposition: one first-person line, sized between body and
    h1 (Massimo). ETBook roman, not italic (the italic reservation
-   does not list a proposition). Additive to the locked subtitle. */
+   does not list a proposition). Since 2026-07-29 this is a plain
+   self-introduction and the page's only category statement, so it
+   is no longer "additive to the subtitle": the subtitle is gone. */
 .proposition {
   font-size: 1.6rem;
   line-height: 1.3;
   color: var(--ink);
-  max-width: 34ch;
-  margin: 0 0 1.9rem 0;
+  /* 54ch, not the 34ch the longer claim-style proposition used: the
+     current line is ~52 characters and 34ch broke it after
+     "engineering", splitting one noun phrase across two lines.
+     Balance keeps any wrap at mid-widths even. */
+  max-width: 54ch;
+  text-wrap: balance;
+  margin: 0 0 1.5rem 0;
 }
 
 /* Two-column asymmetric grid: recent writing leads (~62%), current
@@ -1855,26 +1863,43 @@ figure.timeline.career-band figcaption {
 
   <!-- ==========================================================
        NAMEPLATE
-       Reduced from the former 3.2rem hero h1: the page lede is now
-       the Writing column in the split hero below, so the nameplate
-       sits beside its subtitle on one baseline rather than
-       dominating first paint. Subtitle text is locked (CLAUDE.md
-       Hero); only the surrounding structure changed.
+       Reduced from the former 3.2rem hero h1: the page lede is the
+       Writing column in the split hero below, so the nameplate does
+       not dominate first paint.
+
+       The .subtitle category label ("Healthcare data engineering and
+       Medicare Advantage analytics.") was REMOVED 2026-07-29 on the
+       owner's instruction, which supersedes the CLAUDE.md lock on
+       that text. The proposition below now says the same thing in
+       the first person, so keeping both opened the page on one fact
+       stated twice. The flex baseline layout is kept: the h1 sits
+       alone until something else is set beside it.
        ========================================================== -->
   <div class="nameplate">
     <h1>Zaher Karp</h1>
-    <p class="subtitle">Healthcare data engineering and Medicare Advantage analytics.</p>
   </div>
 
   <!-- ==========================================================
-       PROPOSITION (Tier 1)
-       One first-person claim stating the through-line before the
-       evidence: writing + analytics systems + regulated healthcare
-       + auditability. A <p>, not a heading, so heading order stays
-       h1 -> h2 -> h3. Additive to the locked subtitle above (which
-       is a category label; this is the claim).
+       PROPOSITION (Tier 1) + LEDE
+       A plain first-person introduction, replacing the earlier
+       claim-style proposition ("I build and write about auditable
+       analytics systems for regulated healthcare"). Owner rewrite,
+       2026-07-29. A <p>, not a heading, so heading order stays
+       h1 -> h2 -> h3.
+
+       The lede beneath it carries the prior-career thread that the
+       career band below states qualitatively but never in words,
+       then one line of expectation-setting. Constrained to a ~62ch
+       measure: the hero region is full-width (a sanctioned exception
+       to the 60% column), so unconstrained paragraphs would run the
+       full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I build and write about auditable analytics systems for regulated healthcare.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics.</p>
+
+  <div class="hero-lede">
+    <p>Before this, I worked in public-health research and editorial production. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
+    <p>This site holds my writing, projects, and a fuller account of the work.</p>
+  </div>
 
   <!-- ==========================================================
        SPLIT HERO (Direction B: writing-led, two columns)
