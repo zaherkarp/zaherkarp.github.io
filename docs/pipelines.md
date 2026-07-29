@@ -189,8 +189,9 @@ anti-recursion rule). Two consequences shape the rest of the design:
 
 ## The build pipelines
 
-Nine pipelines stand behind the static surface. Five are wired to CI; four
-are run by hand. Each section gives source → output → trigger → what it does.
+Eleven pipelines stand behind the static surface. Seven are wired to CI in
+this repo (1, 2, 3, 6, 7, 8, 11); three are run by hand (4, 5, 9); one runs
+from an external repo's own CI (10). Each section gives source → output → trigger → what it does.
 
 ### 1. Blog — `scripts/build_blog.py`
 

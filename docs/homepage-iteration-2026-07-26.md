@@ -182,3 +182,20 @@ data and keeps a caveat on each. The numbers are still approximate and still
 match the adjacent prose, so the self-critique at L166-167 holds; what changed is
 that the figcaption now states outright that they are modeled rather than
 measured. The figure remains accent-free, so the accent count is unaffected.
+
+**Follow-up the same day: the description was trimmed back for column balance.**
+The rewrite above took the hero card's prose from 61 to 129 words in the ~38%
+column, and the grid's `align-items: start` turned the difference into visible
+dead space: 488px under the writing column at 1440px, 822px at 900px, measured
+in headless Chromium. The three-band SVG was not the cause (worth about 6px); the
+prose was. It is now ~62 words, keeping all three tiers and a modeled-not-measured
+marker, with the six-feature list, the assumed-parameters elaboration, and the
+early-production-data reading moved into the methodology post. Measured after:
+84px at 1440px, 155px at 900px. The figcaption keeps its caveat clause
+deliberately, so the figure carries its own scope if read alone.
+
+This is the first concrete instance of the §6 writing-column-length item
+(L156-159) biting from the *other* direction: that note anticipated the writing
+column being too tall, and the balance is in fact set by whichever column is
+allowed to grow unchecked. The ~38% column is the constrained one and should be
+treated as having a prose budget.

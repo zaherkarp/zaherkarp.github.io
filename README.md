@@ -523,7 +523,7 @@ filename. Write the body, `preview` as you go (slug fragments work, e.g.
 3. **Commit.** Flips `draft: true` → `false`, `git add`s the post, and
    commits with a `Blog-CLI-Linted:` trailer (the provenance token that
    lets later lint stages skip redundant work).
-4. **Push to `main`.** This fires the **pre-push hook** (the nine
+4. **Push to `main`.** This fires the **pre-push hook** (the twelve
    linters plus grep guards described under [Pre-push lints](#pre-push-lints-scriptshookspre-push)
    above), then hands off to CI.
 
@@ -683,14 +683,14 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Resume PDF downloads, ATS-parseable, 1–2 pages.
 - Career arc swaps from horizontal SVG to vertical SVG below 760px (no
   horizontal scroll).
-- All 7 `<details>` folds open/close (4 experience + speaking + 2 testimonials).
+- All 11 `<details>` folds open/close (4 experience + projects index +
+  speaking + education + service + 3 testimonials).
 - All sidenote/margin-note toggles fire on a narrow viewport (DevTools at
   600px; click superscripts and ⊕ labels).
 - Stars cliff figure renders inside the Stars Cliff Simulator project body.
-- SkillSprout slope graph renders inside the Healthcare Workforce Transition Platform project body.
 - Academic dot plot renders above publication entries; mobile compressed
   version fires below 760px.
-- Education + Service Gantt renders between Testimonials and Education.
+- Education + Service Gantt renders between Speaking and Education.
 - Print preview: nav and career arc hidden, GoatCounter absent, content
   fits two pages, light tokens forced.
 - Lighthouse accessibility ≥ 90 in both modes.

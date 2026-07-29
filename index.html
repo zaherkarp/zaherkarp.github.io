@@ -116,8 +116,8 @@
    ============================================================ */
 /* Palette tokens are GENERATED from src/content/palette.yaml by
    scripts/build_palette.py. Edit the YAML and rebuild, not the block
-   below. Light mode keeps the Tufte cream; dark is cooled to a neutral
-   slate, both sharing the constant accent. NOTE: the figure SVGs
+   below. Light mode is a pale moss-gray ("Lichen"); dark is a deep
+   moss-slate, both sharing the constant green accent. NOTE: the figure SVGs
    hardcode #7a0000 as the accent *sentinel* (remapped to var(--accent)
    by the attribute selectors below); it renders as the accent, not red. */
 :root {
@@ -235,16 +235,6 @@ h3 {
   font-size: 1.5rem;
   line-height: 1.2;
   margin: 1.7rem 0 0.4rem 0;
-  text-wrap: balance;
-}
-
-p.subtitle {
-  font-size: 1.35rem;
-  margin-top: 0.5rem;
-  margin-bottom: 2.5rem;
-  color: var(--ink);
-  display: block;
-  line-height: 1.3;
   text-wrap: balance;
 }
 
@@ -408,7 +398,7 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    zoom a 1280px viewport resolves to ~320 CSS px and falls under the
    <=760px block below, where the labels re-display and the toggles
    work, so the 1.4.10 Reflow path is untouched. */
-@media (min-width: 761px) {
+@media (min-width: 851px) {
   input.margin-toggle { display: none; }
 }
 
@@ -416,8 +406,29 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    Toggle label uses --muted with an underline for affordance.
    The accent color is reserved for chart callouts; using it on
    chrome (which the toggle becomes at narrow widths) re-grows
-   the accent into decoration that CLAUDE.md §Palette warns against. */
-@media (max-width: 760px) {
+   the accent into decoration that CLAUDE.md §Palette warns against.
+
+   The threshold is 850px, NOT the 760px used by the rest of the
+   page's breakpoints. Deliberate, and the resolution of the one
+   formally unresolved Design Council disagreement (§3.4 of the
+   2026-07-19 critique). Measured, the floating band runs 43ch at
+   1400px, 31ch at 1000px, 28ch at 900px, 26ch at 850px, and 23ch at
+   761px. Nothing overflows anywhere, so the band was never broken,
+   but below ~26ch a ragged two-sentence note stops being worth the
+   margin it sits in, and the inline form at that width is ~52ch.
+   850 is Edward's own stated line, and it covers Luke's case (iPad
+   portrait, 768px) which sits inside it.
+
+   Note this decouples the note breakpoint from the ~10 other media
+   queries at 760px (SVG swaps, grid collapse). Between 761 and 850px
+   you get the inline note treatment with the desktop layout
+   otherwise; measure and figure-swap are independent concerns.
+
+   The width/margin-right pair is deliberately NOT touched. Widening
+   `width` while `margin-right: -60%` stays fixed moves the note's
+   LEFT edge into the body column, because the negative margin pins
+   the right edge. Moving the threshold sidesteps that coupling. */
+@media (max-width: 850px) {
   label.margin-toggle:not(.sidenote-number) {
     display: inline;
     color: var(--muted);
@@ -426,7 +437,45 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
     text-underline-offset: 0.18em;
     cursor: pointer;
   }
+  /* Touch targets for the note toggles. The arc bands and publication
+     dots got transparent overlays sized past the WCAG 2.2 2.5.8 floor;
+     the 12 toggle labels never did, so a tap target here was the glyph
+     itself (a ~14px circled plus, or a 0.9rem superscript numeral).
+     Same technique as the SVG overlays: a centered, absolutely
+     positioned 24px box that expands the hit area without moving a
+     visible pixel or changing the line box. ::before is used because
+     .sidenote-number already spends ::after on the counter. */
+  label.margin-toggle { position: relative; }
+  label.margin-toggle::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+  }
   .sidenote, .marginnote {
+    display: none;
+  }
+  /* Margin stats are the exception to the collapse. They exist to pull
+     a buried headline number into view, so hiding all three behind a
+     tap on the majority-traffic viewport inverts the reason they were
+     added. Render them in flow, styled like an expanded note, and
+     retire their toggle (label and checkbox both) so no dead control
+     is left in the tab order. */
+  .marginnote:has(.stat-num) {
+    display: block;
+    float: none;
+    clear: both;
+    width: auto;
+    margin: 1.2rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 3px solid var(--rule);
+    background: color-mix(in srgb, var(--ink) 2%, transparent);
+  }
+  label.margin-toggle:has(+ input + .marginnote .stat-num),
+  input.margin-toggle:has(+ .marginnote .stat-num) {
     display: none;
   }
   .margin-toggle:checked + .sidenote,
@@ -521,9 +570,9 @@ nav.top a:hover { color: var(--ink); text-decoration: underline; }
 }
 /* Unified figcaption styling for hero-width timeline figures
    (career arc, dot plot). Matches the .gantt-figure /
-   .cliff-figure / .sankey-figure figcaption rules so all five
-   figures on the page have consistent caption typography
-   instead of two slightly different sizes. */
+   .cliff-figure figcaption rules so the figures on the page have
+   consistent caption typography instead of two slightly
+   different sizes. */
 figure.timeline figcaption {
   font-style: italic;
   color: var(--muted);
@@ -911,35 +960,10 @@ figure.gantt-figure figcaption {
 }
 
 /* ============================================================
-   SANKEY-STYLE TRANSITION FIGURE
-   The SkillSprout worked example. Same sizing pattern as
-   cliff-figure: inline inside a project body, max-width 600px.
-   ============================================================ */
-figure.sankey-figure {
-  margin: 1.2rem 0;
-  max-width: 760px;     /* viewBox extended to 700-wide so the
-                           rightmost target labels (Health Info Tech,
-                           associate's degree) fit without clipping;
-                           max-width bumped to keep the rendered size
-                           close to the prior 640/600 = 1.067x scale. */
-}
-figure.sankey-figure svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-figure.sankey-figure figcaption {
-  font-style: italic;
-  color: var(--muted);
-  font-size: 1.05rem;
-  margin-bottom: 0.5rem;
-}
-
-/* ============================================================
    OUTCOME FIGURES (Experience section)
    Small before/after bar figures that surface the quantitative
    outcomes otherwise buried in the role prose. Same sizing
-   idiom as cliff-figure / sankey-figure, but narrower, since
+   idiom as cliff-figure, but narrower, since
    they sit inline in the 60% body column beside a role lead.
    Pure SVG; the hex presentation attributes adapt to light/dark
    via the palette selectors lower in this stylesheet, and the
@@ -1416,7 +1440,7 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
    Runs for every reader (the prefers-reduced-motion gate was
    removed 2026-06-13, owner decision). Only stroke-dashoffset
-   animates: no layout, no LCP cost on the h1/subtitle above it.
+   animates: no layout, no LCP cost on the h1 and lede above it.
    ============================================================ */
 @keyframes arc-draw   { from { stroke-dashoffset: var(--arc-len, 540); } to { stroke-dashoffset: 0; } }
 @keyframes label-fade { from { opacity: 0; } }
@@ -1624,7 +1648,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 }
 
 /* ============================================================
-   19. SPLIT HERO (Direction B: writing-led, two columns)
+   20. SPLIT HERO (Direction B: writing-led, two columns)
    The opening: a Tier-1 proposition, then a full-width TWO-column
    grid (recent writing ~62% / current work ~38%), then the career
    timeline as a full-width band, then a one-line "More:" row. The
@@ -1634,9 +1658,12 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    is suppressed for the featured slot in the generator).
    ============================================================ */
 
-/* Nameplate: the former 3.2rem hero h1, reduced and set beside
-   its subtitle on one baseline. The page lede is now the writing
-   column, not the name. */
+/* Nameplate: the former 3.2rem hero h1, reduced. It carried a
+   muted category-label subtitle beside it on one baseline until
+   2026-07-29; that text was removed when the proposition was
+   rewritten to say the same thing in the first person. The flex
+   baseline layout is kept so a second element can sit beside the
+   name again without re-deriving it. */
 nav.top { width: 100%; }
 .nameplate {
   display: flex;
@@ -1650,21 +1677,36 @@ nav.top { width: 100%; }
   margin: 0;
   line-height: 1.05;
 }
-.nameplate .subtitle {
-  font-size: 1rem;
-  color: var(--muted);
-  margin: 0;
+/* Lede: the two-paragraph introduction under the proposition.
+   Body size, held to a ~62ch measure because the hero region is
+   full-width and would otherwise set these at 1400px. */
+.hero-lede {
+  max-width: 62ch;
+  margin: 0 0 2.2rem 0;
+}
+.hero-lede p {
+  margin: 0 0 0.9rem 0;
+}
+.hero-lede p:last-child {
+  margin-bottom: 0;
 }
 
-/* Tier-1 proposition: one first-person claim, sized between body and
+/* Tier-1 proposition: one first-person line, sized between body and
    h1 (Massimo). ETBook roman, not italic (the italic reservation
-   does not list a proposition). Additive to the locked subtitle. */
+   does not list a proposition). Since 2026-07-29 this is a plain
+   self-introduction and the page's only category statement, so it
+   is no longer "additive to the subtitle": the subtitle is gone. */
 .proposition {
   font-size: 1.6rem;
   line-height: 1.3;
   color: var(--ink);
-  max-width: 34ch;
-  margin: 0 0 1.9rem 0;
+  /* 54ch, not the 34ch the longer claim-style proposition used: the
+     current line is ~52 characters and 34ch broke it after
+     "engineering", splitting one noun phrase across two lines.
+     Balance keeps any wrap at mid-widths even. */
+  max-width: 54ch;
+  text-wrap: balance;
+  margin: 0 0 1.5rem 0;
 }
 
 /* Two-column asymmetric grid: recent writing leads (~62%), current
@@ -1761,7 +1803,7 @@ figure.timeline.career-band figcaption {
 }
 
 /* ============================================================
-   20. MORE LINE
+   21. MORE LINE
    One restrained line replacing the three-card teaser row (which
    read as a second navigation). Same-page jump links to the
    sections the reduced top nav dropped, plus full experience. A top
@@ -1777,7 +1819,7 @@ figure.timeline.career-band figcaption {
 .hero-more a { text-decoration-color: var(--rule); }
 
 /* ============================================================
-   20.1. SPLIT HERO BREAKPOINTS (Direction B)
+   21.1. SPLIT HERO BREAKPOINTS (Direction B)
    The two-column grid uses fr units, so it scales fluidly. The
    1000px stop gives the writing column a little more room at mid
    widths (resolving the 761-1000px squeeze the 2026-07-19 critique
@@ -1821,26 +1863,43 @@ figure.timeline.career-band figcaption {
 
   <!-- ==========================================================
        NAMEPLATE
-       Reduced from the former 3.2rem hero h1: the page lede is now
-       the Writing column in the split hero below, so the nameplate
-       sits beside its subtitle on one baseline rather than
-       dominating first paint. Subtitle text is locked (CLAUDE.md
-       Hero); only the surrounding structure changed.
+       Reduced from the former 3.2rem hero h1: the page lede is the
+       Writing column in the split hero below, so the nameplate does
+       not dominate first paint.
+
+       The .subtitle category label ("Healthcare data engineering and
+       Medicare Advantage analytics.") was REMOVED 2026-07-29 on the
+       owner's instruction, which supersedes the CLAUDE.md lock on
+       that text. The proposition below now says the same thing in
+       the first person, so keeping both opened the page on one fact
+       stated twice. The flex baseline layout is kept: the h1 sits
+       alone until something else is set beside it.
        ========================================================== -->
   <div class="nameplate">
     <h1>Zaher Karp</h1>
-    <p class="subtitle">Healthcare data engineering and Medicare Advantage analytics.</p>
   </div>
 
   <!-- ==========================================================
-       PROPOSITION (Tier 1)
-       One first-person claim stating the through-line before the
-       evidence: writing + analytics systems + regulated healthcare
-       + auditability. A <p>, not a heading, so heading order stays
-       h1 -> h2 -> h3. Additive to the locked subtitle above (which
-       is a category label; this is the claim).
+       PROPOSITION (Tier 1) + LEDE
+       A plain first-person introduction, replacing the earlier
+       claim-style proposition ("I build and write about auditable
+       analytics systems for regulated healthcare"). Owner rewrite,
+       2026-07-29. A <p>, not a heading, so heading order stays
+       h1 -> h2 -> h3.
+
+       The lede beneath it carries the prior-career thread that the
+       career band below states qualitatively but never in words,
+       then one line of expectation-setting. Constrained to a ~62ch
+       measure: the hero region is full-width (a sanctioned exception
+       to the 60% column), so unconstrained paragraphs would run the
+       full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I build and write about auditable analytics systems for regulated healthcare.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics.</p>
+
+  <div class="hero-lede">
+    <p>Before this, I worked in public-health research and editorial production. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
+    <p>This site holds my writing, projects, and a fuller account of the work.</p>
+  </div>
 
   <!-- ==========================================================
        SPLIT HERO (Direction B: writing-led, two columns)
@@ -1955,7 +2014,7 @@ figure.timeline.career-band figcaption {
       <div class="body">
         <h3>Medicare Advantage Insight Engine</h3>
         <p>
-          A three-tier simulation of a Stars analyst's triage, modeling raw exposure, a relevance screen, and a scoring threshold, put the load near 180 to 200 items a week, with about 20 clearing the screen and four or five clearing the threshold. That is a reasoned model with assumed parameters, not measured data. This engine codifies the triage. It scores each item on six named features (source authority, rulemaking stage, measure-set relevance, plan versus industry framing, structural signals, recency) and posts the ones that clear the threshold to a Teams webhook, each with a per-feature breakdown for explainability. Early production data shows a low single digit number of alerts a week against a low double digit number of deduplicated stories, over too short a run to establish a stable baseline.
+          A modeled funnel puts a Stars analyst near 200 news items a week, about 20 clearing a relevance screen, four or five worth acting on. Those numbers come from a reasoned model, not measurement. The engine scores each item on six named features, from source authority to recency, and posts what clears the threshold to a Teams webhook with a per-feature breakdown.
         </p>
 
         <!-- ==========================================================
@@ -1966,9 +2025,10 @@ figure.timeline.career-band figcaption {
              relevance screen to the few items that matter; the worked
              accept/reject example and its per-feature bars now live
              only in the methodology post (linked below). The three
-             figures (~200/week, ~20, ~5) are the simulation's, and all
+             figures (~200/week, ~20, ~5) are the model's, and all
              three already appear in the prose above; the figcaption
-             carries the caveat that they are modeled, not measured.
+             repeats the modeled-not-measured caveat deliberately, so
+             the numbers keep their scope if the figure is read alone.
              Accent-free by design (career/funnel figures carry no
              accent). Presentation hexes (#6a6a6a, #111, #d0d0c8) are
              remapped to the palette by section 17. -->
@@ -1984,7 +2044,7 @@ figure.timeline.career-band figcaption {
             <text x="130" y="139" font-family="et-book, Palatino, Georgia, serif" font-size="12" font-style="italic" fill="#111" text-anchor="middle">~5 that matter</text>
           </svg>
           <figcaption>
-            Modeled weekly volume narrowing through a relevance screen to the items that clear the scoring threshold. The three figures come from a reasoned model with assumed parameters, not from measurement. The worked accept-versus-reject example is in the methodology post.
+            Modeled weekly volume narrowing through a relevance screen to the items that clear the scoring threshold. The three figures are modeled, not measured. The worked accept-versus-reject example is in the methodology post.
           </figcaption>
         </figure>
 
@@ -2243,12 +2303,13 @@ figure.timeline.career-band figcaption {
        that hides an entire paragraph about the medallion
        architecture, RxNorm validation, and HIPAA framing.
 
-       Here, the expanded detail is NOT expand-collapsed. It is
-       pulled inline where it belongs, with the most detailed
-       technical passes demoted to sidenotes so they don't
-       crowd the main reading line.
+       Here, the lead paragraph always stays visible and the
+       most detailed technical passes are demoted to sidenotes so
+       they don't crowd the main reading line. The remaining depth
+       does sit behind a "More detail" fold (details.fold), per
+       CLAUDE.md §Experience entry expand rule.
 
-       Effect: the reader gets the full story without clicking,
+       Effect: the reader gets the shape of the role without clicking,
        and the technical depth is right there in the margin for
        anyone who wants it.
        ========================================================== -->
@@ -2333,7 +2394,8 @@ figure.timeline.career-band figcaption {
          below) as a before/after bar pair so the Experience lead
          carries a visible figure, not pure prose. The "after" bar
          is the section's single accent use (the accent sentinel
-         renders petrol teal via the palette selectors); the "before"
+         renders the accent, moss green, via the palette selectors);
+         the "before"
          bar is muted grey. "6x faster" is the direct label (72/12).
          Numbers match the fold prose exactly; no SVG swap, the
          viewBox scales the lone copy on mobile.
@@ -2382,37 +2444,43 @@ figure.timeline.career-band figcaption {
     </p>
 
     <!-- ==========================================================
-         OUTCOME FIGURE: internal dashboard adoption
-         Two-bar before/after of dashboard adoption, roughly 10
-         users to over 100. Exact client numbers are not public,
-         so both endpoints are stated as the approximations they
-         are (~10 / 100+), per the calibrated-claims rule.
-         Monochrome (both bars muted grey, no accent) so the
-         section keeps to its single accent use in the Health
-         Catalyst figure above. The $1M recurring revenue and the
-         400 retired reporting hours ride in the caption. Only the
-         two endpoints I actually have are drawn; no fabricated
-         growth trajectory between them. viewBox scales the lone
-         copy on mobile (no SVG swap).
+         OUTCOME FIGURE: dashboard user growth absorbed
+         Two-bar figure showing a RATIO, not endpoints: the
+         governed semantic layer absorbed sevenfold growth in
+         dashboard users across the role. It drew ~10 to 100+
+         until 2026-07-28, but that is a tenfold multiple and
+         contradicted the resume's 7x, which the owner confirmed
+         as the correct figure. Exact user counts are
+         client-private and the true endpoints are not on record,
+         so the figure now encodes the one quantity that is: the
+         multiple. Bar widths are exactly 1:7 (50 and 350), so the
+         geometry states the claim rather than illustrating it.
+         The "after" bar carries the #7a0000 accent sentinel for
+         visual parity with the Health Catalyst figure above (an
+         owner decision, 2026-07-23, replacing the earlier
+         monochrome treatment). The retired prep hours ride in the
+         caption; the $1M in new recurring revenue belongs to the
+         sales-analytics ROI work and sits in the fold with it.
+         viewBox scales the lone copy on mobile (no SVG swap).
          ========================================================== -->
     <figure class="outcome-figure">
       <figcaption>
-        Internal dashboard adoption grew from roughly ten users to more than one hundred over the course of the role, retiring about 400 hours of annual manual reporting. The analytics supported over $1M in recurring revenue.
+        The governed semantic layer absorbed sevenfold growth in dashboard users across the role, and retired more than 400 hours of report preparation per quarter. Exact user counts are client-private, so the figure shows the multiple rather than the endpoints.
       </figcaption>
-      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: internal dashboard adoption grew from roughly 10 users to more than 100 over the role.">
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: the dashboard user base grew sevenfold across the role, shown as a multiple rather than absolute counts.">
         <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
-        <rect x="95" y="28" width="38" height="22" fill="#6a6a6a"><title>Internal dashboard users before: roughly 10</title></rect>
-        <text x="141" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">~10 users</text>
+        <rect x="95" y="28" width="50" height="22" fill="#6a6a6a"><title>Dashboard user base at the start of the role, the baseline</title></rect>
+        <text x="153" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">baseline</text>
         <text x="85" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">after</text>
-        <rect x="95" y="78" width="400" height="22" fill="#7a0000"><title>Internal dashboard users after: more than 100</title></rect>
-        <text x="503" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">100+ users</text>
+        <rect x="95" y="78" width="350" height="22" fill="#7a0000"><title>Sevenfold the baseline, by the end of the role</title></rect>
+        <text x="453" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">7&#215; baseline</text>
       </svg>
     </figure>
 
     <details class="fold">
       <summary>More detail</summary>
       <p>
-        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported contract renewals. The same dashboards replaced a standing manual reporting cycle that had recurred every quarter.
+        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported contract renewals. I led the sales-analytics initiative behind it, and the ROI dashboard contributed to more than $1M in new recurring revenue. The same dashboards replaced a standing manual reporting cycle that had recurred every quarter.
       </p>
     </details>
 

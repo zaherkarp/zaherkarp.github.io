@@ -1,9 +1,22 @@
-# Search engines and well-behaved general crawlers: full access except build sources.
+# Search engines and well-behaved general crawlers: full access except build
+# sources and the repo's internal working records. The second group is not
+# secret, it is just written for me rather than for a reader who arrived from
+# a search result: candid review artifacts, a hiring evaluation, agent
+# instructions, and a running to-do list. Excluding them keeps the indexed
+# surface the published site.
 User-agent: *
 Allow: /
 Disallow: /src/
 Disallow: /scripts/
 Disallow: /archive/
+Disallow: /critiques/
+Disallow: /evaluations/
+Disallow: /reviews/
+Disallow: /docs/
+Disallow: /data/
+Disallow: /TODO.md
+Disallow: /CLAUDE.md
+Disallow: /README.md
 
 # AI training crawlers: disallowed by default. The site stays available for search
 # engines and human readers; this just keeps content out of training corpora.

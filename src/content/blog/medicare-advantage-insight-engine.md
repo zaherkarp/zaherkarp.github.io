@@ -9,6 +9,8 @@ tags: ["medicare-advantage", "stars", "automation", "python", "domain-knowledge"
 
 A Stars analyst skims roughly 180 to 200 healthcare news items per week. About 20 clear a first relevance screen, and four or five of those matter. Those figures come from a three-tier model with assumed parameters rather than from measurement, but the question they frame is the real one: which five.
 
+The engine's own early output is a separate quantity, and worth stating separately rather than reconciling with the model. It has so far posted a low single digit number of alerts per week against a low double digit number of deduplicated stories. That is too short a run to establish a stable baseline, and it measures what the tool emits rather than what an analyst faces, so it neither confirms nor corrects the estimate above.
+
 "Matter" is not a vague word here. It has a specific meaning that the analyst could articulate if you asked them. A CMS rulemaking notice that changes a measure weight matters. A trade-press article that mentions Medicare Advantage in passing, while really reporting on a hospital system's earnings call, does not matter. A NCQA bulletin about a value-set update matters. A press release from a quality-improvement vendor reframing a CMS announcement as their product launch, also mentions Medicare Advantage, does not matter.
 
 The first time I sat with an analyst doing this triage, the most striking thing was how fast they were. Title and source were enough to dismiss 80% of items in under a second each. The remaining 20% got a five-second skim of the lede. Of those, maybe ten percent got opened, and of those, maybe half ended up shared with the team. The output was five items.

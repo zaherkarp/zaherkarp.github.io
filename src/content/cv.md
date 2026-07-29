@@ -55,7 +55,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 - **2015** Karp Z, Wietfeldt N, Pandhi N. Approaches to involving diverse community partners and patients in integrated mental health research. Seminar, Access, Quality, and Outcomes Research Network, Appleton, WI.
 - **2015** Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, DeCheck N, Karp Z. An efficient process of gathering diverse community opinions to inform an intervention. Society for Implementation Research Collaboration Conference, Seattle, WA.
 - **2015** Karp Z. Influences of the primary care clinic environment on patients and staff: preliminary findings. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
-- **2012** Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. Approaches and challenges to optimizing the use of electronic health records in primary care. World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education, Montréal, QC.
+- **2012** Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. Approaches and challenges to optimizing the use of electronic health records in primary care. World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education, <span lang="fr">Montréal</span>, QC.
 - **2012** Pandhi N, Yang W, Karp Z. Clinical application specialists: meeting themes. Presentation to UW Health organizational leadership, Middleton, WI.
 
 ## Posters

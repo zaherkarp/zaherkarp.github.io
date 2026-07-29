@@ -175,14 +175,47 @@ All ten media queries sit at 760px; nothing handles 761–1000px.
   "stopped being a margin and become a gutter." Holds that only sub-850px is
   genuinely degraded, and that collapsing the whole band over-corrects.
 
-**Status: unresolved.** Luke and Edward disagree about a number, not a principle,
-and neither moved. All three reject do-nothing.
+**Status: RESOLVED 2026-07-28. Threshold moved to 850px.**
 
-**Engineering caution if this is actioned:** widening `width` toward 60–65% while
-`margin-right: -60%` stays fixed moves the note's *left* edge toward the body
-column — the float is pulled right by the negative margin, so the right edge is
-what is pinned. The two values are coupled and must be retuned together. This was
-flagged without being rendered; verify visually.
+The disagreement was blocked on its own §7 caveat, that none of this had been
+seen in a rendered browser. Measured in headless Chromium, the table above is
+accurate, and two things it could not know decided the question:
+
+| Viewport | Note width | Real measure | Overflow |
+|---|---|---|---|
+| 1400px | 386px | 43.3ch | none |
+| 1000px | 276px | 30.9ch | none |
+| 900px | 248px | 27.8ch | none |
+| 850px | 235px | 26.3ch | none |
+| 800px | 220px | 24.6ch | none |
+| 761px | 208px | 23.3ch | none |
+
+1. **Nothing breaks.** Zero box overflow at any width across all 16 notes; the
+   worst-case word (`medicare-advantage`) takes 69% of the band at its tightest,
+   and every `.stat-num` numeral fits. "The whole band is broken" overstates it:
+   this is a comfort problem, not a layout failure, which is the substance of
+   Edward's objection that collapsing 761–1000px over-corrects.
+2. **The two positions overlapped.** Luke's concrete case is iPad portrait at
+   768px, which sits *inside* Edward's sub-850px concession. They were arguing
+   about the range while agreeing about the example.
+
+**Resolution: collapse below 850px**, Edward's own stated line, which covers
+Luke's case. Above it the float is tight but reads and stays visible without
+interaction, which is the point of a margin; below ~26ch the inline form (~52ch
+at that width) is simply better.
+
+**Luke's second point was dropped, not actioned.** He argued the hover-only
+focus-plus-context reveals are dead on touch in that band. They fire on `:focus`
+as well, and every mark that carries a reveal is an `<a>`, so a tap focuses it
+and the reveal runs. No work needed.
+
+**The engineering caution below was sidestepped rather than managed.** It warned
+that widening `width` toward 60–65% while `margin-right: -60%` stays fixed moves
+the note's *left* edge toward the body column, because the negative margin pins
+the right edge, so the two values are coupled and must be retuned together.
+Moving the collapse threshold touches neither value, so the coupling never comes
+into play. The safer intervention was available the whole time; the proposal that
+made this look risky was the one nobody needed.
 
 ---
 
@@ -261,8 +294,19 @@ so a `<span>` there is text. Same word, two pipelines, opposite handling.
 3. **Leave it.** One French city in one folded 2012 citation; a screen reader
    anglicizes one vowel. Genuinely marginal cost/benefit.
 
-**Status:** deferred. Preferred path is option 1, homepage-only unless the CV
-scope question is answered otherwise. Not urgent.
+**Status: SHIPPED 2026-07-23** (commit `6f7bea8`), via option 1. A
+`venue_lang` mapping in `src/content/publications.yaml` is applied at render
+time by `scripts/_publications.py`, after escaping. The CV scope question was
+answered implicitly: the wrapper feeds `render_cv_entries` too, so `cv.html`
+got it as well.
+
+**One residual, found and fixed 2026-07-28.** The YAML-driven path covered the
+publications entry on both the homepage and `cv.html`, but the CV's
+*presentations* list is hand-authored markdown, so `cv.md:58` still carried a
+bare `Montréal` while the generated entry two sections away was wrapped. It is
+now wrapped by hand to match. The general lesson: a render-time fix keyed to one
+source of truth leaves any hand-authored surface of the same fact untouched, and
+nothing checks the two against each other.
 
 ### Explicitly out of scope
 
@@ -379,7 +423,7 @@ None of this has been seen in a browser. Before trusting §2:
 - [ ] Same at 700px. Confirm `⊕` toggles work and reveal notes inline.
 - [ ] 400% browser zoom at 1280px. Confirm the mobile block engages and toggles
       function (this is the path §2.2's media query depends on).
-- [ ] Render at 761px, 800px, 1000px. Judge the sidenote measure against the
+- [x] Render at 761px, 800px, 1000px. Judge the sidenote measure against the
       table in §3.4 and decide the Luke/Edward threshold question.
 - [ ] Light and dark mode on the writing index, confirming the removed
       `.index-label` CSS left no visual gap.
@@ -389,7 +433,20 @@ None of this has been seen in a browser. Before trusting §2:
 
 ## 8. Palette reopening — decision record (exploratory)
 
-**Status: proposal, not a change. Nothing was written to `index.html`.** The
+**Status: ADOPTED 2026-07-23. This section is now a historical record.** Board
+entry #1, "Lichen at First Light" (`seed-122`), was chosen by the owner, and its
+values are live in `index.html` and `src/content/palette.yaml`. The text below is
+preserved as written, so it still describes the pre-adoption cream/slate +
+petrol-teal palette as current; read it as of its own date.
+
+**Two follow-ups survive the adoption and are still open.** The hand-tuning pass
+this section asks for at the end (tuning the five roles against the real page,
+plus a full-council convening, rather than a find-and-replace of the tokens)
+does not appear to have happened: the shipped hexes are the board values
+verbatim. And the nudge-vs-statement vote it asks to be held explicitly, if a
+single winner were ever forced, was not held. A single winner was forced.
+
+The original framing follows. The
 current cream/slate + petrol-teal palette is a locked design token; this section
 records an exploration of alternatives, not a decision to adopt one. Adopting any
 palette is a separate, deliberate step and a full-council convening.
