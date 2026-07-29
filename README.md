@@ -693,7 +693,11 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Education + Service Gantt renders between Speaking and Education.
 - Print preview: nav and career arc hidden, GoatCounter absent, content
   fits two pages, light tokens forced.
-- Lighthouse accessibility ≥ 90 in both modes.
+- Lighthouse accessibility ≥ 90 in both modes. Known non-issue: the
+  `label-content-name-mismatch` audit flags all five career-arc band links.
+  It is weight 0 (score stays 100) and is an artifact of axe concatenating
+  each band's visible label with its nested `<title>`. Do not chase it; see
+  CLAUDE.md §Career arc SVG.
 - Keyboard Tab: focus outline visible on each sidenote label and each
   fold summary as you traverse.
 - Keyboard skip link: Tab once from page load, press Enter, then Tab again.

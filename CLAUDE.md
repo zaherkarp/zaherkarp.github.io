@@ -72,7 +72,11 @@ figure above it, `#projects` explains why "Featured" opens at 02, and the hero
 lede's two career nouns were swapped to match the chronology the career band
 and About both tell. Design decisions below tagged "(Text ordering,
 2026-07-29)" mark the superseding wording. Full findings, panel review, and
-decision record in `docs/homepage-ordering-review-2026-07-29.md`.
+decision record in `docs/homepage-ordering-review-2026-07-29.md`. One fix
+came out of verifying rather than planning: the desktop career arc's "BHA"
+band carried an accessible name that never contained the abbreviation it
+displays, so speech input could not activate it; see §Career arc SVG for the
+band `aria-label` contract that now governs it.
 
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
@@ -602,6 +606,30 @@ overlays when editing band markup. Known limit: the two adjacent 2019
 dots overlap hit areas (centers 8 units apart on mobile); the spacing
 exception covers them, and moving dots is off the table (locked
 coordinates).
+
+**Band `aria-label` contract (2026-07-29, WCAG 2.5.3 Label in Name).** Every
+band `<a>`'s `aria-label` must CONTAIN that band's visible `<text>` label
+verbatim, because speech-input users activate a control by speaking the label
+they can see. The desktop arc labels the current role "BHA" while its
+accessible name read "Baltimore Health Analytics, ..."; saying "click BHA"
+matched nothing, so the abbreviation was fronted (`"BHA, Baltimore Health
+Analytics, 2025 to present. Jump to the current role."`). The mobile `tl-rail`
+needed no change: it labels that band "Baltimore Health", which the name
+already contains. If you rename a visible band label, update its `aria-label`
+in the same edit. This is an attribute-only contract; it touches no
+coordinate, no `<title>`, and no rendered pixel.
+
+**Do not chase Lighthouse's `label-content-name-mismatch` on these bands.** It
+flags all five, before and after the fix above, and always will: axe reads
+"text inside the element" as `textContent`, which concatenates the visible
+`<text>` label with the `<title>` nested in the band line ("BHABaltimore
+Health Analytics, 2025 to present"), and that mashed string appears in no
+accessible name. Four of the five bands had clean prefix labels the whole
+time. Silencing it would mean moving `<title>` out of the link, which is the
+documented all-browser accessible layer for these marks (see the hover/focus
+section below). The audit carries weight 0, so accessibility scores 100 in
+both modes with it present. Verify Label in Name by checking containment
+directly, not by reading that audit.
 
 Hover / focus, focus-plus-context + typeset reveal (CSS section "18.3"):
 a Design Council pass replaced the dead native-tooltip *feel* with the chart

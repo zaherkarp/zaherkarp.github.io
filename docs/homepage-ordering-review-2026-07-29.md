@@ -534,3 +534,40 @@ See §12. Same-change rule: CLAUDE.md must describe the shipped page.
   `#writing`): historical record of its date, leave unedited.
 - **docs/backlog-review-2026-07-28.md:** historical record, leave unedited;
   its "what is `#writing` for" question is answered here.
+
+---
+
+## 13. Addendum: what the verification pass turned up (2026-07-29)
+
+Added after implementation. The plan above is unchanged; this records one
+finding that came out of running §10 rather than out of §4.
+
+**A real Label in Name gap, fixed.** §10 asks for Lighthouse accessibility in
+both modes. It scored 100 both ways, but its `label-content-name-mismatch`
+audit flagged the five career-arc band links. Four were false positives (see
+below). The fifth was real: the desktop arc labels the current-role band
+**"BHA"**, while its accessible name read "Baltimore Health Analytics, 2025 to
+present. Jump to the current role." A speech-input user reading the chart says
+"click BHA" and matches nothing, which is exactly the failure WCAG 2.5.3
+(Label in Name, Level A) exists to prevent. Fixed by fronting the abbreviation
+in the `aria-label`; no coordinate, `<title>`, or rendered pixel moved. The
+mobile `tl-rail` needed nothing, since it labels that band "Baltimore Health",
+which its accessible name already contains. All ten band links across both
+SVGs now satisfy containment. The contract is recorded in CLAUDE.md
+§Career arc SVG.
+
+**Why the audit still shows five, and why that is correct to ignore.** axe
+computes "text inside the element" as `textContent`, which concatenates the
+visible `<text>` label with the `<title>` nested inside the band line:
+`'BHABaltimore Health Analytics, 2025 to present'`. That string appears in no
+accessible name, so the rule fails for every band, including the four
+("Editorial and writing", "healthfinch", "Health Catalyst", and the
+en-dash/hyphen "Research, UW-Madison") whose visible labels were already clean
+prefixes. Clearing it would require moving `<title>` out of the link, which is
+the documented all-browser accessible layer for these marks. The audit is
+weight 0 and does not affect the score. Check Label in Name by testing
+containment directly; do not re-litigate this audit.
+
+**Method note.** This is a second instance of the §Agent panels rule that
+opened this review: render and measure before arguing. The audit's own summary
+said five links were broken; measuring said one was, and named it.
