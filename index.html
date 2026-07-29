@@ -320,6 +320,11 @@ a:hover {
    so the label lands on the combined experience -> projects area while
    the section keeps its own id (lint_facts). Same zero-height pattern. */
 .section-anchor { display: block; height: 0; scroll-margin-top: 2rem; }
+/* The nav's "writing" item targets the hero writing column itself
+   (2026-07-29), not the cadence section below, so the first click
+   lands ON the writing rather than past it. Same landing offset as
+   the zero-height anchors above. */
+#writing-hero { scroll-margin-top: 2rem; }
 
 /* Sidenote numbering: CSS counter increments on each .sidenote-number
    label, then both the inline superscript and the note prefix display
@@ -1868,7 +1873,7 @@ figure.timeline.career-band figcaption {
 <header class="site-header">
   <nav class="top">
     <ul>
-      <li><a href="#writing">writing</a></li>
+      <li><a href="#writing-hero">writing</a></li>
       <li><a href="#work">work</a></li>
       <li><a href="#about">about</a></li>
       <li><a href="#contact">contact</a></li>
@@ -1942,8 +1947,10 @@ figure.timeline.career-band figcaption {
     <!-- LEFT: recent writing. Two featured entries lead; the
          six-title index (moved here from the former "More writing"
          fold) follows, compacted to dated titles. The cadence
-         sparkline stays below in #writing. -->
-    <div class="hero-writing">
+         sparkline stays below in #writing.
+         This column is the nav's "writing" target (id=writing-hero,
+         2026-07-29). -->
+    <div class="hero-writing" id="writing-hero">
       <h2 class="col-head">Recent writing</h2>
       <!-- writing-list:start -->
     <div class="entry">
@@ -2241,19 +2248,10 @@ figure.timeline.career-band figcaption {
        top nav dropped, plus full experience. -->
   <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">full experience</a></p>
 
-  <section id="about">
-    <h2>About</h2>
-    <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
-
-    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS (Healthcare Effectiveness Data and Information Set) pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
-    </p>
-  </section>
-
-  <hr>
-
   <section id="writing">
-    <h2>Writing</h2>
+    <h2>Writing cadence</h2>
+
+    <p>The pulse behind the writing list above: publishing pace, week by week.</p>
 
     <!-- CADENCE HEADER
          Twenty-four-week sparkline generated from blog frontmatter
@@ -2760,6 +2758,26 @@ figure.timeline.career-band figcaption {
     </div>
   </div>
   </details>
+
+  <hr>
+
+  <!-- ==========================================================
+       ABOUT
+       Moved here 2026-07-29 (was directly after the hero). The
+       nav reads writing, work, about, contact; with About at the
+       top the page delivered them in a different order, and the
+       methodology paragraph sat far from the academic record it
+       describes. Here it reads as the preface to the dot plot and
+       Publications directly below.
+       ========================================================== -->
+  <section id="about">
+    <h2>About</h2>
+    <p>
+      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
+
+    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS (Healthcare Effectiveness Data and Information Set) pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
+    </p>
+  </section>
 
   <hr>
 
