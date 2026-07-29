@@ -552,6 +552,15 @@ nav.top a {
 }
 nav.top a:hover { color: var(--ink); text-decoration: underline; }
 
+/* Header wrapper: the nav moved out of <main> on 2026-07-29 so the
+   skip link actually bypasses it; the header replicates the centering
+   box main provided. */
+.site-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(2rem, 4vw, 5rem);
+}
+
 /* ============================================================
    11. CAREER ARC TIMELINE
    An annotated time series replaces the original bare
@@ -1847,11 +1856,16 @@ figure.timeline.career-band figcaption {
 
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
-<main id="main">
 
-  <!-- ==========================================================
-       NAV: restrained, two-tier, small caps
-       ========================================================== -->
+<!-- ==========================================================
+     NAV: restrained, two-tier, small caps
+     Sits OUTSIDE <main> (moved 2026-07-29) so "Skip to main
+     content" actually bypasses it; while the nav lived inside,
+     the landmark it targets began with the nav it exists to
+     skip (WCAG 2.4.1). The .site-header wrapper replicates the
+     centering box <main> was providing.
+     ========================================================== -->
+<header class="site-header">
   <nav class="top">
     <ul>
       <li><a href="#writing">writing</a></li>
@@ -1860,6 +1874,9 @@ figure.timeline.career-band figcaption {
       <li><a href="#contact">contact</a></li>
     </ul>
   </nav>
+</header>
+
+<main id="main">
 
   <!-- ==========================================================
        NAMEPLATE
