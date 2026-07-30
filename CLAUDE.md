@@ -78,6 +78,76 @@ band carried an accessible name that never contained the abbreviation it
 displays, so speech input could not activate it; see §Career arc SVG for the
 band `aria-label` contract that now governs it.
 
+**Experience text reduction, Certifications disabled (2026-07-30, this
+branch).** Owner request: cut the Experience prose hard, and comment out
+Certifications so it survives in the file and the pipelines but stops
+rendering. The joint Focus Group / Design Council convening chose selective
+fold retirement: three of the four "More detail" folds retired (BHA,
+healthfinch, UW), the Health Catalyst one kept and renamed "Published
+customer outcomes" because it holds the page's only third-party verification.
+Experience went from 1,209 words to ~570 (−53%), with closed-fold prose from
+~698 words to ~42. Both outcome figures stayed. The Huber psi formula was
+PROMOTED out of the retired BHA fold into visible prose rather than cut.
+`#experience` now closes with a resume/CV pointer and the hero says
+"experience" rather than "full experience".
+
+**A SECOND pass followed within the hour**, after the owner said the page was
+still "too much to provide value since it probably scares people away" -
+reversing the stop-here call above on reception grounds. It cut every Experience
+lead to ~35-55 words, put the Huber formula back in a (named) fold, removed the
+healthfinch outcome figure, dropped `sn-ehrs`, deleted the `.hero-more` "More:"
+line outright, and moved the writing cadence sparkline into the hero beside the
+writing list. Page 10,709px to 10,033px, 11.9 to 11.1 screens, visible words
+1,834 to 1,665. The reordering question the owner raised in the same breath was
+deliberately NOT acted on; it became a study instead, so no section moved.
+
+**A THIRD pass followed**, on the owner's question of whether `#service` could
+be cut while staying "active in a pipeline form but not visible", plus whether
+`#education` had fluff or combinable parts. Answer: yes to the first, verified
+empirically, because `lint_recognition` and `lint_gantt` both slice the section
+with a raw-text regex that ignores HTML comments. `#service` is now commented
+out with both gates still operating on it; its `id` moved to the Gantt figure,
+which becomes the visible service record; fluff was trimmed from both sections
+first. A merged single "highlights" section was costed and rejected (it would
+make both gates pass vacuously for a ~55px gain). The measurement that shaped
+the advice: both sections were ALREADY folded, so they cost 225px each in
+closed-state chrome while every entry contributed zero pixels. Page 10,033px to
+9,734px, 11.1 to 10.8 screens. Details at §Recognition alignment lint.
+
+**Twenty minutes later the owner asked "isn't it redundant with the figure?"
+about `#education`, and they were right: disabling `#service` had made
+`#education` MORE redundant with the Gantt, not less, and the two sections were
+now getting inconsistent treatment for the same reason.** After the trim, the
+chart's labels already stated all five entries' title and date; only the
+$18,000 grant and the Carayon/AHRQ detail were not in the chart, and both moved
+into the figcaption before `#education` was disabled the same way as
+`#service`. Disabling three consecutive sections (education, service,
+certifications) also silently removed the rule between the Gantt and
+Testimonials, caught by rendering rather than inspection, and restored outside
+all three disabled blocks so it survives any future partial restore. Page
+9,734px to **9,518px**. Details at §Gantt figure alignment lint and
+§Recognition alignment lint.
+
+**The headline number is honest but easy to misread**, so it is repeated in
+§Experience entry expand rule: total content fell 53%, while the section's
+rendered default height fell only ~2% (2884px to 2836px at 1400px). More than
+half the section was already invisible behind closed folds, so this was a
+content cut, not a page-length cut. Anyone asked for a *visibly* shorter
+Experience should start from the five lead paragraphs, not the folds, and
+should measure rather than estimate.
+
+Two defects were caught by rendering and by nothing else: the Certifications
+banner originally contained literal comment delimiters and an `<hr>` as prose,
+which terminated the comment early and leaked live markup onto the page
+(spurious rule, horizontal overflow at 761px and below) while `lint_html`
+stayed green; and the trailing `<hr>` has to sit inside the disabled region or
+two rules render in a row. Both are documented at §Certifications. Design
+decisions below tagged "(Text reduction, 2026-07-30)" mark superseding
+wording. Decision record in `docs/experience-text-reduction-2026-07-30.md`,
+including §10 Rollback and versioning: the before/after commit SHAs for this
+whole pass and why they, not a git tag, are the durable rollback point (tag
+push is blocked in this environment's git scope).
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -316,7 +386,11 @@ menu without discussion. **(Direction B, 2026-07-26)** Nav is four items
 before `#experience` (which keeps its own id for `lint_facts`); `contact` is
 back in the bar. The un-navigated section ids (experience, projects,
 publications, speaking, education, service) are still live anchors, reached via
-the `.hero-more` "More:" line and the dot plot; do not delete them.
+the dot plot and the blog-post navs; do not delete them. **The `.hero-more`
+"More:" line that used to reach four of them was REMOVED 2026-07-30** (see the
+dated entry above): its targets sat 3 to 9 screens away, which all six
+reception panelists read as a promise the scroll could not keep. `#projects` is
+still reached from every blog page's nav (`/#projects`).
 
 **(Text ordering, 2026-07-29)** `writing` targets `#writing-hero`, the id on the
 hero's `.hero-writing` column, NOT `#writing` (which it scrolled past, landing
@@ -332,20 +406,36 @@ change.
 column.** The writing-led hero is a `<div class="split-hero">` grid, deliberately
 NOT a `<section>`, so `section { width: 60% }` and the floating-note margin never
 apply to it. It carries no floating notes by design (see §Writing section
-update rule for the suppressed per-post note). Now **two** columns (writing
+update rule for the two suppressed notes: the per-post one and, since
+2026-07-30, the cadence tag rollup). Now **two** columns (writing
 ~1.6fr / current work ~1fr) above 760px, tightening to ~1.4fr/1fr at 761-1000px,
-one column below 760px. The full-width `figure.timeline.career-band` and the
-`.hero-more` line sit below the grid (also full-width exceptions). The rest of
-the page keeps the 60% column. CSS lives in sections 20 / 21 / 21.1 of
-index.html (§20 is now the `.hero-more` line, not the retired teaser row).
+one column below 760px. The full-width `figure.timeline.career-band` sits
+below the grid (also a full-width exception). The rest of
+the page keeps the 60% column. CSS lives in sections 21 / 21.1 of
+index.html; **§20 and §21's MORE LINE block were deleted 2026-07-30 with
+`.hero-more` itself** (markup, CSS, and its `@media print` hide rule).
+
+**(Text reduction, 2026-07-30) the writing cadence sparkline now lives INSIDE
+`.hero-writing`**, after the "View all writing" line, rather than in its own
+`<section id="writing">` a screen and a half down the page. It is a
+build-generated region, so its `activity-grid` markers moved with it and
+`build_portfolio.py` repopulates them in place. Its `mn-cadence` tag-rollup
+margin note is no longer emitted at all: `.marginnote` positions itself with
+`margin-right: -60%`, a value calibrated to the 60% prose column, so in the
+full-width hero it lands mid-page instead of beside its anchor. Same rule and
+same reason as the suppressed per-post note. `#writing` survives as a bare
+`.section-anchor` span because external bookmarks may point at `/#writing`;
+nothing on this site links to it.
 
 ### Hero
 
 **(Owner rewrite, 2026-07-29.)** Sequence: nav, `.nameplate` (h1 alone), a
 Tier-1 `<p class="proposition">`, a two-paragraph `.hero-lede`, then the
 two-column `.split-hero` grid (recent writing ~62% / current work ~38%), then
-the full-width `figure.timeline.career-band`, then the `.hero-more` "More:"
-line. The featured project 01 block is MOVED into the hero (not copied) so the
+the full-width `figure.timeline.career-band`. (A trailing `.hero-more` "More:"
+line closed the sequence until 2026-07-30, when it was removed.) The
+writing column also carries the cadence sparkline as of that date. The
+featured project 01 block is MOVED into the hero (not copied) so the
 project CSS counter still numbers it 01 in DOM order. No epigraph, no italic
 claim block, no manifesto framing.
 
@@ -851,14 +941,25 @@ the next CI run overwrites them. Two tiers:
     `build_writing_list()` suppresses the `mn-w-<slug>` note (test:
     `test_writing_list_suppresses_hero_marginnote`). The frontmatter field is
     still read/preserved by the blog tooling; it just no longer surfaces here.
-    `#writing` below now holds only the cadence sparkline (its `mn-cadence`
-    note still floats there). **(Text ordering, 2026-07-29)** that section is
-    retitled **"Writing cadence"** and carries a one-line lead above the
-    sparkline, so the heading is honest about its content and does not compete
-    with the hero's "Recent writing" column head. The lead sits BEFORE
-    `<!-- activity-grid:start -->`, outside the generated region; keep it there
-    or the next build overwrites it. `.hero-writing` also carries
-    `id="writing-hero"`, the nav's `writing` target.
+    **(Text reduction, 2026-07-30) `<section id="writing">` was RETIRED and its
+    cadence sparkline moved INTO `.hero-writing`,** after the "View all
+    writing" line. The two halves of one idea had 1,400px of career band
+    between them: the writing list sat at screen 0.5 and its own cadence chart
+    at screen 2.3. The `activity-grid` markers moved with it and
+    `build_portfolio.py` repopulates them in place, so do not hand-edit
+    between them. Its one-line lead and its `<h2>Writing cadence</h2>` went
+    with the section, and **`build_activity_grid()` no longer emits the
+    `mn-cadence` tag rollup at all** (test:
+    `test_activity_grid_suppresses_cadence_marginnote`) for the same reason
+    the per-post note is suppressed: `.marginnote` uses
+    `margin-right: -60%`, calibrated to the 60% prose column, so in the
+    full-width hero it lands mid-page rather than beside its anchor. The tags
+    stay reachable at `/blog/tags/`. `#writing` survives only as a bare
+    `.section-anchor` span, kept because external bookmarks may point at
+    `/#writing` (nothing on this site links to it, verified). `.hero-writing`
+    still carries `id="writing-hero"`, the nav's `writing` target.
+    (Superseded here: the 2026-07-29 wording that `#writing` holds the
+    sparkline, is retitled "Writing cadence", and carries a lead.)
   - **Index** (`WRITING_TILES = 6`): the next six posts after the
     featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
     markers. **(Direction B, 2026-07-26)** these markers ALSO moved into the
@@ -970,20 +1071,103 @@ This is intentional and complete. Do not treat as a gap to fill.
 
 ### Experience entry expand rule
 
-Four of five experience entries (BHA, Health Catalyst, healthfinch, UW)
-use a `<details class="fold">`/`<summary>` expand pattern for the technical
-detail. The lead paragraph stays visible always. Sustainable Clarity is a
-single paragraph and doesn't fold. The summary text is "More detail" with
-custom `+`/`-` prefix (`details.fold > summary::before`); browser default
-disclosure markers are suppressed.
+**(Text reduction, second pass, 2026-07-30.) TWO folds in the section, and
+both name their contents.** BHA carries `<summary>The robust smoothing, in one
+formula</summary>` holding only the Huber psi block; Health Catalyst carries
+`<summary>Published customer outcomes</summary>`. Every lead was cut to ~35-55
+words, the healthfinch outcome figure was removed, the `sn-ehrs` sidenote was
+dropped (its four-EHR content is in the lead), and UW's stack line lost NVivo
+and SPSS with the qualitative-methods clause. Measured result: Experience
+2,836px to 2,419px, page 10,709px to 10,033px (11.9 to 11.1 screens), visible
+words 1,834 to 1,665. Experience notes are now two, both `.stat-num`
+(`mn-hc-caregaps`, `mn-uw-cohort`).
 
-The Huber psi-function formula sits inside the BHA fold as pure HTML/CSS
-math (no MathJax/KaTeX dependency for one short formula).
+**The Huber formula went back into a fold**, having been promoted to visible
+earlier the same day. Promoting it cost ~180px and made BHA the second-tallest
+role; collapsed it costs ~34px. Deleting it was the alternative and was
+rejected: ~34px was not worth losing the page's densest technical evidence and
+a canonical §Calibrated claims example. If a future pass wants it gone, that is
+a decision about evidence, not about height.
 
-**Outcome figures (added 2026-06-09).** Two roles carry a small inline
-`figure.outcome-figure` (before/after bar pair) between the lead paragraph
-and the fold, so the densest section shows data by default instead of pure
-prose: Health Catalyst (refill turnaround 72h to 12h) and healthfinch
+**Per-role heights after this pass**, so the next reader does not re-measure:
+BHA 490px, Health Catalyst 684px, healthfinch 456px, UW 445px, Sustainable
+Clarity 290px. Catalyst is the outlier at 29% because it alone still has a
+figure; see §Outcome figures for the open lever.
+
+**(Text reduction, first pass, 2026-07-30.) One of five entries folds now, not four.**
+Only Health Catalyst keeps a `<details class="fold">`, and its summary reads
+**"Published customer outcomes"**, not "More detail": with a single fold left
+in the section a generic label is exactly the defect
+`critiques/critique-index-2026-07-04.md:116` flagged (four identical labels
+gave a scanning reader equal reason to skip all four, including the one with
+the most distinctive content). What it holds is the page's only third-party
+verification, the three `healthcatalyst.com` success-story links, plus the
+`37,000` / `72 hours` / `12` that the refill figcaption cites, so those
+numbers stay anchored in prose per the Outcome figures rule below. The `+`/`-`
+prefix (`details.fold > summary::before`) and the suppressed native marker are
+unchanged, and the other eight folds on the page still read "More" or a named
+summary. Every lead paragraph stays visible always; Sustainable Clarity is a
+single paragraph and still doesn't fold.
+
+The BHA, healthfinch, and UW folds were retired, cutting ~698 words of
+closed-fold prose to ~42. Know what this did and did not buy, because the
+arithmetic is counterintuitive: the section's **total** content fell 1,209
+words to ~570 (−53%), but its **rendered default height** fell only ~2%
+(2884px to 2836px at 1400px, measured in headless Chromium). More than half
+the section was already invisible, so retiring folds is a content cut, not a
+page-length cut. If a future pass needs the section to *look* dramatically
+shorter, the levers are the five lead paragraphs (~300 visible words), the two
+figcaptions, the promoted formula caption, and the three margin notes. Do not
+re-argue this from intuition; re-measure.
+
+**The Huber psi-function formula is now in the VISIBLE layer**, directly under
+the trimmed BHA lead, not inside a fold (the fold that held it is gone). It
+stays pure HTML/CSS math, no MathJax/KaTeX. It was promoted rather than cut
+because `evaluations/hiring-eval-2026-05-23.md:200` calls it "the cleanest 'I
+still know what I'm doing under the hood' signal in the Experience section",
+and burying the section's densest evidence two clicks deep was the one option
+that earned neither restraint nor credit. Its caption is unchanged **verbatim**
+and remains a canonical §Calibrated claims example.
+
+Retiring those folds also deleted the `sn-tech-notes` and `sn-medallion`
+sidenotes with their host paragraphs, taking two toggles out of the tab order.
+Experience keeps three notes: `sn-ehrs` and the two `.stat-num` margin stats
+(`mn-hc-caregaps`, `mn-uw-cohort`). Deleting prose is always safe for
+`lint_notes` (its checks need material present in BOTH a note and the
+surrounding page, so shrinking the page can only relax them). **The inverse is
+the trap:** lifting note text up into a lead is what fails it, and its own
+calibration comment records it was born catching a shingle that lived in the
+BHA lead. Rewrite when promoting; never copy-paste.
+
+The section now closes with a one-line pointer to `/resume.html` and
+`/cv.html`. (This pass also retitled the hero's `.hero-more` link from "full
+experience" to "experience", but the second pass later that day deleted the
+whole line, so only the section-closing pointer survives.) A much shorter
+section should not be introduced as "full", and those two documents were
+previously reachable only from `#contact` and the footer at the very bottom of
+the page.
+
+**Outcome figures (added 2026-06-09; ONE remains as of 2026-07-30).** The
+surviving `figure.outcome-figure` (before/after bar pair) sits on the Health
+Catalyst entry after the lead paragraph and before the fold, so the densest
+section shows data by default instead of pure prose. It carries the section's
+only accent use; the page-wide count is now **12** of the 20 cap, down from 14.
+
+**The healthfinch figure was REMOVED in the second 2026-07-30 pass** (the
+owner asked for the page to be shorter, saying its length "probably scares
+people away"). Its two facts moved into that role's lead prose, where they
+still read: sevenfold growth in dashboard users absorbed, and 400+ hours of
+report prep retired per quarter. Removing it saved ~180px net of the prose it
+added. Note the cost, so it is not re-litigated blind: Experience now shows a
+figure on one of five roles, which sharpens rather than fixes the
+Catalyst-is-heaviest asymmetry the owner flagged (Catalyst measured 684px, 29%
+of the section, against 445-490px for the others). Dropping the last figure
+would even that out at ~504px and is the obvious next lever, but it would leave
+Experience as pure prose, undoing the 2026-06-09 answer to the wall-of-text
+critique. Not done without a decision.
+
+The retained figure is Health Catalyst (refill
+turnaround 72h to 12h). The removed one was healthfinch
 (dashboard user growth absorbed, a 1:7 ratio). Both use the same
 gray-before / accent-after pattern: the "after" bar is the `#7a0000`
 accent sentinel, the "before" bar is `#6a6a6a` muted. (The healthfinch
@@ -1032,18 +1216,20 @@ appears alongside the counter-generated digit) and will look broken.
 
 The section uses a featured + small-multiples-index pattern:
 
-  - **Featured** (inside `<section id="projects">`, 60% body column):
-    The first two projects in DOM order — currently the Medicare
-    Advantage Insight Engine and the Stars Cliff Simulator. Each
-    renders as a `<div class="project">` with an inline figure
-    (a small `funnel-figure` SVG on the Medicare card, ~200 items/week ▸
-    ~20 screened ▸ ~5 that matter, since 2026-07-26 and three-tier since
+  - **Featured** (inside an un-id'd `<section>`, 60% body column, itself a
+    child of `<div id="projects">` — see the wrapping-div note below): The
+    Medicare Advantage Insight Engine featured project MOVED into the hero
+    (not copied) in the Direction B iteration, so today this inner
+    `<section>` holds only the Stars Cliff Simulator in DOM order. Each
+    featured project renders as a `<div class="project">` with an inline
+    figure (a small `funnel-figure` SVG on the Medicare card, ~200 items/week
+    ▸ ~20 screened ▸ ~5 that matter, since 2026-07-26 and three-tier since
     2026-07-28; cliff-figure SVG on Stars), full
     prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
-  - **Index** (outside the section, as a sibling `<div
-    class="projects-index">`, 90% max-width grid): The remaining
-    projects as `<div class="project-tile">` small multiples (today:
+  - **Index** (a child `<div class="projects-index">`, 90% max-width grid,
+    behind a `<details class="fold">` "More projects (N)"): The
+    remaining projects as `<div class="project-tile">` small multiples (today:
     Healthcare Workforce Transition Platform, ECDS Shock Index, Care
     Delivery Workflow Changes, Practice Automation Analytics). Tiles
     use `position:absolute` for the hanging number (not float),
@@ -1051,6 +1237,24 @@ The section uses a featured + small-multiples-index pattern:
     optional `.tile-links` row, and `.stack`. The grid is
     `auto-fit, minmax(240px, 1fr)` so it renders 4 columns at
     desktop and collapses to 1 column at the 760px breakpoint.
+
+**(2026-07-30) `#projects` is now a wrapping `<div>`, not the `<section>`
+itself, and the index fold is a CHILD of it, not a top-level page sibling.**
+Until this date the fold sat directly under `<main>`, floating between
+`</section>` and the next section with no visible container — flagged as M3 in
+`docs/homepage-ordering-review-2026-07-30.md`, "lowest risk, do it," by both
+panels. **The naive fix (literally nesting `.projects-index` inside
+`<section>`) is NOT lowest risk and was caught before landing:** `section`
+carries `width: 60%` and `.projects-index` carries `max-width: 90%`; nested,
+the 90% resolves against the 60% column, giving ~54% of the page instead of
+90%, a real visual regression. The actual fix moves the `id="projects"`
+attribute off the `<section>` onto a new outer `<div id="projects">` that
+carries no width rule, with the un-id'd `<section>` (still 60%, unaffected)
+and the fold+grid (still 90% of the *outer* div, unaffected) as its two
+children. Verified pixel-identical at 1400/761/390px before and after (773px
+/ 1159px, 416px / 624px, 322px / 322px section/grid widths respectively).
+Nothing references `<section id="projects">` by element type or a
+`main >`/`#main >` direct-child selector, so nothing else needed to change.
 
 A small italic `<p class="section-subhead">Featured</p>` label sits
 between the H2 and the first featured project to cue the two-tier
@@ -1162,12 +1366,21 @@ no-bundler discipline and what it shipped; removing it eliminated that.
      feeds for contract-level remediation planning. Source is private.
      As of the 2026-05-21 restructure, this tool no longer has its own
      project card. Two surfaces on the public site reference it:
-       (a) The BHA role's "More detail" fold in the Experience section
-           describes the architectural pattern ("a client-side Stars
-           rating predictor where the cut-point projection runs
-           entirely in the analyst's browser") as a compliance-driven
-           architecture example, alongside the HEDIS hybrid measures
-           paragraph.
+       (a) The BHA role's LEAD PARAGRAPH in the Experience section
+           describes the architectural pattern ("one recent design
+           runs the Stars cut-point projection entirely in the
+           analyst's browser, so member-level data never leaves the
+           machine")
+           as a compliance-driven architecture example. This moved
+           out of that role's "More detail" fold on 2026-07-30 when
+           the fold was retired; the surrounding HEDIS hybrid
+           measures paragraph went with it, so the pattern is now a
+           single clause in visible prose rather than a paragraph.
+           It was deliberately preserved rather than cut BECAUSE
+           this section names it as one of only two public surfaces
+           for the tool. If a future trim reaches this clause, that
+           is a decision to retire a documented surface, not a copy
+           edit; update this section in the same change.
        (b) The blog post compliance-as-architecture-stars-predictor.md
            (PR #40, merged 2026-05-21) names the tool explicitly and
            uses it as a case study for the broader thesis that some
@@ -1619,10 +1832,12 @@ across rebuilds — WeasyPrint embeds a timestamp — but resume.html is.)
 
 index.html is hand-maintained, with three build-time insertions:
 
-  1. Writing cadence sparkline — a 24-week dot strip above the Writing
-     entries. One dot per week, filled when there's a publication that
-     week, empty otherwise. Trailing total ("N posts") + a margin note
-     about the post-hiatus return. Sourced from blog frontmatter.
+  1. Writing cadence sparkline — a 24-week stem chart. One stem per week,
+     height proportional to that week's post count; silent weeks render as
+     empty space. Trailing total ("N posts") as Tufte's last-point label.
+     Sourced from blog frontmatter. Since 2026-07-30 it renders inside the
+     hero's `.hero-writing` column (NOT a separate section) and emits NO
+     margin note; see §Writing section update rule.
   2. Publications block — the full Publications section, generated from
      src/content/publications.yaml between
      `<!-- pub-list:start --> ... <!-- pub-list:end -->` markers.
@@ -1894,7 +2109,9 @@ figures still hardcode `#7a0000` remapped to `var(--accent)`; only the
 ## Recognition alignment lint
 
 `scripts/lint_recognition.py` keeps the homepage "Service and Recognition"
-section (`index.html` `<section id="service">`, the `.row-entry` blocks)
+section (`index.html` `<section id="service">`, the `.row-entry` blocks;
+**that section is COMMENTED OUT as of 2026-07-30 and the linter still reads
+it, deliberately, see below**)
 aligned with the comprehensive record in `src/content/cv.md` — awards,
 fellowships, and service — WITHOUT a shared data file. Both surfaces stay
 hand-authored pure HTML/Markdown; the linter parses each and compares.
@@ -1933,11 +2150,104 @@ Two outputs:
     direction that surfaces a genuine gap when a new CV award hasn't been
     promoted to the homepage.
 
-**Certifications are out of scope (2026-06-12):** homepage
+**(Text reduction, 2026-07-30) `#service` is commented out, and this linter
+still guards it.** Both gates that read the section slice it with a raw-text
+regex and neither strips HTML comments: `SERVICE_SECTION_RE`
+(`lint_recognition.py:122-124`) and `_section_body` (`lint_gantt.py:179-184`).
+So the homepage-subset-of-CV gate and the Gantt alignment check keep operating
+on the disabled markup exactly as before. Verified empirically, not assumed:
+`lint_gantt` still reports "12 section entry(ies) (5 education + 7 service)
+reconciled against 12 figure mark(s)". This is precisely what made hiding the
+section possible without weakening a guarantee, so **do not "fix" either linter
+to skip comments** without first replacing what it guards.
+
+**The visible service surface is now the Gantt figure**, which carries a mark
+for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
+the retired section's lead sentence, naming the two 2014-15 roles, and points at
+`/cv.html` for orgs and citations. **The `id="service"` anchor MOVED** out of
+the disabled section to sit immediately before that figure, because all ~250
+generated blog pages link to `/#service`
+(`scripts/templates/blog/base.html:50-51`) and **`lint_links` cannot see
+blog-to-homepage fragments** - it validates only index.html's own fragments and
+homepage-to-blog links. Removing the id would have left 250 dead nav links with
+CI green. Keep the anchor wherever the service record is visible.
+
+Fluff was trimmed from both sections in the same pass, before `#service` was
+disabled (so a restore brings back the clean version): notes that merely
+restated their own titles went (Oxford, Boot Camp), the MPH committee names
+became CV-only, the mentor note's six-item skill list became the fact, and the
+Spirit of Charlie citation quote went as internal-recognition language. **Kept
+deliberately** as recognizable field credentials: Pascale Carayon as advisor,
+the AHRQ-funded SEIPS training, the $18,000 grant, and Digital Fellow's
+25-of-2,000 selectivity.
+
+**(Text reduction, third pass, same day) `#education` was disabled 20 minutes
+after `#service`, for a reason `#service`'s disabling had itself created.** The
+owner asked directly: "isn't it redundant with the figure?" After the service
+trim, the Gantt's terse chart labels ("MPH, Biostatistics", "Oxford, qualitative
+methods", "Grad Cert, Patient Safety", "Entrepreneurial Boot Camp", "BA, English
+Literature") already stated all five education entries' title AND date. Checked
+precisely before acting: only two facts anywhere in the fold were not already in
+the chart, the MPH's $18,000 grant and the Patient Safety entry's Carayon/AHRQ
+detail. Both were folded into the Gantt figcaption, then the section was
+disabled exactly like `#service` (same banner shape, same restore instructions,
+`id="education"` relocated beside `id="service"`'s anchor). `lint_gantt` still
+reconciles both lanes against the figure (raw-text regex, no comment
+stripping); `lint_recognition` never covered `#education` in the first place.
+
+**Disabling THREE consecutive sections (education, service, certifications)
+removed a rule the page's rhythm depended on**, and this was caught by
+rendering, not by inspection: the Gantt originally carried no rule of its own,
+because the three sections after it each supplied one on their way out. With
+all three hidden, the Gantt ran straight into Testimonials with zero live
+`<hr>` between them (a 48px gap from margins alone, no divider) — every other
+section boundary on the page keeps one. Fixed with a single `<hr>` placed
+OUTSIDE all three disabled blocks, right before the Testimonials banner, so it
+is not a duplicate if any of the three is restored later and does not live
+inside any one section's restore instructions.
+
+**A merged single "highlights" section was proposed and REJECTED.** A prose-line
+version (the retired Certifications pattern) would run ~170px against 450px, but
+it has no `.row-entry` blocks, so `lint_recognition.parse_homepage()` returns an
+empty list and BOTH gates pass vacuously - green while guarding nothing. Keeping
+them meaningful means re-pointing both at `cv.md` and rewriting two test files,
+and the whole exercise beats the simple comment-out by ~55px. Two variants were
+also checked and fail: highlights-unfolded measures the same as
+everything-folded, and nesting `<section id="service">` inside a merged fold
+breaks the outer slice because `_section_body` is non-greedy.
+
+**Certifications are out of scope (2026-06-12), and the section is now
+COMMENTED OUT (owner, 2026-07-30):** homepage
 `<section id="certifications">` (a deliberately small h2 + one
 newest-first semicolon-separated prose line, after #service; a
 details.fold version was tried and replaced the same day on Design
 Council feedback) pairs with cv.md `## Certifications`.
+
+The homepage section is wrapped in an HTML comment. It no longer renders,
+but the markup is kept verbatim in place so the content survives in the
+file and through every pipeline. **`cv.md` is now the live record.** An
+HTML comment, not `display: none`, was the owner's instruction and is also
+the correct mechanism: the content leaves the DOM entirely, so it is not
+read by screen readers, not indexed, and not printed, whereas
+`display: none` would still expose it to assistive tech. Restoring it means
+deleting two delimiter lines; nothing else is required, because no CSS
+targets the section (it carries no classes) and nothing links to
+`#certifications`.
+
+Two mechanical rules for that block, both learned the hard way in the same
+pass. **The trailing `<hr>` must stay inside the disabled region** or two
+adjacent rules render between `#service` and `#testimonials`. And **never
+write comment delimiters, or a literal rule tag, as prose inside the
+explanatory banner above it**: comments cannot nest, so a stray close
+sequence ends the banner early and dumps its remaining text onto the page as
+live markup. That happened while writing the banner, and it rendered a
+spurious `<hr>` plus a long unbroken row of equals signs that overflowed the
+page horizontally at 761px and below. **`lint_html` passed the whole time** the
+bug was live, because the result was structurally valid HTML, merely wrong.
+Only a headless render caught it, which is the §Agent panels
+"render before arguing about a rendered thing" rule applying to verification
+as much as to design.
+
 Neither linter covers the pair; keep the two lists in sync BY HAND
 (currently four entries: Databricks 2024, Sumo Logic x2 2020, Six Sigma
 Yellow Belt 2015). Six Sigma moved here out of #service and the CV's
@@ -1953,8 +2263,13 @@ no nav entry by design.
 `scripts/lint_gantt.py` keeps the homepage Education + Service Gantt
 (`index.html` `figure.gantt-figure`) in lockstep with the two prose
 sections it summarizes, WITHOUT a shared data file. The figure has two
-lanes — education (`y < 135`) mirrors `<section id="education">`, service
-(`y > 135`) mirrors `<section id="service">` (#service). Each data mark
+lanes — education (`y < 135`) mirrors `<section id="education">` (also commented
+out since 2026-07-30, for the same redundancy reason as service; see below),
+service
+(`y > 135`) mirrors `<section id="service">` (#service, commented out since
+2026-07-30 but still parsed; see §Recognition alignment lint. The figure is now
+that content's only VISIBLE surface, which raises the stakes on this lint rather
+than lowering them). Each data mark
 encodes its year(s) positionally through the chart's own transform
 `x(year) = 90 + (year - 2003) * 19`: a single-year square's year is read
 back from its centre x, a multi-year bar's start/end from x1/x2. Each
@@ -2152,9 +2467,10 @@ consolidation, new gates) is documented in
 - No 640px max-width regression and no removing the sidenote system. The
   60% column with 40% margin is a contract for the prose sections; the
   sidenotes need the margin. (The Timeline Split `.split-hero` and
-  full-width `figure.timeline.career-band`, and `.hero-more` line are the
+  full-width `figure.timeline.career-band` are the
   sanctioned full-width exceptions above that column; see §Layout. They host
-  no floating notes, so the contract holds.)
+  no floating notes, which is why both the per-post note and the cadence tag
+  rollup are suppressed there, so the contract holds.)
 - No "By the Numbers" stats table. The chart inventory replaces it.
 - No sidenotes outside the homepage. Blog posts use KaTeX/Mermaid/Prism
   for technical depth.

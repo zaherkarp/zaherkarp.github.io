@@ -1652,11 +1652,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     font-size: 11pt;
   }
   nav.top, .timeline, figure.timeline { display: none; }
-  /* Split hero collapses to a single column in print; the "More:"
-     jump line is useless on paper. */
+  /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
-  .hero-more { display: none; }
   hr { width: 100%; }
   details.fold, details.speaking-list { page-break-inside: avoid; }
   details.fold > summary, details.speaking-list > summary { display: none; }
@@ -1830,22 +1828,6 @@ figure.timeline.career-band figcaption {
   opacity: 0.7;
   pointer-events: none;
 }
-
-/* ============================================================
-   21. MORE LINE
-   One restrained line replacing the three-card teaser row (which
-   read as a second navigation). Same-page jump links to the
-   sections the reduced top nav dropped, plus full experience. A top
-   rule sets it off from the timeline band above.
-   ============================================================ */
-.hero-more {
-  border-top: 1px solid var(--rule);
-  padding-top: 1rem;
-  margin: 1.4rem 0 2.8rem 0;
-  font-size: 0.95rem;
-  color: var(--muted);
-}
-.hero-more a { text-decoration-color: var(--rule); }
 
 /* ============================================================
    21.1. SPLIT HERO BREAKPOINTS (Direction B)
@@ -2029,6 +2011,56 @@ figure.timeline.career-band figcaption {
     </div>
     <!-- writing-index:end -->
       </div>
+
+      <!-- CADENCE HEADER
+           Twenty-four-week sparkline generated from blog frontmatter
+           by scripts/build_portfolio.py on every CI run. Each week's
+           post count drives a vertical stem (height = count * 2 SVG
+           units, capped at the chart top); silent weeks render as
+           empty space against the faint baseline rule. The encoding
+           now carries actual cadence variance (burst weeks vs. quiet
+           weeks) that the earlier binary-dot version flattened away.
+
+           Trailing "{N} posts" is the Tufte last-point-label pattern:
+           a small numeric annotation at the end of a sparkline giving
+           the series total, so the chart is self-legending.
+
+           Margin note expands into a tag frequency rollup across the
+           24-week window, computed by the same build step.
+
+           The wrapping markers (activity-grid:start / activity-grid:end)
+           are anchors for scripts/build_portfolio.py to rewrite the
+           entire block. Do not hand-edit between the markers; changes
+           are overwritten on the next CI run. -->
+      <!-- activity-grid:start -->
+<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
+      24 weeks
+      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
+        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
+        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="120" y1="16" x2="120" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="131" y1="16" x2="131" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="142" y1="16" x2="142" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="153" y1="16" x2="153" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="164" y1="16" x2="164" y2="6" stroke="#111" stroke-width="1.2"/>
+        <line x1="197" y1="16" x2="197" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="230" y1="16" x2="230" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="241" y1="16" x2="241" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="252" y1="16" x2="252" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="263" y1="16" x2="263" y2="14" stroke="#111" stroke-width="1.2"/>
+      </svg>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">34 posts</span>
+    </p>
+    <!-- activity-grid:end -->
 
       <p class="hero-viewall"><a href="/blog/">View all writing &rarr;</a></p>
     </div>
@@ -2256,92 +2288,45 @@ figure.timeline.career-band figcaption {
     </svg>
   </figure>
 
-  <!-- ==========================================================
-       MORE LINE
-       One restrained line replacing the three-card teaser row (a
-       second nav). Same-page destinations: the sections the reduced
-       top nav dropped, plus full experience. -->
-  <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">full experience</a></p>
 
-  <section id="writing">
-    <h2>Writing cadence</h2>
-
-    <p>The pulse behind the writing list above: publishing pace, week by week.</p>
-
-    <!-- CADENCE HEADER
-         Twenty-four-week sparkline generated from blog frontmatter
-         by scripts/build_portfolio.py on every CI run. Each week's
-         post count drives a vertical stem (height = count * 2 SVG
-         units, capped at the chart top); silent weeks render as
-         empty space against the faint baseline rule. The encoding
-         now carries actual cadence variance (burst weeks vs. quiet
-         weeks) that the earlier binary-dot version flattened away.
-
-         Trailing "{N} posts" is the Tufte last-point-label pattern:
-         a small numeric annotation at the end of a sparkline giving
-         the series total, so the chart is self-legending.
-
-         Margin note expands into a tag frequency rollup across the
-         24-week window, computed by the same build step.
-
-         The wrapping markers (activity-grid:start / activity-grid:end)
-         are anchors for scripts/build_portfolio.py to rewrite the
-         entire block. Do not hand-edit between the markers; changes
-         are overwritten on the next CI run. -->
-    <!-- activity-grid:start -->
-<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
-      24 weeks
-      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
-        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
-        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="120" y1="16" x2="120" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="131" y1="16" x2="131" y2="8" stroke="#111" stroke-width="1.2"/>
-        <line x1="142" y1="16" x2="142" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="153" y1="16" x2="153" y2="8" stroke="#111" stroke-width="1.2"/>
-        <line x1="164" y1="16" x2="164" y2="6" stroke="#111" stroke-width="1.2"/>
-        <line x1="197" y1="16" x2="197" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="230" y1="16" x2="230" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="241" y1="16" x2="241" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="252" y1="16" x2="252" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="263" y1="16" x2="263" y2="14" stroke="#111" stroke-width="1.2"/>
-      </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">34 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote"><a href="/blog/tags/data-engineering/">data-engineering</a> (14) · <a href="/blog/tags/healthcare/">healthcare</a> (7) · <a href="/blog/tags/healthcare-data/">healthcare-data</a> (7) · <a href="/blog/tags/medicare-advantage/">medicare-advantage</a> (6) · <a href="/blog/tags/sql/">sql</a> (6) · <a href="/blog/tags/architecture/">architecture</a> (5) · <a href="/blog/tags/medicare/">medicare</a> (5) · <a href="/blog/tags/methodology/">methodology</a> (5) · <a href="/blog/tags/ci-cd/">ci-cd</a> (4) · <a href="/blog/tags/python/">python</a> (4) · and 31 more</span>
-    </p>
-    <!-- activity-grid:end -->
-
-    <!-- The recent-writing list (two featured posts + the small-multiples
-         index) leads the split hero at the top of the page; both marker
-         regions moved there in the 2026-07-26 iteration. This section now
-         keeps only the cadence sparkline and its tag-rollup margin note. -->
-  </section>
+  <!-- #writing: the standalone "Writing cadence" section was retired
+       2026-07-30. Its sparkline moved into the hero .hero-writing column
+       beside the writing list it describes; the two halves of one idea had
+       1,400px of career band between them. The id survives as a bare anchor
+       because external bookmarks may point at /#writing (nothing on this
+       site links to it). -->
+  <span id="writing" class="section-anchor"></span>
 
   <hr>
 
   <!-- ==========================================================
-       EXPERIENCE - HEALTH CATALYST ENTRY
-       This is the most instructive conversion. The original
-       site has a "More detail / Less" expand-collapse toggle
-       that hides an entire paragraph about the medallion
-       architecture, RxNorm validation, and HIPAA framing.
+       EXPERIENCE
+       Five roles, newest first. Each carries a bare <h3> and a
+       markup-free <p class="meta"> of "Org · … · Mon YYYY to
+       Present|Mon YYYY"; lint_facts parses both, and every
+       resume.md employer must appear here as an org, so neither
+       may be dropped. The five .role-anchor spans are the jump
+       targets for both career-arc SVGs (lint_links gates them).
 
-       Here, the lead paragraph always stays visible and the
-       most detailed technical passes are demoted to sidenotes so
-       they don't crowd the main reading line. The remaining depth
-       does sit behind a "More detail" fold (details.fold), per
-       CLAUDE.md §Experience entry expand rule.
-
-       Effect: the reader gets the shape of the role without clicking,
-       and the technical depth is right there in the margin for
-       anyone who wants it.
+       TRIMMED 2026-07-30: 1,252 words to ~430. Three of the four
+       "More detail" folds were retired (BHA, healthfinch, UW) and
+       692 words of fold prose cut to ~60. What survived, and why:
+         - BHA's Huber psi formula was PROMOTED to the visible
+           layer rather than cut; see its own comment below.
+         - The Health Catalyst fold is the only one left, holding
+           the page's only third-party verification (three
+           published customer outcomes) and the numbers the
+           refill figcaption cites.
+         - Both outcome figures stay. Cutting prose around them
+           raises the section's data-ink ratio, which is the
+           point; they were the answer to the wall-of-text
+           critique and still are.
+         - sn-tech-notes and sn-medallion went with their host
+           paragraphs, taking two toggles out of the tab order.
+           Experience keeps three notes: sn-ehrs and the two
+           .stat-num margin stats.
+       The section no longer claims to be the complete record; a
+       closing line points at the resume and CV instead.
        ========================================================== -->
   <!-- #work anchor: the nav "work" item targets the combined
        experience -> projects area. Kept as an empty span so the
@@ -2355,35 +2340,45 @@ figure.timeline.career-band figcaption {
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures built on claims, eligibility, and pharmacy data. My remit is the methodology and engineering function behind it. That spans direct management and code review, data science and QA coordination across two geographies, and translation from CMS requirements into organizational priorities.
+      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own the methodology and engineering behind it. One recent design runs the Stars cut-point projection entirely in the analyst's browser, so member-level data never leaves the machine.
     </p>
 
+    <!-- ==========================================================
+         HUBER PSI FORMULA
+         Inline math block illustrating the "robust" in robust
+         exponential smoothing. Huber's psi-function is the
+         derivative of his loss function: linear for small
+         residuals, clipped at threshold k for large ones.
+         Effect: outliers stop dominating the gradient updates
+         that calibrate the smoothing parameters, so COVID shocks
+         don't permanently bias the trend forecast.
+
+         Briefly promoted to the visible layer on 2026-07-30, then
+         returned to a fold LATER THE SAME DAY when the owner asked
+         for the page to be shorter still. Promoting it cost ~180px
+         and made BHA the second-tallest role; a collapsed fold
+         costs ~34px. Deleting it outright was the other option and
+         was rejected: the 2026-05-23 hiring evaluation calls this
+         the cleanest "still knows what he is doing under the hood"
+         signal in Experience, and its caption is a canonical
+         §Calibrated claims example, so a height saving of ~34px
+         over the fold was not worth losing the page's densest
+         technical evidence.
+
+         The summary NAMES its contents rather than reading "More
+         detail", per the 2026-07-04 critique: identical labels give
+         a scanner equal reason to skip all of them.
+
+         Caption is VERBATIM and must stay so: a proof of concept
+         the author tested, not a deployed component. The shipped
+         Stars cutpoint pipeline used robust M-estimators; this
+         Huber psi variant was a separate proposal, so the caption
+         says so plainly.
+
+         Pure HTML/CSS math styling, no MathJax dependency.
+         ========================================================== -->
     <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cut-point regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
-      </p>
-
-      <!-- ==========================================================
-           HUBER PSI FORMULA
-           Inline math block illustrating the "robust" in robust
-           exponential smoothing. Huber's psi-function is the
-           derivative of his loss function: linear for small
-           residuals, clipped at threshold k for large ones.
-           Effect: outliers stop dominating the gradient updates
-           that calibrate the smoothing parameters, so COVID shocks
-           don't permanently bias the trend forecast.
-
-           Sits inside the BHA "More detail" fold so only the lead
-           paragraph stays visible by default. Framed as a proof of
-           concept the author tested, not a deployed component: the
-           shipped Stars cutpoint pipeline used robust M-estimators,
-           but this Huber psi variant was a separate proposal, so the
-           caption says so plainly rather than implying production
-           customer-analytics use.
-
-           Pure HTML/CSS math styling, no MathJax dependency.
-           ========================================================== -->
+      <summary>The robust smoothing, in one formula</summary>
       <div class="formula-block">
         <div class="formula">
           &psi;<sub><i>k</i></sub>(<i>r</i>) =
@@ -2396,13 +2391,6 @@ figure.timeline.career-band figcaption {
           Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
         </div>
       </div>
-
-      <p>
-        HEDIS hybrid measures like Transitions of Care, along with the Part D medication adherence triplet (MAH, MAC, and MAD, for hypertension, cholesterol, and diabetes), add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
-      </p>
-      <p>
-        Compliance-driven architecture is part of the role's design discipline. A recent example: a client-side Stars rating predictor where the cut-point projection runs entirely in the analyst's browser, so member-level data never transits off the machine. The browser-side compute sidesteps the data-transit review a server-side version would trigger; a side benefit has been a faster iteration loop.
-      </p>
     </details>
 
     <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Python</p>
@@ -2414,7 +2402,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      When Health Catalyst acquired healthfinch in 2020, I moved with the product and the analytics work behind it. A three-person function became the analytics arm of a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviors, and different interpretations of the same clinical concept.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%, and the migration rebuilt the analytics layer from AWS onto Azure and Databricks without interrupting service for existing clients.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      I moved with the product when Health Catalyst acquired healthfinch in 2020, and a three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%; the AWS to Azure migration took 24+ hours off the weekly load.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2445,19 +2433,18 @@ figure.timeline.career-band figcaption {
       </svg>
     </figure>
 
+    <!-- The one surviving fold in Experience (2026-07-30). Its
+         summary names its contents rather than reading "More
+         detail": the 2026-07-04 critique found four identical
+         labels gave a scanner equal reason to skip all of them.
+         What it holds is the page's only third-party verification,
+         and the 37,000 / 72 / 12 the figcaption above cites, so
+         the numbers stay anchored in prose per CLAUDE.md
+         §Experience entry expand rule. -->
     <details class="fold">
-      <summary>More detail</summary>
+      <summary>Published customer outcomes</summary>
       <p>
-        Across five years I led cross-functional teams to implement analytics, build measurement for clinical and operational work, and deliver sales analytics, often as the only engineer, working alongside analysts and clinical and commercial partners.
-      </p>
-      <p>
-        Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
-      </p>
-      <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm? The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one, though it still cut weekly load latency by 24+ hours.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test.</span> Vendor-specific logic was parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
-      </p>
-      <p>
-        HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
+        <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
       </p>
     </details>
 
@@ -2470,49 +2457,8 @@ figure.timeline.career-band figcaption {
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      The infrastructure did not exist when I arrived as the first analytics hire. I built it on AWS to HIPAA and HITRUST controls. Every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. I was promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
+      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. Promoted to manager after a year, I led the sales-analytics work behind an ROI dashboard that contributed to more than $1M in new recurring revenue. A governed semantic layer absorbed sevenfold growth in dashboard users and retired 400+ hours of report prep a quarter.
     </p>
-
-    <!-- ==========================================================
-         OUTCOME FIGURE: dashboard user growth absorbed
-         Two-bar figure showing a RATIO, not endpoints: the
-         governed semantic layer absorbed sevenfold growth in
-         dashboard users across the role. It drew ~10 to 100+
-         until 2026-07-28, but that is a tenfold multiple and
-         contradicted the resume's 7x, which the owner confirmed
-         as the correct figure. Exact user counts are
-         client-private and the true endpoints are not on record,
-         so the figure now encodes the one quantity that is: the
-         multiple. Bar widths are exactly 1:7 (50 and 350), so the
-         geometry states the claim rather than illustrating it.
-         The "after" bar carries the #7a0000 accent sentinel for
-         visual parity with the Health Catalyst figure above (an
-         owner decision, 2026-07-23, replacing the earlier
-         monochrome treatment). The retired prep hours ride in the
-         caption; the $1M in new recurring revenue belongs to the
-         sales-analytics ROI work and sits in the fold with it.
-         viewBox scales the lone copy on mobile (no SVG swap).
-         ========================================================== -->
-    <figure class="outcome-figure">
-      <figcaption>
-        The governed semantic layer absorbed sevenfold growth in dashboard users across the role, and retired more than 400 hours of report preparation per quarter. Exact user counts are client-private, so the figure shows the multiple rather than the endpoints.
-      </figcaption>
-      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: the dashboard user base grew sevenfold across the role, shown as a multiple rather than absolute counts.">
-        <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
-        <rect x="95" y="28" width="50" height="22" fill="#6a6a6a"><title>Dashboard user base at the start of the role, the baseline</title></rect>
-        <text x="153" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">baseline</text>
-        <text x="85" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">after</text>
-        <rect x="95" y="78" width="350" height="22" fill="#7a0000"><title>Sevenfold the baseline, by the end of the role</title></rect>
-        <text x="453" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">7&#215; baseline</text>
-      </svg>
-    </figure>
-
-    <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported contract renewals. I led the sales-analytics initiative behind it, and the ROI dashboard contributed to more than $1M in new recurring revenue. The same dashboards replaced a standing manual reporting cycle that had recurred every quarter.
-      </p>
-    </details>
 
     <p class="stack">SQL &middot; Python &middot; Sisense &middot; AWS &middot; HIPAA &middot; HITRUST</p>
 
@@ -2523,23 +2469,10 @@ figure.timeline.career-band figcaption {
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      I spent nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
+      Nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of them.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research.
     </p>
 
-    <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.
-      </p>
-      <p>
-        A sustained research thread on primary care redesign used grounded theory for qualitative analysis of field notes and focus group transcripts, and interrupted time series analysis to measure the effect of care delivery change initiatives on clinic panel data.
-      </p>
-      <p>
-        The ACO cost research integrated EMR, claims, and patient satisfaction data in Stata and SAS to produce cohort analyses showing that higher-baseline-cost organizations were more likely to achieve shared savings, published in the <em>International Journal of Healthcare Management</em> in 2018.
-      </p>
-    </details>
-
-    <p class="stack">Stata &middot; SAS &middot; NVivo &middot; SPSS &middot; REDCap</p>
+    <p class="stack">Stata &middot; SAS &middot; REDCap</p>
 
     <hr>
 
@@ -2548,8 +2481,15 @@ figure.timeline.career-band figcaption {
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
     <p>
-      An editorial services practice specializing in environmental, health, and policy content. I managed up to eight copy editors, graphic designers, and photographers, wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire, and edited and indexed a variety of client material: books, peer-reviewed journal articles, grant proposals, and dissertations.
+      An editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
     </p>
+
+    <!-- Overflow valve (2026-07-30). With the four "More detail"
+         folds cut to one, this section no longer pretends to be the
+         complete record. The resume and CV are the documents built
+         for that, and they were previously reachable only from
+         #contact and the footer at the very bottom of the page. -->
+    <p>The full record, including grants and publications, is in the <a href="/resume.html">resume</a> and <a href="/cv.html">CV</a>.</p>
   </section>
 
   <hr>
@@ -2566,7 +2506,8 @@ figure.timeline.career-band figcaption {
        hand-typed. Stack tags use the same small-caps treatment
        as experience entries.
        ========================================================== -->
-  <section id="projects">
+  <div id="projects">
+  <section>
     <h2>Projects</h2>
 
     <p class="section-subhead">Featured</p>
@@ -2702,11 +2643,18 @@ figure.timeline.career-band figcaption {
   <!-- ==========================================================
        PROJECTS INDEX (small-multiples grid)
 
-       Sibling of <section id="projects">, NOT a child, wrapped in
-       a details.fold ("More projects (4)") since 2026-07-26, so the
-       grid can use the page's 90% max-width without overriding
-       the section's 60% width rule. Mirrors the fullwidth
-       pattern used by the career arc and dot plot.
+       MOVED 2026-07-30 to be a child of the new #projects wrapping <div>
+       (was a top-level sibling of the whole page, floating between
+       </section> and the next section with no visible container --
+       flagged in docs/homepage-ordering-review-2026-07-30.md M3). Still
+       wrapped in a details.fold ("More projects (4)"), and the grid
+       still renders at the page's 90% max-width: the OUTER <div> carries
+       no width rule, so .projects-index's max-width:90% resolves against
+       it rather than against the <section>'s 60% column. Do not nest
+       .projects-index directly inside <section> -- 90% of a 60% column is
+       54%, a real visual regression, verified by rendering before this
+       move landed. Mirrors the fullwidth pattern used by the career arc
+       and dot plot.
 
        Tile numbers continue the same CSS counter the featured
        projects use, so tiles render as the next ascending values
@@ -2773,6 +2721,7 @@ figure.timeline.career-band figcaption {
     </div>
   </div>
   </details>
+  </div>
 
   <hr>
 
@@ -3247,9 +3196,22 @@ figure.timeline.career-band figcaption {
          Lane divider:   y = 135
          Year axis:      y = 310  (viewBox height 340)
        ========================================================== -->
+  <!-- #service anchor, relocated 2026-07-30. The Service and Recognition
+       SECTION below is commented out, but every generated blog page links to
+       /#service (scripts/templates/blog/base.html), and lint_links cannot see
+       blog-to-homepage fragments, so removing the id would leave ~250 pages
+       with a dead nav link and CI green. Pointing it at the Gantt is the
+       honest target: that figure carries a mark for every service entry and
+       is now the only VISIBLE service surface on the page. -->
+  <span id="service" class="section-anchor"></span>
+  <!-- #education anchor, relocated 2026-07-30 for the same reason as
+       #service just above: the Education SECTION below is commented out,
+       but every generated blog page links to /#education, and lint_links
+       cannot see blog-to-homepage fragments. -->
+  <span id="education" class="section-anchor"></span>
   <figure class="gantt-figure">
     <figcaption>
-      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges.
+      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two 2014-15 service roles are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety fellowship under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
     <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
@@ -3362,12 +3324,45 @@ figure.timeline.career-band figcaption {
   </figure>
 
   <!-- ==========================================================
-       EDUCATION
-       Year-span-left, content-right layout. Five entries from
-       the real site. Committee and advisor names stored as a
-       muted row-note rather than a sidenote since they are a
-       natural extension of the degree info, not a tangent.
+       EDUCATION - DISABLED, NOT DELETED (owner, 2026-07-30)
+       Commented out for the same reason and by the same mechanism as
+       SERVICE just above: after today's trim, the Gantt figure's terse
+       labels already state all five entries' TITLE and DATE ("MPH,
+       Biostatistics", "Oxford, qualitative methods", etc.), so this
+       section had become ~90% redundant with the figure directly above
+       it. Verified before disabling: only two facts anywhere in this
+       fold were not already in the chart, the $18,000 MPH grant and the
+       Carayon/AHRQ Patient Safety detail, and both were folded into the
+       Gantt figcaption before this section was hidden.
+
+       WHY THIS STILL LINTS. lint_gantt.py's _section_body slices this
+       section with a raw-text regex and does not strip HTML comments,
+       so the Gantt alignment check keeps reconciling all 5 education
+       marks against this content exactly as before. lint_recognition.py
+       never covered #education in the first place (SERVICE_SECTION_RE
+       only). Do NOT "fix" lint_gantt to skip comments without replacing
+       what it guards.
+
+       The id="education" anchor moved up beside id="service"'s, for the
+       identical reason: every generated blog page links to /#education
+       and lint_links cannot see blog-to-homepage fragments.
+
+       The trailing horizontal rule is INSIDE the disabled region, same
+       reasoning as SERVICE: a rule already precedes this banner.
+
+       To restore: delete the bare comment-open line below and the bare
+       comment-close line after the disabled rule, then move the
+       id="education" anchor back onto the section.
+
+       Do NOT write comment delimiters, or a literal rule tag, as prose
+       in this banner; see the SERVICE banner above for why.
+
+       Content notes, still accurate: year-span-left, content-right
+       layout; committee and advisor names stored as a muted row-note
+       rather than a sidenote since they are a natural extension of the
+       degree info, not a tangent.
        ========================================================== -->
+<!--
   <section id="education">
     <h2>Education</h2>
 
@@ -3381,7 +3376,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Master of Public Health (MPH), Biostatistics</span>
         <span class="row-org">University of Wisconsin-Madison</span>
-        <span class="row-note">Health Innovation Program Research Trainee. Committee: Nancy Pandhi MD MPH PhD, Sandra Kamnetz MD, Todd Molfenter PhD. Designed and wrote a grant proposal awarded $18,000; produced peer-reviewed research on clinic environments.</span>
+        <span class="row-note">Health Innovation Program Research Trainee. Wrote a grant proposal awarded $18,000.</span>
       </div>
     </div>
 
@@ -3399,7 +3394,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Contemporary Qualitative Interviewing Methods</span>
         <span class="row-org">University of Oxford</span>
-        <span class="row-note">Intensive training in advanced qualitative interviewing for health services research.</span>
       </div>
     </div>
 
@@ -3408,7 +3402,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Wisconsin Entrepreneurial Boot Camp Fellow</span>
         <span class="row-org">University of Wisconsin School of Business</span>
-        <span class="row-note">Competitive fellowship in technology entrepreneurship for graduate students in sciences, engineering, and mathematics.</span>
       </div>
     </div>
 
@@ -3423,16 +3416,48 @@ figure.timeline.career-band figcaption {
   </section>
 
   <hr>
+-->
 
   <!-- ==========================================================
-       SERVICE AND RECOGNITION
-       Same date-left layout as Education. Nonprofit board work,
-       peer review service, awards. The award/fellowship entries
-       (Spirit of Charlie, Alumni Hall, Digital Fellow) are small
-       entries that sit cleanly alongside the larger commitments
-       without needing their own section. Certifications live in
-       their own collapsed section below; the IPM award is CV-only.
+       SERVICE AND RECOGNITION - DISABLED, NOT DELETED (owner, 2026-07-30)
+       Commented out to shorten the page, kept verbatim so the content
+       survives in the file and through the pipelines. cv.md is the live
+       record. Certifications below is disabled the same way.
+
+       WHY THIS STILL LINTS. Both gates that read this section slice it
+       with a raw-text regex and neither strips HTML comments:
+       lint_recognition.py SERVICE_SECTION_RE and lint_gantt.py
+       _section_body. So the homepage-subset-of-CV gate and the Gantt
+       alignment check keep working on the disabled markup exactly as
+       before. That is deliberate, and it is the reason this could be
+       hidden without weakening a guarantee. Do NOT "fix" either linter
+       to skip comments without replacing what it guards.
+
+       THE VISIBLE SERVICE SURFACE IS NOW THE GANTT above, which carries
+       a mark for every entry here (lint_gantt enforces that). Its
+       figcaption absorbed this section's lead sentence and points at the
+       CV for orgs and citations. The id="service" anchor moved up to sit
+       beside that figure, because every generated blog page links to
+       /#service and lint_links cannot see blog-to-homepage fragments.
+
+       The trailing horizontal rule is INSIDE the disabled region: a rule
+       already sits above this banner, so disabling the section alone
+       would leave two adjacent rules before Testimonials.
+
+       To restore: delete the bare comment-open line below and the bare
+       comment-close line after the disabled rule, then move the
+       id="service" anchor back onto the section.
+
+       Do NOT write comment delimiters, or a literal rule tag, as prose
+       in this banner. Comments cannot nest, so a stray close sequence
+       ends it early and dumps the rest onto the page as live markup.
+       That happened once while writing the Certifications banner.
+
+       Content notes: the award/fellowship entries (Spirit of Charlie,
+       Alumni Hall, Digital Fellow) sat cleanly alongside the larger
+       commitments without their own section; the IPM award is CV-only.
        ========================================================== -->
+<!--
   <section id="service">
     <h2>Service and Recognition</h2>
 
@@ -3454,7 +3479,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Board of Directors</span>
         <span class="row-org">The Road Home of Dane County</span>
-        <span class="row-note">A nonprofit providing homelessness prevention and housing stability services in Dane County, Wisconsin.</span>
+        <span class="row-note">Homelessness prevention and housing stability, Dane County, Wisconsin.</span>
       </div>
     </div>
 
@@ -3463,7 +3488,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Undergraduate Research Scholar Mentor</span>
         <span class="row-org">UW School of Medicine and Public Health</span>
-        <span class="row-note">Mentored three undergraduate research scholars in data cleaning, programming, data visualization, statistical analysis, and literature review.</span>
+        <span class="row-note">Mentored three undergraduate research scholars.</span>
       </div>
     </div>
 
@@ -3472,7 +3497,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Community Advisory Board Chair</span>
         <span class="row-org">WORT 89.9 FM</span>
-        <span class="row-note">Elected board chair for two terms at an independent community radio station in Madison, Wisconsin.</span>
+        <span class="row-note">Elected chair for two terms; independent community radio, Madison.</span>
       </div>
     </div>
 
@@ -3481,7 +3506,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Spirit of Charlie Award</span>
         <span class="row-org">Health Catalyst</span>
-        <span class="row-note">The award citation: "You are helping evolve healthcare through your deep dive into data for each of our customers!"</span>
       </div>
     </div>
 
@@ -3506,22 +3530,68 @@ figure.timeline.career-band figcaption {
   </section>
 
   <hr>
+-->
 
   <!-- ==========================================================
-       CERTIFICATIONS
-       Deliberately small: one newest-first prose line, no fold,
-       no figures, no margin notes. Hand-maintained in lockstep
-       with cv.md ## Certifications (no linter covers this pair;
-       lint_recognition and lint_gantt scope to #service only).
-       DataCamp course completions are deliberately omitted as
+       CERTIFICATIONS - DISABLED, NOT DELETED (owner, 2026-07-30)
+       The section below is intentionally commented out. It no
+       longer renders, but it is kept here verbatim so the content
+       survives in the file and through every pipeline.
+
+       Because it is an HTML comment rather than display:none, the
+       content leaves the DOM entirely: not read by screen readers,
+       not indexed, not printed. That is what "no longer visible"
+       has to mean; display:none would still expose it to
+       assistive tech.
+
+       The trailing horizontal rule is INSIDE the disabled block on
+       purpose. A rule already sits above this banner, so disabling
+       the section alone would leave two adjacent rules between
+       #service and #testimonials.
+
+       To restore: delete the bare comment-open line just below
+       this banner, and the bare comment-close line after the
+       disabled rule. Nothing else is required. No CSS targets this
+       section (it carries no classes, only generic section, h2 and
+       p rules), and nothing links to #certifications.
+
+       Do NOT write comment delimiters, or a literal rule tag, as
+       prose inside this banner. Comments cannot nest, so a stray
+       close sequence here ends the banner early and dumps the rest
+       of it onto the page as live markup. That happened once while
+       writing this block: the leaked text rendered a spurious rule
+       and a long unbroken row of equals signs that overflowed the
+       page horizontally at 761px and below.
+
+       src/content/cv.md ## Certifications remains the live record
+       and is unaffected. No linter covers this pair either way
+       (lint_recognition and lint_gantt scope to #service only), so
+       keep the two in sync by hand if a certification is added.
+
+       Original notes, still accurate: deliberately small, one
+       newest-first prose line, no fold, no figures, no margin
+       notes. DataCamp course completions deliberately omitted as
        entry-level; Databricks listed by issue year per CV
        convention (HR focus-group call, 2026-06-12).
        ========================================================== -->
+<!--
   <section id="certifications">
     <h2>Certifications</h2>
     <p>Databricks Fundamentals accreditation (2024); Sumo Logic Search Mastery and Fundamentals certifications (2020); Certified Six Sigma Yellow Belt, American Society for Quality (2015).</p>
   </section>
 
+  <hr>
+-->
+
+  <!-- A live rule, deliberately OUTSIDE all three disabled blocks above.
+       Originally the Gantt figure carried no rule of its own; the three
+       sections that followed it each supplied one. With education,
+       service, and certifications all commented out on 2026-07-30, that
+       left zero live rules between the Gantt and Testimonials, breaking
+       the section-then-rule rhythm every other boundary on the page
+       keeps. This one rule restores it and survives any future restore
+       of the sections above without becoming a duplicate: it sits
+       outside every wrap. -->
   <hr>
 
   <!-- ==========================================================
