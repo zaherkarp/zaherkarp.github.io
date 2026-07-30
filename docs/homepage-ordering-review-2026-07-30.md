@@ -176,6 +176,27 @@ read, or reduce the three folds to two inline short quotes and cut ~480px. The
 owner declined this once during the second pass; it is recorded here because the
 measurement makes it the highest-value remaining move, not to re-litigate it.
 
+**Correction, same day, after the owner pushed back on "no value."** The
+declined summary above undersold the content and needs its own correction, not
+just a repeat of the position argument. Two of the three quotes are named,
+titled, third-party corroboration, not generic praise: Jessica McCay (Director
+of Customer Success, Health Catalyst) states, in her own words, the exact
+claims the `#experience` Health Catalyst entry makes — sole engineer across
+Cerner/Epic/athenahealth/Veradigm, the Sisense-to-Pop-Insights migration,
+pushing back to protect data integrity. William Barber's quote is a
+deliberate pair with the Sustainable Clarity entry's "managed up to eight
+copy editors" line (documented in `CLAUDE.md` §Testimonials). **The content is
+real corroborating evidence, not filler; the diagnosis is that its position
+wastes it, not that it lacks value.** A concrete idea that follows from that
+diagnosis and was NOT in the original assessment: move a short, unfolded
+McCay pull-quote into the `#experience` Health Catalyst entry itself, right
+where the antagonist archetype already wants third-party proof, and leave
+`#testimonials` exactly as it is for a reader who wants all three. Offered to
+the owner 2026-07-30; **declined** — no site change made. Recorded so the next
+person to read this table does not re-derive "no value" from the position
+argument alone; the position argument and the value argument are different
+claims, and only the first one is true.
+
 ### M3. The orphaned projects-index fold — DONE, and not as trivial as assessed
 
 `.fold` ("More projects (4)") is a **top-level sibling of `main`** sitting
@@ -254,7 +275,7 @@ whose order is correct. Flagged for a length pass, explicitly out of scope here.
 | # | Move | Panels | Recommendation |
 |---|---|---|---|
 | M3 | Projects-index fold into `#projects` | agree | **Done** 2026-07-30 (not as simple as scored — see M3) |
-| M2 | Testimonials: promote one or cut to two | agree | **Highest value.** Owner declined once |
+| M2 | Testimonials: promote one or cut to two | agree | Real value, wasted by position. Owner declined twice (cut, then promote-one) |
 | M1 | Projects above Experience | **split** | Try the shorter-Experience substitute first |
 | M4 | About earlier | tension, no proposal | Leave; 2026-07-29 decision stands |
 | M5 | Writing cadence orphan | agree | **Done** 2026-07-30 |
