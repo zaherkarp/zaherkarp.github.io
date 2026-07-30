@@ -2506,7 +2506,8 @@ figure.timeline.career-band figcaption {
        hand-typed. Stack tags use the same small-caps treatment
        as experience entries.
        ========================================================== -->
-  <section id="projects">
+  <div id="projects">
+  <section>
     <h2>Projects</h2>
 
     <p class="section-subhead">Featured</p>
@@ -2642,11 +2643,18 @@ figure.timeline.career-band figcaption {
   <!-- ==========================================================
        PROJECTS INDEX (small-multiples grid)
 
-       Sibling of <section id="projects">, NOT a child, wrapped in
-       a details.fold ("More projects (4)") since 2026-07-26, so the
-       grid can use the page's 90% max-width without overriding
-       the section's 60% width rule. Mirrors the fullwidth
-       pattern used by the career arc and dot plot.
+       MOVED 2026-07-30 to be a child of the new #projects wrapping <div>
+       (was a top-level sibling of the whole page, floating between
+       </section> and the next section with no visible container --
+       flagged in docs/homepage-ordering-review-2026-07-30.md M3). Still
+       wrapped in a details.fold ("More projects (4)"), and the grid
+       still renders at the page's 90% max-width: the OUTER <div> carries
+       no width rule, so .projects-index's max-width:90% resolves against
+       it rather than against the <section>'s 60% column. Do not nest
+       .projects-index directly inside <section> -- 90% of a 60% column is
+       54%, a real visual regression, verified by rendering before this
+       move landed. Mirrors the fullwidth pattern used by the career arc
+       and dot plot.
 
        Tile numbers continue the same CSS counter the featured
        projects use, so tiles render as the next ascending values
@@ -2713,6 +2721,7 @@ figure.timeline.career-band figcaption {
     </div>
   </div>
   </details>
+  </div>
 
   <hr>
 

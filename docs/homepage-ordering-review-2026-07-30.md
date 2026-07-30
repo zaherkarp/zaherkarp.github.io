@@ -176,19 +176,36 @@ read, or reduce the three folds to two inline short quotes and cut ~480px. The
 owner declined this once during the second pass; it is recorded here because the
 measurement makes it the highest-value remaining move, not to re-litigate it.
 
-### M3. The orphaned projects-index fold
+### M3. The orphaned projects-index fold — DONE, and not as trivial as assessed
 
 `.fold` ("More projects (4)") is a **top-level sibling of `main`** sitting
 between `#projects` (ends 6.1) and `#about` (6.3) — 34px of disclosure control
 outside the section whose content it holds.
 
-**Both panels agree, no dissent:** it belongs inside `#projects`. Steve calls it
+**Both panels agreed, no dissent:** it belongs inside `#projects`. Steve calls it
 a control with no visible parent; Massimo, a rhythm break between two sections.
-Low risk: the CSS counter resets on `#main`, so moving the fold inside the
-section does not disturb project numbering — **but verify the 01/02 sequence
-after moving it**, because tile numbers are counter-generated from DOM order.
+Assessed here as **low risk** on the grounds that the CSS counter resets on
+`#main`, so moving the fold does not disturb project numbering.
 
-**Recommended.** Smallest, safest fix in this document.
+**That counter check was right; the width check was missing, and it mattered.**
+Before implementing, `section { width: 60% }` and `.projects-index { max-width:
+90% }` were checked together: nesting `.projects-index` literally inside
+`<section id="projects">` would have resolved its 90% against the section's own
+60%-wide box, rendering the grid at ~54% of the page instead of 90% — a real
+visual regression this document's "lowest risk" label did not anticipate.
+
+**Fix applied:** `id="projects"` moved off the `<section>` onto a new outer
+`<div id="projects">` (no width rule of its own) that wraps both the un-id'd
+`<section>` (unaffected, still 60%) and the fold+grid (unaffected, still 90% of
+the new outer div rather than of the column). Verified pixel-identical before
+and after at three viewports: 773px/1159px, 416px/624px, 322px/322px
+(section/grid). Full details in `CLAUDE.md` §Project numbering and layout.
+
+**The lesson for the rest of this document's recommendations:** "lowest risk"
+in a table cell is a claim, not a fact, until it is checked against the actual
+CSS. Treat every remaining recommendation here (M1, M2) the same way before
+implementing — re-verify the specific mechanism, not just the general shape of
+the change.
 
 ### M4. About's position
 
@@ -236,7 +253,7 @@ whose order is correct. Flagged for a length pass, explicitly out of scope here.
 
 | # | Move | Panels | Recommendation |
 |---|---|---|---|
-| M3 | Projects-index fold into `#projects` | agree | **Do it.** Lowest risk, clear defect |
+| M3 | Projects-index fold into `#projects` | agree | **Done** 2026-07-30 (not as simple as scored — see M3) |
 | M2 | Testimonials: promote one or cut to two | agree | **Highest value.** Owner declined once |
 | M1 | Projects above Experience | **split** | Try the shorter-Experience substitute first |
 | M4 | About earlier | tension, no proposal | Leave; 2026-07-29 decision stands |

@@ -1213,18 +1213,20 @@ appears alongside the counter-generated digit) and will look broken.
 
 The section uses a featured + small-multiples-index pattern:
 
-  - **Featured** (inside `<section id="projects">`, 60% body column):
-    The first two projects in DOM order — currently the Medicare
-    Advantage Insight Engine and the Stars Cliff Simulator. Each
-    renders as a `<div class="project">` with an inline figure
-    (a small `funnel-figure` SVG on the Medicare card, ~200 items/week ▸
-    ~20 screened ▸ ~5 that matter, since 2026-07-26 and three-tier since
+  - **Featured** (inside an un-id'd `<section>`, 60% body column, itself a
+    child of `<div id="projects">` — see the wrapping-div note below): The
+    Medicare Advantage Insight Engine featured project MOVED into the hero
+    (not copied) in the Direction B iteration, so today this inner
+    `<section>` holds only the Stars Cliff Simulator in DOM order. Each
+    featured project renders as a `<div class="project">` with an inline
+    figure (a small `funnel-figure` SVG on the Medicare card, ~200 items/week
+    ▸ ~20 screened ▸ ~5 that matter, since 2026-07-26 and three-tier since
     2026-07-28; cliff-figure SVG on Stars), full
     prose, links row, and stack line. The hanging number floats left as a large oldstyle figure
     (font-size 2.2rem, color var(--muted)).
-  - **Index** (outside the section, as a sibling `<div
-    class="projects-index">`, 90% max-width grid): The remaining
-    projects as `<div class="project-tile">` small multiples (today:
+  - **Index** (a child `<div class="projects-index">`, 90% max-width grid,
+    behind a `<details class="fold">` "More projects (N)"): The
+    remaining projects as `<div class="project-tile">` small multiples (today:
     Healthcare Workforce Transition Platform, ECDS Shock Index, Care
     Delivery Workflow Changes, Practice Automation Analytics). Tiles
     use `position:absolute` for the hanging number (not float),
@@ -1232,6 +1234,24 @@ The section uses a featured + small-multiples-index pattern:
     optional `.tile-links` row, and `.stack`. The grid is
     `auto-fit, minmax(240px, 1fr)` so it renders 4 columns at
     desktop and collapses to 1 column at the 760px breakpoint.
+
+**(2026-07-30) `#projects` is now a wrapping `<div>`, not the `<section>`
+itself, and the index fold is a CHILD of it, not a top-level page sibling.**
+Until this date the fold sat directly under `<main>`, floating between
+`</section>` and the next section with no visible container — flagged as M3 in
+`docs/homepage-ordering-review-2026-07-30.md`, "lowest risk, do it," by both
+panels. **The naive fix (literally nesting `.projects-index` inside
+`<section>`) is NOT lowest risk and was caught before landing:** `section`
+carries `width: 60%` and `.projects-index` carries `max-width: 90%`; nested,
+the 90% resolves against the 60% column, giving ~54% of the page instead of
+90%, a real visual regression. The actual fix moves the `id="projects"`
+attribute off the `<section>` onto a new outer `<div id="projects">` that
+carries no width rule, with the un-id'd `<section>` (still 60%, unaffected)
+and the fold+grid (still 90% of the *outer* div, unaffected) as its two
+children. Verified pixel-identical at 1400/761/390px before and after (773px
+/ 1159px, 416px / 624px, 322px / 322px section/grid widths respectively).
+Nothing references `<section id="projects">` by element type or a
+`main >`/`#main >` direct-child selector, so nothing else needed to change.
 
 A small italic `<p class="section-subhead">Featured</p>` label sits
 between the H2 and the first featured project to cue the two-tier
