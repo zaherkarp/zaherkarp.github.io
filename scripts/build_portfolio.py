@@ -42,13 +42,12 @@ import sys
 import time
 import urllib.request
 import urllib.error
-from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import frontmatter
 
-from _common import install_git_hooks, iter_post_paths, slugify_tag
+from _common import install_git_hooks, iter_post_paths
 from _publications import (
     load_publications,
     render_homepage_entries,
@@ -85,18 +84,6 @@ SPARKLINE_WEEKS = 24
 SPARKLINE_X0 = 10        # left x-coordinate of the first dot in the SVG
 SPARKLINE_DX = 11        # spacing between dots; matches the demo's geometry
 PRE_BLOG_CUTOFF = date(2025, 1, 1)
-# Cadence-marginnote tag list: tags appearing in at least this many cadence-
-# window posts qualify for the frequency rollup. Single-occurrence tags are
-# filtered out so the long tail of one-offs doesn't drown the multi-post
-# signal. Fallback: if fewer than CADENCE_TAGS_MIN_FLOOR tags qualify, the
-# top CADENCE_TAGS_MIN_FLOOR by frequency are shown regardless.
-CADENCE_TAG_MIN_COUNT = 2
-CADENCE_TAGS_MIN_FLOOR = 8
-# Upper cap: show at most this many tags in the rollup, ranked by count
-# then alphabetic, with the remainder summarized as a plain "and N more"
-# suffix. Without a cap the note rendered every qualifying tag (~38), an
-# undifferentiated wall that carried no argument (critique 2026-07-04, M1).
-CADENCE_TAGS_TOP_N = 10
 S2_TIMEOUT = 10  # seconds
 S2_URL = "https://api.semanticscholar.org/graph/v1/paper/{sid}?fields=citationCount"
 
@@ -141,47 +128,6 @@ def last_sunday(today: date) -> date:
     return today if today.weekday() == 6 else today - timedelta(days=today.weekday() + 1)
 
 
-def build_cadence_marginnote(cadence_posts: list[dict]) -> str:
-    """Render the cadence ⊕ margin note as a tag frequency rollup.
-
-    Aggregates tags across the cadence window (post-2025), keeps tags
-    appearing in ≥ CADENCE_TAG_MIN_COUNT posts, and falls back to the
-    top CADENCE_TAGS_MIN_FLOOR by count if too few qualify. Sorted by
-    count desc then alphabetic, then capped at CADENCE_TAGS_TOP_N with
-    the remainder summarized as `and N more`. Rendered as compact `tag (n)` pairs
-    separated by middle dots, each tag linking to its /blog/tags/<slug>/
-    archive page (the slug rule is shared with build_blog.py via
-    _common.slugify_tag, so the homepage link and the generated page can
-    never disagree). Links inherit the muted marginnote color and the
-    site's standard underline treatment; no accent, per accent discipline.
-    """
-    counter: Counter[str] = Counter()
-    for p in cadence_posts:
-        for t in p["tags"]:
-            counter[t] += 1
-    if not counter:
-        return ""
-
-    qualifying = [(t, n) for t, n in counter.items() if n >= CADENCE_TAG_MIN_COUNT]
-    if len(qualifying) < CADENCE_TAGS_MIN_FLOOR:
-        qualifying = counter.most_common(CADENCE_TAGS_MIN_FLOOR)
-    qualifying.sort(key=lambda kv: (-kv[1], kv[0]))
-
-    # Cap the visible list so the rollup reads as a ranked top-N rather
-    # than an undifferentiated wall of every qualifying tag; the long tail
-    # is summarized as a plain "and N more" suffix (a nested disclosure
-    # inside a marginnote span would be fragile, so no second-level fold).
-    shown = qualifying[:CADENCE_TAGS_TOP_N]
-    pairs = " · ".join(
-        f'<a href="/blog/tags/{slugify_tag(tag)}/">{_esc(tag)}</a> ({n})'
-        for tag, n in shown
-    )
-    remaining = len(qualifying) - len(shown)
-    if remaining:
-        pairs += f" · and {remaining} more"
-    return pairs
-
-
 def build_activity_grid(posts: list[dict]) -> str:
     """Emit the 24-week inline cadence sparkline as per-week stems.
 
@@ -194,8 +140,9 @@ def build_activity_grid(posts: list[dict]) -> str:
 
     Tufte's last-point-label pattern: a small numeric annotation at the
     end of the sparkline gives the trailing total so the chart is self-
-    legending. The ⊕ margin note expands into a tag frequency rollup
-    (multi-post tags within the cadence window).
+    legending. No margin note is emitted: the sparkline now sits in the
+    split hero, which has no floating-note margin. See the comment at
+    the return statement below.
     """
     anchor = last_sunday(date.today())
     cadence_posts = [p for p in posts if p["date"] >= PRE_BLOG_CUTOFF]
@@ -230,10 +177,18 @@ def build_activity_grid(posts: list[dict]) -> str:
 
     stems_block = ("\n".join(stems) + "\n") if stems else ""
     label = "post" if cadence_total_in_window == 1 else "posts"
-    tag_rollup = build_cadence_marginnote(cadence_posts)
-    marginnote_html = (
-        f'<span class="marginnote">{tag_rollup}</span>' if tag_rollup else ""
-    )
+    # The ⊕ tag-rollup margin note is deliberately NOT emitted. Since
+    # 2026-07-30 the cadence sparkline lives inside the split hero's
+    # .hero-writing column, beside the writing list it describes, rather
+    # than in its own <section id="writing"> a screen and a half below.
+    # The hero is a sanctioned full-width exception to the 60% prose
+    # column and has NO floating-note margin, and `.marginnote` positions
+    # itself with `margin-right: -60%`, a value calibrated to that column;
+    # rendered in the hero it lands in the middle of the page instead of
+    # beside its anchor. This is the same reason build_writing_list()
+    # suppresses the per-post `homepageMarginnote` (see its docstring).
+    # The tags stay reachable at /blog/tags/.
+    # Tests: test_activity_grid_suppresses_cadence_marginnote.
     return (
         '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
         '      24 weeks\n'
@@ -244,10 +199,7 @@ def build_activity_grid(posts: list[dict]) -> str:
         + stems_block +
         '      </svg>\n'
         f'      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); '
-        f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>'
-        '<label for="mn-cadence" class="margin-toggle">&#8853;</label>'
-        '<input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/>'
-        f'{marginnote_html}\n'
+        f'margin-left: 0.3rem;">{cadence_total_in_window} {label}</span>\n'
         '    </p>'
     )
 

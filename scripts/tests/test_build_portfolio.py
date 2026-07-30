@@ -134,6 +134,41 @@ def test_writing_list_suppresses_hero_marginnote():
     assert "This aside must never reach the hero." not in html
 
 
+def test_activity_grid_suppresses_cadence_marginnote():
+    """The cadence sparkline moved into the split hero on 2026-07-30, and the
+    hero has no floating-note margin (.marginnote positions itself with
+    margin-right: -60%, calibrated to the 60% prose column, so in the
+    full-width hero it lands mid-page instead of beside its anchor). So
+    build_activity_grid must emit the sparkline and its trailing total but no
+    margin note and no toggle control. Same rule, same reason, as
+    test_writing_list_suppresses_hero_marginnote above."""
+    import datetime
+
+    today = datetime.date.today()
+    posts = [
+        {
+            "date": today - datetime.timedelta(days=7 * i),
+            "title": f"Post {i}",
+            "description": "blurb",
+            "slug": f"post-{i}",
+            "marginnote": "",
+            "tags": ["data-engineering", "healthcare"],
+            "lifeweek_topic": "",
+        }
+        for i in range(4)
+    ]
+    html = build_portfolio.build_activity_grid(posts)
+    # the sparkline itself still renders, with its self-legending total
+    assert 'class="cadence"' in html
+    assert "posts</span>" in html
+    # ...but nothing that needs a floating margin or a control
+    assert "marginnote" not in html
+    assert "mn-cadence" not in html
+    assert "margin-toggle" not in html
+    assert "<label" not in html
+    assert "<input" not in html
+
+
 def test_citation_fetch_failure_preserves_cached_count(monkeypatch):
     fake_pubs = [
         {

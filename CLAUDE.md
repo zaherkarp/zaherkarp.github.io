@@ -91,6 +91,16 @@ PROMOTED out of the retired BHA fold into visible prose rather than cut.
 `#experience` now closes with a resume/CV pointer and the hero says
 "experience" rather than "full experience".
 
+**A SECOND pass followed within the hour**, after the owner said the page was
+still "too much to provide value since it probably scares people away" -
+reversing the stop-here call above on reception grounds. It cut every Experience
+lead to ~35-55 words, put the Huber formula back in a (named) fold, removed the
+healthfinch outcome figure, dropped `sn-ehrs`, deleted the `.hero-more` "More:"
+line outright, and moved the writing cadence sparkline into the hero beside the
+writing list. Page 10,709px to 10,033px, 11.9 to 11.1 screens, visible words
+1,834 to 1,665. The reordering question the owner raised in the same breath was
+deliberately NOT acted on; it became a study instead, so no section moved.
+
 **The headline number is honest but easy to misread**, so it is repeated in
 §Experience entry expand rule: total content fell 53%, while the section's
 rendered default height fell only ~2% (2884px to 2836px at 1400px). More than
@@ -346,7 +356,11 @@ menu without discussion. **(Direction B, 2026-07-26)** Nav is four items
 before `#experience` (which keeps its own id for `lint_facts`); `contact` is
 back in the bar. The un-navigated section ids (experience, projects,
 publications, speaking, education, service) are still live anchors, reached via
-the `.hero-more` "More:" line and the dot plot; do not delete them.
+the dot plot and the blog-post navs; do not delete them. **The `.hero-more`
+"More:" line that used to reach four of them was REMOVED 2026-07-30** (see the
+dated entry above): its targets sat 3 to 9 screens away, which all six
+reception panelists read as a promise the scroll could not keep. `#projects` is
+still reached from every blog page's nav (`/#projects`).
 
 **(Text ordering, 2026-07-29)** `writing` targets `#writing-hero`, the id on the
 hero's `.hero-writing` column, NOT `#writing` (which it scrolled past, landing
@@ -362,20 +376,36 @@ change.
 column.** The writing-led hero is a `<div class="split-hero">` grid, deliberately
 NOT a `<section>`, so `section { width: 60% }` and the floating-note margin never
 apply to it. It carries no floating notes by design (see §Writing section
-update rule for the suppressed per-post note). Now **two** columns (writing
+update rule for the two suppressed notes: the per-post one and, since
+2026-07-30, the cadence tag rollup). Now **two** columns (writing
 ~1.6fr / current work ~1fr) above 760px, tightening to ~1.4fr/1fr at 761-1000px,
-one column below 760px. The full-width `figure.timeline.career-band` and the
-`.hero-more` line sit below the grid (also full-width exceptions). The rest of
-the page keeps the 60% column. CSS lives in sections 20 / 21 / 21.1 of
-index.html (§20 is now the `.hero-more` line, not the retired teaser row).
+one column below 760px. The full-width `figure.timeline.career-band` sits
+below the grid (also a full-width exception). The rest of
+the page keeps the 60% column. CSS lives in sections 21 / 21.1 of
+index.html; **§20 and §21's MORE LINE block were deleted 2026-07-30 with
+`.hero-more` itself** (markup, CSS, and its `@media print` hide rule).
+
+**(Text reduction, 2026-07-30) the writing cadence sparkline now lives INSIDE
+`.hero-writing`**, after the "View all writing" line, rather than in its own
+`<section id="writing">` a screen and a half down the page. It is a
+build-generated region, so its `activity-grid` markers moved with it and
+`build_portfolio.py` repopulates them in place. Its `mn-cadence` tag-rollup
+margin note is no longer emitted at all: `.marginnote` positions itself with
+`margin-right: -60%`, a value calibrated to the 60% prose column, so in the
+full-width hero it lands mid-page instead of beside its anchor. Same rule and
+same reason as the suppressed per-post note. `#writing` survives as a bare
+`.section-anchor` span because external bookmarks may point at `/#writing`;
+nothing on this site links to it.
 
 ### Hero
 
 **(Owner rewrite, 2026-07-29.)** Sequence: nav, `.nameplate` (h1 alone), a
 Tier-1 `<p class="proposition">`, a two-paragraph `.hero-lede`, then the
 two-column `.split-hero` grid (recent writing ~62% / current work ~38%), then
-the full-width `figure.timeline.career-band`, then the `.hero-more` "More:"
-line. The featured project 01 block is MOVED into the hero (not copied) so the
+the full-width `figure.timeline.career-band`. (A trailing `.hero-more` "More:"
+line closed the sequence until 2026-07-30, when it was removed.) The
+writing column also carries the cadence sparkline as of that date. The
+featured project 01 block is MOVED into the hero (not copied) so the
 project CSS counter still numbers it 01 in DOM order. No epigraph, no italic
 claim block, no manifesto framing.
 
@@ -881,14 +911,25 @@ the next CI run overwrites them. Two tiers:
     `build_writing_list()` suppresses the `mn-w-<slug>` note (test:
     `test_writing_list_suppresses_hero_marginnote`). The frontmatter field is
     still read/preserved by the blog tooling; it just no longer surfaces here.
-    `#writing` below now holds only the cadence sparkline (its `mn-cadence`
-    note still floats there). **(Text ordering, 2026-07-29)** that section is
-    retitled **"Writing cadence"** and carries a one-line lead above the
-    sparkline, so the heading is honest about its content and does not compete
-    with the hero's "Recent writing" column head. The lead sits BEFORE
-    `<!-- activity-grid:start -->`, outside the generated region; keep it there
-    or the next build overwrites it. `.hero-writing` also carries
-    `id="writing-hero"`, the nav's `writing` target.
+    **(Text reduction, 2026-07-30) `<section id="writing">` was RETIRED and its
+    cadence sparkline moved INTO `.hero-writing`,** after the "View all
+    writing" line. The two halves of one idea had 1,400px of career band
+    between them: the writing list sat at screen 0.5 and its own cadence chart
+    at screen 2.3. The `activity-grid` markers moved with it and
+    `build_portfolio.py` repopulates them in place, so do not hand-edit
+    between them. Its one-line lead and its `<h2>Writing cadence</h2>` went
+    with the section, and **`build_activity_grid()` no longer emits the
+    `mn-cadence` tag rollup at all** (test:
+    `test_activity_grid_suppresses_cadence_marginnote`) for the same reason
+    the per-post note is suppressed: `.marginnote` uses
+    `margin-right: -60%`, calibrated to the 60% prose column, so in the
+    full-width hero it lands mid-page rather than beside its anchor. The tags
+    stay reachable at `/blog/tags/`. `#writing` survives only as a bare
+    `.section-anchor` span, kept because external bookmarks may point at
+    `/#writing` (nothing on this site links to it, verified). `.hero-writing`
+    still carries `id="writing-hero"`, the nav's `writing` target.
+    (Superseded here: the 2026-07-29 wording that `#writing` holds the
+    sparkline, is retitled "Writing cadence", and carries a lead.)
   - **Index** (`WRITING_TILES = 6`): the next six posts after the
     featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
     markers. **(Direction B, 2026-07-26)** these markers ALSO moved into the
@@ -1000,7 +1041,30 @@ This is intentional and complete. Do not treat as a gap to fill.
 
 ### Experience entry expand rule
 
-**(Text reduction, 2026-07-30.) One of five entries folds now, not four.**
+**(Text reduction, second pass, 2026-07-30.) TWO folds in the section, and
+both name their contents.** BHA carries `<summary>The robust smoothing, in one
+formula</summary>` holding only the Huber psi block; Health Catalyst carries
+`<summary>Published customer outcomes</summary>`. Every lead was cut to ~35-55
+words, the healthfinch outcome figure was removed, the `sn-ehrs` sidenote was
+dropped (its four-EHR content is in the lead), and UW's stack line lost NVivo
+and SPSS with the qualitative-methods clause. Measured result: Experience
+2,836px to 2,419px, page 10,709px to 10,033px (11.9 to 11.1 screens), visible
+words 1,834 to 1,665. Experience notes are now two, both `.stat-num`
+(`mn-hc-caregaps`, `mn-uw-cohort`).
+
+**The Huber formula went back into a fold**, having been promoted to visible
+earlier the same day. Promoting it cost ~180px and made BHA the second-tallest
+role; collapsed it costs ~34px. Deleting it was the alternative and was
+rejected: ~34px was not worth losing the page's densest technical evidence and
+a canonical §Calibrated claims example. If a future pass wants it gone, that is
+a decision about evidence, not about height.
+
+**Per-role heights after this pass**, so the next reader does not re-measure:
+BHA 490px, Health Catalyst 684px, healthfinch 456px, UW 445px, Sustainable
+Clarity 290px. Catalyst is the outlier at 29% because it alone still has a
+figure; see §Outcome figures for the open lever.
+
+**(Text reduction, first pass, 2026-07-30.) One of five entries folds now, not four.**
 Only Health Catalyst keeps a `<details class="fold">`, and its summary reads
 **"Published customer outcomes"**, not "More detail": with a single fold left
 in the section a generic label is exactly the defect
@@ -1046,18 +1110,34 @@ calibration comment records it was born catching a shingle that lived in the
 BHA lead. Rewrite when promoting; never copy-paste.
 
 The section now closes with a one-line pointer to `/resume.html` and
-`/cv.html`, and the hero's `.hero-more` link text was changed from "full
-experience" to "experience". A 53%-shorter section should not be introduced as
-"full", and those two documents were previously reachable only from `#contact`
-and the footer at the very bottom of the page.
+`/cv.html`. (This pass also retitled the hero's `.hero-more` link from "full
+experience" to "experience", but the second pass later that day deleted the
+whole line, so only the section-closing pointer survives.) A much shorter
+section should not be introduced as "full", and those two documents were
+previously reachable only from `#contact` and the footer at the very bottom of
+the page.
 
-**Outcome figures (added 2026-06-09).** Two roles carry a small inline
-`figure.outcome-figure` (before/after bar pair) after the lead paragraph
-(before the fold, where one survives), so the densest section shows data by
-default instead of pure prose. **Both figures survived the 2026-07-30 text
-reduction on purpose:** cutting prose around them raises the section's data-ink
-ratio, which is the point of having them. They are Health Catalyst (refill
-turnaround 72h to 12h) and healthfinch
+**Outcome figures (added 2026-06-09; ONE remains as of 2026-07-30).** The
+surviving `figure.outcome-figure` (before/after bar pair) sits on the Health
+Catalyst entry after the lead paragraph and before the fold, so the densest
+section shows data by default instead of pure prose. It carries the section's
+only accent use; the page-wide count is now **12** of the 20 cap, down from 14.
+
+**The healthfinch figure was REMOVED in the second 2026-07-30 pass** (the
+owner asked for the page to be shorter, saying its length "probably scares
+people away"). Its two facts moved into that role's lead prose, where they
+still read: sevenfold growth in dashboard users absorbed, and 400+ hours of
+report prep retired per quarter. Removing it saved ~180px net of the prose it
+added. Note the cost, so it is not re-litigated blind: Experience now shows a
+figure on one of five roles, which sharpens rather than fixes the
+Catalyst-is-heaviest asymmetry the owner flagged (Catalyst measured 684px, 29%
+of the section, against 445-490px for the others). Dropping the last figure
+would even that out at ~504px and is the obvious next lever, but it would leave
+Experience as pure prose, undoing the 2026-06-09 answer to the wall-of-text
+critique. Not done without a decision.
+
+The retained figure is Health Catalyst (refill
+turnaround 72h to 12h). The removed one was healthfinch
 (dashboard user growth absorbed, a 1:7 ratio). Both use the same
 gray-before / accent-after pattern: the "after" bar is the `#7a0000`
 accent sentinel, the "before" bar is `#6a6a6a` muted. (The healthfinch
@@ -1702,10 +1782,12 @@ across rebuilds — WeasyPrint embeds a timestamp — but resume.html is.)
 
 index.html is hand-maintained, with three build-time insertions:
 
-  1. Writing cadence sparkline — a 24-week dot strip above the Writing
-     entries. One dot per week, filled when there's a publication that
-     week, empty otherwise. Trailing total ("N posts") + a margin note
-     about the post-hiatus return. Sourced from blog frontmatter.
+  1. Writing cadence sparkline — a 24-week stem chart. One stem per week,
+     height proportional to that week's post count; silent weeks render as
+     empty space. Trailing total ("N posts") as Tufte's last-point label.
+     Sourced from blog frontmatter. Since 2026-07-30 it renders inside the
+     hero's `.hero-writing` column (NOT a separate section) and emits NO
+     margin note; see §Writing section update rule.
   2. Publications block — the full Publications section, generated from
      src/content/publications.yaml between
      `<!-- pub-list:start --> ... <!-- pub-list:end -->` markers.
@@ -2262,9 +2344,10 @@ consolidation, new gates) is documented in
 - No 640px max-width regression and no removing the sidenote system. The
   60% column with 40% margin is a contract for the prose sections; the
   sidenotes need the margin. (The Timeline Split `.split-hero` and
-  full-width `figure.timeline.career-band`, and `.hero-more` line are the
+  full-width `figure.timeline.career-band` are the
   sanctioned full-width exceptions above that column; see §Layout. They host
-  no floating notes, so the contract holds.)
+  no floating notes, which is why both the per-post note and the cadence tag
+  rollup are suppressed there, so the contract holds.)
 - No "By the Numbers" stats table. The chart inventory replaces it.
 - No sidenotes outside the homepage. Blog posts use KaTeX/Mermaid/Prism
   for technical depth.

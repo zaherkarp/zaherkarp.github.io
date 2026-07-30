@@ -1652,11 +1652,9 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     font-size: 11pt;
   }
   nav.top, .timeline, figure.timeline { display: none; }
-  /* Split hero collapses to a single column in print; the "More:"
-     jump line is useless on paper. */
+  /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
-  .hero-more { display: none; }
   hr { width: 100%; }
   details.fold, details.speaking-list { page-break-inside: avoid; }
   details.fold > summary, details.speaking-list > summary { display: none; }
@@ -1830,22 +1828,6 @@ figure.timeline.career-band figcaption {
   opacity: 0.7;
   pointer-events: none;
 }
-
-/* ============================================================
-   21. MORE LINE
-   One restrained line replacing the three-card teaser row (which
-   read as a second navigation). Same-page jump links to the
-   sections the reduced top nav dropped, plus full experience. A top
-   rule sets it off from the timeline band above.
-   ============================================================ */
-.hero-more {
-  border-top: 1px solid var(--rule);
-  padding-top: 1rem;
-  margin: 1.4rem 0 2.8rem 0;
-  font-size: 0.95rem;
-  color: var(--muted);
-}
-.hero-more a { text-decoration-color: var(--rule); }
 
 /* ============================================================
    21.1. SPLIT HERO BREAKPOINTS (Direction B)
@@ -2029,6 +2011,56 @@ figure.timeline.career-band figcaption {
     </div>
     <!-- writing-index:end -->
       </div>
+
+      <!-- CADENCE HEADER
+           Twenty-four-week sparkline generated from blog frontmatter
+           by scripts/build_portfolio.py on every CI run. Each week's
+           post count drives a vertical stem (height = count * 2 SVG
+           units, capped at the chart top); silent weeks render as
+           empty space against the faint baseline rule. The encoding
+           now carries actual cadence variance (burst weeks vs. quiet
+           weeks) that the earlier binary-dot version flattened away.
+
+           Trailing "{N} posts" is the Tufte last-point-label pattern:
+           a small numeric annotation at the end of a sparkline giving
+           the series total, so the chart is self-legending.
+
+           Margin note expands into a tag frequency rollup across the
+           24-week window, computed by the same build step.
+
+           The wrapping markers (activity-grid:start / activity-grid:end)
+           are anchors for scripts/build_portfolio.py to rewrite the
+           entire block. Do not hand-edit between the markers; changes
+           are overwritten on the next CI run. -->
+      <!-- activity-grid:start -->
+<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
+      24 weeks
+      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
+        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
+        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="120" y1="16" x2="120" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="131" y1="16" x2="131" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="142" y1="16" x2="142" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="153" y1="16" x2="153" y2="8" stroke="#111" stroke-width="1.2"/>
+        <line x1="164" y1="16" x2="164" y2="6" stroke="#111" stroke-width="1.2"/>
+        <line x1="197" y1="16" x2="197" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.2"/>
+        <line x1="230" y1="16" x2="230" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="241" y1="16" x2="241" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="252" y1="16" x2="252" y2="14" stroke="#111" stroke-width="1.2"/>
+        <line x1="263" y1="16" x2="263" y2="14" stroke="#111" stroke-width="1.2"/>
+      </svg>
+      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">34 posts</span>
+    </p>
+    <!-- activity-grid:end -->
 
       <p class="hero-viewall"><a href="/blog/">View all writing &rarr;</a></p>
     </div>
@@ -2256,73 +2288,14 @@ figure.timeline.career-band figcaption {
     </svg>
   </figure>
 
-  <!-- ==========================================================
-       MORE LINE
-       One restrained line replacing the three-card teaser row (a
-       second nav). Same-page destinations: the sections the reduced
-       top nav dropped, plus full experience. -->
-  <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">experience</a></p>
 
-  <section id="writing">
-    <h2>Writing cadence</h2>
-
-    <p>The pulse behind the writing list above: publishing pace, week by week.</p>
-
-    <!-- CADENCE HEADER
-         Twenty-four-week sparkline generated from blog frontmatter
-         by scripts/build_portfolio.py on every CI run. Each week's
-         post count drives a vertical stem (height = count * 2 SVG
-         units, capped at the chart top); silent weeks render as
-         empty space against the faint baseline rule. The encoding
-         now carries actual cadence variance (burst weeks vs. quiet
-         weeks) that the earlier binary-dot version flattened away.
-
-         Trailing "{N} posts" is the Tufte last-point-label pattern:
-         a small numeric annotation at the end of a sparkline giving
-         the series total, so the chart is self-legending.
-
-         Margin note expands into a tag frequency rollup across the
-         24-week window, computed by the same build step.
-
-         The wrapping markers (activity-grid:start / activity-grid:end)
-         are anchors for scripts/build_portfolio.py to rewrite the
-         entire block. Do not hand-edit between the markers; changes
-         are overwritten on the next CI run. -->
-    <!-- activity-grid:start -->
-<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">
-      24 weeks
-      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="writing cadence sparkline showing posts per week over the last 24 weeks">
-        <line x1="10" y1="16" x2="263" y2="16" stroke="#d0d0c8" stroke-width="0.5"/>
-        <line x1="10" y1="16" x2="10" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="21" y1="16" x2="21" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="32" y1="16" x2="32" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="43" y1="16" x2="43" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="54" y1="16" x2="54" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="65" y1="16" x2="65" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="87" y1="16" x2="87" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="98" y1="16" x2="98" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="109" y1="16" x2="109" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="120" y1="16" x2="120" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="131" y1="16" x2="131" y2="8" stroke="#111" stroke-width="1.2"/>
-        <line x1="142" y1="16" x2="142" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="153" y1="16" x2="153" y2="8" stroke="#111" stroke-width="1.2"/>
-        <line x1="164" y1="16" x2="164" y2="6" stroke="#111" stroke-width="1.2"/>
-        <line x1="197" y1="16" x2="197" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="219" y1="16" x2="219" y2="12" stroke="#111" stroke-width="1.2"/>
-        <line x1="230" y1="16" x2="230" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="241" y1="16" x2="241" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="252" y1="16" x2="252" y2="14" stroke="#111" stroke-width="1.2"/>
-        <line x1="263" y1="16" x2="263" y2="14" stroke="#111" stroke-width="1.2"/>
-      </svg>
-      <span style="font-variant-numeric: oldstyle-nums; color: var(--ink); margin-left: 0.3rem;">34 posts</span><label for="mn-cadence" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show tag frequency breakdown" id="mn-cadence" class="margin-toggle"/><span class="marginnote"><a href="/blog/tags/data-engineering/">data-engineering</a> (14) · <a href="/blog/tags/healthcare/">healthcare</a> (7) · <a href="/blog/tags/healthcare-data/">healthcare-data</a> (7) · <a href="/blog/tags/medicare-advantage/">medicare-advantage</a> (6) · <a href="/blog/tags/sql/">sql</a> (6) · <a href="/blog/tags/architecture/">architecture</a> (5) · <a href="/blog/tags/medicare/">medicare</a> (5) · <a href="/blog/tags/methodology/">methodology</a> (5) · <a href="/blog/tags/ci-cd/">ci-cd</a> (4) · <a href="/blog/tags/python/">python</a> (4) · and 31 more</span>
-    </p>
-    <!-- activity-grid:end -->
-
-    <!-- The recent-writing list (two featured posts + the small-multiples
-         index) leads the split hero at the top of the page; both marker
-         regions moved there in the 2026-07-26 iteration. This section now
-         keeps only the cadence sparkline and its tag-rollup margin note. -->
-  </section>
+  <!-- #writing: the standalone "Writing cadence" section was retired
+       2026-07-30. Its sparkline moved into the hero .hero-writing column
+       beside the writing list it describes; the two halves of one idea had
+       1,400px of career band between them. The id survives as a bare anchor
+       because external bookmarks may point at /#writing (nothing on this
+       site links to it). -->
+  <span id="writing" class="section-anchor"></span>
 
   <hr>
 
@@ -2367,7 +2340,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures built on claims, eligibility, and pharmacy data. I own the methodology and engineering function behind it. Compliance shapes the architecture: one recent design runs the Stars cut-point projection entirely in the analyst's browser, so member-level data never leaves the machine.
+      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own the methodology and engineering behind it. One recent design runs the Stars cut-point projection entirely in the analyst's browser, so member-level data never leaves the machine.
     </p>
 
     <!-- ==========================================================
@@ -2380,34 +2353,45 @@ figure.timeline.career-band figcaption {
          that calibrate the smoothing parameters, so COVID shocks
          don't permanently bias the trend forecast.
 
-         PROMOTED to the visible layer 2026-07-30 when the BHA
-         fold was retired. It was the section's densest technical
-         evidence sitting two clicks deep; the 2026-05-23 hiring
-         evaluation called it the cleanest "still knows what he is
-         doing under the hood" signal in Experience, and the
-         2026-07-04 critique flagged that four identical "More
-         detail" labels gave a scanner equal reason to skip the
-         fold holding it. Caption is VERBATIM from that fold: it
-         is a canonical §Calibrated claims example, framed as a
-         proof of concept the author tested rather than a deployed
-         component. The shipped Stars cutpoint pipeline used
-         robust M-estimators; this Huber psi variant was a
-         separate proposal, so the caption says so plainly.
+         Briefly promoted to the visible layer on 2026-07-30, then
+         returned to a fold LATER THE SAME DAY when the owner asked
+         for the page to be shorter still. Promoting it cost ~180px
+         and made BHA the second-tallest role; a collapsed fold
+         costs ~34px. Deleting it outright was the other option and
+         was rejected: the 2026-05-23 hiring evaluation calls this
+         the cleanest "still knows what he is doing under the hood"
+         signal in Experience, and its caption is a canonical
+         §Calibrated claims example, so a height saving of ~34px
+         over the fold was not worth losing the page's densest
+         technical evidence.
+
+         The summary NAMES its contents rather than reading "More
+         detail", per the 2026-07-04 critique: identical labels give
+         a scanner equal reason to skip all of them.
+
+         Caption is VERBATIM and must stay so: a proof of concept
+         the author tested, not a deployed component. The shipped
+         Stars cutpoint pipeline used robust M-estimators; this
+         Huber psi variant was a separate proposal, so the caption
+         says so plainly.
 
          Pure HTML/CSS math styling, no MathJax dependency.
          ========================================================== -->
-    <div class="formula-block">
-      <div class="formula">
-        &psi;<sub><i>k</i></sub>(<i>r</i>) =
-        <span class="cases">
-          <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
-          <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
-        </span>
+    <details class="fold">
+      <summary>The robust smoothing, in one formula</summary>
+      <div class="formula-block">
+        <div class="formula">
+          &psi;<sub><i>k</i></sub>(<i>r</i>) =
+          <span class="cases">
+            <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
+            <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
+          </span>
+        </div>
+        <div class="formula-caption">
+          Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
+        </div>
       </div>
-      <div class="formula-caption">
-        Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
-      </div>
-    </div>
+    </details>
 
     <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Python</p>
 
@@ -2418,7 +2402,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      I moved with the product when Health Catalyst acquired healthfinch in 2020. A three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviors, and different interpretations of the same clinical concept.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%; the AWS to Azure migration took 24+ hours off the weekly load.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      I moved with the product when Health Catalyst acquired healthfinch in 2020, and a three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%; the AWS to Azure migration took 24+ hours off the weekly load.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2473,42 +2457,8 @@ figure.timeline.career-band figcaption {
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      The infrastructure did not exist when I arrived as the first analytics hire. I built it on AWS to HIPAA and HITRUST controls, and every governance decision, from access control to retention, was mine. Promoted to manager after a year, I led the sales-analytics work behind an ROI dashboard that contributed to more than $1M in new recurring revenue.
+      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. Promoted to manager after a year, I led the sales-analytics work behind an ROI dashboard that contributed to more than $1M in new recurring revenue. A governed semantic layer absorbed sevenfold growth in dashboard users and retired 400+ hours of report prep a quarter.
     </p>
-
-    <!-- ==========================================================
-         OUTCOME FIGURE: dashboard user growth absorbed
-         Two-bar figure showing a RATIO, not endpoints: the
-         governed semantic layer absorbed sevenfold growth in
-         dashboard users across the role. It drew ~10 to 100+
-         until 2026-07-28, but that is a tenfold multiple and
-         contradicted the resume's 7x, which the owner confirmed
-         as the correct figure. Exact user counts are
-         client-private and the true endpoints are not on record,
-         so the figure now encodes the one quantity that is: the
-         multiple. Bar widths are exactly 1:7 (50 and 350), so the
-         geometry states the claim rather than illustrating it.
-         The "after" bar carries the #7a0000 accent sentinel for
-         visual parity with the Health Catalyst figure above (an
-         owner decision, 2026-07-23, replacing the earlier
-         monochrome treatment). The retired prep hours ride in the
-         caption; the $1M in new recurring revenue belongs to the
-         sales-analytics ROI work and sits in the fold with it.
-         viewBox scales the lone copy on mobile (no SVG swap).
-         ========================================================== -->
-    <figure class="outcome-figure">
-      <figcaption>
-        The governed semantic layer absorbed sevenfold growth in dashboard users and retired 400+ hours of report prep per quarter. Exact user counts are client-private, so the figure shows the multiple.
-      </figcaption>
-      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: the dashboard user base grew sevenfold across the role, shown as a multiple rather than absolute counts.">
-        <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
-        <rect x="95" y="28" width="50" height="22" fill="#6a6a6a"><title>Dashboard user base at the start of the role, the baseline</title></rect>
-        <text x="153" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">baseline</text>
-        <text x="85" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">after</text>
-        <rect x="95" y="78" width="350" height="22" fill="#7a0000"><title>Sevenfold the baseline, by the end of the role</title></rect>
-        <text x="453" y="95" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">7&#215; baseline</text>
-      </svg>
-    </figure>
 
     <p class="stack">SQL &middot; Python &middot; Sisense &middot; AWS &middot; HIPAA &middot; HITRUST</p>
 
@@ -2519,10 +2469,10 @@ figure.timeline.career-band figcaption {
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      Nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of them.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research, using methods from grounded theory to interrupted time series.
+      Nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of them.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research.
     </p>
 
-    <p class="stack">Stata &middot; SAS &middot; NVivo &middot; SPSS &middot; REDCap</p>
+    <p class="stack">Stata &middot; SAS &middot; REDCap</p>
 
     <hr>
 
@@ -2531,7 +2481,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
     <p>
-      An editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, graphic designers, and photographers, wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire, and edited and indexed books, journal articles, grant proposals, and dissertations.
+      An editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
     </p>
 
     <!-- Overflow valve (2026-07-30). With the four "More detail"

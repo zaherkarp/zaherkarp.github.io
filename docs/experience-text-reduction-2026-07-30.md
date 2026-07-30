@@ -199,7 +199,70 @@ ENTRY` banner (already reported wrong at
 `docs/qa-audit-2026-07-28.md:70-73`) and the `#service` banner's
 "Certifications live in their own collapsed section below" cross-reference.
 
-## 8. Deliberately not done: the visible-layer pass
+## 7b. Second pass, same day: the visible-layer cut
+
+The owner reversed the stop-here decision within the hour: *"I need things to be
+shorter. Its too much to provide value since it probably scares people away."*
+That is a reception argument, not a taste call, so it goes to the Focus Group's
+lane, and the panels were convened jointly on the whole page rather than on
+Experience alone.
+
+### What the page-level measurement showed
+
+Page was **10,709px = 11.9 screens, 1,834 visible words**, with `#experience` at
+**31%** of it. Panels agreed the problem was page-level, not section-level.
+
+### Reception findings
+
+The recruiter round never scrolled past screen three, which meant never seeing a
+single project (Projects began at screen 5.8). The antagonist round put it
+sharpest: *"Cut half of this and I'd trust it more, not less. Length reads as
+insecurity."* All six reception panelists independently rejected the
+`.hero-more` line: its four targets sat 3 to 9 screens away, a promise the
+scroll cannot keep.
+
+### Applied
+
+Every lead cut to ~35-55 words; the Huber formula returned to a named fold; the
+healthfinch outcome figure removed with its facts moved into prose; `sn-ehrs`
+dropped; `.hero-more` deleted entirely (markup, CSS, print rule); the cadence
+sparkline moved into `.hero-writing` and `<section id="writing">` retired.
+
+| | Before pass 1 | After pass 1 | After pass 2 |
+|---|---|---|---|
+| Page height @1400px | 11,028px | 10,709px | **10,033px** |
+| Screens @900px | 12.3 | 11.9 | **11.1** |
+| Visible words | — | 1,834 | **1,665** |
+| `#experience` | 2,884px | 2,836px | **2,419px** |
+| Mobile @390px | 17,786px | 17,252px | **16,345px** |
+| Accent uses | 14 | 14 | **12** |
+
+Per-role: BHA 490px, Health Catalyst 684px, healthfinch 456px, UW 445px,
+Sustainable Clarity 290px.
+
+### Declined, and why
+
+**Testimonials (780px) and the Gantt figure (462px)** were both offered and not
+taken. The Gantt was contested inside the Council: Jess and Steve wanted it gone
+as an enforced duplicate of `#education` + `#service` (removing it would also
+retire `lint_gantt.py` entirely), while Edward and Nathan argued the figures are
+the page's distinguishing asset and cutting charts to buy scroll trades the
+memorable thing for the thing already lost. Recorded as unresolved, not settled.
+
+**Reordering was deliberately not done.** Reception wanted Projects above
+Experience; the Council noted the 2026-07-29 pass had just spent a full
+iteration getting the four nav targets into nav order. The owner chose a study
+instead, so no section moved in this pass.
+
+### Open item this pass created
+
+Catalyst is now **29% of the section at 684px** against 445-490px for the
+others, because it alone retains a figure. The asymmetry the owner originally
+flagged is sharper, not resolved. Dropping the last outcome figure evens it at
+~504px but leaves Experience as pure prose, undoing the 2026-06-09 answer to the
+wall-of-text critique. Flagged for decision, not taken unilaterally.
+
+## 8. Deliberately not done: the reordering study
 
 The owner stopped after the content cut and asked for a prompt to pick up the
 *visible* streamlining later, with the panels reviewing each step. This pass is
@@ -208,6 +271,10 @@ this change left broken.
 
 ### Prompt for the follow-up pass
 
+> (Partly superseded by the second pass in section 7b, which did cut the
+> visible leads. What remains open from it: Testimonials, the Gantt, and the
+> Catalyst asymmetry.)
+>
 > Streamline the **visible** text of the Experience section on `index.html`,
 > with the Focus Group and Design Council reviewing each step. Read
 > `docs/experience-text-reduction-2026-07-30.md` first: the 2026-07-30 pass cut
