@@ -28,6 +28,7 @@ import sys
 from datetime import date
 
 from _ideas import load_ideas, new_id, save_ideas
+from _issue_forms import parse_issue_form
 
 # Form field labels -> ledger fields. Matching is case-insensitive and
 # tolerant of GitHub appending nothing / trailing whitespace.
@@ -38,37 +39,6 @@ SECTION_ALIASES = {
     "the angle": "note",
     "tags": "tags",
 }
-
-NO_RESPONSE = "_no response_"
-
-
-def parse_issue_form(body: str) -> dict[str, str]:
-    """Split a rendered issue-form body into {normalized label: value}.
-
-    Unfilled optional fields come through as `_No response_` and are dropped,
-    so a skipped field is absent rather than literally that string.
-    """
-    sections: dict[str, str] = {}
-    current: str | None = None
-    buf: list[str] = []
-
-    def flush() -> None:
-        if current is None:
-            return
-        value = "\n".join(buf).strip()
-        if value and value.lower() != NO_RESPONSE:
-            sections[current] = value
-
-    for line in (body or "").splitlines():
-        m = re.match(r"^#{1,6}\s+(.*?)\s*$", line)
-        if m:
-            flush()
-            current = m.group(1).strip().lower()
-            buf = []
-        elif current is not None:
-            buf.append(line)
-    flush()
-    return sections
 
 
 def strip_em_dashes(text: str) -> str:
@@ -82,7 +52,7 @@ def strip_em_dashes(text: str) -> str:
 
 
 def build_entry(number: str, title: str, body: str, existing: list[dict]) -> dict:
-    sections = parse_issue_form(body)
+    sections = parse_issue_form(body, known_labels=set(SECTION_ALIASES))
     fields: dict[str, str] = {}
     for label, value in sections.items():
         key = SECTION_ALIASES.get(label)

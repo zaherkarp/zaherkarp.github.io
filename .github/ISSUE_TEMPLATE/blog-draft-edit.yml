@@ -1,0 +1,77 @@
+name: Blog draft edit
+description: Edit an existing draft's body from your phone, and optionally publish it.
+title: "draft-edit: "
+labels: ["blog-draft-edit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Edits an existing DRAFT post (`draft: true` under
+        `src/content/blog/`) and pushes the change to `main`. This is the
+        phone equivalent of `blog edit` + `blog publish`.
+
+        This does not create posts and will not touch a post that is
+        already published. Get the current body from
+        `github.com/<owner>/<repo>/blob/main/src/content/blog/<slug>.md`
+        before you start, since there's no way to pre-fill it here, paste
+        your edited copy into the body field below, which REPLACES the
+        post's body entirely.
+
+        If something fails (bad slug, lint failure), this issue stays open
+        with the error as a comment. Edit the issue (fix the field that was
+        wrong) to retry, no need to file a new one.
+  - type: input
+    id: slug
+    attributes:
+      label: Draft slug
+      description: >
+        Exact filename under src/content/blog/, without .md. Must already
+        exist and be draft: true. A typo fails loudly with a comment;
+        nothing is created.
+      placeholder: how-this-site-builds-itself
+    validations:
+      required: true
+  - type: textarea
+    id: body
+    attributes:
+      label: New body (markdown)
+      description: >
+        Replaces everything after the frontmatter. Do not include the ---
+        frontmatter block here.
+      placeholder: |
+        ## TL;DR
+
+        -
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Title override (optional)
+      description: Leave blank to keep the current title.
+    validations:
+      required: false
+  - type: input
+    id: description
+    attributes:
+      label: Description override (optional)
+      description: Leave blank to keep the current description.
+    validations:
+      required: false
+  - type: input
+    id: tags
+    attributes:
+      label: Tags override (optional)
+      description: Comma-separated. Replaces ALL tags. Leave blank to keep current tags.
+      placeholder: stars, cms, forecasting
+    validations:
+      required: false
+  - type: checkboxes
+    id: publish
+    attributes:
+      label: Publish
+      options:
+        - label: >
+            Publish this now, goes live on the next build, immediately, with
+            no further review step.
+          required: false

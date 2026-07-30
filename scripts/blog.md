@@ -231,6 +231,15 @@ proceed with that post?` before mutating, so a one-match-by-accident
 won't silently rewrite the wrong file. `edit`, `lint`, and `preview`
 remain unprompted because they're non-destructive.
 
+**From a phone:** GitHub app → Issues → New issue → **Blog draft edit**.
+Fill in the slug and the new body; `blog-draft-edit-intake.yml` applies it,
+lints, commits, comments, and closes the issue. Tick **Publish this now** to
+also flip `draft: false` and move the ledger row, in the same commit — the
+phone equivalent of `blog publish`. If the slug is wrong or lint fails, the
+issue stays open with the error as a comment; edit the issue to retry. This
+pipeline only touches drafts — it refuses (loudly) to edit an already-live
+post, exactly the boundary `edit`/`publish` above enforce from the terminal.
+
 ### 2c. Lint
 
 ```bash
@@ -304,6 +313,8 @@ Sequence:
    push; see §2f for the safety guard).
 
 The trailer is the audit signal for the redundancy toggles (§3 below).
+
+See §2b's phone callout for the mobile equivalent of this command.
 
 ### 2f. Publishing from a non-main branch
 

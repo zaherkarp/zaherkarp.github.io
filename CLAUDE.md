@@ -1457,6 +1457,49 @@ is one you learn to ignore.
 
 ---
 
+## Mobile draft editing
+
+A sibling pipeline to the idea backlog above, one funnel stage later: this
+one edits an EXISTING `drafting`-stage post, not a bare idea, and (unlike
+capture) can move a ledger row all the way to `published`. Model: opening a
+"Blog draft edit" issue (the form at
+`.github/ISSUE_TEMPLATE/blog-draft-edit.yml`, native in the phone app) hands
+`scripts/blog_draft_edit_intake.py` a slug, a full replacement body, optional
+title/description/tags overrides, and a "Publish this now" checkbox.
+`.github/workflows/blog-draft-edit-intake.yml` runs it, lints, commits, and
+closes the issue. This is the phone equivalent of `blog edit <slug>` followed,
+optionally, by `blog publish <slug>`.
+
+The script replaces frontmatter fields via targeted regex line substitution
+scoped to the isolated `---`/`---` block, not a full `frontmatter.dump`
+re-serialize, specifically so a hand-written `# homepageMarginnote: "..."` /
+`# vocab_exempt: []` comment line (see `build_frontmatter_block()` in
+`scripts/blog`) survives an edit untouched. When "Publish this now" is
+checked, it flips `draft: false` and moves the ledger row to `published` in
+the same commit, exactly like `blog publish` keeps the post file and the
+ledger row in lockstep. `scripts/_ideas.py` now owns both the draft-flag flip
+(`flip_draft_false`/`flip_draft_true`) and the ledger-transition helper
+(`ledger_set_status`) that `scripts/blog` and this intake script share; see
+that module's docstring.
+
+**This pipeline never strips em-dashes**, unlike `blog_ideas_intake.py`'s
+ledger-facing `strip_em_dashes`. Blog post sources are explicitly exempt from
+the em-dash-clean rule (see the Em dash policy above and the "no em-dash
+stripping in blog post markdown sources" line under §What NOT to do); a
+mobile edit must preserve that, not regress it toward ledger-style stripping.
+
+The pipeline refuses, loudly, to touch a post that isn't currently
+`draft: true` — a typo'd slug or an attempt to edit an already-published post
+fails with a comment on the issue rather than silently doing nothing or, worse,
+creating the wrong file. **Known limitation:** there is no mobile
+"unpublish." An accidental publish is recovered at a terminal with
+`blog draft <slug>`.
+
+See `scripts/blog.md` §2b for the phone-callout mechanics and
+`docs/pipelines.md` for the full pipeline writeup.
+
+---
+
 ## Resume and CV pipeline
 
 Two documents share one build: a 1-2 page **resume** and a comprehensive
