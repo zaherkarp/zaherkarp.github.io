@@ -3195,9 +3195,14 @@ figure.timeline.career-band figcaption {
        honest target: that figure carries a mark for every service entry and
        is now the only VISIBLE service surface on the page. -->
   <span id="service" class="section-anchor"></span>
+  <!-- #education anchor, relocated 2026-07-30 for the same reason as
+       #service just above: the Education SECTION below is commented out,
+       but every generated blog page links to /#education, and lint_links
+       cannot see blog-to-homepage fragments. -->
+  <span id="education" class="section-anchor"></span>
   <figure class="gantt-figure">
     <figcaption>
-      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two 2014-15 service roles are the undergraduate research mentorship and the WORT board chair. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
+      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two 2014-15 service roles are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety fellowship under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
     <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
@@ -3310,12 +3315,45 @@ figure.timeline.career-band figcaption {
   </figure>
 
   <!-- ==========================================================
-       EDUCATION
-       Year-span-left, content-right layout. Five entries from
-       the real site. Committee and advisor names stored as a
-       muted row-note rather than a sidenote since they are a
-       natural extension of the degree info, not a tangent.
+       EDUCATION - DISABLED, NOT DELETED (owner, 2026-07-30)
+       Commented out for the same reason and by the same mechanism as
+       SERVICE just above: after today's trim, the Gantt figure's terse
+       labels already state all five entries' TITLE and DATE ("MPH,
+       Biostatistics", "Oxford, qualitative methods", etc.), so this
+       section had become ~90% redundant with the figure directly above
+       it. Verified before disabling: only two facts anywhere in this
+       fold were not already in the chart, the $18,000 MPH grant and the
+       Carayon/AHRQ Patient Safety detail, and both were folded into the
+       Gantt figcaption before this section was hidden.
+
+       WHY THIS STILL LINTS. lint_gantt.py's _section_body slices this
+       section with a raw-text regex and does not strip HTML comments,
+       so the Gantt alignment check keeps reconciling all 5 education
+       marks against this content exactly as before. lint_recognition.py
+       never covered #education in the first place (SERVICE_SECTION_RE
+       only). Do NOT "fix" lint_gantt to skip comments without replacing
+       what it guards.
+
+       The id="education" anchor moved up beside id="service"'s, for the
+       identical reason: every generated blog page links to /#education
+       and lint_links cannot see blog-to-homepage fragments.
+
+       The trailing horizontal rule is INSIDE the disabled region, same
+       reasoning as SERVICE: a rule already precedes this banner.
+
+       To restore: delete the bare comment-open line below and the bare
+       comment-close line after the disabled rule, then move the
+       id="education" anchor back onto the section.
+
+       Do NOT write comment delimiters, or a literal rule tag, as prose
+       in this banner; see the SERVICE banner above for why.
+
+       Content notes, still accurate: year-span-left, content-right
+       layout; committee and advisor names stored as a muted row-note
+       rather than a sidenote since they are a natural extension of the
+       degree info, not a tangent.
        ========================================================== -->
+<!--
   <section id="education">
     <h2>Education</h2>
 
@@ -3369,6 +3407,7 @@ figure.timeline.career-band figcaption {
   </section>
 
   <hr>
+-->
 
   <!-- ==========================================================
        SERVICE AND RECOGNITION - DISABLED, NOT DELETED (owner, 2026-07-30)
@@ -3534,6 +3573,17 @@ figure.timeline.career-band figcaption {
 
   <hr>
 -->
+
+  <!-- A live rule, deliberately OUTSIDE all three disabled blocks above.
+       Originally the Gantt figure carried no rule of its own; the three
+       sections that followed it each supplied one. With education,
+       service, and certifications all commented out on 2026-07-30, that
+       left zero live rules between the Gantt and Testimonials, breaking
+       the section-then-rule rhythm every other boundary on the page
+       keeps. This one rule restores it and survives any future restore
+       of the sections above without becoming a duplicate: it sits
+       outside every wrap. -->
+  <hr>
 
   <!-- ==========================================================
        TESTIMONIALS

@@ -114,6 +114,20 @@ the advice: both sections were ALREADY folded, so they cost 225px each in
 closed-state chrome while every entry contributed zero pixels. Page 10,033px to
 9,734px, 11.1 to 10.8 screens. Details at §Recognition alignment lint.
 
+**Twenty minutes later the owner asked "isn't it redundant with the figure?"
+about `#education`, and they were right: disabling `#service` had made
+`#education` MORE redundant with the Gantt, not less, and the two sections were
+now getting inconsistent treatment for the same reason.** After the trim, the
+chart's labels already stated all five entries' title and date; only the
+$18,000 grant and the Carayon/AHRQ detail were not in the chart, and both moved
+into the figcaption before `#education` was disabled the same way as
+`#service`. Disabling three consecutive sections (education, service,
+certifications) also silently removed the rule between the Gantt and
+Testimonials, caught by rendering rather than inspection, and restored outside
+all three disabled blocks so it survives any future partial restore. Page
+9,734px to **9,518px**. Details at §Gantt figure alignment lint and
+§Recognition alignment lint.
+
 **The headline number is honest but easy to misread**, so it is repeated in
 §Experience entry expand rule: total content fell 53%, while the section's
 rendered default height fell only ~2% (2884px to 2836px at 1400px). More than
@@ -2144,6 +2158,31 @@ deliberately** as recognizable field credentials: Pascale Carayon as advisor,
 the AHRQ-funded SEIPS training, the $18,000 grant, and Digital Fellow's
 25-of-2,000 selectivity.
 
+**(Text reduction, third pass, same day) `#education` was disabled 20 minutes
+after `#service`, for a reason `#service`'s disabling had itself created.** The
+owner asked directly: "isn't it redundant with the figure?" After the service
+trim, the Gantt's terse chart labels ("MPH, Biostatistics", "Oxford, qualitative
+methods", "Grad Cert, Patient Safety", "Entrepreneurial Boot Camp", "BA, English
+Literature") already stated all five education entries' title AND date. Checked
+precisely before acting: only two facts anywhere in the fold were not already in
+the chart, the MPH's $18,000 grant and the Patient Safety entry's Carayon/AHRQ
+detail. Both were folded into the Gantt figcaption, then the section was
+disabled exactly like `#service` (same banner shape, same restore instructions,
+`id="education"` relocated beside `id="service"`'s anchor). `lint_gantt` still
+reconciles both lanes against the figure (raw-text regex, no comment
+stripping); `lint_recognition` never covered `#education` in the first place.
+
+**Disabling THREE consecutive sections (education, service, certifications)
+removed a rule the page's rhythm depended on**, and this was caught by
+rendering, not by inspection: the Gantt originally carried no rule of its own,
+because the three sections after it each supplied one on their way out. With
+all three hidden, the Gantt ran straight into Testimonials with zero live
+`<hr>` between them (a 48px gap from margins alone, no divider) — every other
+section boundary on the page keeps one. Fixed with a single `<hr>` placed
+OUTSIDE all three disabled blocks, right before the Testimonials banner, so it
+is not a duplicate if any of the three is restored later and does not live
+inside any one section's restore instructions.
+
 **A merged single "highlights" section was proposed and REJECTED.** A prose-line
 version (the retired Certifications pattern) would run ~170px against 450px, but
 it has no `.row-entry` blocks, so `lint_recognition.parse_homepage()` returns an
@@ -2201,7 +2240,9 @@ no nav entry by design.
 `scripts/lint_gantt.py` keeps the homepage Education + Service Gantt
 (`index.html` `figure.gantt-figure`) in lockstep with the two prose
 sections it summarizes, WITHOUT a shared data file. The figure has two
-lanes — education (`y < 135`) mirrors `<section id="education">`, service
+lanes — education (`y < 135`) mirrors `<section id="education">` (also commented
+out since 2026-07-30, for the same redundancy reason as service; see below),
+service
 (`y > 135`) mirrors `<section id="service">` (#service, commented out since
 2026-07-30 but still parsed; see §Recognition alignment lint. The figure is now
 that content's only VISIBLE surface, which raises the stakes on this lint rather

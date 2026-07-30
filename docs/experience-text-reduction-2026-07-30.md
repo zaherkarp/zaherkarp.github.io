@@ -334,6 +334,62 @@ clean version rather than the old one.
 | Live `.row-entry` blocks | 12 | **5** (education only) |
 | Live `<hr>` between #education and #testimonials | 2 | **1** |
 
+## 7d. Fourth pass, same afternoon: Education disabled too
+
+Twenty minutes after the Service disable shipped, the owner asked directly:
+*"isn't it redundant with the figure?"* — about Education this time. They were
+right, and it exposed an inconsistency: disabling Service had made Education
+*more* redundant with the Gantt, not less, and the two sections were now
+getting different treatment for the same underlying reason.
+
+### The check, done before acting
+
+After the day's trim, the Gantt's terse chart labels already stated all five
+Education entries' title AND date: "MPH, Biostatistics", "Grad Cert, Patient
+Safety", "Oxford, qualitative methods", "Entrepreneurial Boot Camp", "BA,
+English Literature", each positioned on the year axis. Enumerated precisely
+what was NOT already in the chart: exactly two facts across the whole
+five-entry fold — the MPH's $18,000 grant, and the Patient Safety entry's
+Carayon-advisor / AHRQ-funding detail. Everything else, including every org
+name except Oxford's (which the chart label already carries), duplicated the
+figure.
+
+### Applied
+
+Both facts folded into the Gantt figcaption. `#education` disabled with the
+identical mechanism, banner shape, and restore instructions as `#service`:
+`id="education"` relocated beside `id="service"`'s anchor before the figure;
+`lint_gantt`'s raw-text `_section_body` regex (no comment stripping) keeps
+reconciling both lanes against the figure exactly as before —
+`lint_recognition` was never in scope for `#education` to begin with, so no
+coverage was lost or gained there.
+
+### A defect this created, caught by rendering rather than inspection
+
+Disabling three consecutive sections (education, service, certifications) all
+sharing the pattern of "content, then a trailing `<hr>`" silently removed the
+rule between the Gantt and Testimonials. The Gantt itself had never carried a
+rule of its own — the three sections after it each supplied one on their way
+out — so with all three hidden, the figure ran straight into Testimonials on a
+bare 48px margin gap, the one place on the page where a section boundary had no
+divider. Fixed with a single `<hr>` placed OUTSIDE all three disabled blocks,
+immediately before the Testimonials banner, specifically so it is not
+duplicated if any of the three sections is restored later.
+
+### Result
+
+| | before this pass | after |
+|---|---|---|
+| Page @1400px | 9,734px | **9,518px** |
+| Mobile @390px | 15,943px | **15,642px** |
+| Live `.row-entry` blocks | 5 (education only) | **0** |
+| Live `<details>` folds, page-wide | 9 | **8** |
+| `#education`/`#service` linter coverage | unchanged | unchanged (verified) |
+
+Both sections' content survives verbatim in the file, guarded by `lint_gantt`,
+restorable by deleting two lines each plus moving an anchor back. `cv.md`
+remains each one's live record.
+
 ## 8. Deliberately not done: the reordering study
 
 The owner stopped after the content cut and asked for a prompt to pick up the

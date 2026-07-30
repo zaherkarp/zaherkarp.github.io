@@ -240,10 +240,12 @@ no-ops. The hook runs twelve linters:
 - `lint_recognition.py` — the homepage "Service and Recognition"
   section must stay a subset of the comprehensive record in `cv.md`.
 - `lint_gantt.py` — the homepage Education + Service Gantt figure must
-  carry a mark for every `#education` and `#service` entry. `#service` is
-  commented out since 2026-07-30 and both linters still read it (raw-text
-  slice, no comment stripping), so the figure is now that content's only
-  visible surface.
+  carry a mark for every `#education` and `#service` entry. BOTH sections are
+  commented out since 2026-07-30 (Education was found ~90% redundant with the
+  figure once Service's trim made the comparison obvious) and both linters
+  still read them (raw-text slice, no comment stripping), so the figure is now
+  the only visible surface for either. `lint_recognition.py` never covered
+  `#education` in the first place.
 - `lint_markers.py` — the build-time injection markers a generator
   splices into (activity-grid, writing-list, pub-list, cliff-path,
   blog-thoughts, the resume.md skills block, the cv.md publications
@@ -706,8 +708,10 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Resume PDF downloads, ATS-parseable, 1–2 pages.
 - Career arc swaps from horizontal SVG to vertical SVG below 760px (no
   horizontal scroll).
-- All 10 `<details>` folds open/close (2 experience + projects index +
-  publications + speaking + education + service + 3 testimonials). The
+- All 8 `<details>` folds open/close (2 experience + projects index +
+  publications + speaking + 3 testimonials). Education's and Service's folds
+  went dark with their sections on 2026-07-30 (see below); their content is
+  still guarded by `lint_gantt`, just not clickable on the page. The
   experience folds are BHA's "The robust smoothing, in one formula" and Health
   Catalyst's "Published customer outcomes"; both name their contents rather
   than reading "More detail".
