@@ -199,7 +199,85 @@ ENTRY` banner (already reported wrong at
 `docs/qa-audit-2026-07-28.md:70-73`) and the `#service` banner's
 "Certifications live in their own collapsed section below" cross-reference.
 
-## 8. Found, not fixed
+## 8. Deliberately not done: the visible-layer pass
+
+The owner stopped after the content cut and asked for a prompt to pick up the
+*visible* streamlining later, with the panels reviewing each step. This pass is
+therefore complete as scoped; the section below is the handoff, not a TODO that
+this change left broken.
+
+### Prompt for the follow-up pass
+
+> Streamline the **visible** text of the Experience section on `index.html`,
+> with the Focus Group and Design Council reviewing each step. Read
+> `docs/experience-text-reduction-2026-07-30.md` first: the 2026-07-30 pass cut
+> the section's content 53% by retiring three of four folds, but its rendered
+> default height fell only ~2%, because most of the section was already hidden.
+> The folds are now nearly empty. **The remaining bulk is in the visible layer,
+> and that is what this pass is about.**
+>
+> **Measure before proposing anything.** Render `index.html` in headless
+> Chromium at 1400 / 1000 / 761 / 390px and record the `#experience` bounding
+> height plus a per-component visible word count. As of 2026-07-30 that was:
+> five lead paragraphs ~300w, two figcaptions 43w, the promoted Huber caption
+> 34w, three margin notes 51w, and ~117w of structural h3 / meta / stack / h2
+> that cannot be cut. Bring those numbers to the panels rather than adjectives;
+> CLAUDE.md §Agent panels requires it, and this repo has already lost months to
+> one argument that a single measurement settled.
+>
+> **Work one role at a time, and convene both panels on each** before editing
+> it, per the 2026-07-28 joint-convening decision. Lead with the editorial
+> voices (Jess on the Council; the recruiter, hiring-manager, and
+> emotional-register archetypes on the Focus Group) but report the three-part
+> synthesis: reception findings, design findings, then the conflicts, held open
+> rather than collapsed. Expect real conflict here, because the prior reviews
+> rate this prose as the page's **strongest asset with expert readers**
+> (`docs/homepage-ordering-review-2026-07-29.md` §antagonist rounds;
+> `evaluations/hiring-eval-2026-05-23.md`), and no prior critique has ever
+> asked for Experience to be shorter. A cut that removes a verifiable fact is a
+> loss, not a win. Do not convert the prose to bullets: CLAUDE.md's register is
+> long-form prose explaining decisions, and `resume.md` already carries the
+> bullet version.
+>
+> **Hard constraints, all mechanically enforced.** Keep all five
+> `.role-anchor` spans (ten career-arc band links target them; `lint_links`
+> gates it). Keep each role's bare `<h3>` and markup-free
+> `<p class="meta">` in `Org · … · Mon YYYY to Present|Mon YYYY` form, and keep
+> every `resume.md` employer present as a homepage org (`lint_facts`). Keep
+> `id="experience"` (blog nav links `/#experience`) and `id="work"`. Numbers a
+> figcaption cites must stay in that role's prose. Deleting prose is always safe
+> for `lint_notes`; **lifting note text into a lead is what fails it**, so
+> rewrite rather than copy-paste.
+>
+> **Treat these four as decisions to reopen explicitly, not copy edits.** Each
+> is documented and each was argued once already: the promoted Huber ψ formula
+> and its verbatim caption (a canonical §Calibrated claims example); the Stars
+> cut-point clause in the BHA lead (one of only two public surfaces for that
+> internal tool, per §Stars tools distinction); the two outcome figures (kept on
+> purpose, since cutting prose around them is what raises the data-ink ratio);
+> and the `.stat-num` margin stats. Touching any of them means updating
+> CLAUDE.md in the same change.
+>
+> **Guard the calibrated claims.** The 2026-07-30 pass introduced two
+> regressions purely through compression: "contributed to more than $1M in
+> **new** recurring revenue" became "**added** more than $1M in recurring
+> revenue", which claims sole causation and reads as total rather than
+> incremental. Tightening prose is exactly when this happens. After each role,
+> re-read the result against §Calibrated claims specifically for causation verbs
+> and dropped qualifiers.
+>
+> **Verify by rendering, not by linting.** All twelve linters stayed green
+> through a bug that leaked live markup onto the page and caused horizontal
+> overflow below 761px. Assert explicitly: no horizontal overflow at any
+> viewport, all five `#exp-*` anchors resolving, expected `<details>` and `<hr>`
+> counts, and both colour schemes. Then run the twelve linters, the five guard
+> steps, and `pytest scripts/tests/`.
+>
+> **Report the honest delta in both units** — content words *and* rendered
+> height — and update CLAUDE.md §Experience entry expand rule, which currently
+> records the 2836px figure as the baseline.
+
+## 9. Found, not fixed
 
 `CLAUDE.md:830`, the whole `### .exp-stack contrast` subsection around
 `CLAUDE.md:1070-1076`, and `docs/pipelines.md:669` all reference a `.exp-stack`
