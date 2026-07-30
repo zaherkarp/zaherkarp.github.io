@@ -143,7 +143,10 @@ which terminated the comment early and leaked live markup onto the page
 stayed green; and the trailing `<hr>` has to sit inside the disabled region or
 two rules render in a row. Both are documented at §Certifications. Design
 decisions below tagged "(Text reduction, 2026-07-30)" mark superseding
-wording. Decision record in `docs/experience-text-reduction-2026-07-30.md`.
+wording. Decision record in `docs/experience-text-reduction-2026-07-30.md`,
+including §10 Rollback and versioning: the before/after commit SHAs for this
+whole pass and why they, not a git tag, are the durable rollback point (tag
+push is blocked in this environment's git scope).
 
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 

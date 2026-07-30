@@ -478,3 +478,47 @@ this change left broken.
 `CLAUDE.md:1070-1076`, and `docs/pipelines.md:669` all reference a `.exp-stack`
 class that **does not exist** in `index.html`. The live selector is
 `.experience .stack`. Out of scope here; worth its own pass.
+
+## 10. Rollback and versioning
+
+The owner asked how to mark this pass as a version / facilitate rollback. Two
+full commit SHAs anchor it:
+
+```
+before  9edb422076350e6a850d4f2d8b3b71fd4351572e   branch point on main (PR #118 merge)
+after   1544944619544f6e393cef20d492284a20a7e56d   PR #119 tip, 8 commits, all checks green
+```
+
+**Nothing needs to be "set up" for these to work as rollback points.** Every
+commit is already permanently addressable by its SHA. `9edb422` is on `main`
+today, permanently. `1544944` becomes a permanent ancestor of `main` the
+moment PR #119 merges. `git diff 9edb422 1544944`, `git checkout 1544944 --
+index.html`, and `git reset --hard 9edb422` all work now and will keep working
+indefinitely, tag or no tag.
+
+**Annotated tags were attempted for a human-readable name** and blocked: this
+session's git write access is scoped to `refs/heads/*`, so `git push origin
+<tag>` returns `HTTP 403` from GitHub (confirmed non-transient, retried once;
+the agent proxy's relay log was empty, so the block is GitHub-side on the
+token's ref scope, not egress filtering). The two local tags created in that
+attempt do not survive this container's lifecycle and are not expected to
+exist going forward. To create them for real, from a machine with normal push
+access:
+
+```
+git fetch origin
+git tag -a resume-text-reduction-before -m "Baseline before the 2026-07-30 text-reduction pass" 9edb422076350e6a850d4f2d8b3b71fd4351572e
+git tag -a resume-text-reduction-2026-07-30 -m "State after the pass (PR #119, 8 commits)" 1544944619544f6e393cef20d492284a20a7e56d
+git push origin resume-text-reduction-before resume-text-reduction-2026-07-30
+```
+
+Or via the GitHub web UI: Releases -> Create a new release -> choose a tag ->
+type a SHA directly, no local git access required.
+
+**Once PR #119 merges**, the merge commit itself is the simplest version
+marker and needs no setup at all: GitHub's one-click **Revert** button on a
+merged PR opens a new PR undoing the whole change. For a partial rollback,
+three of this pass's changes (Certifications, Service, Education) are HTML
+comments around intact markup, so reverting any one of them individually is a
+two-line edit deleting the comment delimiters, independent of git history
+entirely.
