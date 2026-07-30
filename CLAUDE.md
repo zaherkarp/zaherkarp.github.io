@@ -1237,9 +1237,10 @@ no-bundler discipline and what it shipped; removing it eliminated that.
      As of the 2026-05-21 restructure, this tool no longer has its own
      project card. Two surfaces on the public site reference it:
        (a) The BHA role's LEAD PARAGRAPH in the Experience section
-           describes the architectural pattern ("the newest Stars
-           cut-point projection runs entirely in the analyst's
-           browser, so member-level data never leaves the machine")
+           describes the architectural pattern ("one recent design
+           runs the Stars cut-point projection entirely in the
+           analyst's browser, so member-level data never leaves the
+           machine")
            as a compliance-driven architecture example. This moved
            out of that role's "More detail" fold on 2026-07-30 when
            the fold was retired; the surrounding HEDIS hybrid
