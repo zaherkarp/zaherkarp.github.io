@@ -2261,7 +2261,7 @@ figure.timeline.career-band figcaption {
        One restrained line replacing the three-card teaser row (a
        second nav). Same-page destinations: the sections the reduced
        top nav dropped, plus full experience. -->
-  <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">full experience</a></p>
+  <p class="hero-more">More: <a href="#projects">projects</a> &middot; <a href="#publications">publications</a> &middot; <a href="#speaking">presentations</a> &middot; <a href="#experience">experience</a></p>
 
   <section id="writing">
     <h2>Writing cadence</h2>
@@ -2327,21 +2327,33 @@ figure.timeline.career-band figcaption {
   <hr>
 
   <!-- ==========================================================
-       EXPERIENCE - HEALTH CATALYST ENTRY
-       This is the most instructive conversion. The original
-       site has a "More detail / Less" expand-collapse toggle
-       that hides an entire paragraph about the medallion
-       architecture, RxNorm validation, and HIPAA framing.
+       EXPERIENCE
+       Five roles, newest first. Each carries a bare <h3> and a
+       markup-free <p class="meta"> of "Org · … · Mon YYYY to
+       Present|Mon YYYY"; lint_facts parses both, and every
+       resume.md employer must appear here as an org, so neither
+       may be dropped. The five .role-anchor spans are the jump
+       targets for both career-arc SVGs (lint_links gates them).
 
-       Here, the lead paragraph always stays visible and the
-       most detailed technical passes are demoted to sidenotes so
-       they don't crowd the main reading line. The remaining depth
-       does sit behind a "More detail" fold (details.fold), per
-       CLAUDE.md §Experience entry expand rule.
-
-       Effect: the reader gets the shape of the role without clicking,
-       and the technical depth is right there in the margin for
-       anyone who wants it.
+       TRIMMED 2026-07-30: 1,252 words to ~430. Three of the four
+       "More detail" folds were retired (BHA, healthfinch, UW) and
+       692 words of fold prose cut to ~60. What survived, and why:
+         - BHA's Huber psi formula was PROMOTED to the visible
+           layer rather than cut; see its own comment below.
+         - The Health Catalyst fold is the only one left, holding
+           the page's only third-party verification (three
+           published customer outcomes) and the numbers the
+           refill figcaption cites.
+         - Both outcome figures stay. Cutting prose around them
+           raises the section's data-ink ratio, which is the
+           point; they were the answer to the wall-of-text
+           critique and still are.
+         - sn-tech-notes and sn-medallion went with their host
+           paragraphs, taking two toggles out of the tab order.
+           Experience keeps three notes: sn-ehrs and the two
+           .stat-num margin stats.
+       The section no longer claims to be the complete record; a
+       closing line points at the resume and CV instead.
        ========================================================== -->
   <!-- #work anchor: the nav "work" item targets the combined
        experience -> projects area. Kept as an empty span so the
@@ -2355,55 +2367,47 @@ figure.timeline.career-band figcaption {
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures built on claims, eligibility, and pharmacy data. My remit is the methodology and engineering function behind it. That spans direct management and code review, data science and QA coordination across two geographies, and translation from CMS requirements into organizational priorities.
+      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures built on claims, eligibility, and pharmacy data. I own the methodology and engineering function behind it. Compliance shapes the architecture: the newest Stars cut-point projection runs entirely in the analyst's browser, so member-level data never leaves the machine.
     </p>
 
-    <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        CMS Star Rating methodology is published in Technical Notes that run to hundreds of pages: regulatory language describing measure construction, denominator logic, significance testing, and improvement score calculation.<label for="sn-tech-notes" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on CMS Technical Notes annual revisions" id="sn-tech-notes" class="margin-toggle"/><span class="sidenote">The CMS Technical Notes are revised each rating year. A single measure rewrite can propagate into denominator changes, hold-harmless logic, and cut-point regeneration, all of which need to round-trip through the analytics layer without drift.</span> The work translates that regulatory text into executable Python and SQL: pandas for data transformation, scipy and numpy for statistical components (including robust exponential smoothing for time series forecasting), and browser automation for source extraction. Every threshold and weighted average stays traceable to its source.
-      </p>
+    <!-- ==========================================================
+         HUBER PSI FORMULA
+         Inline math block illustrating the "robust" in robust
+         exponential smoothing. Huber's psi-function is the
+         derivative of his loss function: linear for small
+         residuals, clipped at threshold k for large ones.
+         Effect: outliers stop dominating the gradient updates
+         that calibrate the smoothing parameters, so COVID shocks
+         don't permanently bias the trend forecast.
 
-      <!-- ==========================================================
-           HUBER PSI FORMULA
-           Inline math block illustrating the "robust" in robust
-           exponential smoothing. Huber's psi-function is the
-           derivative of his loss function: linear for small
-           residuals, clipped at threshold k for large ones.
-           Effect: outliers stop dominating the gradient updates
-           that calibrate the smoothing parameters, so COVID shocks
-           don't permanently bias the trend forecast.
+         PROMOTED to the visible layer 2026-07-30 when the BHA
+         fold was retired. It was the section's densest technical
+         evidence sitting two clicks deep; the 2026-05-23 hiring
+         evaluation called it the cleanest "still knows what he is
+         doing under the hood" signal in Experience, and the
+         2026-07-04 critique flagged that four identical "More
+         detail" labels gave a scanner equal reason to skip the
+         fold holding it. Caption is VERBATIM from that fold: it
+         is a canonical §Calibrated claims example, framed as a
+         proof of concept the author tested rather than a deployed
+         component. The shipped Stars cutpoint pipeline used
+         robust M-estimators; this Huber psi variant was a
+         separate proposal, so the caption says so plainly.
 
-           Sits inside the BHA "More detail" fold so only the lead
-           paragraph stays visible by default. Framed as a proof of
-           concept the author tested, not a deployed component: the
-           shipped Stars cutpoint pipeline used robust M-estimators,
-           but this Huber psi variant was a separate proposal, so the
-           caption says so plainly rather than implying production
-           customer-analytics use.
-
-           Pure HTML/CSS math styling, no MathJax dependency.
-           ========================================================== -->
-      <div class="formula-block">
-        <div class="formula">
-          &psi;<sub><i>k</i></sub>(<i>r</i>) =
-          <span class="cases">
-            <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
-            <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
-          </span>
-        </div>
-        <div class="formula-caption">
-          Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
-        </div>
+         Pure HTML/CSS math styling, no MathJax dependency.
+         ========================================================== -->
+    <div class="formula-block">
+      <div class="formula">
+        &psi;<sub><i>k</i></sub>(<i>r</i>) =
+        <span class="cases">
+          <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
+          <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
+        </span>
       </div>
-
-      <p>
-        HEDIS hybrid measures like Transitions of Care, along with the Part D medication adherence triplet (MAH, MAC, and MAD, for hypertension, cholesterol, and diabetes), add a separate class of problem. The denominator is constructed from claims and eligibility data arriving from multiple health plans in inconsistent formats. Normalizing that into a unified analytic layer while preserving the audit trail requires treating every source format as a suspected deviation from the specification until proven otherwise.
-      </p>
-      <p>
-        Compliance-driven architecture is part of the role's design discipline. A recent example: a client-side Stars rating predictor where the cut-point projection runs entirely in the analyst's browser, so member-level data never transits off the machine. The browser-side compute sidesteps the data-transit review a server-side version would trigger; a side benefit has been a faster iteration loop.
-      </p>
-    </details>
+      <div class="formula-caption">
+        Huber's &psi;-function. I prototyped this robustification as a proof of concept, clipping large residuals so a single COVID-era shock would not dominate the smoothing parameter estimates. A tested proposal, not a deployed customer-analytics component.
+      </div>
+    </div>
 
     <p class="stack">pandas &middot; scipy &middot; numpy &middot; dbt &middot; SQL &middot; Python</p>
 
@@ -2414,7 +2418,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      When Health Catalyst acquired healthfinch in 2020, I moved with the product and the analytics work behind it. A three-person function became the analytics arm of a clinical quality platform serving health systems across Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviors, and different interpretations of the same clinical concept.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%, and the migration rebuilt the analytics layer from AWS onto Azure and Databricks without interrupting service for existing clients.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      I moved with the product when Health Catalyst acquired healthfinch in 2020. A three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm.<label for="sn-ehrs" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on EHR data model differences across Epic, Cerner, athenahealth, and Veradigm" id="sn-ehrs" class="margin-toggle"/><span class="sidenote">Four EHRs with different data models, different extract behaviors, and different interpretations of the same clinical concept.</span> RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%; the AWS to Azure migration took 24+ hours off the weekly load.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2445,19 +2449,18 @@ figure.timeline.career-band figcaption {
       </svg>
     </figure>
 
+    <!-- The one surviving fold in Experience (2026-07-30). Its
+         summary names its contents rather than reading "More
+         detail": the 2026-07-04 critique found four identical
+         labels gave a scanner equal reason to skip all of them.
+         What it holds is the page's only third-party verification,
+         and the 37,000 / 72 / 12 the figcaption above cites, so
+         the numbers stay anchored in prose per CLAUDE.md
+         §Experience entry expand rule. -->
     <details class="fold">
-      <summary>More detail</summary>
+      <summary>Published customer outcomes</summary>
       <p>
-        Across five years I led cross-functional teams to implement analytics, build measurement for clinical and operational work, and deliver sales analytics, often as the only engineer, working alongside analysts and clinical and commercial partners.
-      </p>
-      <p>
-        Published customer outcomes from the platform: <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
-      </p>
-      <p>
-        Data governance came down to one question: does a medication adherence rate mean the same thing across Epic, Cerner, athenahealth, and Veradigm? The ELT pipeline I inherited ran for multiple days and produced outputs that were difficult to trace to their source. The redesign was an auditability and governance decision, not a performance one, though it still cut weekly load latency by 24+ hours.<label for="sn-medallion" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on medallion architecture rationale" id="sn-medallion" class="margin-toggle"/><span class="sidenote">Medallion architecture: bronze for raw ingestion, silver for documented business logic, gold for analytic output. Every transformation has a name, a location, and a test.</span> Vendor-specific logic was parameterized at the silver tier, so one gold-level measure spec resolved across all four EHRs.
-      </p>
-      <p>
-        HIPAA compliance was an architectural constraint throughout. Not a certification, but a set of requirements that shaped every decision about data storage, access control, and transmission across a platform handling protected health information at scale.
+        <a href="https://www.healthcatalyst.com/learn/success-stories/closing-care-gaps-chnw">Community Health Network</a> closed over 373,000 care gaps in six months. <a href="https://www.healthcatalyst.com/learn/success-stories/closing-gaps-in-care-through-medication-refill-technology">St. Joseph Heritage Healthcare</a> scaled refill processing to 37,000 monthly requests with turnaround dropping from 72 hours to 12. <a href="https://www.healthcatalyst.com/learn/success-stories/medication-refill-processing">Valley Medical Group</a> reduced provider-bound refill requests by 60%.
       </p>
     </details>
 
@@ -2470,7 +2473,7 @@ figure.timeline.career-band figcaption {
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      The infrastructure did not exist when I arrived as the first analytics hire. I built it on AWS to HIPAA and HITRUST controls. Every data governance decision, from access control to audit logging to retention policy, was mine to make without a prior framework to inherit. I was promoted to manager after one year to lead cross-functional work across product, engineering, and customer success.
+      The infrastructure did not exist when I arrived as the first analytics hire. I built it on AWS to HIPAA and HITRUST controls, and every governance decision, from access control to retention, was mine. Promoted to manager after a year, I led the sales-analytics work behind an ROI dashboard that added more than $1M in recurring revenue.
     </p>
 
     <!-- ==========================================================
@@ -2495,7 +2498,7 @@ figure.timeline.career-band figcaption {
          ========================================================== -->
     <figure class="outcome-figure">
       <figcaption>
-        The governed semantic layer absorbed sevenfold growth in dashboard users across the role, and retired more than 400 hours of report preparation per quarter. Exact user counts are client-private, so the figure shows the multiple rather than the endpoints.
+        The governed semantic layer absorbed sevenfold growth in dashboard users and retired 400+ hours of report prep per quarter. Counts are client-private, so the figure shows the multiple.
       </figcaption>
       <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart: the dashboard user base grew sevenfold across the role, shown as a multiple rather than absolute counts.">
         <text x="85" y="45" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="end">before</text>
@@ -2507,13 +2510,6 @@ figure.timeline.career-band figcaption {
       </svg>
     </figure>
 
-    <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        ROI modeling was the commercially critical work: linear regression on clinical workflow data, translated into client-facing reports that supported contract renewals. I led the sales-analytics initiative behind it, and the ROI dashboard contributed to more than $1M in new recurring revenue. The same dashboards replaced a standing manual reporting cycle that had recurred every quarter.
-      </p>
-    </details>
-
     <p class="stack">SQL &middot; Python &middot; Sisense &middot; AWS &middot; HIPAA &middot; HITRUST</p>
 
     <hr>
@@ -2523,21 +2519,8 @@ figure.timeline.career-band figcaption {
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      I spent nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built the technical infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and multiple UW Institute for Clinical and Translational Research awards.
+      Nine years embedded in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort, the Wisconsin Longitudinal Study I built infrastructure for.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research, using methods from grounded theory to interrupted time series.
     </p>
-
-    <details class="fold">
-      <summary>More detail</summary>
-      <p>
-        The Wisconsin Longitudinal Study, a fifty-year cohort of ten thousand adults integrating survey, health, and administrative records, taught me what longitudinal data quality problems actually look like: cohort attrition, measurement drift, linkage failure across administrative sources that were never designed to be linked.
-      </p>
-      <p>
-        A sustained research thread on primary care redesign used grounded theory for qualitative analysis of field notes and focus group transcripts, and interrupted time series analysis to measure the effect of care delivery change initiatives on clinic panel data.
-      </p>
-      <p>
-        The ACO cost research integrated EMR, claims, and patient satisfaction data in Stata and SAS to produce cohort analyses showing that higher-baseline-cost organizations were more likely to achieve shared savings, published in the <em>International Journal of Healthcare Management</em> in 2018.
-      </p>
-    </details>
 
     <p class="stack">Stata &middot; SAS &middot; NVivo &middot; SPSS &middot; REDCap</p>
 
@@ -2548,8 +2531,15 @@ figure.timeline.career-band figcaption {
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
     <p>
-      An editorial services practice specializing in environmental, health, and policy content. I managed up to eight copy editors, graphic designers, and photographers, wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire, and edited and indexed a variety of client material: books, peer-reviewed journal articles, grant proposals, and dissertations.
+      An editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, graphic designers, and photographers, wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire, and edited and indexed books, journal articles, grant proposals, and dissertations.
     </p>
+
+    <!-- Overflow valve (2026-07-30). With the four "More detail"
+         folds cut to one, this section no longer pretends to be the
+         complete record. The resume and CV are the documents built
+         for that, and they were previously reachable only from
+         #contact and the footer at the very bottom of the page. -->
+    <p>The full record, including grants and publications, is in the <a href="/resume.html">resume</a> and <a href="/cv.html">CV</a>.</p>
   </section>
 
   <hr>
@@ -3430,8 +3420,9 @@ figure.timeline.career-band figcaption {
        peer review service, awards. The award/fellowship entries
        (Spirit of Charlie, Alumni Hall, Digital Fellow) are small
        entries that sit cleanly alongside the larger commitments
-       without needing their own section. Certifications live in
-       their own collapsed section below; the IPM award is CV-only.
+       without needing their own section. The Certifications
+       section below is commented out as of 2026-07-30 (cv.md is
+       its live record); the IPM award is CV-only.
        ========================================================== -->
   <section id="service">
     <h2>Service and Recognition</h2>
@@ -3508,21 +3499,55 @@ figure.timeline.career-band figcaption {
   <hr>
 
   <!-- ==========================================================
-       CERTIFICATIONS
-       Deliberately small: one newest-first prose line, no fold,
-       no figures, no margin notes. Hand-maintained in lockstep
-       with cv.md ## Certifications (no linter covers this pair;
-       lint_recognition and lint_gantt scope to #service only).
-       DataCamp course completions are deliberately omitted as
+       CERTIFICATIONS - DISABLED, NOT DELETED (owner, 2026-07-30)
+       The section below is intentionally commented out. It no
+       longer renders, but it is kept here verbatim so the content
+       survives in the file and through every pipeline.
+
+       Because it is an HTML comment rather than display:none, the
+       content leaves the DOM entirely: not read by screen readers,
+       not indexed, not printed. That is what "no longer visible"
+       has to mean; display:none would still expose it to
+       assistive tech.
+
+       The trailing horizontal rule is INSIDE the disabled block on
+       purpose. A rule already sits above this banner, so disabling
+       the section alone would leave two adjacent rules between
+       #service and #testimonials.
+
+       To restore: delete the bare comment-open line just below
+       this banner, and the bare comment-close line after the
+       disabled rule. Nothing else is required. No CSS targets this
+       section (it carries no classes, only generic section, h2 and
+       p rules), and nothing links to #certifications.
+
+       Do NOT write comment delimiters, or a literal rule tag, as
+       prose inside this banner. Comments cannot nest, so a stray
+       close sequence here ends the banner early and dumps the rest
+       of it onto the page as live markup. That happened once while
+       writing this block: the leaked text rendered a spurious rule
+       and a long unbroken row of equals signs that overflowed the
+       page horizontally at 761px and below.
+
+       src/content/cv.md ## Certifications remains the live record
+       and is unaffected. No linter covers this pair either way
+       (lint_recognition and lint_gantt scope to #service only), so
+       keep the two in sync by hand if a certification is added.
+
+       Original notes, still accurate: deliberately small, one
+       newest-first prose line, no fold, no figures, no margin
+       notes. DataCamp course completions deliberately omitted as
        entry-level; Databricks listed by issue year per CV
        convention (HR focus-group call, 2026-06-12).
        ========================================================== -->
+<!--
   <section id="certifications">
     <h2>Certifications</h2>
     <p>Databricks Fundamentals accreditation (2024); Sumo Logic Search Mastery and Fundamentals certifications (2020); Certified Six Sigma Yellow Belt, American Society for Quality (2015).</p>
   </section>
 
   <hr>
+-->
 
   <!-- ==========================================================
        TESTIMONIALS

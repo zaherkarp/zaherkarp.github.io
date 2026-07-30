@@ -703,8 +703,10 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Resume PDF downloads, ATS-parseable, 1–2 pages.
 - Career arc swaps from horizontal SVG to vertical SVG below 760px (no
   horizontal scroll).
-- All 11 `<details>` folds open/close (4 experience + projects index +
-  speaking + education + service + 3 testimonials).
+- All 9 `<details>` folds open/close (1 experience + projects index +
+  publications + speaking + education + service + 3 testimonials). The
+  experience fold is Health Catalyst's "Published customer outcomes"; the
+  other three experience folds were retired 2026-07-30.
 - All sidenote/margin-note toggles fire on a narrow viewport (DevTools at
   600px; click superscripts and ⊕ labels).
 - Stars cliff figure renders inside the Stars Cliff Simulator project body.

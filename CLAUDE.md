@@ -78,6 +78,36 @@ band carried an accessible name that never contained the abbreviation it
 displays, so speech input could not activate it; see §Career arc SVG for the
 band `aria-label` contract that now governs it.
 
+**Experience text reduction, Certifications disabled (2026-07-30, this
+branch).** Owner request: cut the Experience prose hard, and comment out
+Certifications so it survives in the file and the pipelines but stops
+rendering. The joint Focus Group / Design Council convening chose selective
+fold retirement: three of the four "More detail" folds retired (BHA,
+healthfinch, UW), the Health Catalyst one kept and renamed "Published
+customer outcomes" because it holds the page's only third-party verification.
+Experience went from 1,209 words to ~570 (−53%), with closed-fold prose from
+~698 words to ~42. Both outcome figures stayed. The Huber psi formula was
+PROMOTED out of the retired BHA fold into visible prose rather than cut.
+`#experience` now closes with a resume/CV pointer and the hero says
+"experience" rather than "full experience".
+
+**The headline number is honest but easy to misread**, so it is repeated in
+§Experience entry expand rule: total content fell 53%, while the section's
+rendered default height fell only ~2% (2884px to 2836px at 1400px). More than
+half the section was already invisible behind closed folds, so this was a
+content cut, not a page-length cut. Anyone asked for a *visibly* shorter
+Experience should start from the five lead paragraphs, not the folds, and
+should measure rather than estimate.
+
+Two defects were caught by rendering and by nothing else: the Certifications
+banner originally contained literal comment delimiters and an `<hr>` as prose,
+which terminated the comment early and leaked live markup onto the page
+(spurious rule, horizontal overflow at 761px and below) while `lint_html`
+stayed green; and the trailing `<hr>` has to sit inside the disabled region or
+two rules render in a row. Both are documented at §Certifications. Design
+decisions below tagged "(Text reduction, 2026-07-30)" mark superseding
+wording. Decision record in `docs/experience-text-reduction-2026-07-30.md`.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -970,20 +1000,64 @@ This is intentional and complete. Do not treat as a gap to fill.
 
 ### Experience entry expand rule
 
-Four of five experience entries (BHA, Health Catalyst, healthfinch, UW)
-use a `<details class="fold">`/`<summary>` expand pattern for the technical
-detail. The lead paragraph stays visible always. Sustainable Clarity is a
-single paragraph and doesn't fold. The summary text is "More detail" with
-custom `+`/`-` prefix (`details.fold > summary::before`); browser default
-disclosure markers are suppressed.
+**(Text reduction, 2026-07-30.) One of five entries folds now, not four.**
+Only Health Catalyst keeps a `<details class="fold">`, and its summary reads
+**"Published customer outcomes"**, not "More detail": with a single fold left
+in the section a generic label is exactly the defect
+`critiques/critique-index-2026-07-04.md:116` flagged (four identical labels
+gave a scanning reader equal reason to skip all four, including the one with
+the most distinctive content). What it holds is the page's only third-party
+verification, the three `healthcatalyst.com` success-story links, plus the
+`37,000` / `72 hours` / `12` that the refill figcaption cites, so those
+numbers stay anchored in prose per the Outcome figures rule below. The `+`/`-`
+prefix (`details.fold > summary::before`) and the suppressed native marker are
+unchanged, and the other eight folds on the page still read "More" or a named
+summary. Every lead paragraph stays visible always; Sustainable Clarity is a
+single paragraph and still doesn't fold.
 
-The Huber psi-function formula sits inside the BHA fold as pure HTML/CSS
-math (no MathJax/KaTeX dependency for one short formula).
+The BHA, healthfinch, and UW folds were retired, cutting ~698 words of
+closed-fold prose to ~42. Know what this did and did not buy, because the
+arithmetic is counterintuitive: the section's **total** content fell 1,209
+words to ~570 (−53%), but its **rendered default height** fell only ~2%
+(2884px to 2836px at 1400px, measured in headless Chromium). More than half
+the section was already invisible, so retiring folds is a content cut, not a
+page-length cut. If a future pass needs the section to *look* dramatically
+shorter, the levers are the five lead paragraphs (~300 visible words), the two
+figcaptions, the promoted formula caption, and the three margin notes. Do not
+re-argue this from intuition; re-measure.
+
+**The Huber psi-function formula is now in the VISIBLE layer**, directly under
+the trimmed BHA lead, not inside a fold (the fold that held it is gone). It
+stays pure HTML/CSS math, no MathJax/KaTeX. It was promoted rather than cut
+because `evaluations/hiring-eval-2026-05-23.md:200` calls it "the cleanest 'I
+still know what I'm doing under the hood' signal in the Experience section",
+and burying the section's densest evidence two clicks deep was the one option
+that earned neither restraint nor credit. Its caption is unchanged **verbatim**
+and remains a canonical §Calibrated claims example.
+
+Retiring those folds also deleted the `sn-tech-notes` and `sn-medallion`
+sidenotes with their host paragraphs, taking two toggles out of the tab order.
+Experience keeps three notes: `sn-ehrs` and the two `.stat-num` margin stats
+(`mn-hc-caregaps`, `mn-uw-cohort`). Deleting prose is always safe for
+`lint_notes` (its checks need material present in BOTH a note and the
+surrounding page, so shrinking the page can only relax them). **The inverse is
+the trap:** lifting note text up into a lead is what fails it, and its own
+calibration comment records it was born catching a shingle that lived in the
+BHA lead. Rewrite when promoting; never copy-paste.
+
+The section now closes with a one-line pointer to `/resume.html` and
+`/cv.html`, and the hero's `.hero-more` link text was changed from "full
+experience" to "experience". A 53%-shorter section should not be introduced as
+"full", and those two documents were previously reachable only from `#contact`
+and the footer at the very bottom of the page.
 
 **Outcome figures (added 2026-06-09).** Two roles carry a small inline
-`figure.outcome-figure` (before/after bar pair) between the lead paragraph
-and the fold, so the densest section shows data by default instead of pure
-prose: Health Catalyst (refill turnaround 72h to 12h) and healthfinch
+`figure.outcome-figure` (before/after bar pair) after the lead paragraph
+(before the fold, where one survives), so the densest section shows data by
+default instead of pure prose. **Both figures survived the 2026-07-30 text
+reduction on purpose:** cutting prose around them raises the section's data-ink
+ratio, which is the point of having them. They are Health Catalyst (refill
+turnaround 72h to 12h) and healthfinch
 (dashboard user growth absorbed, a 1:7 ratio). Both use the same
 gray-before / accent-after pattern: the "after" bar is the `#7a0000`
 accent sentinel, the "before" bar is `#6a6a6a` muted. (The healthfinch
@@ -1162,12 +1236,20 @@ no-bundler discipline and what it shipped; removing it eliminated that.
      feeds for contract-level remediation planning. Source is private.
      As of the 2026-05-21 restructure, this tool no longer has its own
      project card. Two surfaces on the public site reference it:
-       (a) The BHA role's "More detail" fold in the Experience section
-           describes the architectural pattern ("a client-side Stars
-           rating predictor where the cut-point projection runs
-           entirely in the analyst's browser") as a compliance-driven
-           architecture example, alongside the HEDIS hybrid measures
-           paragraph.
+       (a) The BHA role's LEAD PARAGRAPH in the Experience section
+           describes the architectural pattern ("the newest Stars
+           cut-point projection runs entirely in the analyst's
+           browser, so member-level data never leaves the machine")
+           as a compliance-driven architecture example. This moved
+           out of that role's "More detail" fold on 2026-07-30 when
+           the fold was retired; the surrounding HEDIS hybrid
+           measures paragraph went with it, so the pattern is now a
+           single clause in visible prose rather than a paragraph.
+           It was deliberately preserved rather than cut BECAUSE
+           this section names it as one of only two public surfaces
+           for the tool. If a future trim reaches this clause, that
+           is a decision to retire a documented surface, not a copy
+           edit; update this section in the same change.
        (b) The blog post compliance-as-architecture-stars-predictor.md
            (PR #40, merged 2026-05-21) names the tool explicitly and
            uses it as a case study for the broader thesis that some
@@ -1933,11 +2015,38 @@ Two outputs:
     direction that surfaces a genuine gap when a new CV award hasn't been
     promoted to the homepage.
 
-**Certifications are out of scope (2026-06-12):** homepage
+**Certifications are out of scope (2026-06-12), and the section is now
+COMMENTED OUT (owner, 2026-07-30):** homepage
 `<section id="certifications">` (a deliberately small h2 + one
 newest-first semicolon-separated prose line, after #service; a
 details.fold version was tried and replaced the same day on Design
 Council feedback) pairs with cv.md `## Certifications`.
+
+The homepage section is wrapped in an HTML comment. It no longer renders,
+but the markup is kept verbatim in place so the content survives in the
+file and through every pipeline. **`cv.md` is now the live record.** An
+HTML comment, not `display: none`, was the owner's instruction and is also
+the correct mechanism: the content leaves the DOM entirely, so it is not
+read by screen readers, not indexed, and not printed, whereas
+`display: none` would still expose it to assistive tech. Restoring it means
+deleting two delimiter lines; nothing else is required, because no CSS
+targets the section (it carries no classes) and nothing links to
+`#certifications`.
+
+Two mechanical rules for that block, both learned the hard way in the same
+pass. **The trailing `<hr>` must stay inside the disabled region** or two
+adjacent rules render between `#service` and `#testimonials`. And **never
+write comment delimiters, or a literal rule tag, as prose inside the
+explanatory banner above it**: comments cannot nest, so a stray close
+sequence ends the banner early and dumps its remaining text onto the page as
+live markup. That happened while writing the banner, and it rendered a
+spurious `<hr>` plus a long unbroken row of equals signs that overflowed the
+page horizontally at 761px and below. **`lint_html` passed the whole time** the
+bug was live, because the result was structurally valid HTML, merely wrong.
+Only a headless render caught it, which is the §Agent panels
+"render before arguing about a rendered thing" rule applying to verification
+as much as to design.
+
 Neither linter covers the pair; keep the two lists in sync BY HAND
 (currently four entries: Databricks 2024, Sumo Logic x2 2020, Six Sigma
 Yellow Belt 2015). Six Sigma moved here out of #service and the CV's
