@@ -101,6 +101,19 @@ writing list. Page 10,709px to 10,033px, 11.9 to 11.1 screens, visible words
 1,834 to 1,665. The reordering question the owner raised in the same breath was
 deliberately NOT acted on; it became a study instead, so no section moved.
 
+**A THIRD pass followed**, on the owner's question of whether `#service` could
+be cut while staying "active in a pipeline form but not visible", plus whether
+`#education` had fluff or combinable parts. Answer: yes to the first, verified
+empirically, because `lint_recognition` and `lint_gantt` both slice the section
+with a raw-text regex that ignores HTML comments. `#service` is now commented
+out with both gates still operating on it; its `id` moved to the Gantt figure,
+which becomes the visible service record; fluff was trimmed from both sections
+first. A merged single "highlights" section was costed and rejected (it would
+make both gates pass vacuously for a ~55px gain). The measurement that shaped
+the advice: both sections were ALREADY folded, so they cost 225px each in
+closed-state chrome while every entry contributed zero pixels. Page 10,033px to
+9,734px, 11.1 to 10.8 screens. Details at §Recognition alignment lint.
+
 **The headline number is honest but easy to misread**, so it is repeated in
 §Experience entry expand rule: total content fell 53%, while the section's
 rendered default height fell only ~2% (2884px to 2836px at 1400px). More than
@@ -2059,7 +2072,9 @@ figures still hardcode `#7a0000` remapped to `var(--accent)`; only the
 ## Recognition alignment lint
 
 `scripts/lint_recognition.py` keeps the homepage "Service and Recognition"
-section (`index.html` `<section id="service">`, the `.row-entry` blocks)
+section (`index.html` `<section id="service">`, the `.row-entry` blocks;
+**that section is COMMENTED OUT as of 2026-07-30 and the linter still reads
+it, deliberately, see below**)
 aligned with the comprehensive record in `src/content/cv.md` — awards,
 fellowships, and service — WITHOUT a shared data file. Both surfaces stay
 hand-authored pure HTML/Markdown; the linter parses each and compares.
@@ -2097,6 +2112,47 @@ Two outputs:
     CV-only; the list is an advisory scan, not a to-do. This is the
     direction that surfaces a genuine gap when a new CV award hasn't been
     promoted to the homepage.
+
+**(Text reduction, 2026-07-30) `#service` is commented out, and this linter
+still guards it.** Both gates that read the section slice it with a raw-text
+regex and neither strips HTML comments: `SERVICE_SECTION_RE`
+(`lint_recognition.py:122-124`) and `_section_body` (`lint_gantt.py:179-184`).
+So the homepage-subset-of-CV gate and the Gantt alignment check keep operating
+on the disabled markup exactly as before. Verified empirically, not assumed:
+`lint_gantt` still reports "12 section entry(ies) (5 education + 7 service)
+reconciled against 12 figure mark(s)". This is precisely what made hiding the
+section possible without weakening a guarantee, so **do not "fix" either linter
+to skip comments** without first replacing what it guards.
+
+**The visible service surface is now the Gantt figure**, which carries a mark
+for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
+the retired section's lead sentence, naming the two 2014-15 roles, and points at
+`/cv.html` for orgs and citations. **The `id="service"` anchor MOVED** out of
+the disabled section to sit immediately before that figure, because all ~250
+generated blog pages link to `/#service`
+(`scripts/templates/blog/base.html:50-51`) and **`lint_links` cannot see
+blog-to-homepage fragments** - it validates only index.html's own fragments and
+homepage-to-blog links. Removing the id would have left 250 dead nav links with
+CI green. Keep the anchor wherever the service record is visible.
+
+Fluff was trimmed from both sections in the same pass, before `#service` was
+disabled (so a restore brings back the clean version): notes that merely
+restated their own titles went (Oxford, Boot Camp), the MPH committee names
+became CV-only, the mentor note's six-item skill list became the fact, and the
+Spirit of Charlie citation quote went as internal-recognition language. **Kept
+deliberately** as recognizable field credentials: Pascale Carayon as advisor,
+the AHRQ-funded SEIPS training, the $18,000 grant, and Digital Fellow's
+25-of-2,000 selectivity.
+
+**A merged single "highlights" section was proposed and REJECTED.** A prose-line
+version (the retired Certifications pattern) would run ~170px against 450px, but
+it has no `.row-entry` blocks, so `lint_recognition.parse_homepage()` returns an
+empty list and BOTH gates pass vacuously - green while guarding nothing. Keeping
+them meaningful means re-pointing both at `cv.md` and rewriting two test files,
+and the whole exercise beats the simple comment-out by ~55px. Two variants were
+also checked and fail: highlights-unfolded measures the same as
+everything-folded, and nesting `<section id="service">` inside a merged fold
+breaks the outer slice because `_section_body` is non-greedy.
 
 **Certifications are out of scope (2026-06-12), and the section is now
 COMMENTED OUT (owner, 2026-07-30):** homepage
@@ -2146,7 +2202,10 @@ no nav entry by design.
 (`index.html` `figure.gantt-figure`) in lockstep with the two prose
 sections it summarizes, WITHOUT a shared data file. The figure has two
 lanes — education (`y < 135`) mirrors `<section id="education">`, service
-(`y > 135`) mirrors `<section id="service">` (#service). Each data mark
+(`y > 135`) mirrors `<section id="service">` (#service, commented out since
+2026-07-30 but still parsed; see §Recognition alignment lint. The figure is now
+that content's only VISIBLE surface, which raises the stakes on this lint rather
+than lowering them). Each data mark
 encodes its year(s) positionally through the chart's own transform
 `x(year) = 90 + (year - 2003) * 19`: a single-year square's year is read
 back from its centre x, a multi-year bar's start/end from x1/x2. Each

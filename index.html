@@ -3187,9 +3187,17 @@ figure.timeline.career-band figcaption {
          Lane divider:   y = 135
          Year axis:      y = 310  (viewBox height 340)
        ========================================================== -->
+  <!-- #service anchor, relocated 2026-07-30. The Service and Recognition
+       SECTION below is commented out, but every generated blog page links to
+       /#service (scripts/templates/blog/base.html), and lint_links cannot see
+       blog-to-homepage fragments, so removing the id would leave ~250 pages
+       with a dead nav link and CI green. Pointing it at the Gantt is the
+       honest target: that figure carries a mark for every service entry and
+       is now the only VISIBLE service surface on the page. -->
+  <span id="service" class="section-anchor"></span>
   <figure class="gantt-figure">
     <figcaption>
-      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges.
+      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two 2014-15 service roles are the undergraduate research mentorship and the WORT board chair. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
     <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
@@ -3321,7 +3329,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Master of Public Health (MPH), Biostatistics</span>
         <span class="row-org">University of Wisconsin-Madison</span>
-        <span class="row-note">Health Innovation Program Research Trainee. Committee: Nancy Pandhi MD MPH PhD, Sandra Kamnetz MD, Todd Molfenter PhD. Designed and wrote a grant proposal awarded $18,000; produced peer-reviewed research on clinic environments.</span>
+        <span class="row-note">Health Innovation Program Research Trainee. Wrote a grant proposal awarded $18,000.</span>
       </div>
     </div>
 
@@ -3339,7 +3347,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Contemporary Qualitative Interviewing Methods</span>
         <span class="row-org">University of Oxford</span>
-        <span class="row-note">Intensive training in advanced qualitative interviewing for health services research.</span>
       </div>
     </div>
 
@@ -3348,7 +3355,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Wisconsin Entrepreneurial Boot Camp Fellow</span>
         <span class="row-org">University of Wisconsin School of Business</span>
-        <span class="row-note">Competitive fellowship in technology entrepreneurship for graduate students in sciences, engineering, and mathematics.</span>
       </div>
     </div>
 
@@ -3365,15 +3371,45 @@ figure.timeline.career-band figcaption {
   <hr>
 
   <!-- ==========================================================
-       SERVICE AND RECOGNITION
-       Same date-left layout as Education. Nonprofit board work,
-       peer review service, awards. The award/fellowship entries
-       (Spirit of Charlie, Alumni Hall, Digital Fellow) are small
-       entries that sit cleanly alongside the larger commitments
-       without needing their own section. The Certifications
-       section below is commented out as of 2026-07-30 (cv.md is
-       its live record); the IPM award is CV-only.
+       SERVICE AND RECOGNITION - DISABLED, NOT DELETED (owner, 2026-07-30)
+       Commented out to shorten the page, kept verbatim so the content
+       survives in the file and through the pipelines. cv.md is the live
+       record. Certifications below is disabled the same way.
+
+       WHY THIS STILL LINTS. Both gates that read this section slice it
+       with a raw-text regex and neither strips HTML comments:
+       lint_recognition.py SERVICE_SECTION_RE and lint_gantt.py
+       _section_body. So the homepage-subset-of-CV gate and the Gantt
+       alignment check keep working on the disabled markup exactly as
+       before. That is deliberate, and it is the reason this could be
+       hidden without weakening a guarantee. Do NOT "fix" either linter
+       to skip comments without replacing what it guards.
+
+       THE VISIBLE SERVICE SURFACE IS NOW THE GANTT above, which carries
+       a mark for every entry here (lint_gantt enforces that). Its
+       figcaption absorbed this section's lead sentence and points at the
+       CV for orgs and citations. The id="service" anchor moved up to sit
+       beside that figure, because every generated blog page links to
+       /#service and lint_links cannot see blog-to-homepage fragments.
+
+       The trailing horizontal rule is INSIDE the disabled region: a rule
+       already sits above this banner, so disabling the section alone
+       would leave two adjacent rules before Testimonials.
+
+       To restore: delete the bare comment-open line below and the bare
+       comment-close line after the disabled rule, then move the
+       id="service" anchor back onto the section.
+
+       Do NOT write comment delimiters, or a literal rule tag, as prose
+       in this banner. Comments cannot nest, so a stray close sequence
+       ends it early and dumps the rest onto the page as live markup.
+       That happened once while writing the Certifications banner.
+
+       Content notes: the award/fellowship entries (Spirit of Charlie,
+       Alumni Hall, Digital Fellow) sat cleanly alongside the larger
+       commitments without their own section; the IPM award is CV-only.
        ========================================================== -->
+<!--
   <section id="service">
     <h2>Service and Recognition</h2>
 
@@ -3395,7 +3431,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Board of Directors</span>
         <span class="row-org">The Road Home of Dane County</span>
-        <span class="row-note">A nonprofit providing homelessness prevention and housing stability services in Dane County, Wisconsin.</span>
+        <span class="row-note">Homelessness prevention and housing stability, Dane County, Wisconsin.</span>
       </div>
     </div>
 
@@ -3404,7 +3440,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Undergraduate Research Scholar Mentor</span>
         <span class="row-org">UW School of Medicine and Public Health</span>
-        <span class="row-note">Mentored three undergraduate research scholars in data cleaning, programming, data visualization, statistical analysis, and literature review.</span>
+        <span class="row-note">Mentored three undergraduate research scholars.</span>
       </div>
     </div>
 
@@ -3413,7 +3449,7 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Community Advisory Board Chair</span>
         <span class="row-org">WORT 89.9 FM</span>
-        <span class="row-note">Elected board chair for two terms at an independent community radio station in Madison, Wisconsin.</span>
+        <span class="row-note">Elected chair for two terms; independent community radio, Madison.</span>
       </div>
     </div>
 
@@ -3422,7 +3458,6 @@ figure.timeline.career-band figcaption {
       <div class="row-body">
         <span class="row-title">Spirit of Charlie Award</span>
         <span class="row-org">Health Catalyst</span>
-        <span class="row-note">The award citation: "You are helping evolve healthcare through your deep dive into data for each of our customers!"</span>
       </div>
     </div>
 
@@ -3447,6 +3482,7 @@ figure.timeline.career-band figcaption {
   </section>
 
   <hr>
+-->
 
   <!-- ==========================================================
        CERTIFICATIONS - DISABLED, NOT DELETED (owner, 2026-07-30)

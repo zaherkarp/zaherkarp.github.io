@@ -240,7 +240,10 @@ no-ops. The hook runs twelve linters:
 - `lint_recognition.py` — the homepage "Service and Recognition"
   section must stay a subset of the comprehensive record in `cv.md`.
 - `lint_gantt.py` — the homepage Education + Service Gantt figure must
-  carry a mark for every `#education` and `#service` entry.
+  carry a mark for every `#education` and `#service` entry. `#service` is
+  commented out since 2026-07-30 and both linters still read it (raw-text
+  slice, no comment stripping), so the figure is now that content's only
+  visible surface.
 - `lint_markers.py` — the build-time injection markers a generator
   splices into (activity-grid, writing-list, pub-list, cliff-path,
   blog-thoughts, the resume.md skills block, the cv.md publications

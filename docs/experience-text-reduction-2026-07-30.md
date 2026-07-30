@@ -262,6 +262,78 @@ flagged is sharper, not resolved. Dropping the last outcome figure evens it at
 ~504px but leaves Experience as pure prose, undoing the 2026-06-09 answer to the
 wall-of-text critique. Flagged for decision, not taken unilaterally.
 
+## 7c. Third pass: Service disabled, Education trimmed
+
+Owner question: can `#service` be cut while staying "active in a pipeline form
+but not visible"? And does `#education` have fluff or innovatively combinable
+parts? Framed honestly by the owner as hard because *"it's something I care
+about."*
+
+### The measurement that reframed it
+
+Both sections were **already folded**. Each cost 225px at 1400px (2.2% of the
+page) in `<h2>` + one-line lead + fold summary, while every `.row-entry` inside
+contributed **zero pixels**. So the advice given was: this is not where the fat
+is (Experience 2,419px, Projects 903px, hero 871px, Testimonials 780px), and
+cutting something you care about for 2.2% is a poor trade.
+
+### Yes, pipeline-active-but-invisible works. Verified.
+
+`lint_recognition.py:122-124` (`SERVICE_SECTION_RE`) and
+`lint_gantt.py:179-184` (`_section_body`) both slice with a raw-text
+`<section id="...">` regex and **neither strips HTML comments**. After the
+comment-out, `lint_gantt` still reports *"12 section entry(ies) (5 education + 7
+service) reconciled against 12 figure mark(s)"*. The homepage ⊆ CV subset gate
+likewise still fires. **Do not "fix" either linter to skip comments** without
+replacing what it guards.
+
+### The trap CI cannot see
+
+All ~250 generated blog pages link to `/#education` and `/#service`
+(`scripts/templates/blog/base.html:50-51`), and `lint_links` validates only
+index.html's own fragments plus homepage→blog links — never blog→homepage
+fragments. Commenting the section out without keeping the id would have left 250
+dead nav links with every gate green. Fixed by **moving `id="service"` to sit
+immediately before the Gantt figure** (verified: 0px offset), so those links land
+on the chart that carries the service record. This avoided editing the nav
+template and rebuilding ~250 pages.
+
+### The merged-highlights proposal, rejected
+
+A single prose-line section (following the retired Certifications pattern) would
+run ~170px against 450px. But it has no `.row-entry` blocks, so
+`lint_recognition.parse_homepage()` returns `[]` and **both gates pass
+vacuously** — green while guarding nothing, the third instance of that failure
+class in one day. Keeping them meaningful means re-pointing both at `cv.md` and
+rewriting two test files, to beat the simple comment-out by **~55px**. Two
+variants also fail: highlights-unfolded measures the same as
+everything-folded, and nesting `<section id="service">` inside a merged fold
+breaks the outer slice (`_section_body` is non-greedy).
+
+### Fluff trimmed, and what was deliberately kept
+
+Cut: the Oxford and Boot Camp notes (each restated its own title), the MPH
+committee names (CV material), the mentor note's six-item skill list, the Spirit
+of Charlie citation quote (the antagonist round read it as internal-recognition
+language), and the Road Home / WORT org descriptions.
+
+Kept as recognizable field credentials, on the Director archetype's objection:
+**Pascale Carayon as advisor, the AHRQ-funded SEIPS training, the $18,000
+grant, and Digital Fellow's 25-of-2,000 selectivity.**
+
+Service fluff was trimmed *before* the comment-out, so a restore brings back the
+clean version rather than the old one.
+
+### Result
+
+| | before | after |
+|---|---|---|
+| Page @1400px | 10,033px | **9,734px** |
+| Screens @900px | 11.1 | **10.8** |
+| Mobile @390px | 16,345px | **15,943px** |
+| Live `.row-entry` blocks | 12 | **5** (education only) |
+| Live `<hr>` between #education and #testimonials | 2 | **1** |
+
 ## 8. Deliberately not done: the reordering study
 
 The owner stopped after the content cut and asked for a prompt to pick up the
