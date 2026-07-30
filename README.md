@@ -40,6 +40,9 @@ scripts/
   blog                      Authoring CLI (idea/promote/queue/publish; blog.md)
   blog_backlog.py           Renders the funnel as the weekly digest issue
   blog_ideas_intake.py      Turns a "Blog idea" issue into a ledger row
+  blog_draft_edit_intake.py Turns a "Blog draft edit" issue into a post edit,
+                            optionally publishing it, in one commit
+  _issue_forms.py           Shared GitHub issue-form body parser
   build_blog.py             Blog build pipeline
   build_resume.py           Resume + CV build pipeline (WeasyPrint)
   build_portfolio.py        Activity grid + writing list + citation counts
@@ -70,6 +73,9 @@ docs/
                             new posts auto-populate on the homepage.
   blog-idea-intake.yml      Ingests a "Blog idea" issue into blog-ideas.yaml
                             (the phone capture path), then closes the issue
+  blog-draft-edit-intake.yml  Ingests a "Blog draft edit" issue: replaces a
+                            draft's body (optionally publishing it), commits,
+                            closes the issue
   blog-backlog-digest.yml   Mondays: refreshes the rolling backlog issue,
                             comments only on newly stale items
 
@@ -447,6 +453,19 @@ blog publish why-cut-points          # drafting → published, commits both
 `blog publish` stages the ledger change **in the same commit** as the post, so
 the two halves of the pipeline can never be one commit out of step.
 
+#### "I'm away from my laptop and a draft needs a fix"
+
+Open the GitHub mobile app → **Issues → New issue → Blog draft edit**. Give it
+the slug and the corrected body (and, optionally, a title/description/tags
+override). Tick **Publish this now** to go straight to live in the same
+commit — the phone equivalent of `blog edit` + `blog publish`.
+
+`blog-draft-edit-intake.yml` applies the edit, lints it (the full pre-flight
+when publishing), commits, comments back, and closes the issue. A typo'd slug
+or an attempt to touch an already-published post fails loudly with a comment
+instead of silently doing nothing; edit the issue to retry. See CLAUDE.md
+§Mobile draft editing for the full contract.
+
 #### "It's been a month and I've written nothing"
 
 You get one comment on the rolling backlog issue — and only when something has
@@ -480,6 +499,7 @@ backlog and becomes a guilt list.
 | Register a draft the ledger missed | `blog idea adopt <slug>` |
 | Retire an idea | `blog idea drop <id>` |
 | Ship it | `blog publish <slug>` |
+| Fix or publish a draft, from anywhere | GitHub app → **Blog draft edit** issue |
 
 **One-time setup:**
 
@@ -714,6 +734,10 @@ Serve locally (`python3 -m http.server 8765`) and check:
   or run `./scripts/blog idea add "Title"`. Either way it lands as a row in
   `src/content/blog-ideas.yaml`; `blog-idea-intake.yml` handles the issue path
   and closes the issue. See [§The idea → draft → publish pipeline](#the-idea--draft--publish-pipeline).
+- Fix or publish a draft from the phone: open a **Blog draft edit** issue.
+  `blog-draft-edit-intake.yml` replaces the body (and any overrides), lints,
+  optionally publishes, commits, and closes the issue. See CLAUDE.md
+  §Mobile draft editing.
 - Weekly, Mondays 13:00 UTC: `blog-backlog-digest.yml` refreshes the rolling
   "Blog backlog" tracking issue. It comments only when a draft newly passes 30
   days untouched or an idea passes 90 days idle, so a notification always means
