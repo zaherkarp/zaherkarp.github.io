@@ -153,6 +153,7 @@
 html {
   font-size: 17px;
   background: var(--paper);
+  overflow-x: hidden;
 }
 body {
   margin: 0;
@@ -164,6 +165,7 @@ body {
   line-height: 1.58;
   -webkit-font-smoothing: antialiased;
   counter-reset: sidenote-counter; /* auto-number sidenotes page-wide      */
+  overflow-x: hidden;        /* guards the hero lichen ornament's deliberate viewport-edge bleed */
 }
 ::selection     { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
 ::-moz-selection { background: color-mix(in srgb, var(--ink) 13%, var(--paper)); }
@@ -1651,7 +1653,7 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     color: var(--ink);
     font-size: 11pt;
   }
-  nav.top, .timeline, figure.timeline { display: none; }
+  nav.top, .timeline, figure.timeline, .hero-lichen-layer { display: none; }
   /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
@@ -1829,6 +1831,77 @@ figure.timeline.career-band figcaption {
   pointer-events: none;
 }
 
+/* position:relative + an explicit z-index (not "auto") makes .hero-intro
+   establish its OWN local stacking context. This is required, not
+   decorative: without it, .hero-lichen-layer's z-index:-1 is evaluated
+   against the ROOT stacking context, where it loses to <body>'s own
+   explicit `background: var(--paper)` (body is non-positioned, so its
+   background paints at the root context's "in-flow" step, which is
+   ABOVE any negative-z-index descendant anywhere on the page,
+   regardless of DOM nesting) -- the ornament renders but is fully
+   hidden behind the page background. Scoping the z-index battle to a
+   local stacking context on .hero-intro keeps the ornament above the
+   page background while still under this block's own text. */
+.hero-intro { position: relative; z-index: 0; }
+
+/* ============================================================
+   20.2. HERO LICHEN ORNAMENT (Owner addition, 2026-07-31)
+   Second decorative mark, explicitly overriding the "one
+   ornament" lock above (see CLAUDE.md §Palette for the dated
+   entry recording this override). z-index:-1 (scoped to
+   .hero-intro's local stacking context, see that rule above)
+   keeps it behind all normal-flow text by construction, so
+   legibility never depends on geometry. No animation.
+
+   Colors: four hand-authored moss/sage/forest tokens, NOT
+   color-mix()'d from the site's --paper/--muted/--ink/--rule
+   (that read as flat desaturated gray, not lichen-green, when
+   tried). This follows the same "self-contained figure keeps
+   its own tokens" convention as the two standalone blog-post
+   figures (see CLAUDE.md §Palette pipeline) rather than the
+   generated site palette; no --accent / #7a0000 either way. */
+:root {
+  --lichen-hi:     #cbd6bd;
+  --lichen-mid:    #7a9169;
+  --lichen-deep:   #45613c;
+  --lichen-shadow: #253a22;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lichen-hi:     #9db98c;
+    --lichen-mid:    #6a8c5c;
+    --lichen-deep:   #3c5636;
+    --lichen-shadow: #16241a;
+  }
+}
+.hero-lichen-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-lichen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(380px, 26vw, 440px);
+  height: auto;
+  transform: translate(12%, -50%);
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-lichen .stop-hi     { stop-color: var(--lichen-hi); }
+.hero-lichen .stop-mid    { stop-color: var(--lichen-mid); }
+.hero-lichen .stop-deep   { stop-color: var(--lichen-deep); }
+.hero-lichen .stop-shadow { stop-color: var(--lichen-shadow); }
+.hero-lichen .lichen-hi     { stroke: var(--lichen-hi); opacity: 0.6; }
+.hero-lichen .lichen-shadow { fill: var(--lichen-shadow); opacity: 0.45; }
+.hero-lichen-grain { mix-blend-mode: overlay; opacity: 0.14; pointer-events: none; }
+
 /* ============================================================
    21.1. SPLIT HERO BREAKPOINTS (Direction B)
    The two-column grid uses fr units, so it scales fluidly. The
@@ -1844,6 +1917,7 @@ figure.timeline.career-band figcaption {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     gap: 0 2rem;
   }
+  .hero-lichen { width: clamp(220px, 22vw, 300px); }
 }
 @media (max-width: 760px) {
   .split-hero {
@@ -1852,6 +1926,7 @@ figure.timeline.career-band figcaption {
   }
   .proposition { font-size: 1.4rem; }
   figure.timeline.career-band { margin-top: 1.8rem; }
+  .hero-lichen-layer { display: none; }
 }
 </style>
 </head>
@@ -1894,6 +1969,12 @@ figure.timeline.career-band figcaption {
        stated twice. The flex baseline layout is kept: the h1 sits
        alone until something else is set beside it.
        ========================================================== -->
+  <!-- .hero-intro: positioning anchor for .hero-lichen-layer below.
+       No border/padding/overflow, so margin collapsing between
+       .hero-lede and .split-hero's border-top is unaffected;
+       position:relative doesn't establish a new block-formatting
+       context so collapsing still passes through it. -->
+  <div class="hero-intro">
   <div class="nameplate">
     <h1>Zaher Karp</h1>
   </div>
@@ -1919,6 +2000,142 @@ figure.timeline.career-band figcaption {
     <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
     <p>This site holds my writing, projects, and a fuller account of the work.</p>
   </div>
+
+  <!-- ==========================================================
+       HERO LICHEN ORNAMENT (Owner addition, 2026-07-31)
+       Second decorative mark on the page, explicitly overriding the
+       "one ornament" lock (see CLAUDE.md §Palette). Purely
+       decorative: aria-hidden, no data, z-index:-1 so it can never
+       render above the intro text. Hidden below 760px (see the
+       breakpoint block) and in print.
+       ========================================================== -->
+  <div class="hero-lichen-layer" aria-hidden="true">
+    <svg class="hero-lichen" viewBox="0 0 400 400" width="400" height="400"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="lichenCoreGradient" cx="35%" cy="30%" r="70%">
+          <stop offset="0%"   class="stop-hi"/>
+          <stop offset="35%"  class="stop-mid"/>
+          <stop offset="68%"  class="stop-deep"/>
+          <stop offset="100%" class="stop-shadow"/>
+        </radialGradient>
+        <radialGradient id="lichenLobeGradient" cx="32%" cy="28%" r="75%">
+          <stop offset="0%"   class="stop-hi"/>
+          <stop offset="55%"  class="stop-mid"/>
+          <stop offset="100%" class="stop-deep"/>
+        </radialGradient>
+
+        <filter id="lichenEdge" x="-30%" y="-30%" width="160%" height="160%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.022 0.034" numOctaves="4" seed="11" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="27" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <filter id="lichenGrain" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="g"/>
+          <feColorMatrix in="g" type="saturate" values="0"/>
+        </filter>
+        <filter id="lichenSoften" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3.2"/>
+        </filter>
+
+        <mask id="lichenMask" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
+          <!-- Irregular 14-point silhouette (non-uniform angles/radii, so
+               it does not read as a symmetric flower/pom-pom): each
+               vertex bulges outward toward its own "petal tip" control
+               point, but tip distance and vertex spacing both vary. A
+               soft blur on the whole group turns the vertices into
+               rounded, overlapping lobes rather than pointed star tips,
+               and turns the rim notches into soft bites rather than
+               crisp punched holes. -->
+          <g filter="url(#lichenSoften)">
+            <path fill="#fff" d="
+              M337.25,198
+              C348.4,198 318.9,251.9 307.9,247.0
+              C318.9,251.9 290.9,330.7 281.0,316.5
+              C290.9,330.7 193.7,321.2 194.05,311.1
+              C193.7,321.2 147.2,337.6 152.2,323.8
+              C147.2,337.6 91.2,272.8 100.9,266.0
+              C91.2,272.8 38.7,211.9 57.0,210.3
+              C38.7,211.9 89.0,147.2 97.1,150.9
+              C89.0,147.2 105.3,87.5 113.7,97.5
+              C105.3,87.5 152.5,72.9 156.2,83.2
+              C152.5,72.9 212.0,38.6 210.5,55.7
+              C212.0,38.6 260.1,90.5 255.5,98.5
+              C260.1,90.5 321.4,111.6 309.1,120.2
+              C321.4,111.6 329.5,162.8 318.6,165.7
+              C329.5,162.8 348.4,198 337.25,198
+              Z"/>
+            <!-- Small irregular rim notches, off-vertex and unevenly
+                 sized/spaced, biting into the edge to fragment it. -->
+            <circle cx="268" cy="255" r="10" fill="#000"/>
+            <circle cx="128" cy="278" r="13" fill="#000"/>
+            <circle cx="105" cy="175" r="9"  fill="#000"/>
+            <circle cx="178" cy="98"  r="12" fill="#000"/>
+            <circle cx="262" cy="112" r="8"  fill="#000"/>
+            <circle cx="205" cy="245" r="7"  fill="#000"/>
+            <circle cx="145" cy="140" r="8"  fill="#000"/>
+          </g>
+        </mask>
+      </defs>
+
+      <g filter="url(#lichenEdge)" mask="url(#lichenMask)">
+        <path fill="url(#lichenCoreGradient)" d="
+          M337.25,198
+          C348.4,198 318.9,251.9 307.9,247.0
+          C318.9,251.9 290.9,330.7 281.0,316.5
+          C290.9,330.7 193.7,321.2 194.05,311.1
+          C193.7,321.2 147.2,337.6 152.2,323.8
+          C147.2,337.6 91.2,272.8 100.9,266.0
+          C91.2,272.8 38.7,211.9 57.0,210.3
+          C38.7,211.9 89.0,147.2 97.1,150.9
+          C89.0,147.2 105.3,87.5 113.7,97.5
+          C105.3,87.5 152.5,72.9 156.2,83.2
+          C152.5,72.9 212.0,38.6 210.5,55.7
+          C212.0,38.6 260.1,90.5 255.5,98.5
+          C260.1,90.5 321.4,111.6 309.1,120.2
+          C321.4,111.6 329.5,162.8 318.6,165.7
+          C329.5,162.8 348.4,198 337.25,198
+          Z"/>
+
+        <circle cx="198" cy="198" r="54" fill="url(#lichenLobeGradient)" fill-opacity="0.9"/>
+        <circle cx="175" cy="215" r="42" fill="url(#lichenLobeGradient)" fill-opacity="0.85"/>
+        <circle cx="220" cy="180" r="46" fill="url(#lichenLobeGradient)" fill-opacity="0.85"/>
+        <circle cx="165" cy="170" r="38" fill="url(#lichenLobeGradient)" fill-opacity="0.8"/>
+        <circle cx="230" cy="225" r="36" fill="url(#lichenLobeGradient)" fill-opacity="0.8"/>
+        <circle cx="190" cy="240" r="34" fill="url(#lichenLobeGradient)" fill-opacity="0.75"/>
+        <circle cx="140" cy="190" r="30" fill="url(#lichenLobeGradient)" fill-opacity="0.72"/>
+        <circle cx="255" cy="200" r="28" fill="url(#lichenLobeGradient)" fill-opacity="0.72"/>
+        <circle cx="200" cy="140" r="26" fill="url(#lichenLobeGradient)" fill-opacity="0.7"/>
+        <circle cx="210" cy="265" r="24" fill="url(#lichenLobeGradient)" fill-opacity="0.68"/>
+        <circle cx="120" cy="240" r="22" fill="url(#lichenLobeGradient)" fill-opacity="0.65"/>
+        <circle cx="260" cy="150" r="25" fill="url(#lichenLobeGradient)" fill-opacity="0.68"/>
+        <circle cx="150" cy="280" r="20" fill="url(#lichenLobeGradient)" fill-opacity="0.62"/>
+        <circle cx="270" cy="255" r="22" fill="url(#lichenLobeGradient)" fill-opacity="0.6"/>
+        <circle cx="90"  cy="150" r="16" fill="url(#lichenLobeGradient)" fill-opacity="0.55"/>
+        <circle cx="300" cy="170" r="14" fill="url(#lichenLobeGradient)" fill-opacity="0.55"/>
+        <circle cx="120" cy="90"  r="13" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+        <circle cx="250" cy="80"  r="12" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+        <circle cx="80"  cy="260" r="15" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+        <circle cx="310" cy="240" r="11" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+        <circle cx="180" cy="320" r="13" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+        <circle cx="60"  cy="200" r="10" fill="url(#lichenLobeGradient)" fill-opacity="0.5"/>
+
+        <path class="lichen-hi" d="M150,140 Q168,118 198,124" fill="none" stroke-width="3" stroke-linecap="round"/>
+        <path class="lichen-hi" d="M210,150 Q230,132 258,140" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+        <path class="lichen-hi" d="M120,190 Q136,168 160,172" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+        <path class="lichen-hi" d="M175,205 Q192,186 218,192" fill="none" stroke-width="2" stroke-linecap="round"/>
+
+        <ellipse class="lichen-shadow" cx="185" cy="225" rx="14" ry="9" transform="rotate(20 185 225)"/>
+        <ellipse class="lichen-shadow" cx="235" cy="205" rx="12" ry="8" transform="rotate(-15 235 205)"/>
+        <ellipse class="lichen-shadow" cx="160" cy="175" rx="10" ry="7" transform="rotate(35 160 175)"/>
+        <ellipse class="lichen-shadow" cx="215" cy="255" rx="11" ry="7" transform="rotate(-25 215 255)"/>
+        <ellipse class="lichen-shadow" cx="140" cy="215" rx="9"  ry="6" transform="rotate(10 140 215)"/>
+      </g>
+
+      <rect class="hero-lichen-grain" x="0" y="0" width="400" height="400"
+            filter="url(#lichenGrain)" mask="url(#lichenMask)"/>
+    </svg>
+  </div>
+  </div><!-- /.hero-intro -->
 
   <!-- ==========================================================
        SPLIT HERO (Direction B: writing-led, two columns)

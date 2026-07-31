@@ -304,6 +304,33 @@ exception to the data-ink rule. Do not multiply it: no ornament in the rail,
 the teasers, the footer, or elsewhere without discussion. The pre-push accent
 grep is unaffected (the sprig uses `#d0d0c8`, not `--accent`/`#7a0000`).
 
+**(Owner decision, 2026-07-31) Second ornament, explicit override.** The
+owner directly overrode the rule above and added a second, much larger
+decorative mark: `.hero-lichen` (a lobed, masked, `feTurbulence`-roughened
+organic silhouette wrapped in `.hero-lichen-layer`), bled ~12% of its own
+width past the viewport's right edge, upper-right of the new `.hero-intro`
+wrapper (nameplate + proposition + hero-lede, see §Hero), hidden below
+760px and in print. Unlike `.hero-sprig` it does NOT key off `--rule`/
+`--accent`/the site palette at all: it uses four hand-authored,
+mode-branched custom properties (`--lichen-hi/mid/deep/shadow`, light
+values plus a `prefers-color-scheme: dark` override), the same
+"self-contained figure keeps its own tokens" convention as the two
+standalone blog-post figures (see §Palette pipeline), because color-mixing
+the site's --paper/--muted/--ink/--rule tokens read as flat desaturated
+gray rather than moss/forest/sage green. No `--accent`/`#7a0000` either
+way, so the pre-push accent grep is unaffected (stays at its prior count).
+It is pinned `z-index: -1` so it can never render above the intro text,
+but that alone is not sufficient: `.hero-intro` also needs its OWN
+explicit `z-index` (not `auto`) to form a local stacking context, or the
+ornament's negative z-index is evaluated against the ROOT stacking
+context, where it loses to `<body>`'s own explicit `background:
+var(--paper)` (a non-positioned element's background paints above any
+negative-z-index descendant anywhere on the page, regardless of DOM
+nesting) and the ornament renders fully invisible behind the page
+background. `.hero-sprig` is unchanged and remains in place; the page now
+deliberately carries two ornaments, not one. This is not precedent for
+further ornaments without similarly explicit instruction.
+
 **SVG palette adaptation.** Figure SVGs hardcode hex values
 (fill="#111", "#6a6a6a", "#7a0000", "#d0d0c8") as presentation
 attributes. CSS attribute selectors at the bottom of the inline `<style>`
@@ -472,6 +499,18 @@ pass, so the social card and the page agree.
 sequence: it moved out of `<main>` into `<header class="site-header">` so the
 skip link works, and now sits above the `<main>` that opens at the nameplate.
 Everything from `.nameplate` onward is unchanged.
+
+**(Owner decision, 2026-07-31.)** `.nameplate`, `.proposition`, and
+`.hero-lede` are now wrapped in a `<div class="hero-intro">` (previously
+three direct children of `main`). Purely a positioning anchor for the new
+`.hero-lichen` ornament (see §Palette), not a visual change: no
+border/padding/overflow on it, so `.hero-lede`'s margin still collapses
+straight through into `.split-hero`'s `border-top` exactly as before.
+`.hero-intro` carries `position: relative; z-index: 0` (the explicit
+z-index matters, not just the positioning; see the ornament entry in
+§Palette for why). Sequence is otherwise unchanged: nav (in the header,
+outside `main`), `.hero-intro` (nameplate, proposition, hero-lede, lichen
+ornament), then `.split-hero`, then `figure.timeline.career-band`.
 
 (Prior Timeline Split, superseded: nav, nameplate, three-column split-hero
 [writing / vertical rail / project scorecard], three-card teaser row. Earlier
