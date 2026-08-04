@@ -1676,6 +1676,21 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
      ink cost carrying no information, and this block deliberately forces a
      white ground for legibility. */
   body::before { display: none; }
+  /* Pinned, because the screen rule is unusable here on two counts: its
+     clamp carries a 5vw term that resolves against the page box rather
+     than a viewport, and its rem terms rebase onto the 11pt root above,
+     which together set the name at ~36pt. 24pt is 2.2x the 11pt body,
+     holding the screen's masthead proportion without spending a third of
+     the first page's depth on a name.
+
+     `body ` prefix is load-bearing, not decoration. This block is section
+     19 but `.nameplate h1` is defined in section 21, AFTER it, and a
+     media query adds no specificity, so a bare `.nameplate h1` here loses
+     the cascade to the later rule and silently does nothing. (The
+     body::before hide above needs no such prefix only because section 22
+     never declares `display`, so nothing competes.) Any future print
+     override of a section 20+ rule has the same hazard. */
+  body .nameplate h1 { font-size: 24pt; }
   /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
