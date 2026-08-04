@@ -1709,24 +1709,50 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    is suppressed for the featured slot in the generator).
    ============================================================ */
 
-/* Nameplate: the former 3.2rem hero h1, reduced. It carried a
-   muted category-label subtitle beside it on one baseline until
-   2026-07-29; that text was removed when the proposition was
-   rewritten to say the same thing in the first person. The flex
-   baseline layout is kept so a second element can sit beside the
-   name again without re-deriving it. */
+/* Nameplate. It carried a muted category-label subtitle beside it
+   on one baseline until 2026-07-29; that text was removed when the
+   proposition was rewritten to say the same thing in the first
+   person. The flex baseline layout is kept so a second element can
+   sit beside the name again without re-deriving it.
+
+   Restored to masthead scale 2026-08-04. At the previous 2rem it
+   rendered 34px against a 27.2px proposition and 23.8px body: 1.25x
+   the line directly beneath it, which is not a hierarchy. It was
+   also frozen at 34px on every viewport, so the clamp below fixes a
+   second, latent defect. Deliberately NOT italic and NOT bold: the
+   italic reservation does not list the nameplate (same reasoning as
+   the proposition below), and the italic face is a separate 35.8KB
+   file that nothing above the fold currently loads. */
 nav.top { width: 100%; }
 .nameplate {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0.4rem 1rem;
-  margin-bottom: 1.8rem;
+  /* The space below the name lives HERE, not on the h1. In a flex
+     container the two do not collapse, so setting both would stack
+     to ~73px of accidental air. Kept on the container because the
+     flex layout above exists to let a second element sit beside the
+     name, and that element should share the same spacing. */
+  margin-bottom: 2.5rem;
 }
 .nameplate h1 {
-  font-size: 2rem;
+  /* Ceiling is 3.6rem (61px), not the 4.5rem a first draft used:
+     at this root (17px) 4.5rem renders 76.5px, which is 3.2x the
+     body and reads as a logo rather than a masthead. Floor holds
+     the name on ONE line down to a 320px viewport (needs 239px,
+     has 252px). */
+  font-size: clamp(3.25rem, 5vw, 3.6rem);
+  /* Under 1 so the single line sets as a tight masthead block
+     rather than a paragraph line. */
+  line-height: 0.95;
+  /* Negative tracking keeps a serif at this size looking set rather
+     than merely enlarged; ETBook opens up noticeably past ~50px. */
+  letter-spacing: -0.035em;
+  /* Explicit, because the size increase must not be read as an
+     invitation to add weight: ETBook ships roman and italic only. */
+  font-weight: 400;
   margin: 0;
-  line-height: 1.05;
 }
 /* Lede: the two-paragraph introduction under the proposition.
    Body size, held to a ~62ch measure because the hero region is
