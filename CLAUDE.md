@@ -520,6 +520,26 @@ have violated accent discipline. The career arc now uses NO accent at all —
 its one former accent use is gone. Do not change SVG coordinates without
 recalculating from scratch — they're tested.
 
+**Acquisition annotation vertical position fixed to match the other two
+(2026-08-04).** The 2026-06-07 pass fixed the acquisition annotation's
+*color/style* (removed the red/dashed/circle treatment) but not its
+*position*: its connector still ran from the Row 3 band (y=260) all the way
+past the axis (y=320) to a text baseline at y=395, below even the axis year
+labels (y=355) — the one annotation on the chart that didn't hang close
+under its own band the way "news-wire syndication" and "MPH, Biostatistics"
+do. Caught by rendering, not by reading the SVG source. All three quiet
+annotations (desktop `tl-horizontal` only; the mobile `tl-rail`'s single
+acquisition tick was already fine, a simple horizontal mark off the vertical
+axis) now share one geometry rule: connector starts at the owning band's
+bottom edge (`bandY + 5`, since `stroke-width="10"` gives a 5-unit
+half-thickness), runs 13 units down, and the text baseline sits 17 units
+past that (35 total from band center to text). Acquisition's connector is
+now `x=800, y1=265 to y2=278`, text at `y=295` — comfortably above the axis
+line at y=320, 25 units of clearance. Verified in headless Chromium at
+1400/1000/900px: no collision with the axis, its tick, its year labels, or
+the segment labels above the band. Do not change SVG coordinates without
+recalculating from scratch — they're tested.
+
 The prior site had a single 800×320 SVG that scrolled horizontally on
 mobile. The rebuild dropped that pattern (and its scroll-to-right inline
 JS exception) because horizontal scroll violates Tufte's same-frame rule.
