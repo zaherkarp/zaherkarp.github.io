@@ -2221,23 +2221,16 @@ figure.timeline.career-band figcaption {
         <g><line x1="1140" y1="314" x2="1140" y2="326" stroke="#6a6a6a"/><text x="1140" y="355">now</text></g>
       </g>
 
-      <!-- INFLECTION: acquisition 2020 (calmed).
-           Formerly a loud red dashed callout; demoted to a quiet
-           muted annotation in the same style as the news-wire and
-           MPH era notes (thin solid connector, muted italic, no
-           accent, no circle). The 2020 acquisition is still marked
-           as the inflection but no longer shouts, and the caption
-           drops "Catalyst" so the only Catalyst mention on the
-           chart is the band label above. -->
-      <line x1="800" y1="260" x2="800" y2="314" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="800" y="395" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
-
       <!-- ERA ANNOTATIONS (quiet)
-           One per pre-data-engineering era, positioned at the year
-           they describe. Deliberately understated: muted grey,
-           smaller type, short solid connector (not dashed, not
-           red). The 2020 acquisition annotation above now uses this
-           same calmed style; the arc has no high-contrast callout.
+           One per pre-data-engineering era, plus the 2020 acquisition
+           inflection, positioned at the year they describe. All three
+           now share ONE geometry rule so the set reads as uniform: tick
+           starts at the owning band's bottom edge (bandY + 5, since
+           stroke-width 10 half-thickness is 5), runs 13 units down, then
+           the text baseline sits 17 units below the tick end (35 total
+           from band center to text). Deliberately understated: muted
+           grey, smaller type, short solid connector (not dashed, not
+           red).
 
            RULE: no circles on the band, no dashed lines, no
            accent colors. These are secondary data, not inflection
@@ -2245,18 +2238,28 @@ figure.timeline.career-band figcaption {
 
       <!-- Editorial era: news-wire syndication, 2008.
            x=117 is interpolated between 2007 (x=60) and 2009
-           (x=175). Short tick from band (y=85) down to y=98,
-           text baseline at y=115. -->
+           (x=175). Band at y=80, so tick 85 to 98, text at y=115. -->
       <line x1="117" y1="85" x2="117" y2="98" stroke="#6a6a6a" stroke-width="0.7"/>
       <text x="117" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">news-wire syndication</text>
 
       <!-- UW research era: MPH in Biostatistics, 2013-2015.
            Annotation placed at x=460 (the 2014 year tick, which
-           is the midpoint of the MPH window). Annotation sits
-           BELOW the Row 2 band at y=170, ticking down to y=188,
-           text at y=205. Clears Row 3 (which begins at x=630). -->
+           is the midpoint of the MPH window). Band at y=170, so
+           tick 175 to 188, text at y=205. Clears Row 3 (which
+           begins at x=630). -->
       <line x1="460" y1="175" x2="460" y2="188" stroke="#6a6a6a" stroke-width="0.7"/>
       <text x="460" y="205" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">MPH, Biostatistics</text>
+
+      <!-- Data-engineering inflection: acquisition, 2020. x=800 is the
+           healthfinch/Catalyst segment boundary on Row 3 (y=260), so
+           tick 265 to 278, text at y=295. Until 2026-08-04 this reached
+           all the way past the axis (y=314) to a text baseline at
+           y=395, below the axis year labels, the one annotation that
+           didn't hang close under its own band like the other two.
+           Fixed to the shared geometry rule above; still clears the
+           axis line at y=320 by 25 units. -->
+      <line x1="800" y1="265" x2="800" y2="278" stroke="#6a6a6a" stroke-width="0.7"/>
+      <text x="800" y="295" font-family="et-book, Palatino, Georgia, serif" font-size="18" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
     </svg>
 
     <!-- MOBILE (<=760px): the vertical dated rail. viewBox 300x470,
