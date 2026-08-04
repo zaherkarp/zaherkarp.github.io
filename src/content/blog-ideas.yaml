@@ -99,3 +99,17 @@
   added: 2026-07-03
   status: drafting
   slug: stars-three-live-rulebooks
+
+- id: eight-tools-eight-models-folders
+  title: Eight Tools, Eight Models Folders
+  note: Survey of how eight local LLM tools lay out model files on disk, then the case
+    for reading a plain user-chosen folder. GGUF headers already carry the metadata the
+    directory nesting re-encodes.
+  tags:
+  - llm
+  - inference
+  - developer-tools
+  - systems
+  added: 2026-08-04
+  status: drafting
+  slug: eight-tools-eight-models-folders
