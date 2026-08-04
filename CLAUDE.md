@@ -304,6 +304,45 @@ exception to the data-ink rule. Do not multiply it: no ornament in the rail,
 the teasers, the footer, or elsewhere without discussion. The pre-push accent
 grep is unaffected (the sprig uses `#d0d0c8`, not `--accent`/`#7a0000`).
 
+**(Owner decision, 2026-07-31) Second ornament: the hero corner arc.** The
+owner overrode the rule above and added `body::before`, a large circle whose
+centre sits above and right of the page's top-right corner so only its
+lower-left sweep shows (CSS section 22). `.hero-sprig` is unchanged; the page
+now deliberately carries two decorative marks. Not precedent for a third.
+
+It is attached to `body`, NOT to the hero, and that is load-bearing: the hero
+region begins below `.site-header`, so nothing anchored inside it can reach
+the page's top edge, which is where the arc is meant to start. Attaching at
+page level also means the ornament needs NO new DOM node. There is no `.hero`
+element on this page at all (the opening is `.nameplate` / `.proposition` /
+`.hero-lede` / `.split-hero` as siblings under `<main>`); do not go looking
+for one.
+
+Built from `--muted` only, via `color-mix()` into `--paper`, so one value
+serves both modes. It uses no `--accent`/`#7a0000`, per the accent-discipline
+rule that the accent is for data figures and never decoration.
+
+**Three mechanics that are not obvious and were each found by measuring, not
+by reading:**
+  - `overflow-x: clip` is required on **both** `html` and `body`. Overflow set
+    on `body` alone propagates to the viewport, which leaves `body` itself
+    effectively visible, and `body` is the arc's containing block. Without the
+    pair the page carries ~374px of real horizontal scroll at 1400px. Verify
+    by attempting an actual scroll, not by reading `scrollWidth`.
+  - The arc is `z-index: 0`, and `main` / `.site-header` carry `z-index: 1`.
+    Do NOT "simplify" this to `z-index: -1` on the arc: at -1 it paints behind
+    `body`'s own `background: var(--paper)` and disappears completely.
+  - The centre is 30% of the diameter above the page top, not 50%. At 50% the
+    centre lands exactly on the corner, the flat top edge becomes a diameter,
+    and the arc meets it at a hard 90 degrees, reading as a pie slice.
+
+The `@media (max-width: 480px)` hide is empirical, not a guess: 480px is where
+the arc's painted edge first reaches the nav (322px against a nav ending at
+329px). Above that there is real clearance at every width (279px at 760px).
+Measure this by pixel-scanning a render; computing the arc's left edge from
+`right`/`width` is easy to get sign-wrong and will invent a collision that
+does not exist.
+
 **SVG palette adaptation.** Figure SVGs hardcode hex values
 (fill="#111", "#6a6a6a", "#7a0000", "#d0d0c8") as presentation
 attributes. CSS attribute selectors at the bottom of the inline `<style>`

@@ -153,10 +153,20 @@
 html {
   font-size: 17px;
   background: var(--paper);
+  /* Needed on BOTH html and body: overflow set on body alone propagates to
+     the viewport, which leaves body itself effectively visible and lets the
+     hero arc (a body::before, so body is its containing block) escape.
+     Measured: without this pair the page gains ~374px of real horizontal
+     scroll at 1400px. See section 22. */
+  overflow-x: clip;
 }
 body {
   margin: 0;
   padding: 4rem 0;
+  /* Containing block for the section-22 hero arc, so the arc can be offset
+     from the page's top-right rather than from the viewport. */
+  position: relative;
+  overflow-x: clip;
   background: var(--paper);
   color: var(--ink);
   font-family: "et-book", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
@@ -181,6 +191,11 @@ main {
   margin: 0 auto;
   padding: 0 clamp(2rem, 4vw, 5rem);
   position: relative;
+  /* Explicit, not incidental: pairs with .site-header below to keep every
+     content box painting above the section-22 hero arc. Deliberately NOT
+     solved by giving the arc z-index:-1, which would drop it behind body's
+     own background: var(--paper) and render it invisible. */
+  z-index: 1;
 }
 .skip-link {
   position: absolute;
@@ -564,6 +579,11 @@ nav.top a:hover { color: var(--ink); text-decoration: underline; }
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 clamp(2rem, 4vw, 5rem);
+  /* The arc starts at the page's top edge, so it passes behind the nav band.
+     These two keep the nav painting above it; without them the nav would sit
+     on tinted ground and lose contrast (5.5:1 -> 4.7:1 measured). */
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================
@@ -1652,6 +1672,25 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
     font-size: 11pt;
   }
   nav.top, .timeline, figure.timeline { display: none; }
+  /* The section-22 hero arc is a 44rem tinted disc; on paper it is a large
+     ink cost carrying no information, and this block deliberately forces a
+     white ground for legibility. */
+  body::before { display: none; }
+  /* Pinned, because the screen rule is unusable here on two counts: its
+     clamp carries a 5vw term that resolves against the page box rather
+     than a viewport, and its rem terms rebase onto the 11pt root above,
+     which together set the name at ~36pt. 24pt is 2.2x the 11pt body,
+     holding the screen's masthead proportion without spending a third of
+     the first page's depth on a name.
+
+     `body ` prefix is load-bearing, not decoration. This block is section
+     19 but `.nameplate h1` is defined in section 21, AFTER it, and a
+     media query adds no specificity, so a bare `.nameplate h1` here loses
+     the cascade to the later rule and silently does nothing. (The
+     body::before hide above needs no such prefix only because section 22
+     never declares `display`, so nothing competes.) Any future print
+     override of a section 20+ rule has the same hazard. */
+  body .nameplate h1 { font-size: 24pt; }
   /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
   .split-hero > * { width: 100%; }
@@ -1685,24 +1724,50 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    is suppressed for the featured slot in the generator).
    ============================================================ */
 
-/* Nameplate: the former 3.2rem hero h1, reduced. It carried a
-   muted category-label subtitle beside it on one baseline until
-   2026-07-29; that text was removed when the proposition was
-   rewritten to say the same thing in the first person. The flex
-   baseline layout is kept so a second element can sit beside the
-   name again without re-deriving it. */
+/* Nameplate. It carried a muted category-label subtitle beside it
+   on one baseline until 2026-07-29; that text was removed when the
+   proposition was rewritten to say the same thing in the first
+   person. The flex baseline layout is kept so a second element can
+   sit beside the name again without re-deriving it.
+
+   Restored to masthead scale 2026-08-04. At the previous 2rem it
+   rendered 34px against a 27.2px proposition and 23.8px body: 1.25x
+   the line directly beneath it, which is not a hierarchy. It was
+   also frozen at 34px on every viewport, so the clamp below fixes a
+   second, latent defect. Deliberately NOT italic and NOT bold: the
+   italic reservation does not list the nameplate (same reasoning as
+   the proposition below), and the italic face is a separate 35.8KB
+   file that nothing above the fold currently loads. */
 nav.top { width: 100%; }
 .nameplate {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0.4rem 1rem;
-  margin-bottom: 1.8rem;
+  /* The space below the name lives HERE, not on the h1. In a flex
+     container the two do not collapse, so setting both would stack
+     to ~73px of accidental air. Kept on the container because the
+     flex layout above exists to let a second element sit beside the
+     name, and that element should share the same spacing. */
+  margin-bottom: 2.5rem;
 }
 .nameplate h1 {
-  font-size: 2rem;
+  /* Ceiling is 3.6rem (61px), not the 4.5rem a first draft used:
+     at this root (17px) 4.5rem renders 76.5px, which is 3.2x the
+     body and reads as a logo rather than a masthead. Floor holds
+     the name on ONE line down to a 320px viewport (needs 239px,
+     has 252px). */
+  font-size: clamp(3.25rem, 5vw, 3.6rem);
+  /* Under 1 so the single line sets as a tight masthead block
+     rather than a paragraph line. */
+  line-height: 0.95;
+  /* Negative tracking keeps a serif at this size looking set rather
+     than merely enlarged; ETBook opens up noticeably past ~50px. */
+  letter-spacing: -0.035em;
+  /* Explicit, because the size increase must not be read as an
+     invitation to add weight: ETBook ships roman and italic only. */
+  font-weight: 400;
   margin: 0;
-  line-height: 1.05;
 }
 /* Lede: the two-paragraph introduction under the proposition.
    Body size, held to a ~62ch measure because the hero region is
@@ -1853,6 +1918,70 @@ figure.timeline.career-band figcaption {
   .proposition { font-size: 1.4rem; }
   figure.timeline.career-band { margin-top: 1.8rem; }
 }
+
+/* ============================================================
+   22. HERO CORNER ARC (owner addition, 2026-07-31)
+   A single large circle whose centre sits above and right of the
+   page's top-right corner, so only its lower-left sweep shows. It
+   is attached to body, NOT to the hero: the hero region begins
+   below .site-header, and the arc is meant to start at the very
+   top of the page, level with the nav. Attaching at page level
+   also means NO new DOM node is needed.
+
+   Second decorative mark on the page, so it overrides the "one
+   ornament" rule recorded in CLAUDE.md alongside .hero-sprig,
+   which is unchanged. It is built from --muted only. The accent
+   token is deliberately not used here; it is reserved for data
+   figures and is explicitly not for decoration.
+   ============================================================ */
+body::before {
+  content: "";
+  position: absolute;
+  /* One custom property so the offsets below stay proportional to the
+     circle at every breakpoint instead of being re-derived by hand. */
+  --arc: clamp(24rem, 46vw, 44rem);
+  width: var(--arc);
+  /* aspect-ratio rather than an equal height, so the circle stays circular
+     when only the width is changed at a breakpoint. */
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* Centre pushed 20% of the diameter ABOVE the page top (0.5 would put it
+     exactly on the corner, which makes the flat top edge a diameter and the
+     arc meet it at a hard 90 degrees, reading as a pie slice). Off-centre
+     turns that cut into a chord, so the arc leaves the top edge obliquely
+     and reads as a circle continuing behind the header. */
+  top: calc(var(--arc) * -0.30);
+  /* Centre parked on the viewport's right edge, so exactly the left half is
+     on screen and the shape runs off rather than stopping at the column. */
+  right: calc(var(--arc) * -0.5);
+  background:
+    /* Concentric contours at 2%, the faintest step that still reads as
+       texture rather than a flat disc. Ring spacing is constant in device
+       pixels, so unlike a linear repeat it does not beat against the pixel
+       grid; verified clean at 1x and 2x. */
+    repeating-radial-gradient(circle at 50% 50%, transparent 0 16px,
+      color-mix(in srgb, var(--muted) 2%, transparent) 16px 17.5px),
+    /* Mixed from --paper so the lift tracks whichever mode is active and
+       needs no second value for dark. */
+    color-mix(in srgb, var(--muted) 12%, var(--paper));
+  /* Purely decorative, so it must never swallow a click meant for the text
+     it sits behind. */
+  pointer-events: none;
+  /* 0, not -1: at -1 it would paint behind body's own background:
+     var(--paper) and vanish entirely. main and .site-header carry z-index:1
+     to sit above it. */
+  z-index: 0;
+}
+/* Below ~900px the column narrows faster than the arc does, so the arc is
+   cut back to keep the same proportion of empty margin. */
+@media (max-width: 900px) { body::before { --arc: clamp(18rem, 38vw, 25rem); } }
+/* Smaller again and dimmed: at this width it is peripheral to a single
+   column of running text and should not compete with it. */
+@media (max-width: 600px) { body::before { --arc: 14rem; opacity: 0.6; } }
+/* 480px is where the arc's painted edge first reaches the nav (measured:
+   322px against a nav ending at 329px). Below that it would tint the ground
+   under nav text, so it is dropped rather than shrunk further. */
+@media (max-width: 480px) { body::before { display: none; } }
 </style>
 </head>
 
