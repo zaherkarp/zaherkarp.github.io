@@ -7,6 +7,15 @@ comprehensive record in the CV (src/content/cv.md), WITHOUT a shared
 data file. Both surfaces stay hand-authored; this script parses both
 and compares them.
 
+As of 2026-07-30, `<section id="service">` is wrapped in an HTML
+comment in index.html (redundant with the Gantt figure once its
+labels absorbed every entry's title and date); the homepage parser
+below still finds it because it slices raw text and does not strip
+HTML comments. That is deliberate, not an oversight: stripping
+comments first would leave nothing to parse, so this gate would pass
+vacuously while CI stayed green. Do not "fix" the comment-blindness
+without first replacing what it guards.
+
 Two surfaces, three CV sections reconciled:
 
   homepage  index.html  <section id="service"> .row-entry blocks
@@ -118,6 +127,10 @@ class Entry:
 # ─── homepage parser ──────────────────────────────────────────────────────
 # The .row-entry field regexes + row_field come from _common (shared with
 # lint_gantt); only the #service section slice is local here.
+#
+# Matches raw text and does NOT strip HTML comments, on purpose: #service
+# has been commented out in index.html since 2026-07-30, and this regex
+# still finds it inside the comment. See the module docstring above.
 
 SERVICE_SECTION_RE = re.compile(
     r'<section id="service">(?P<body>.*?)</section>', re.DOTALL

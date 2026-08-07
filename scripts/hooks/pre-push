@@ -173,7 +173,7 @@ if [ -f scripts/lint_skills.py ] && [ -f src/content/skills.yaml ]; then
   fi
 fi
 
-# 3h. HTML structural well-formedness (index.html + generated blog /
+# 3g. HTML structural well-formedness (index.html + generated blog /
 #     resume / cv pages parse with tinyhtml5 and carry no tree-builder
 #     structural errors: misnested/unclosed/orphan tags, loose table
 #     cells, content after </body>). Tokenizer-level nits (bare & in
@@ -188,7 +188,7 @@ if [ -f scripts/lint_html.py ] && [ -f index.html ]; then
   fi
 fi
 
-# 3g. Internal link + anchor integrity (every fragment href in
+# 3h. Internal link + anchor integrity (every fragment href in
 #     index.html resolves to a real id=, every homepage /blog/... link
 #     points at built blog output, every sitemap.xml <loc> resolves to
 #     a real file). Deliberately scoped to /blog/ for homepage file
@@ -271,10 +271,16 @@ if [ -f index.html ]; then
   #    back to var(--accent) at render time, so the literal hex IS the
   #    designed pattern for SVG element attributes).
   #
-  #    Cap = current accepted total + 1, set when the combined-grep
-  #    landed at 19. Ratchet down when removing uses; bump only after
-  #    discussion since each accent use should earn its place per
-  #    CLAUDE.md §Palette.
+  #    Cap is 20, set when the combined-grep landed at 19 (current
+  #    accepted total + 1 at the time). The count has since fallen with
+  #    figure/section removals (12 as of the 2026-07-30 text-reduction
+  #    pass; see CLAUDE.md §Accent discipline for the running history) and
+  #    the cap was NOT ratcheted down to match -- it stays pinned to 20
+  #    here, in .github/workflows/lint.yml, and in
+  #    scripts/tests/test_baseline_clean.py, so changing it in only one
+  #    place would desync the three. Bump (or, if ever done, ratchet down)
+  #    only after discussion, in all three places at once; each accent use
+  #    should earn its place per CLAUDE.md §Palette.
   accent_count=$(grep -cE -- '--accent|#7a0000' index.html || true)
   if [ "$accent_count" -le 20 ]; then
     ok "accent discipline ($accent_count uses, cap 20)"

@@ -59,24 +59,35 @@ build dependency and a font-install step. Tradeoff is real: ETBook
 for branding consistency vs. DejaVu for zero-dep. Decide before
 implementing.
 
-### Build-provenance line on the homepage (#9, partial)
+### Build-provenance line on the homepage (#9, mostly shipped)
 
-Blog pages already get a "Built YYYY-MM-DD from <sha>" footer. The
-homepage doesn't, because `index.html` is hand-maintained. To add it:
-extend `scripts/build_portfolio.py` to inject a `<!-- build-info:start -->
-... <!-- build-info:end -->` block (mirroring the activity-grid pattern),
-then update the `build_portfolio.yml` workflow to commit the result.
+Most of this landed already, under the marker name `updated` rather than
+`build-info`. `build_updated_footer()` in `scripts/build_portfolio.py`
+injects a date stamp between `<!-- updated:start -->` and
+`<!-- updated:end -->` in index.html's footer (currently rendering
+"Updated 2026-08."), the marker pair is registered in
+`lint_markers.PAIR_MARKERS`, and `build_portfolio.yml` already commits
+the regenerated index.html. What's still missing is the `<sha>` half of
+the blog footer's "Built YYYY-MM-DD from <sha>" pattern: the homepage
+stamp is month-precision and carries no build identifier.
+`scripts/build_blog.py` already has a `git_short_sha()` helper for this;
+`build_updated_footer()` could take a similar short SHA and append it.
 
 ### `rel="me"` social verification links (item #16 from "more tracking")
 
 One-line additions in `<head>` linking to LinkedIn, GitHub, Scholar,
 mailto. Useful for IndieWeb identity-graph propagation. Five minutes.
 
-### Citation count history (#13 from "more tracking")
+### ~~Citation count history (#13 from "more tracking")~~ DONE
 
-`scripts/build_portfolio.py` could append `{date, sid, count}` records
-to a `data/citations.json` sidecar on each Sunday cron run. Over months
-this becomes a citation-growth time series per publication.
+Shipped, under a different name than proposed. `write_citation_snapshot()`
+in `scripts/build_portfolio.py` writes a `{date, source, citations}`
+record to `data/snapshots/<date>.json` on any run where at least one
+fresh citation count lands (record-on-change, so most runs add nothing).
+`data/snapshots/` currently holds seven real files, a citation-growth
+time series per publication. Landed as `data/snapshots/<date>.json`
+rather than the `data/citations.json` sidecar proposed here. Kept here
+struck through rather than deleted so the item is not re-proposed.
 
 ### ~~Custom 404.html for inbound dead-link tracking (#17)~~ DONE
 

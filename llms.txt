@@ -16,14 +16,29 @@ The pre-2019 [archive (/blog/archive/)](https://zaherkarp.com/blog/archive/) pre
 
 ## Projects
 
+Six projects on the homepage, numbered by DOM order: the Medicare Advantage Insight Engine opens the page as project 01, the Stars Cliff Simulator is featured second, and four more sit in a "More projects" fold.
+
+- Medicare Advantage Insight Engine, a live feed at https://zaherkarp.com/medicare-advantage-insight-engine/ (served by a separate zaherkarp/medicare-advantage-insight-engine repo's own GitHub Pages, under the shared zaherkarp.com domain). Methodology at https://zaherkarp.com/blog/medicare-advantage-insight-engine/.
 - [Stars Cliff Simulator (/star-rating-predictor/)](https://zaherkarp.com/star-rating-predictor/), a public teaching demo focused on the 4.0★ QBP cliff. Methodology at https://zaherkarp.com/blog/star-rating-demo-methodology/.
-- [SkillSprout (github.com/zaherkarp/skillsprout)](https://github.com/zaherkarp/skillsprout), a career trajectory explorer that ranks O*NET 28.3 occupations against a freeform skill query. The hosted subpage was retired; write-up at https://zaherkarp.com/blog/onet-reskilling-probabilities/.
+- Healthcare Workforce Transition Platform, also called SkillSprout (github.com/zaherkarp/skillsprout), a career trajectory explorer that ranks O*NET 28.3 occupations against a freeform skill query. The hosted subpage was retired; write-up at https://zaherkarp.com/blog/onet-reskilling-probabilities/.
+- ECDS Shock Index, at github.com/zaherkarp/ecds-shock-index. Write-up at https://zaherkarp.com/blog/ecds-shock-index/.
+- Care Delivery Workflow Changes. Visual case study at https://zaherkarp.com/case-study-care-redesign/, write-up at https://zaherkarp.com/blog/interrupted-time-series-care-redesign/.
+- Practice Automation Analytics, healthfinch Charlie. Write-up at https://zaherkarp.com/blog/practice-automation-workflow-roi/.
+
+Two more interactive subpages exist but are not homepage project cards:
+
 - [Life in Weeks (/life-in-weeks/)](https://zaherkarp.com/life-in-weeks/), a 90-year weekly grid in the Tim Urban tradition.
 - [Epidemic simulation (/epidemic-simulation/)](https://zaherkarp.com/epidemic-simulation/), a browser-side stochastic SEIRV simulator. Methodology at https://zaherkarp.com/blog/two-states-one-pathogen/.
 
-## Resume
+## Colophon
 
-[Resume PDF (/resume.pdf)](https://zaherkarp.com/resume.pdf), generated from a markdown source on every push.
+[Colophon (/colophon/)](https://zaherkarp.com/colophon/) explains how the site is built: no framework, five Python build pipelines, twelve linters and a pre-push hook. Linked from every page footer.
+
+## Resume and CV
+
+[Resume PDF (/resume.pdf)](https://zaherkarp.com/resume.pdf), generated from a markdown source; the build is path-filtered to pushes touching the resume source, publications data, skills data, or the build script, not every push to the repo.
+
+[CV (/cv.html)](https://zaherkarp.com/cv.html), a traditional academic curriculum vitae built from the same pipeline: education, appointments, publications, presentations, and academic service.
 
 ## Contact
 

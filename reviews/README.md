@@ -59,9 +59,14 @@ generator). They exist in two places:
    Search the session history for the multi-agent invocation blocks.
 2. Your own private notes, if you've copied them elsewhere.
 
-If you want them versioned alongside the pipeline, drop them into
-`scripts/review/prompts/` (the directory is in `.gitignore` only by
-absence; nothing in the pipeline depends on their location).
+**`scripts/review/prompts/` already exists and is committed.** It holds
+the two verbal-invocation *panel* prompts, `design-council.md` and
+`assess-items.md` (see `scripts/review/README.md` §Panel prompts). What's
+described above is specifically the four *report-generation* prompts, a
+different thing, and those are what remain uncommitted. If you want them
+versioned alongside the pipeline too, drop them into the same directory;
+nothing in the pipeline depends on their location, and nothing in
+`.gitignore` targets `scripts/` at all.
 
 ### 1. Craft critique — six-camp data-viz panel
 
@@ -247,8 +252,10 @@ with trigger conditions, not queued work. Per-item reasons in
 ## Running it again next quarter
 
 1. Start a Claude Code session against this repo.
-2. Generate the four reports for the new date. (The prompt recipes are
-   not in this repo; see "The four prompts" above.)
+2. Generate the four reports for the new date. (The four report-generation
+   prompt recipes are not committed in this repo; see "The four prompts"
+   above. That's separate from the two panel prompts, which are already
+   versioned at `scripts/review/prompts/`.)
 3. Commit the four reports in a single batch and push. The publish
    workflow opens a tracking issue and carries forward unchecked items
    from any open prior issue.
@@ -270,6 +277,7 @@ with trigger conditions, not queued work. Per-item reasons in
 ```
 .github/workflows/
   site-review-publish.yml          # tracking-issue lifecycle; no secrets
+  site-review-check.yml            # checklist box-flipping actuator; no secrets
 
 scripts/
   build_cliff.py                   # CSV-driven SVG renderer for cliff figure
@@ -277,6 +285,10 @@ scripts/
   review/
     README.md                      # publish-pipeline operator notes
     issue-lifecycle.cjs            # Octokit lifecycle script
+    check-items.cjs                # Octokit checklist-toggle script
+    prompts/
+      design-council.md            # Design Council orchestration prompt
+      assess-items.md              # tracking-issue item-assessor prompt
 
 src/data/
   cms-ma-pd-stars-2025.csv         # cliff-figure canonical distribution data

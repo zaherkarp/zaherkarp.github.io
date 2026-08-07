@@ -509,7 +509,7 @@ unpatched entries are accepted behavior with a documented mitigation.
 
 Also fixed in the same pass:
 
-- Module docstring at the top of `scripts/blog` now lists all ten
+- Module docstring at the top of `scripts/blog` now lists all thirteen
   subcommands and is honest about `rename` and `preview` semantics.
 - `scripts/requirements.txt` now pins `rich>=13.0` explicitly so the
   CLI keeps working if a future `typer` release drops it.
@@ -523,6 +523,7 @@ Also fixed in the same pass:
 ```mermaid
 flowchart TB
     Dev([Developer])
+    Phone([Phone: GitHub Issues])
 
     subgraph Local["Local machine"]
         CLI["<b>scripts/blog</b><br/>Typer CLI"]
@@ -532,11 +533,13 @@ flowchart TB
             LB[lint_blog]
             LV[lint_vocab]
             LF[lint_facts]
+            LI[lint_ideas]
             BB["build_blog<br/>(parse + render)"]
             Red[redundancy.py]
         end
 
         Posts[("src/content/blog/*.md")]
+        Ideas[("src/content/blog-ideas.yaml")]
         Cfg[("scripts/blog.config.yaml")]
     end
 
@@ -544,11 +547,15 @@ flowchart TB
         Main[(origin/main)]
         CI1[".github/workflows/<br/>build_blog.yml"]
         CI2[".github/workflows/<br/>build_portfolio.yml"]
+        CI3[".github/workflows/<br/>blog-idea-intake.yml"]
+        CI4[".github/workflows/<br/>blog-draft-edit-intake.yml"]
+        CI5[".github/workflows/<br/>lint.yml"]
         Pages["GitHub Pages<br/>zaherkarp.com"]
     end
 
     Dev -->|"new / edit / lint /<br/>preview / publish / ..."| CLI
     CLI <-->|read + write| Posts
+    CLI <-->|read + write| Ideas
     CLI <-->|read + write| Cfg
     CLI -->|"pre-flight lint,<br/>scoped lint, render preview"| Shared
     CLI -->|"first run installs<br/>via core.hooksPath"| Hook
@@ -556,21 +563,58 @@ flowchart TB
 
     Hook -->|"on push,<br/>gated by redundancy + config"| Shared
 
+    Phone -->|"Blog idea issue"| CI3
+    Phone -->|"Blog draft edit issue"| CI4
+    CI3 -->|"appends a row,<br/>bypasses the CLI"| Ideas
+    CI3 -->|lint_ideas| Shared
+    CI3 -->|commit + push| Main
+    CI4 -->|"edits/publishes a post,<br/>bypasses the CLI"| Posts
+    CI4 -.->|"if 'publish this now':<br/>moves the ledger row"| Ideas
+    CI4 -->|"lint_ideas, lint_facts,<br/>lint_blog, lint_vocab"| Shared
+    CI4 -->|commit + push| Main
+
     Main -->|push event| CI1
     Main -->|push event| CI2
+    Main -->|"push event +<br/>weekly cron"| CI5
     CI1 -->|"lint + build,<br/>gated by redundancy + config"| Shared
     CI1 -->|commits rendered HTML| Main
     CI2 -->|commits index.html| Main
+    CI5 -->|"full lint suite,<br/>unconditional"| Shared
 
     Main --> Pages
 ```
 
-The architectural point: **the same five Python modules are reused at
-three layers** — the CLI's pre-flight, the pre-push hook, and the CI
-workflow. The "Shared Python modules" subgraph is the contract; the
-three callers (CLI, hook, CI) all reach into it. `redundancy.py` plus
-`blog.config.yaml` is the toggle plane that lets the hook and CI
-short-circuit when the CLI already linted (see §3).
+The architectural point from the original diagram still holds, but the
+layer count it described has grown. The "Shared Python modules" box now
+holds six modules (`lint_ideas` joined the original five), and it is
+reached from more than the three original callers (CLI, hook, CI):
+
+- **CLI, pre-push hook, `build_blog.yml`**: the original three, unchanged.
+  `redundancy.py` plus `blog.config.yaml` is still the toggle plane that
+  lets the hook and `build_blog.yml` short-circuit when the CLI already
+  linted (see §3).
+- **`lint.yml`**: the unconditional CI backstop (see §Pre-push checks in
+  CLAUDE.md). It never consults the `Blog-CLI-Linted:` trailer, by design.
+  It exists specifically to catch what the trailer-gated paths might skip,
+  including bot commits from the two intake workflows below, which is also
+  why it carries its own weekly cron in addition to running on every push.
+- **`blog-idea-intake.yml`**: shells out to `lint_ideas.py` only. Idea
+  capture never touches a post file, so there is nothing for
+  `lint_blog`/`lint_vocab` to check.
+- **`blog-draft-edit-intake.yml`**: the deepest integration outside the
+  CLI. `blog_draft_edit_intake.py` itself imports `lint_blog.check_post`
+  and `lint_vocab`'s checks in-process to scope-lint the edited post, the
+  same way `blog lint <slug>` does. The workflow then runs `lint_ideas.py`
+  and `lint_facts.py` as separate subprocess steps, so a mobile edit gets
+  the same four-linter coverage `blog publish` runs from the terminal.
+
+Both intake workflows write directly to the repo and push to `main` on
+their own service identity, without going through `scripts/blog` at all:
+`blog-idea-intake.yml` appends to `blog-ideas.yaml`; `blog-draft-edit-intake.yml`
+edits the post file under `src/content/blog/`, and, only when the issue's
+"Publish this now" box was checked, also moves that post's ledger row to
+`published`. The CLI is one path into the ledger and the posts directory,
+not the only one, which is the point of the "bypasses the CLI" edges above.
 
 `build_blog.parse_post` / `render_post` are imported in-process by
 `blog preview` so the preview path doesn't shell out to a second
@@ -585,15 +629,28 @@ into it today, hence no arrow from CI2 into the Shared box).
 
 | Path | Purpose |
 |---|---|
-| `scripts/blog` | The CLI (Typer-based, ~910 lines) |
+| `scripts/blog` | The CLI (Typer-based, ~1,360 lines) |
 | `scripts/blog.config.yaml` | Redundancy-toggle storage |
 | `scripts/redundancy.py` | Shared toggle checker; called by hook + CI |
 | `scripts/hooks/pre-push` | Bash hook installed via `core.hooksPath` |
 | `scripts/_common.py` | Auto-installs the pre-push hook on first script run |
+| `scripts/_ideas.py` | Shared reader/writer for the idea ledger; every ledger consumer goes through it |
+| `scripts/_issue_forms.py` | Shared parser for rendered GitHub Issue Form bodies; used by both intake scripts |
 | `scripts/lint_blog.py` | Per-post + repo-wide markdown lint |
 | `scripts/lint_vocab.py` | Per-post + repo-wide CMS/HEDIS vocab lint |
-| `scripts/lint_facts.py` | Cross-surface resume / homepage / JSON-LD lint |
+| `scripts/lint_facts.py` | Cross-surface resume / CV / homepage / JSON-LD lint |
+| `scripts/lint_ideas.py` | Ledger ↔ `src/content/blog/` referential integrity lint |
 | `scripts/build_blog.py` | Static-site build; `parse_post` / `render_post` reused by `blog preview` |
+| `scripts/blog_ideas_intake.py` | Turns a phone-submitted "Blog idea" issue into a ledger row |
+| `scripts/blog_draft_edit_intake.py` | Turns a phone-submitted "Blog draft edit" issue into a draft edit, optionally publishing it |
+| `scripts/blog_backlog.py` | Renders the idea/draft funnel as markdown for the weekly digest issue |
 | `.github/workflows/build_blog.yml` | CI build + lint, gated by `ci_blog_lint` toggle |
 | `.github/workflows/build_portfolio.yml` | CI homepage refresh (no lint gating today) |
+| `.github/workflows/blog-idea-intake.yml` | Runs `blog_ideas_intake.py` on a labeled "Blog idea" issue |
+| `.github/workflows/blog-draft-edit-intake.yml` | Runs `blog_draft_edit_intake.py` on a labeled "Blog draft edit" issue |
+| `.github/workflows/blog-backlog-digest.yml` | Monday cron; regenerates the rolling "Blog backlog" tracking issue |
+| `.github/workflows/lint.yml` | Server-side backstop; runs the full lint suite on every PR, every push to main, and a weekly cron |
+| `.github/ISSUE_TEMPLATE/blog-idea.yml` | Native GitHub issue form for phone idea capture |
+| `.github/ISSUE_TEMPLATE/blog-draft-edit.yml` | Native GitHub issue form for phone draft editing |
 | `src/content/blog/*.md` | Blog post sources (frontmatter + markdown) |
+| `src/content/blog-ideas.yaml` | The idea → draft → publish ledger, one row per item |

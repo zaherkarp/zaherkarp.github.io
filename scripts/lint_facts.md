@@ -1,9 +1,10 @@
 # Cross-surface fact lint — playbook
 
-`scripts/lint_facts.py` enforces consistency between the three surfaces
+`scripts/lint_facts.py` enforces consistency between the four surfaces
 that name the same employment facts:
 
 - `src/content/resume.md` — the canonical Markdown source
+- `src/content/cv.md`, the longer-form academic companion source
 - `index.html` — visible chrome (`<h3>` + `<p class="meta">` blocks)
 - `index.html` — embedded JSON-LD (`<script type="application/ld+json">`)
 
@@ -13,7 +14,7 @@ hook installed by `scripts/_common.install_git_hooks()`.
 
 ## What it checks
 
-Three assertions, all phrased as invariants the surfaces should hold:
+Four assertions, all phrased as invariants the surfaces should hold:
 
 1. **Current role agreement.** The newest entry on resume.md (the one
    with `Present` as its end date) must match the first job block on
@@ -30,6 +31,18 @@ Three assertions, all phrased as invariants the surfaces should hold:
    index.html should have exactly one entry with `Present` as the
    end date. Two-current usually means a stale edit; zero-current
    means a missing one.
+
+4. **CV / resume agreement** (skipped, not failed, if cv.md is
+   absent). The CV's current appointment must match the resume's
+   current employer and title, the CV's `## Appointments` section
+   must have exactly one `present` entry, and every resume employer
+   must appear somewhere in cv.md, not just in Appointments (the UW
+   role, for one, lives under `## Past Research Positions`). Because
+   cv.md records years rather than months, the current role's start
+   date is not part of this comparison, unlike assertion 1's
+   month-precision check against the homepage. Implemented in
+   `check_cv_against_resume()` and wired into `main()`; see §H below
+   for its failure playbook.
 
 ## How it works
 
@@ -53,6 +66,13 @@ fact-spine, no schema). It parses the existing surfaces directly:
   `<script type="application/ld+json">` block. Reads `jobTitle`
   and `worksFor.name`.
 
+- **cv.md Appointments**: regex on the `## Appointments` section's
+  year-gutter list, `- **YYYY–YYYY** Org, Title. Optional sentence.`
+  (or `**YYYY–present**` for the current one). Org and title are
+  split out of the line body; no separate date fields are parsed,
+  since the CV records years, not months. This parser is skipped
+  entirely, not run empty, when `cv.md` does not exist. See §H below.
+
 ### Normalization
 
 For comparison, organization names are:
@@ -62,11 +82,19 @@ For comparison, organization names are:
    don't break the match)
 3. Lowercased
 
-Titles are stripped of parentheticals only — no synonym dictionary,
-no fuzzy matching. If the resume says `Analytics Manager` and the
-homepage says `Healthcare Analytics Manager`, the linter fails. That
-is intentional: drift detection is the whole point, and "fix it on
-whichever surface you want to change" is the right response.
+Titles are stripped of parentheticals, then run through one narrow
+fold: the *first* occurrence of `" of "` or `", "` in the title
+becomes a uniform `" :: "` marker. This exists so `Manager of Data
+Science and Engineering` and `Manager, Data Science and Engineering`
+canonicalize to the same string, letting cv.md, the resume, and the
+homepage each pick their preferred register for one title without
+tripping the check. It is not a synonym dictionary and does not do
+fuzzy matching beyond that one substitution: if the resume says
+`Analytics Manager` and the homepage says `Healthcare Analytics
+Manager`, the linter still fails, since neither phrase contains `" of
+"` or `", "` for the fold to act on. That remains intentional: drift
+detection is the whole point, and "fix it on whichever surface you
+want to change" is the right response.
 
 ### Why no synonym table
 
@@ -408,12 +436,123 @@ playbook explaining what changed.
 on success:
 
 ```
-facts lint: 3 resume role(s) + 4 homepage job block(s) consistent
+facts lint: 3 resume role(s) + 4 homepage job block(s) + 2 cv role(s) consistent
 ```
+
+(The `+ N cv role(s)` clause only appears when `cv.md` exists; see §H.)
 
 If the count is lower than expected (e.g., 2 resume roles when you
 have 3), the parser is partially blind and a single role is being
 skipped. Check the format of the role that disappeared.
+
+---
+
+### H. CV / resume agreement mismatch
+
+**Symptom.** One or more of the following. Read the file names in the
+message before picking a section: these look like §A, §B, §E, §F, or §G
+above, but if the message names `cv.md` instead of `index.html`, this
+section is the one that actually explains it (see "Why the letters
+repeat" below).
+
+```
+current employer mismatch: resume.md:11 says 'Baltimore Health Analytics',
+cv.md:9 says 'BHA Inc.'. Playbook: §A.
+```
+
+```
+current title mismatch: resume.md:11 says 'Manager of Data Science & Engineering',
+cv.md:9 says 'Manager, Data Science'. Playbook: §B.
+```
+
+```
+resume.md:21: employer 'sustainable clarity' on resume but not found
+anywhere in cv.md. Playbook: §E.
+```
+
+```
+cv.md: expected exactly 1 'present' appointment, found 2: ['Baltimore
+Health Analytics', 'Some Other Org']. Playbook: §F.
+```
+
+```
+cv.md: no appointments parsed; check the '## Appointments' list format
+(- **YYYY–present** Org, Title.). Playbook: §G.
+```
+
+**Why the letters repeat.** `check_cv_against_resume()` in
+`scripts/lint_facts.py` deliberately reuses the §A/§B/§E/§F/§G labels
+rather than minting new ones, because these are the same kinds of
+drift (current employer, current title, missing employer, multiple
+current roles, unparseable source) checked against a fourth surface.
+The letter tells you the *shape* of the failure; the file name in the
+message body tells you it is this section's shape, not §A-G's.
+
+**Why this check exists.** cv.md is the comprehensive academic
+document; the homepage and resume are curated summaries of it. It is
+also the surface most likely to go stale, since it is edited less
+often than resume.md or index.html. If it drifts from the resume's
+current role, the two documents a hiring committee or search firm are
+most likely to read side by side disagree with each other.
+
+**How cv.md is parsed.** `parse_cv_appointments()` reads the CV's
+`## Appointments` section as a year-gutter list, one entry per line
+(the whole entry, including its optional scope sentence, must fit on
+one line, the parser's regex anchors to end-of-line):
+
+```
+- **2025–present** Baltimore Health Analytics, Manager, Data Science and Engineering. Optional scope sentence.
+```
+
+Two things make this comparison different from resume-vs-homepage:
+
+- **Year-only ranges.** Appointments records `2025–present`, not a
+  month, so the current role's *start date* is never compared (unlike
+  assertion 1's month-precision check in §C). Title still is compared,
+  when the CV line's body includes one, so a title-only line still
+  gets checked; an org-only line does not.
+- **Employer coverage is full-text, not Appointments-only.** Every
+  resume employer must appear somewhere in cv.md, but `## Appointments`
+  holds only the current and immediately prior industry roles. The UW
+  role, for example, lives under `## Past Research Positions`, a
+  different section. So this check searches all of `cv.md`, not just
+  the Appointments list, or the UW employer would fail it every time.
+
+**Triage.**
+
+```bash
+grep -n "^## Appointments" -A 20 src/content/cv.md
+grep -nE '^\*\*' src/content/resume.md
+```
+
+Compare the CV's current (`present`) appointment against the resume's
+first role block, field by field.
+
+**Fix.** Same rule as the rest of this playbook: pick the canonical
+wording and bring the disagreeing surface into line. In practice that
+is usually cv.md, for the staleness reason above.
+
+- Employer / title mismatch: edit the relevant
+  `- **YYYY–present** Org, Title.` line under `## Appointments`.
+- Missing employer: add a line under `## Appointments` (a current or
+  recent industry role) or `## Past Research Positions` (an academic
+  role, like UW). Both sections satisfy the full-text coverage check;
+  only Appointments feeds the current-role comparison.
+- Parser failure: match the `- **YYYY–present** Org, Title.` shape
+  exactly (bold year range, comma before the title, period after).
+
+**Verify.** `python scripts/lint_facts.py`. A clean run's `+ N cv
+role(s)` suffix (see §G above) confirms cv.md was found and parsed;
+its absence means `cv.md` doesn't exist, in which case this check is
+skipped rather than passed.
+
+**False positives.** A CV appointment line with no title (org-only,
+which the format technically allows) is skipped by the title
+comparison rather than flagged, so a false positive there is unlikely.
+If the CV genuinely records a role the resume condenses into a
+different org name, the fix is the same as §E: decide which surface is
+canonical and edit the other one. There is no synonym table here
+either.
 
 ---
 
@@ -440,11 +579,17 @@ Two cases.
    positives). Resist adding a synonym dictionary — keep
    comparison strict.
 
-2. **A new surface (e.g., a future CV PDF source).** Add a parser
+2. **A new surface** (e.g., the GitHub profile README's headline
+   title, generated in a separate repo from resume.md's current
+   role; see CLAUDE.md §GitHub profile README). Add a parser
    function that returns `list[Job]` and run the existing checks
    against it as well. The pattern is `parse_<surface>(text) ->
    list[Job]`. Update this document to list the new surface in
-   the opening summary.
+   the opening summary. cv.md is the precedent to follow: it added
+   `parse_cv_appointments()` plus `check_cv_against_resume()` (§H)
+   rather than folding into the resume/homepage/JSON-LD checks,
+   because its year-only ranges and its own section shape didn't fit
+   the existing `Job` comparisons cleanly.
 
 ## When the linter is wrong
 
@@ -460,15 +605,27 @@ case doesn't relearn it.
 The fact lint is deliberately scoped to the most-leveraged
 invariants. Things it does NOT check today:
 
-- Career-arc SVG `<text>` labels in index.html (lines ~1080–1230
-  for desktop, ~1180–1240 for mobile). Employer name changes here
-  must be made by hand.
-- Education entries (degree, institution, year). The homepage
-  references education in chart annotations and a stat figure
-  rather than a structured list, so cross-surface comparison is
-  fragile. A future check could match on `(degree, institution,
-  year)` triples if the homepage adopts a structured education
-  section.
+- Career-arc SVG `<text>` labels in index.html: the desktop
+  `svg.tl-horizontal` and mobile `svg.tl-rail` figures (currently
+  around lines 2315–2395 and 2398–2423 respectively, but line numbers
+  here drift with every unrelated edit above them; search for the
+  class names instead of trusting these numbers). Employer name
+  changes here must be made by hand.
+- Education entries (degree, institution, year) are now MOSTLY
+  covered, just not by this linter. `index.html` carries a structured
+  `<section id="education">` of `.row-entry` blocks (title, org, date
+  range), and `scripts/lint_gantt.py` reconciles every one of those
+  entries against the Education/Service Gantt figure on year plus
+  token overlap, the same way this linter reconciles resume vs
+  homepage vs JSON-LD vs cv.md. `lint_facts.py` itself still does not
+  read that section; if you want resume/cv.md degree entries checked
+  against the homepage specifically, that gap is real, but "the
+  homepage has no structured education record" is not the reason
+  anymore. One more wrinkle: `#education` has been wrapped in an HTML
+  comment since 2026-07-30 (see CLAUDE.md's Text reduction entries),
+  so it no longer renders, but `lint_gantt.py` slices it with a
+  raw-text regex that does not strip comments, so the section is still
+  parsed and still reconciled against the figure exactly as before.
 - Skills, methods, BI tools listed on the resume vs the
   experience-entry stack lines on the homepage. These overlap
   semantically but rarely in exact wording.

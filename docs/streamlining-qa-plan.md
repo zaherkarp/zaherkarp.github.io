@@ -72,7 +72,7 @@ CLAUDE.md and the pipeline design; none is negotiable inside this program.
 | **Stoplists stay separate** | `lint_recognition` drops `"research"` as generic; `lint_gantt` must keep it so its abbreviated labels still match. Consolidation may share the *matcher functions* with the stoplist passed as a parameter, but must **not** merge the two `STOP` sets. |
 | **No npm / node / JS build tooling** | Rules out any JS-ecosystem QA tool (linters, HTML validators, JS syntax checkers that need node). |
 | **Preserve the redundancy-trailer + `GITHUB_TOKEN` anti-loop design** | The `Blog-CLI-Linted:` short-circuit and the `workflow_run` citation→CV edge are load-bearing. Do not "simplify" them away. |
-| **`index.html` inline CSS stays inline** | ~2,570 lines of inline CSS is a deliberate first-paint decision; no extraction, and no QA gate that assumes an external stylesheet. |
+| **`index.html` inline CSS stays inline** | The single `<style>` block (~1,940 lines) is a deliberate first-paint decision; no extraction, and no QA gate that assumes an external stylesheet. |
 
 Two structural notes that follow from the above:
 
@@ -97,7 +97,7 @@ behavior. Coverage shipped:
 
 | Area | What it exercises |
 | --- | --- |
-| Linters (all 8 gates) | Each linter is run in a **pass** case (against the real repo tree, which is clean) and a **violation** case (a fixture that should trip it), so both exit paths are pinned. |
+| Linters (11 of 12 gates) | Each covered linter is run in a **pass** case (against the real repo tree, which is clean) and a **violation** case (a fixture that should trip it), so both exit paths are pinned. `lint_palette` has no test file yet, a real coverage gap left by its later addition, not closed here. |
 | `build_blog` | Renders pages; the generated `sitemap.xml` and `blog/feed.xml` are asserted to be well-formed XML. |
 | `build_portfolio` | Marker-injection idempotency: running twice against unchanged input is a no-op (the property the pipeline already claims). |
 | `build_resume` | Skills-block regeneration from `skills.yaml`. The WeasyPrint PDF render **self-skips** when `libpango` is absent, so the suite runs green on a machine without the system libraries. |
@@ -219,10 +219,13 @@ together adds coupling for little gain.
 **Status: all shipped.** The five gates below landed one PR each (#96
 lint_links, #97 marginnote block discipline, #98 sim.py py_compile, #99
 lint_html, #100 Lighthouse subpage coverage), each wired into every
-no-drift surface and covered by a pass + violation test. The integrity
-suite is now **10 gate linters + 5 guard steps** (was 8 + 4). The one
-optional item (post-build sanity checks inside the three build workflows)
-is left as a future follow-up, not part of this batch.
+no-drift surface and covered by a pass + violation test. This batch brought
+the integrity suite from 8 gate linters + 4 guard steps to **10 + 5**. Two
+more gate linters, `lint_palette` and `lint_ideas`, landed later (see
+docs/pipelines.md for the roster), so the suite today runs **12 gate
+linters + 5 guard steps**. The one optional item (post-build sanity checks
+inside the three build workflows) is left as a future follow-up, not part
+of this batch.
 
 Each new gate closes a check that README §Before pushing currently asks a
 human to perform. **Wiring requirement (the no-drift contract):** a new gate

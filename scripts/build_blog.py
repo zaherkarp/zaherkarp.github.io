@@ -4,7 +4,9 @@ build_blog.py
 
 Reads markdown + YAML frontmatter from src/content/blog/*.md,
 renders each to blog/<slug>/index.html using Jinja2 templates,
-rebuilds blog/index.html listing, regenerates sitemap.xml.
+rebuilds blog/index.html (current posts, ARCHIVE_CUTOFF and later)
+and blog/archive/index.html (older posts), a per-tag index page under
+blog/tags/, blog/feed.xml, and regenerates sitemap.xml.
 
 Design notes:
 - Math uses LaTeX-style delimiters: \(...\) for inline and \[...\]

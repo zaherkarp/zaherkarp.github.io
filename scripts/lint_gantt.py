@@ -6,6 +6,18 @@ Keeps the homepage Education + Service Gantt figure
 sections it summarizes, WITHOUT a shared data file. The figure is a
 hand-coded SVG; this script reads it and the sections and compares.
 
+Both `<section id="education">` and `<section id="service">` have been
+wrapped in HTML comments in index.html since 2026-07-30 (each judged
+redundant with this figure once its terse labels absorbed every
+entry's title and date). `_section_body` below still parses them
+because it slices raw text and does not strip HTML comments; that is
+deliberate, not an oversight. With the sections hidden, the Gantt
+figure is now the ONLY VISIBLE surface for that content, which raises
+the stakes on this check rather than lowering them: stripping comments
+first would leave nothing to parse, so the gate would pass vacuously
+on the page's one remaining view into this record. Do not "fix" the
+comment-blindness without first replacing what it guards.
+
 The figure has two lanes that mirror two sections:
 
   education lane (y < 135)   <->  <section id="education">
@@ -174,6 +186,11 @@ def parse_figure(text: str) -> list[Item]:
 # ─── section parser ───────────────────────────────────────────────────────
 # The .row-entry field regexes + row_field come from _common (shared with
 # lint_recognition); the <section id> slice below is gantt-local.
+#
+# Matches raw text and does NOT strip HTML comments, on purpose: both
+# #education and #service are commented out in index.html (2026-07-30),
+# and this is how the lint still sees their entries. See the module
+# docstring above.
 
 
 def _section_body(text: str, section_id: str) -> tuple[str, int] | None:

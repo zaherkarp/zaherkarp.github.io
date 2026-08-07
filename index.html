@@ -170,7 +170,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: "et-book", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: 1.4rem;         /* ~21px, Tufte's comfortable body size       */
+  font-size: 1.4rem;         /* ~24px, Tufte's comfortable body size       */
   line-height: 1.58;
   -webkit-font-smoothing: antialiased;
   counter-reset: sidenote-counter; /* auto-number sidenotes page-wide      */
@@ -285,8 +285,9 @@ a:hover {
    the text that references it. The superscript number appears
    inline with the body text.
 
-   Narrow screens (< 760px): there is no margin to float into,
-   so notes are hidden by default. A label tied to a hidden
+   Narrow screens (<= 850px, see the threshold note below): there is
+   no margin to float into, so notes are hidden by default. A label
+   tied to a hidden
    checkbox acts as a toggle; clicking the superscript reveals
    the note inline as an indented block. Pure CSS, zero JS.
    ============================================================ */
@@ -407,16 +408,17 @@ details.speaking-list > summary:focus-visible {
 label.sidenote-number { display: inline; cursor: default; }
 label.margin-toggle:not(.sidenote-number) { display: none; }
 
-/* WCAG 2.4.7 Focus Visible (Haben, 2026-07-18). Above 760px the note
+/* WCAG 2.4.7 Focus Visible (Haben, 2026-07-18). Above 850px the note
    already floats into the margin ungated by :checked, so every toggle
-   is functionless here. Leaving the sr-only inputs focusable made 13
+   is functionless here. Leaving the sr-only inputs focusable made 12
    of them focus stops whose only focus style (the label rule above)
    sits on a display:none box, so the ring had nothing to paint on:
    failure technique F78. Removing them from the tab order at desktop
-   honors the L353-355 intent (never strand a note behind a mouse)
+   honors the "keep it in the tab order so keyboard users can reach
+   the toggle" intent above (never strand a note behind a mouse)
    rather than reversing it. Media-query-scoped deliberately: at 400%
    zoom a 1280px viewport resolves to ~320 CSS px and falls under the
-   <=760px block below, where the labels re-display and the toggles
+   <=850px block below, where the labels re-display and the toggles
    work, so the 1.4.10 Reflow path is untouched. */
 @media (min-width: 851px) {
   input.margin-toggle { display: none; }
@@ -518,8 +520,8 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    8. NEWTHOUGHT
    Small-caps treatment for the first few words of a paragraph.
    Tufte uses this at the start of sections in Beautiful Evidence.
-   Used once here on the About paragraph for demonstration;
-   should be applied sparingly, not on every section.
+   Used on four section leads here (Experience, About, Publications,
+   Speaking), applied sparingly, not on every section.
    ============================================================ */
 .newthought {
   font-variant: small-caps;
@@ -529,9 +531,11 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
 
 /* ============================================================
    9. FULLWIDTH
-   For figures that break the body column. Used below for the
-   career arc timeline and (in a real deployment) for the
-   Stars Cliff simulator embed.
+   For figures that break the body column. Used once below, on the
+   academic activity dot plot. The career arc has its own
+   figure.timeline.career-band width:100% rule instead, and the
+   Stars Cliff Simulator project figure uses .cliff-figure
+   (max-width 600px).
    ============================================================ */
 .fullwidth {
   max-width: 90%;
@@ -560,7 +564,11 @@ nav.top ul {
   padding: 0;
   margin: 0;
   display: flex;
-  flex-wrap: wrap;       /* 9 items may not fit one line at narrower widths */
+  flex-wrap: wrap;       /* Kept for the 4-item nav, which fits one line at every
+                            width today. It was written for the pre-Direction-B
+                            9-item bar; wrapping is still the sanctioned
+                            behaviour (no hamburger), so this stays as the
+                            guard rather than being tuned to the current count. */
   gap: 1.3rem;
   row-gap: 0.4rem;
 }
@@ -705,9 +713,10 @@ figure.timeline figcaption {
   margin-top: 0;
 }
 
-/* Writing small-multiples grid. Sibling of section#writing, mirroring
-   .projects-index/.project-tile but keyed by date instead of a CSS
-   counter, so it never touches the project numbering sequence. */
+/* Writing small-multiples grid. Lives inside .hero-writing (see section
+   20) since the 2026-07-30 text-reduction pass retired section#writing;
+   mirrors .projects-index/.project-tile but keyed by date instead of a
+   CSS counter, so it never touches the project numbering sequence. */
 .writing-index {
   max-width: 90%;
   margin: 2.5rem 0 1rem 0;
@@ -812,11 +821,13 @@ figure.timeline figcaption {
 /* ============================================================
    NEW: Project index (small-multiples grid)
 
-   Architectural note: this element sits OUTSIDE the
-   <section id="projects"> in the DOM, as a sibling. That mirrors
-   the existing fullwidth pattern (career arc, dot plot) and lets
-   the grid use the page's 90% max-width without overriding the
-   60% width rule on sections.
+   Architectural note: this element lives inside the #projects
+   wrapping <div> (2026-07-30) as a sibling of the un-id'd
+   <section> that holds the featured projects, not inside a
+   <section id="projects"> (that id now lives on the outer div).
+   That mirrors the existing fullwidth pattern (career arc, dot
+   plot) and lets the grid use the page's 90% max-width without
+   overriding the 60% width rule on the featured section.
 
    Grid behaviour:
      - auto-fit with minmax(240px, 1fr) gives 2 to 4 columns
@@ -925,10 +936,11 @@ figure.timeline figcaption {
 
    Numbers on .project and .project-tile elements are generated
    from DOM order, not hand-assigned. The counter is reset at
-   #main (a shared ancestor of <section id="projects"> and its
-   sibling <div class="projects-index">) and incremented on every
-   .num element inside either container, so featured projects and
-   index tiles share a single ascending sequence.
+   #main (a shared ancestor of the #projects wrapping <div>, which
+   holds the un-id'd featured <section> and the .projects-index
+   fold as siblings) and incremented on every .num element inside
+   either container, so featured projects and index tiles share a
+   single ascending sequence.
 
    To add, remove, reorder, or promote/demote a project, edit the
    DOM; the digits follow. Markup contract: keep <span class="num">
@@ -969,9 +981,11 @@ figure.cliff-figure figcaption {
 
 /* ============================================================
    COMBINED GANTT FIGURE
-   The Education + Service overlap plot. Sits between the hr
-   that separates Testimonials from Education and the Education
-   section heading itself. Section-width (not fullwidth) so it
+   The Education + Service overlap plot. Sits after the hr that
+   follows Speaking, ahead of the (commented-out, 2026-07-30)
+   Education and Service sections; since those two sections no
+   longer render, this figure is now the visible content between
+   Speaking and Testimonials. Section-width (not fullwidth) so it
    matches the prose column it summarizes.
    ============================================================ */
 figure.gantt-figure {
@@ -994,11 +1008,12 @@ figure.gantt-figure figcaption {
 }
 
 /* ============================================================
-   OUTCOME FIGURES (Experience section)
-   Small before/after bar figures that surface the quantitative
-   outcomes otherwise buried in the role prose. Same sizing
-   idiom as cliff-figure, but narrower, since
-   they sit inline in the 60% body column beside a role lead.
+   OUTCOME FIGURE (Experience section)
+   A small before/after bar figure (Health Catalyst; the
+   healthfinch figure was removed 2026-07-30) that surfaces a
+   quantitative outcome otherwise buried in the role prose. Same
+   sizing idiom as cliff-figure, but narrower, since it sits
+   inline in the 60% body column beside the role lead.
    Pure SVG; the hex presentation attributes adapt to light/dark
    via the palette selectors lower in this stylesheet, and the
    viewBox lets a single copy scale on mobile (no SVG swap). */
@@ -1132,7 +1147,10 @@ figure.funnel-figure figcaption {
    Education and Service both use the same layout: year span on
    the left, content on the right. Two-column semantic <dl> is
    the correct element, but we use flex on an .entry for finer
-   visual control.
+   visual control. Both sections are commented out as of
+   2026-07-30 (see their disabled-section banners below), so this
+   rule set is currently dead CSS, kept in place so the markup
+   renders correctly if either section is restored.
    ============================================================ */
 .row-entry {
   display: flex;
@@ -1208,7 +1226,11 @@ details.fold > *:not(summary) {
   margin-top: 0.9rem;
 }
 
-/* Speaking list inherits from .fold but keeps its own list styling */
+/* Speaking list markup is <details class="speaking-list">, with no
+   .fold class, so it does NOT inherit the .fold rules above; this
+   block is a hand-duplicated copy with its own list styling. That is
+   why every .fold rule in the file (focus-visible, print) carries a
+   paired .speaking-list selector: keep the two in sync by hand. */
 details.speaking-list {
   margin: 1rem 0 2rem 0;
 }
@@ -1355,7 +1377,11 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    view: stroked lines trace via stroke-dashoffset, bars grow
    from their left edge via scaleX. This is pure CSS scroll-
    driven animation (animation-timeline: view()), NO JavaScript,
-   so it stays inside the homepage no-JS contract. Gated by
+   so it stays inside the homepage no-JS contract: no JS for layout,
+   content, or interaction anywhere on this page. The sole carve-out
+   is analytics, the two <script> blocks near the end of <body>
+   (GoatCounter, and an outbound-link click tracker built on top of
+   it) that this contract has never covered. Gated by
    @supports only: browsers without scroll-driven animations
    (older Safari / Firefox) render the final static figure.
    Zero-cost graceful degradation, no fallback needed. (A
@@ -1486,6 +1512,19 @@ svg [stroke="#d0d0c8"] { stroke: var(--rule); }
    the band traces and its label fades on the same staggered beat,
    with no per-band selectors. The arc unfolds as a story:
    editorial, then research, then the data-engineering trio.
+
+   --seq is not always an integer: editorial is 0, research is 1,
+   and the data-engineering trio (healthfinch, Health Catalyst, BHA,
+   all one continuous row 3 in the source data) is 2, 2.3, 2.6 rather
+   than 2, 3, 4. That is deliberate: giving Health Catalyst and BHA
+   the next whole integers would cascade them a full 0.35s apart, the
+   same gap used between editorial/research/data-engineering, which
+   are three UNRELATED rows starting fresh. The fractional sub-beats
+   keep the trio reading as one continuous line picking up speed,
+   not three new bands starting. Do not "round" these to integers;
+   the Gantt figure two sections down uses integers 0-8 only because
+   each of ITS marks is a genuinely separate credential or
+   commitment, not a continuation of the same series.
 
    Scope (2026-07-26 iteration): the career timeline is now a
    full-width band below the writing lede, no longer a peripheral
@@ -1649,11 +1688,13 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
 /* ============================================================
    19. PRINT OVERRIDES
    Paper is always a light medium regardless of the reader's
-   screen mode, so we force light tokens. Hide nav and the
-   career arc SVG (its 1200-unit viewBox exceeds printable
-   column width). Hide the GoatCounter script container and
-   any sidenote toggle controls; sidenote bodies and margin
-   notes still print inline because they're real content.
+   screen mode, so we force light tokens. Hide nav and every
+   figure.timeline (the career arc AND the academic dot plot;
+   both carry viewBoxes that exceed printable column width).
+   GoatCounter needs no rule here: it is a bare <script> with no
+   container, and scripts never render on paper regardless of
+   this block. Hide sidenote toggle controls; sidenote bodies and
+   margin notes still print inline because they're real content.
    ============================================================ */
 @media print {
   :root {
@@ -1684,12 +1725,17 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
      the first page's depth on a name.
 
      `body ` prefix is load-bearing, not decoration. This block is section
-     19 but `.nameplate h1` is defined in section 21, AFTER it, and a
+     19 but `.nameplate h1` is defined in section 20, AFTER it, and a
      media query adds no specificity, so a bare `.nameplate h1` here loses
      the cascade to the later rule and silently does nothing. (The
-     body::before hide above needs no such prefix only because section 22
-     never declares `display`, so nothing competes.) Any future print
-     override of a section 20+ rule has the same hazard. */
+     body::before hide above needs no such prefix for a different reason:
+     section 22 DOES later declare `display: none` on the same selector,
+     in its <=480px rule, but that rule sets the identical value, so
+     whichever one wins the source-order tie changes nothing visible.
+     That is unlike the nameplate case, where the two rules disagree on
+     font-size and the loser's value is silently discarded.) Any future
+     print override of a section 20+ rule has the same hazard, unless,
+     like this one, the later rule happens to agree on the value. */
   body .nameplate h1 { font-size: 24pt; }
   /* Split hero collapses to a single column in print. */
   .split-hero { display: block; }
@@ -1717,7 +1763,8 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    20. SPLIT HERO (Direction B: writing-led, two columns)
    The opening: a Tier-1 proposition, then a full-width TWO-column
    grid (recent writing ~62% / current work ~38%), then the career
-   timeline as a full-width band, then a one-line "More:" row. The
+   timeline as a full-width band. (The one-line "More:" row that used
+   to follow was removed 2026-07-30 along with .hero-more.) The
    grid region is a <div>, not a <section>, so `section { width:
    60% }` and the floating-note margin never apply here; the hero
    carries no floating notes by design (the per-post homepage note
@@ -1738,6 +1785,13 @@ figure.timeline svg.dp-wide a:focus .dp-label { opacity: 1; }
    italic reservation does not list the nameplate (same reasoning as
    the proposition below), and the italic face is a separate 35.8KB
    file that nothing above the fold currently loads. */
+
+/* Overrides section 10's `nav.top { width: 60% }` above by source
+   order alone (identical selector, identical specificity, later
+   rule wins). Needed because the nav lives in .site-header, outside
+   <main>, and should span the header's full width rather than the
+   60% prose-column width section 10 was written for. Anyone editing
+   the section 10 rule should know this one silently wins. */
 nav.top { width: 100%; }
 .nameplate {
   display: flex;
@@ -1805,7 +1859,7 @@ nav.top { width: 100%; }
    work is a compact secondary column (~38%). The career timeline is
    NOT in this grid; it sits full-width below
    (figure.timeline.career-band). DOM order is writing -> project ->
-   band -> more, which is also the stacked mobile order, so visual and
+   band, which is also the stacked mobile order, so visual and
    assistive-tech reading order agree. */
 .split-hero {
   display: grid;
@@ -1881,9 +1935,11 @@ figure.timeline.career-band figcaption {
 .hero-project .project { margin-bottom: 0; }
 .hero-project figure.funnel-figure { font-size: 0.95rem; }
 
-/* One botanical ornament, the page's single decorative mark: faint
-   (var(--rule) via the #d0d0c8 sentinel), tucked at the card foot,
-   aria-hidden, never near the rail axis (Edward/Massimo). */
+/* One botanical ornament, faint (var(--rule) via the #d0d0c8
+   sentinel), tucked at the card foot, aria-hidden, never near the
+   rail axis (Edward/Massimo). The page's original single decorative
+   mark; the section-22 hero corner arc (2026-07-31) added a second,
+   overriding that "one ornament" rule (see section 22's comment). */
 .hero-sprig {
   position: absolute;
   right: -6px;
@@ -1895,14 +1951,13 @@ figure.timeline.career-band figcaption {
 }
 
 /* ============================================================
-   21.1. SPLIT HERO BREAKPOINTS (Direction B)
+   20.1. SPLIT HERO BREAKPOINTS (Direction B)
    The two-column grid uses fr units, so it scales fluidly. The
    1000px stop gives the writing column a little more room at mid
    widths (resolving the 761-1000px squeeze the 2026-07-19 critique
    flagged, now with a compact project column rather than the dense
    scorecard). Below 760px the two columns stack (writing, then
-   current work), the timeline band swaps to the vertical rail, and
-   the "More:" line follows.
+   current work), and the timeline band swaps to the vertical rail.
    ============================================================ */
 @media (max-width: 1000px) {
   .split-hero {
@@ -1921,12 +1976,20 @@ figure.timeline.career-band figcaption {
 
 /* ============================================================
    22. HERO CORNER ARC (owner addition, 2026-07-31)
-   A single large circle whose centre sits above and right of the
-   page's top-right corner, so only its lower-left sweep shows. It
-   is attached to body, NOT to the hero: the hero region begins
-   below .site-header, and the arc is meant to start at the very
-   top of the page, level with the nav. Attaching at page level
-   also means NO new DOM node is needed.
+   A single large circle positioned so its centre lands below and to
+   the right of the page's top-right corner (see the `top` geometry
+   note below; the centre is BELOW the page top, not above it). Only
+   the circle's left half is on screen (right: -0.5 * diameter parks
+   the centre on body's right edge), trimmed by a shallow cap where
+   the page's top edge crops the very top of the circle, since the
+   centre sits only 40% of a radius below that edge. It is attached
+   to body, NOT to the hero: the hero region begins below
+   .site-header, and the arc is meant to start at the very top of the
+   page, level with the nav. Attaching at page level also means NO
+   new DOM node is needed. Depends on the `overflow-x: clip` pair on
+   html and body documented near the top of this stylesheet (html's
+   rule); without both, widening this arc reintroduces ~374px of real
+   horizontal scroll at 1400px.
 
    Second decorative mark on the page, so it overrides the "one
    ornament" rule recorded in CLAUDE.md alongside .hero-sprig,
@@ -1945,11 +2008,19 @@ body::before {
      when only the width is changed at a breakpoint. */
   aspect-ratio: 1;
   border-radius: 50%;
-  /* Centre pushed 20% of the diameter ABOVE the page top (0.5 would put it
-     exactly on the corner, which makes the flat top edge a diameter and the
-     arc meet it at a hard 90 degrees, reading as a pie slice). Off-centre
-     turns that cut into a chord, so the arc leaves the top edge obliquely
-     and reads as a circle continuing behind the header. */
+  /* `top` positions the circle's TOP EDGE, not its centre: at
+     -0.30 * diameter, the top edge sits 30% of a diameter above the
+     page top. The box is exactly one diameter tall, so the CENTRE
+     lands at -0.30d + 0.5d (radius) = +0.20d, i.e. 20% of the
+     diameter BELOW the page top, not above it. 30% of the circle's
+     height is cropped off above the page edge; the visible vertical
+     extent is the remaining 70% of the diameter. (0.5 would put the
+     top edge a full radius above the page top, so the centre would
+     land exactly ON the page top, turning the flat top edge into a
+     diameter and making the arc meet it at a hard 90 degrees, reading
+     as a pie slice.) Off-centre turns that cut into a chord, so the
+     arc leaves the top edge obliquely and reads as a circle
+     continuing behind the header. */
   top: calc(var(--arc) * -0.30);
   /* Centre parked on the viewport's right edge, so exactly the left half is
      on screen and the shape runs off rather than stopping at the column. */
@@ -1989,7 +2060,7 @@ body::before {
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <!-- ==========================================================
-     NAV: restrained, two-tier, small caps
+     NAV: restrained, one row of four, small caps
      Sits OUTSIDE <main> (moved 2026-07-29) so "Skip to main
      content" actually bypasses it; while the nav lived inside,
      the landmark it targets began with the nav it exists to
@@ -2060,9 +2131,9 @@ body::before {
        the featured project MOVED (not copied) from #projects so the
        project CSS counter still reads 01 in DOM order. The career
        timeline is NOT in this grid; it sits full-width below (see
-       figure.timeline.career-band), then the "More:" line.
+       figure.timeline.career-band).
 
-       DOM order is writing -> project (-> band -> more), which is
+       DOM order is writing -> project -> band, which is
        also the stacked mobile order (Haben). No floating notes live
        in this region; the per-post homepage margin note is suppressed
        in the generator for the featured slot, so the floating note
@@ -2073,7 +2144,8 @@ body::before {
     <!-- LEFT: recent writing. Two featured entries lead; the
          six-title index (moved here from the former "More writing"
          fold) follows, compacted to dated titles. The cadence
-         sparkline stays below in #writing.
+         sparkline sits below the index, inside this same column
+         (moved here 2026-07-30, see the CADENCE HEADER comment below).
          This column is the nav's "writing" target (id=writing-hero,
          2026-07-29). -->
     <div class="hero-writing" id="writing-hero">
@@ -2154,8 +2226,15 @@ body::before {
            a small numeric annotation at the end of a sparkline giving
            the series total, so the chart is self-legending.
 
-           Margin note expands into a tag frequency rollup across the
-           24-week window, computed by the same build step.
+           No margin note is emitted here: build_activity_grid() (in
+           scripts/build_portfolio.py) deliberately suppresses the
+           mn-cadence tag-frequency-rollup note since this sparkline
+           moved into the full-width hero column (2026-07-30), because
+           .marginnote uses margin-right: -60%, calibrated to the 60%
+           prose column, so in the hero it would land mid-page instead
+           of beside its anchor. A test
+           (test_activity_grid_suppresses_cadence_marginnote) asserts
+           the absence.
 
            The wrapping markers (activity-grid:start / activity-grid:end)
            are anchors for scripts/build_portfolio.py to rewrite the
@@ -2205,7 +2284,8 @@ body::before {
          remaining projects 02+. The empty .num span is intentional;
          the digit is generated. One botanical ornament lives here as
          a signature, aria-hidden and drawn in var(--rule) via the
-         #d0d0c8 palette sentinel, the page's single decorative mark. -->
+         #d0d0c8 palette sentinel; one of the page's two decorative
+         marks, alongside the section-22 hero corner arc. -->
     <div class="hero-project">
       <h2 class="col-head">Current work</h2>
     <div class="project">
@@ -2439,23 +2519,28 @@ body::before {
        may be dropped. The five .role-anchor spans are the jump
        targets for both career-arc SVGs (lint_links gates them).
 
-       TRIMMED 2026-07-30: 1,252 words to ~430. Three of the four
-       "More detail" folds were retired (BHA, healthfinch, UW) and
-       692 words of fold prose cut to ~60. What survived, and why:
-         - BHA's Huber psi formula was PROMOTED to the visible
-           layer rather than cut; see its own comment below.
+       TRIMMED 2026-07-30 in two passes, hours apart. First pass:
+       1,209 words to ~570 (-53%; docs/experience-text-reduction-
+       2026-07-30.md:116). Three of the four "More detail" folds
+       were retired (BHA, healthfinch, UW) and ~698 words of fold
+       prose cut to ~42; the Huber psi formula was PROMOTED to the
+       visible layer. A second pass, later the same day, cut every
+       lead further (~35-55 words each), returned the Huber formula
+       to a fold (see its own comment below), removed the
+       healthfinch outcome figure, and dropped the sn-ehrs sidenote
+       (its content folded into the lead prose). What survives now:
          - The Health Catalyst fold is the only one left, holding
            the page's only third-party verification (three
            published customer outcomes) and the numbers the
            refill figcaption cites.
-         - Both outcome figures stay. Cutting prose around them
-           raises the section's data-ink ratio, which is the
-           point; they were the answer to the wall-of-text
-           critique and still are.
-         - sn-tech-notes and sn-medallion went with their host
-           paragraphs, taking two toggles out of the tab order.
-           Experience keeps three notes: sn-ehrs and the two
-           .stat-num margin stats.
+         - One outcome figure remains (Health Catalyst). Cutting
+           prose around it raises the section's data-ink ratio,
+           which is the point; it was the answer to the
+           wall-of-text critique and still is.
+         - sn-tech-notes, sn-medallion, and sn-ehrs are all gone
+           with their host paragraphs. Experience keeps exactly two
+           notes, both .stat-num margin stats (mn-hc-caregaps,
+           mn-uw-cohort).
        The section no longer claims to be the complete record; a
        closing line points at the resume and CV instead.
        ========================================================== -->
@@ -2628,12 +2713,14 @@ body::before {
   <!-- ==========================================================
        PROJECTS
        Featured + small-multiples-index layout. Featured projects
-       (full prose + inline figure) live inside this section in
-       the 60% body column; the small-multiples grid is a sibling
-       div (.projects-index) immediately after </section>, at 90%
-       max-width. Project numbers on both featured and tile
-       elements are generated by a CSS counter from DOM order
-       (see "PROJECT NUMBERING (CSS counter)" rule); never
+       (full prose + inline figure) live inside this un-id'd
+       section, itself a child of the outer #projects div, in the
+       60% body column; the small-multiples grid sits in a
+       details.fold (.projects-index) that is this section's
+       sibling inside that same outer div (see PROJECTS INDEX
+       below), at 90% max-width. Project numbers on both featured
+       and tile elements are generated by a CSS counter from DOM
+       order (see "PROJECT NUMBERING (CSS counter)" rule); never
        hand-typed. Stack tags use the same small-caps treatment
        as experience entries.
        ========================================================== -->
@@ -2895,7 +2982,7 @@ body::before {
 
       <!-- YEAR AXIS at y=140. The reference line dividing the two
            lanes. Axis runs 2010 (x=200) to 2019 (x=1145), with
-           115-unit spacing per year. -->
+           105-unit spacing per year. -->
       <line x1="180" y1="140" x2="1180" y2="140" stroke="#111" stroke-width="1"/>
 
       <!-- YEAR TICKS AND LABELS -->
@@ -3001,17 +3088,13 @@ body::before {
            - Year axis horizontal, y=85 (middle of the figure)
            - Publications row above the axis (y=55, dots sized by
              citation count, just like the wide version)
-           - Presentations row below the axis (y=110, single row,
-             single bar per year scaled to count rather than
-             stacking dots vertically)
+           - Presentations row below the axis (y=108+, stacked
+             dots, one per presentation, the same countable-dots
+             encoding as the wide version; see the PRESENTATIONS
+             comment below)
            - Lane labels on the left edge
 
          Trade-offs vs the wide version:
-           - 2015's seven-presentation column becomes a wider bar
-             rather than a stack of seven dots. The shape (peak at
-             2015) is preserved; the literal countability is not.
-             At phone scale, seven stacked dots become illegible
-             smudges, so a clean bar is the better encoding.
            - Dropped the citation-count and "Patient Choice Award"
              annotations. The size of the 2014 publication dot
              already encodes its citation count visually; an
@@ -3023,7 +3106,7 @@ body::before {
 
          Coordinate math:
            - Year x positions: 70 + (year - 2010) * 38 = 70 to 412
-             (10 years, 38px apart, 360-unit usable width)
+             (10 years, 38px apart, 342-unit usable width)
            ========================================================== -->
     <svg class="dp-mobile" viewBox="0 0 440 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019, mobile layout" aria-describedby="dp-m-desc">
       <desc id="dp-m-desc">Presentations per year: one in 2010, two in 2012, three in 2014, seven in 2015 (the peak year), two in 2016, and two in 2017.</desc>
@@ -3289,7 +3372,7 @@ body::before {
        Design:
          - Year axis 2003 to 2026 along the bottom
          - Education lane (upper): 5 entries, ordered by start year
-         - Service lane (lower): 9 entries, ordered by start year
+         - Service lane (lower): 7 entries, ordered by start year
          - Single-year credentials: small filled square
          - Multi-year ranges: horizontal bar (4px stroke)
          - Faint horizontal rule between lanes; lane labels left
@@ -3457,14 +3540,15 @@ body::before {
   <!-- ==========================================================
        EDUCATION - DISABLED, NOT DELETED (owner, 2026-07-30)
        Commented out for the same reason and by the same mechanism as
-       SERVICE just above: after today's trim, the Gantt figure's terse
-       labels already state all five entries' TITLE and DATE ("MPH,
-       Biostatistics", "Oxford, qualitative methods", etc.), so this
-       section had become ~90% redundant with the figure directly above
-       it. Verified before disabling: only two facts anywhere in this
-       fold were not already in the chart, the $18,000 MPH grant and the
-       Carayon/AHRQ Patient Safety detail, and both were folded into the
-       Gantt figcaption before this section was hidden.
+       SERVICE below: after today's trim, the Gantt figure's terse
+       labels already state all five entries' TITLE ("MPH,
+       Biostatistics", "Oxford, qualitative methods", etc.); dates are
+       read positionally against the axis and are never written out, so
+       this section had become ~90% redundant with the figure directly
+       above it. Verified before disabling: only two facts anywhere in
+       this fold were not already in the chart, the $18,000 MPH grant
+       and the Carayon/AHRQ Patient Safety detail, and both were folded
+       into the Gantt figcaption before this section was hidden.
 
        WHY THIS STILL LINTS. lint_gantt.py's _section_body slices this
        section with a raw-text regex and does not strip HTML comments,
@@ -3479,14 +3563,16 @@ body::before {
        and lint_links cannot see blog-to-homepage fragments.
 
        The trailing horizontal rule is INSIDE the disabled region, same
-       reasoning as SERVICE: a rule already precedes this banner.
+       reasoning as SERVICE below (see that banner for the reasoning,
+       corrected there for why the "rule already precedes" justification
+       no longer holds now that both sections are disabled).
 
        To restore: delete the bare comment-open line below and the bare
        comment-close line after the disabled rule, then move the
        id="education" anchor back onto the section.
 
        Do NOT write comment delimiters, or a literal rule tag, as prose
-       in this banner; see the SERVICE banner above for why.
+       in this banner; see the SERVICE banner below for why.
 
        Content notes, still accurate: year-span-left, content-right
        layout; committee and advisor names stored as a muted row-note
@@ -3571,9 +3657,19 @@ body::before {
        beside that figure, because every generated blog page links to
        /#service and lint_links cannot see blog-to-homepage fragments.
 
-       The trailing horizontal rule is INSIDE the disabled region: a rule
-       already sits above this banner, so disabling the section alone
-       would leave two adjacent rules before Testimonials.
+       The trailing horizontal rule is INSIDE the disabled region. That
+       mattered when this section was first disabled: Education (the
+       section immediately above) was still live at that point, so its
+       own trailing rule butted directly against this one, and keeping
+       this rule inside the comment kept the two from doubling.
+       Education was disabled 20 minutes later, so the rule immediately
+       above this banner is now ALSO inside a commented-out block and
+       currently renders nothing on its own. The trailing rule stays
+       inside this block regardless, so each of the three disabled
+       sections carries its own rule rather than needing a hand-added
+       one if it is restored alone; see the standalone rule before
+       Testimonials below for a doubling case a partial restore still
+       has to check by hand.
 
        To restore: delete the bare comment-open line below and the bare
        comment-close line after the disabled rule, then move the
@@ -3676,9 +3772,17 @@ body::before {
        assistive tech.
 
        The trailing horizontal rule is INSIDE the disabled block on
-       purpose. A rule already sits above this banner, so disabling
-       the section alone would leave two adjacent rules between
-       #service and #testimonials.
+       purpose. That mattered when this section was first disabled:
+       Service (the section immediately above) was still live at that
+       point, so its own trailing rule butted directly against this
+       one, and keeping this rule inside the comment kept the two from
+       doubling. Service was disabled in a later pass the same day, so
+       today the rule immediately above this banner is ALSO inside a
+       commented-out block and renders nothing on its own. The trailing
+       rule stays inside this block regardless, for the same
+       restore-symmetry reason given in the SERVICE banner above; see
+       the standalone rule below (before Testimonials) for a doubling
+       case a partial restore still has to check by hand.
 
        To restore: delete the bare comment-open line just below
        this banner, and the bare comment-close line after the
@@ -3720,9 +3824,17 @@ body::before {
        service, and certifications all commented out on 2026-07-30, that
        left zero live rules between the Gantt and Testimonials, breaking
        the section-then-rule rhythm every other boundary on the page
-       keeps. This one rule restores it and survives any future restore
-       of the sections above without becoming a duplicate: it sits
-       outside every wrap. -->
+       keeps. This one rule restores it for today's actual state (all
+       three sections disabled), but it is NOT immune to a partial
+       restore: restoring any one of the three sections alone (per its
+       own banner's restore instructions) brings that section's own
+       trailing rule back live, and since the sections after it stay
+       disabled and invisible, that rule lands immediately next to this
+       one with nothing rendering between them, two adjacent rules. Not
+       moved to avoid that, because it is also what keeps a rule between
+       the Gantt and Testimonials in the current all-disabled state. A
+       partial restore of any of the three needs the restorer to check
+       for, and remove, the resulting doubled rule by hand. -->
   <hr>
 
   <!-- ==========================================================

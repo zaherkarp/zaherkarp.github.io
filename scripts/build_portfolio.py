@@ -2,31 +2,42 @@
 """
 build_portfolio.py
 
-Injects four pieces of build-time content into index.html, between marker
-comments:
+Injects six pieces of build-time content: five marker regions in
+index.html, plus one in life-in-weeks/index.html.
 
-  <!-- activity-grid:start --> ... <!-- activity-grid:end -->
-    24-week dot sparkline showing recent posting cadence. Sourced from the
-    blog frontmatter (publishDate, draft). No external requests.
+  <!-- activity-grid:start --> ... <!-- activity-grid:end -->  (index.html)
+    24-week inline stem sparkline showing recent posting cadence: one
+    vertical stem per week, height proportional to that week's post
+    count, silent weeks rendering as empty space. Sourced from the blog
+    frontmatter (publishDate, draft). No external requests.
 
-  <!-- writing-list:start --> ... <!-- writing-list:end -->
-    The two most recent non-draft posts, rendered as the homepage Writing
-    section's featured entries (full summary). Sourced from the blog
-    frontmatter; the optional `homepageMarginnote` field renders an inline
-    margin note next to the entry title.
+  <!-- writing-list:start --> ... <!-- writing-list:end -->  (index.html)
+    The two most recent non-draft posts, rendered as the full featured
+    entries inside the split hero's `.hero-writing` column (there is no
+    longer a standalone Writing section; see build_writing_list()).
+    Sourced from the blog frontmatter. `homepageMarginnote` is still
+    read and preserved but is NOT rendered here; the hero has no
+    floating-note margin for it to live in.
 
-  <!-- writing-index:start --> ... <!-- writing-index:end -->
+  <!-- writing-index:start --> ... <!-- writing-index:end -->  (index.html)
     The next six posts after the featured pair, rendered as compact
-    .writing-tile small multiples in the sibling .writing-index grid.
-    Same frontmatter source; margin notes are featured-only, so tiles
-    omit homepageMarginnote.
+    .writing-tile small multiples in the sibling .writing-index grid,
+    also inside .hero-writing. Same frontmatter source; margin notes
+    are featured-only, so tiles omit homepageMarginnote too.
 
-  <!-- pub-list:start --> ... <!-- pub-list:end -->
+  <!-- pub-list:start --> ... <!-- pub-list:end -->  (index.html)
     The Publications block, generated from src/content/publications.yaml
     (the single source of truth shared with the CV build). Semantic Scholar
     citation counts are refreshed per entry `sid` and written back into the
     YAML cache; on fetch failure the cached value is preserved (so a flaky
     network or rate-limit doesn't wipe prior values).
+
+  <!-- updated:start --> ... <!-- updated:end -->  (index.html)
+    The page-closer "Updated YYYY-MM" date stamp, month precision.
+
+  // blog-thoughts:start ... // blog-thoughts:end  (life-in-weeks/index.html)
+    One generated EVENTS entry per non-draft post that resolves a topic,
+    merged into that page's weekly grid as a "thought" dot.
 
 The script is idempotent: running it twice with the same inputs produces
 the same output. See .github/workflows/build_portfolio.yml for the CI
@@ -230,16 +241,16 @@ def build_writing_list(posts: list[dict]) -> str:
     so featured and tile text stay visually uniform. The featured/tile
     distinction is carried by title size and layout, not blurb length.
 
-    `homepageMarginnote` is NO LONGER rendered. Since the Timeline Split
-    redesign (2026-07-26) the featured entries lead the split hero, a
-    three-column grid that opts out of the 60% prose column and therefore
-    has no right margin for a floating sidenote to live in. Running a
-    second, inline-toggle note idiom just in the hero was rejected by the
-    Design Council (Edward: "a fracture"; Haben: a comprehension cost), so
-    the per-post note is suppressed here and the floating note stays the
-    page's sole note idiom everywhere else. The frontmatter field is still
-    read and preserved by the blog tooling; it simply no longer surfaces on
-    the homepage.
+    `homepageMarginnote` is NO LONGER rendered. Since the Direction B
+    iteration (2026-07-26) the featured entries lead the split hero, a
+    two-column asymmetric grid (writing / current work) that opts out of
+    the 60% prose column and therefore has no right margin for a floating
+    sidenote to live in. Running a second, inline-toggle note idiom just
+    in the hero was rejected by the Design Council (Edward: "a fracture";
+    Haben: a comprehension cost), so the per-post note is suppressed here
+    and the floating note stays the page's sole note idiom everywhere
+    else. The frontmatter field is still read and preserved by the blog
+    tooling; it simply no longer surfaces on the homepage.
     """
     recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
     blocks: list[str] = []
@@ -427,8 +438,6 @@ def write_citation_snapshot(pubs: list[dict]) -> None:
     print(f"  wrote citation snapshot {path.relative_to(ROOT)} ({len(counts)} entries)")
 
 
-# ─── marker replacement ───────────────────────────────────────────────────
-
 # ─── page closer (Updated YYYY-MM) ────────────────────────────────────────
 
 def build_updated_footer() -> str:
@@ -436,7 +445,7 @@ def build_updated_footer() -> str:
 
     Month-precision (not day) because the page doesn't typically change
     day-to-day in ways a reader cares about; the activity grid already
-    carries day-precision for posting cadence. The hairline rule and
+    carries week-precision for posting cadence. The hairline rule and
     .page-footer styling live in index.html's <style> block.
     """
     today = date.today()
@@ -478,6 +487,8 @@ def build_life_thoughts(posts: list[dict]) -> str:
         )
     return "\n".join(lines)
 
+
+# ─── marker replacement ───────────────────────────────────────────────────
 
 def replace_between_js(text: str, marker: str, payload: str) -> str:
     """Marker replace for `// marker:start` / `// marker:end` JS comments

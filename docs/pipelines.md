@@ -72,12 +72,19 @@ Every fact on the site traces to exactly one of these:
 | `src/content/cv.md` | `cv.pdf`, `cv.html`; the reconciliation target for recognition/facts lints | the comprehensive academic record |
 | `src/content/skills.yaml` | the resume's `## Skills` block (regenerated into resume.md, gated by `lint_skills`) + the private job-search tooling (matrix, packets, job-fit report) | the canonical skill list |
 | `src/data/cms-ma-pd-stars-2025.csv` | the homepage Star Ratings cliff curve | the CMS rating distribution |
-| `index.html` (hand-authored prose + marked regions) | the homepage itself | experience, projects, speaking, service, certifications, the hero |
+| `src/content/palette.yaml` | `index.html`, `blog.css`, `404.html`, the three subpages, the four resume/CV templates, `favicon.svg` (each via its own local token names, e.g. `--paper` on the homepage vs `--bg`/`--text` in the blog) | the site-wide color palette (light/dark/print/favicon roles) |
+| `index.html` (hand-authored prose + marked regions) | the homepage itself | experience, projects, speaking, the hero (education, service, and certifications are HTML-comment-disabled as of 2026-07-30 but retained verbatim; see CLAUDE.md §Recognition alignment lint) |
 | `og-default.png` design tokens (inlined in `build_og.py`) | the Open Graph card | the social share image |
 
 Note `index.html` is *both* a hand-authored source (its prose) and a
 generated target (its marked regions). That dual role is why it appears on
 both sides of the diagram below.
+
+`palette.yaml` is a source in the same sense, but is deliberately **not**
+counted among the twelve build pipelines in §The build pipelines below (see
+CLAUDE.md §Palette pipeline) even though `build_palette.py` and
+`lint_palette.py` are real, wired-in scripts, covered under §The linters
+instead.
 
 Four of these sources (blog frontmatter, `publications.yaml`, `resume.md`,
 and `skills.yaml`) also feed a surface in a *different* repository: the GitHub
@@ -107,6 +114,7 @@ They locate a `start`/`end` comment pair and replace only what's between it:
 <!-- writing-index:start -->   …6 tile posts…                    <!-- writing-index:end -->
 <!-- pub-list:start -->        …Publications block…              <!-- pub-list:end -->
 <!-- cliff-path:start -->      …Star Ratings density SVG path…   <!-- cliff-path:end -->
+<!-- updated:start -->         …"Updated YYYY-MM." footer line…  <!-- updated:end -->
 // blog-thoughts:start         …💭 dots in life-in-weeks EVENTS… // blog-thoughts:end
 <!-- publications -->          …(single placeholder in cv.md)…
 ```
@@ -115,6 +123,16 @@ Rule: **never hand-edit between a start/end pair.** The next build
 overwrites it. Edit the *source* (the YAML, the blog frontmatter, the CSV)
 and re-run the generator. The lint-notes pipeline explicitly exempts these
 regions from its additivity checks for the same reason.
+
+A structurally different marker family, not shown in the table above because
+it doesn't fit the one-file-one-pair shape: `palette:light` / `palette:dark`
+(CSS comment syntax, `/* palette:start */ ... */`) and `palette:print` /
+`palette:start` (XML, in `favicon.svg`) each repeat across ~11 files,
+including `index.html`, `blog.css`, `404.html`, the three subpages, and the
+four resume/CV templates, wrapping only the declaration lines inside
+whatever `:root` the file already has. `scripts/build_palette.py` rewrites
+every span from `src/content/palette.yaml`; `scripts/lint_palette.py` guards
+drift. See CLAUDE.md §Palette pipeline.
 
 ### CI choreography and the commit-back loop
 
@@ -180,7 +198,8 @@ anti-recursion rule). Two consequences shape the rest of the design:
                    unconditionally (the server-side backstop)
   pre-push hook ─▶ lint_blog · lint_vocab · lint_facts · lint_notes ·
                    lint_recognition · lint_gantt · lint_markers ·
-                   lint_skills · lint_links · lint_html + guard steps
+                   lint_skills · lint_links · lint_html · lint_palette ·
+                   lint_ideas + guard steps
   CI (build_blog) ─▶ lint_vocab · lint_blog   (before build; trailer can skip)
   manual only ─▶ lint_jobfit   (informational, always exits 0)
 ```
@@ -199,9 +218,11 @@ runs from an external repo's own CI (10). Each section gives source → output �
 - **Output:** `blog/<slug>/index.html`, `blog/index.html`,
   `blog/archive/index.html`, `blog/feed.xml`, `sitemap.xml`
 - **CI:** `.github/workflows/build_blog.yml` — push under
-  `src/content/blog/**`, `scripts/**`, or the workflow; plus
-  `workflow_dispatch`. Runs `lint_vocab.py` then `lint_blog.py` first;
-  either failure aborts the build.
+  `src/content/blog/**`, `scripts/build_blog.py`,
+  `scripts/templates/blog/**`, `scripts/requirements.txt`, or the workflow
+  itself; plus `workflow_dispatch`. (Narrower than `scripts/**`: touching,
+  say, `scripts/lint_notes.py` does not trigger it.) Runs `lint_vocab.py`
+  then `lint_blog.py` first; either failure aborts the build.
 
 markdown-it-py + mdit-py-plugins + Jinja2 + python-frontmatter. Math
 (`\(...\)` / `\[...\]`) is stashed before parsing and restored verbatim for
@@ -223,7 +244,7 @@ CLAUDE.md §Blog pipeline.
   the script, `scripts/requirements.txt`, or blog posts; Sundays 06:00 UTC
   (citation refresh); manual dispatch.
 
-Four insertions:
+Five insertions:
 - `activity-grid` markers → 24-week posting-cadence sparkline (no network).
 - `writing-list` / `writing-index` markers → 2 featured posts + 6 tiles.
   Em-dashes stripped on import. Optional `homepageMarginnote` frontmatter
@@ -231,6 +252,8 @@ Four insertions:
 - `pub-list` markers → the Publications block, rendered by
   `_publications.render_homepage_entries()` from `publications.yaml`,
   including a Semantic Scholar citation count per entry with a `sid`.
+- `updated` markers → the footer's "Updated YYYY-MM." date stamp
+  (`build_updated_footer()`), month-precision, written on every run.
 - `blog-thoughts` JS markers in life-in-weeks → one 💭 dot per post.
 
 Semantic Scholar's public tier rate-limits (HTTP 429); the script retries
@@ -251,10 +274,11 @@ weekly `publications.yaml` commit even when no count changed. See CLAUDE.md
   `publications.yaml`
 - **Output:** `resume.pdf`, `resume.html`, `cv.pdf`, `cv.html`
 - **CI:** `.github/workflows/build_resume.yml` — push to either markdown
-  source, `publications.yaml`, the templates, the bundled fonts, the script,
-  or `_publications.py`; plus a `workflow_run` edge that fires after the
-  weekly **Build portfolio** run completes successfully, so the CV picks up
-  the citation counts that run just refreshed (see §CI choreography).
+  source, `publications.yaml`, `skills.yaml`, the templates, the bundled
+  fonts, the script, `_publications.py`, or `_skills.py`; plus a
+  `workflow_run` edge that fires after the weekly **Build portfolio** run
+  completes successfully, so the CV picks up the citation counts that run
+  just refreshed (see §CI choreography).
 
 One config-driven pipeline emits both documents (the `DOCS` list names each
 source, its two templates, and its two outputs). markdown-it-py + Jinja2 +
@@ -318,9 +342,13 @@ not site changes.
 - `site-review-check.yml` — `workflow_dispatch` to flip checklist items on a
   tracking issue.
 
-Operator notes: `scripts/review/README.md` and `reviews/README.md`. The
-multi-agent prompts live under `scripts/review/prompts/`. See CLAUDE.md
-§Site review workflow.
+Operator notes: `scripts/review/README.md` and `reviews/README.md`. Two
+panel prompts (`assess-items.md`, `design-council.md`) are committed under
+`scripts/review/prompts/`; the four multi-agent review-report prompts (craft
+critique, alignment summary, hiring eval, synthesis) that this pipeline
+actually runs are deliberately **not** committed (Option A scope: prompts
+live with the generator, not the repo). Both operator READMEs say so. See
+CLAUDE.md §Site review workflow.
 
 ### 8. Lighthouse — `.github/workflows/lighthouse.yml`
 
@@ -502,7 +530,7 @@ run.
 | `lint_facts.py` | cross-surface fact drift between `resume.md`, `cv.md`, `index.html` h3+meta, and JSON-LD (playbook: `scripts/lint_facts.md`) |
 | `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats; margin block discipline (no block-level tags inside a note span) |
 | `lint_recognition.py` | homepage `#service` ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML) |
-| `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry |
+| `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry (both sections are HTML-comment-disabled since 2026-07-30; the figure is now their only visible surface) |
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
 | `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
@@ -637,16 +665,24 @@ add margin stats where a genuinely buried number exists.
 
 ### Add an award / recognition
 
-Two surfaces, reconciled by two linters:
+Two surfaces, reconciled by two linters. **As of 2026-07-30 the homepage
+`<section id="service">` is wrapped in an HTML comment** (kept verbatim so a
+future restore stays correct, but it renders nowhere today). The
+**Education+Service Gantt figure is now the only VISIBLE public surface**
+for recognition entries; its figcaption points readers at `/cv.html` for
+orgs and citations. Both linters still parse the commented-out section with
+a raw-text regex that does not strip HTML comments, so they keep guarding it
+exactly as if it were live.
 
 1. Add the full record to `cv.md` (`## Awards and Honors`,
    `### Fellowships and Training`, or `## Service and Professional
    Activities`).
-2. If it should appear publicly, add a `.row-entry` to the homepage
-   `<section id="service">` **and** a mark to the Education+Service Gantt
-   (`figure.gantt-figure`): compute `x = 90 + (year - 2003) * 19`, add the
-   square (`<rect fill="#111">`) or bar (`<line stroke-width="4">`) + label,
-   extend the lane/axis if rows run out.
+2. If it should appear publicly, add a `.row-entry` inside the commented-out
+   homepage `<section id="service">` (so a future restore is correct) **and**
+   a mark to the Education+Service Gantt (`figure.gantt-figure`), which is
+   what a reader actually sees: compute `x = 90 + (year - 2003) * 19`, add
+   the square (`<rect fill="#111">`) or bar (`<line stroke-width="4">`) +
+   label, extend the lane/axis if rows run out.
 3. Run `python scripts/lint_recognition.py` and `python scripts/lint_gantt.py`.
 
 The homepage is a curated subset of the CV (homepage ⊆ CV), so CV-only items
@@ -655,9 +691,12 @@ are fine; a public item with no CV record fails the push. See CLAUDE.md
 
 ### Add a certification
 
-Hand-sync two surfaces (no linter covers this pair): the homepage
-`<section id="certifications">` one-line prose list and `cv.md`
-`## Certifications`. Keep them in sync by hand. See CLAUDE.md §Recognition
+`cv.md` `## Certifications` is the live record. **The homepage
+`<section id="certifications">` has been wrapped in an HTML comment since
+2026-07-30** (kept verbatim so it can be restored, but it renders nowhere,
+isn't indexed, and isn't read by assistive tech). No linter covers this
+pair. Add the entry to `cv.md`, and update the commented-out homepage list
+by hand too so a future restore stays correct. See CLAUDE.md §Recognition
 alignment lint (Certifications note).
 
 ### Edit the resume or CV

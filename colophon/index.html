@@ -154,11 +154,12 @@
       preprocessor, no bundler, no Google Fonts. The body face is ETBook, the
       MIT-licensed revival of the type Tufte used in print, self-hosted in two
       weights. JavaScript appears in exactly four narrow places: a
-      privacy-respecting page-view counter, and three URL-scoped interactive
-      subpages where static markup genuinely cannot express the idea (a Star
-      Ratings cliff simulator, a 4,680-week life grid, and a stochastic epidemic
-      model that runs Python in the browser). Everywhere else, including this
-      page, the rule is HTML and CSS or nothing.</p>
+      privacy-respecting page-view counter and its outbound-click companion, and
+      three URL-scoped interactive subpages where static markup genuinely cannot
+      express the idea (a Star Ratings cliff simulator, a 4,680-week life grid,
+      and a stochastic epidemic model that runs Python in the browser).
+      Everywhere else, including this page, the rule is HTML and CSS or
+      nothing.</p>
 
       <h2>Build pipelines</h2>
       <p>Five Python scripts turn source files into the published site. Each is
@@ -188,7 +189,7 @@
       <div class="spec">
         <div><span class="k">lint_facts.py</span><span class="v">Cross-checks employer, title, and dates across the resume, the homepage, and the structured JSON-LD metadata. The same fact stated in three places must agree.</span></div>
         <div><span class="k">lint_recognition.py</span><span class="v">Every award or service entry shown on the homepage must have a counterpart in the comprehensive CV record. The public highlight reel is a strict subset of the full one.</span></div>
-        <div><span class="k">lint_gantt.py</span><span class="v">The hand-coded Education and Service timeline figure must carry a mark for every entry in the prose sections it summarizes, read back from the chart's own coordinate transform.</span></div>
+        <div><span class="k">lint_gantt.py</span><span class="v">The hand-coded Education and Service timeline figure must carry a mark for every entry in the prose sections it summarizes, read back from the chart's own coordinate transform. Those two prose sections are commented out today, so the figure is their only visible surface.</span></div>
         <div><span class="k">lint_notes.py</span><span class="v">A margin note may not restate a number or a phrase already in the page's prose, so the asides stay additive rather than redundant.</span></div>
         <div><span class="k">lint_vocab.py</span><span class="v">Program names from CMS, like Star Ratings and Medicare Advantage, render in their canonical capitalization across every post and page.</span></div>
         <div><span class="k">lint_blog.py</span><span class="v">Catches the source-side markdown mistakes that render as garbage: leaked HTML comments, blank lines inside an inline SVG, a diagram written as a blockquote.</span></div>

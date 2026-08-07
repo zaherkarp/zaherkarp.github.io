@@ -17,14 +17,18 @@ simulation, review personas) under §Agent panels.
 index.html                  Main portfolio page (inline CSS, Tufte palette)
 blog.css                    Shared stylesheet for /blog/
 blog/                       Generated blog output — do not hand-edit
-resume.pdf                  Generated resume — do not hand-edit
+resume.pdf, resume.html     Generated resume — do not hand-edit
+cv.pdf, cv.html             Generated CV, do not hand-edit
 sitemap.xml                 Generated (by build_blog.py)
 favicon.svg, og-default.png SEO / social assets
+404.html                    Custom not-found page (GoatCounter-tracked)
 robots.txt, .nojekyll, CNAME GitHub Pages config
 
 star-rating-predictor/      Interactive Medicare Star Rating predictor
                             (inline vanilla JS)
 life-in-weeks/              90-year life-in-weeks grid (inline vanilla JS)
+epidemic-simulation/        Stochastic SEIRV simulator; Pyodide + Plotly via
+                            CDN, the site's one CDN-dependent subpage
 
 src/content/
   blog/*.md                 Blog post sources (frontmatter + markdown)
@@ -33,8 +37,12 @@ src/content/
   cv.md                     Comprehensive academic CV source
   publications.yaml         Publications (one source for homepage + CV)
   skills.yaml               Skill list (private job-search tooling)
+  palette.yaml              Single-source color palette (light + dark tokens)
 src/data/
   cms-ma-pd-stars-*.csv     CMS Star Ratings distribution (cliff curve)
+data/
+  snapshots/<date>.json     Longitudinal citation-count history, appended
+                            by build_portfolio.py on record-on-change runs
 
 scripts/
   blog                      Authoring CLI (idea/promote/queue/publish; blog.md)
@@ -48,6 +56,8 @@ scripts/
   build_portfolio.py        Activity grid + writing list + citation counts
   build_cliff.py            Star Ratings density curve (manual, annual)
   build_og.py               Open Graph card renderer (manual)
+  build_palette.py          Palette pipeline: renders src/content/palette.yaml
+                            into every consuming file's palette:* marker block
   build_jobsearch.py        Private, local-only job-search driver
   lint_*.py                 Guards (blog, vocab, facts, notes, recognition,
                             gantt, markers, skills, links, html, palette,
@@ -66,7 +76,7 @@ docs/
 
 .github/workflows/
   build_blog.yml            Builds blog + commits output on push
-  build_resume.yml          Builds resume PDF + commits on push
+  build_resume.yml          Builds resume + CV PDF/HTML + commits on push
   build_portfolio.yml       Refreshes activity grid, homepage writing list,
                             and citation counts (also runs weekly on a
                             schedule). Triggers on any blog post change so
@@ -78,6 +88,18 @@ docs/
                             closes the issue
   blog-backlog-digest.yml   Mondays: refreshes the rolling backlog issue,
                             comments only on newly stale items
+  lint.yml                  Server-side backstop: runs the full lint suite
+                            unconditionally on every PR and push to main
+  tests.yml                 Runs the pytest characterization suite under
+                            scripts/tests/
+  critique.yml              Runs the critique pipeline (Claude Code Action)
+                            against a target file; monthly cron + manual
+  lighthouse.yml            Lighthouse CI on PRs touching page-affecting
+                            paths (index.html, blog.css, subpages, ...)
+  site-review-check.yml     Manual dispatch: flips checkboxes on the
+                            tracking issue a site review produced
+  site-review-publish.yml   Opens/updates a tracking issue from new
+                            critiques/, evaluations/, or reviews/ docs
 
 archive/                    Historical reference (not served)
   redesign/                 Tufte rebuild rationale doc
@@ -109,13 +131,16 @@ job-search, and external GitHub-profile pipelines are documented in full in
                                                           ▼
                                                 resume.pdf, resume.html
 
-  src/content/blog/*.md  ──┐
-  index.html (markers)   ──┴──────────────────────────▶ build_portfolio
+  src/content/blog/*.md         ──┐
+  src/content/publications.yaml ──┤
+  index.html (markers)          ──┴───────────────────▶ build_portfolio
                                                           │
                                                           ▼
-                                            index.html (activity grid,
-                                                       writing list,
-                                                       citations)
+                                            index.html (sparkline, writing
+                                                       list + tiles, pub
+                                                       list, updated stamp),
+                                            life-in-weeks/index.html,
+                                            data/snapshots/<date>.json
 
   blog-ideas.yaml (ledger) ─┐
   src/content/blog/*.md   ──┴─────────────────────────▶ blog queue
@@ -140,7 +165,8 @@ job-search, and external GitHub-profile pipelines are documented in full in
 
 - **Source:** `src/content/blog/*.md` (markdown + YAML frontmatter)
 - **Output:** `blog/<slug>/index.html`, `blog/index.html`,
-  `blog/archive/index.html`, `sitemap.xml`
+  `blog/archive/index.html`, `blog/tags/` (tag index + one page per
+  tag), `blog/feed.xml`, `sitemap.xml`
 - **CI:** [build_blog.yml](.github/workflows/build_blog.yml) on push to
   `src/content/blog/**`, `scripts/build_blog.py`,
   `scripts/templates/blog/**`, or `scripts/requirements.txt`
@@ -162,13 +188,14 @@ back to the repo.
 - **Output:** `resume.pdf` (US Letter, single column, ATS-parseable),
   `resume.html`
 - **CI:** [build_resume.yml](.github/workflows/build_resume.yml) on push
-  to `src/content/resume.md`, `scripts/build_resume.py`,
-  `scripts/templates/resume/**`, `scripts/fonts/**`, or
-  `scripts/requirements.txt`. (It also builds the CV from
-  `src/content/cv.md` + `publications.yaml`, and re-runs via a
-  `workflow_run` edge after the weekly **Build portfolio** run so the CV
-  picks up freshly refreshed citation counts — see
-  [docs/pipelines.md](./docs/pipelines.md).)
+  to `src/content/resume.md`, `src/content/cv.md`,
+  `src/content/publications.yaml`, `src/content/skills.yaml`,
+  `scripts/build_resume.py`, `scripts/_publications.py`,
+  `scripts/_skills.py`, `scripts/templates/resume/**`,
+  `scripts/fonts/**`, `scripts/requirements.txt`, or the workflow file
+  itself. It also re-runs via a `workflow_run` edge after the weekly
+  **Build portfolio** run so the CV picks up freshly refreshed citation
+  counts, see [docs/pipelines.md](./docs/pipelines.md).
 
 Markdown renders through a Jinja2 template; WeasyPrint prints the PDF.
 A regex post-pass converts the three-line role block (`**Company** |
@@ -183,27 +210,50 @@ runs with `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib`.
 
 ### Portfolio (`scripts/build_portfolio.py`)
 
-- **Source:** `src/content/blog/*.md` frontmatter + `index.html` marker
-  comments
-- **Output:** in-place updates to `index.html` (no new files)
+- **Source:** `src/content/blog/*.md` frontmatter,
+  `src/content/publications.yaml`, and `index.html` marker comments
+- **Output:** in-place updates to `index.html`, plus a companion
+  marker-bounded region in `life-in-weeks/index.html`, plus a new
+  `data/snapshots/<date>.json` on any run where a citation count
+  actually changed (see below)
 - **CI:** [build_portfolio.yml](.github/workflows/build_portfolio.yml)
   on push to `index.html`, `scripts/build_portfolio.py`,
   `scripts/requirements.txt`, or `src/content/blog/**.md`. Also Sundays
   06:00 UTC. Manual dispatch supported.
 
-Three insertions land between marker comments in `index.html`:
+Five marker-comment regions in `index.html`, plus one more in
+`life-in-weeks/index.html`:
 
-- `<!-- activity-grid:start --> ... :end -->` — a 24-week Tufte-style
-  dot sparkline showing recent posting cadence. No external requests.
-- `<!-- writing-list:start --> ... :end -->` — the two most recent
+- `<!-- activity-grid:start --> ... :end -->`: a 24-week cadence
+  sparkline, one vertical stem per week, height proportional to that
+  week's post count, silent weeks rendering as empty space, plus a
+  trailing post-count label. (The marker name is historical, held
+  over from an earlier 52-week heatmap the stem chart replaced.) No
+  external requests.
+- `<!-- writing-list:start --> ... :end -->`: the two most recent
   non-draft posts as full featured entries, and
-  `<!-- writing-index:start --> ... :end -->` — the next six as compact
-  tiles. Em-dashes are stripped on import; homepage chrome stays
-  em-dash-clean even when source markdown isn't.
-- `<span class="pub-citations">` inside each `<div class="pub-entry"
-  data-sid="...">` — Semantic Scholar citation count. The public tier
-  rate-limits aggressively (HTTP 429); the script retries with
-  exponential backoff and preserves the existing value on failure.
+  `<!-- writing-index:start --> ... :end -->`: the next six as compact
+  tiles. Both now render inside the split-hero's `.hero-writing`
+  column rather than a standalone writing section. Em-dashes are
+  stripped on import; homepage chrome stays em-dash-clean even when
+  source markdown isn't.
+- `<!-- pub-list:start --> ... :end -->`: the full Publications block
+  rendered from `publications.yaml`, each entry carrying a
+  `<span class="pub-citations">` Semantic Scholar citation count where
+  a `sid` is set. The public tier rate-limits aggressively (HTTP 429);
+  the script retries with exponential backoff and preserves the
+  existing value on failure.
+- `<!-- updated:start --> ... :end -->`: the "Updated YYYY-MM." stamp
+  in the page footer.
+- `// blog-thoughts:start ... :end` inside the `EVENTS` array in
+  `life-in-weeks/index.html`: one 💭 dot per blog post (same-week
+  posts merge into one dot; a milestone in the same week wins).
+
+On a run where at least one citation count changes, the refreshed
+counts are also appended to `data/snapshots/<date>.json`
+(record-on-change, so most runs add nothing); the YAML cache only ever
+holds the latest count, and the snapshots are what accretes the
+longitudinal series it would otherwise discard.
 
 New posts populate the homepage on the same CI run that publishes
 them, because the workflow triggers on the blog path too. Both
@@ -247,10 +297,11 @@ no-ops. The hook runs twelve linters:
   the only visible surface for either. `lint_recognition.py` never covered
   `#education` in the first place.
 - `lint_markers.py` — the build-time injection markers a generator
-  splices into (activity-grid, writing-list, pub-list, cliff-path,
-  blog-thoughts, the resume.md skills block, the cv.md publications
-  placeholder) must pair cleanly and still be present, so a stray hand
-  edit can't corrupt a host file on the next build.
+  splices into (activity-grid, writing-list, writing-index, pub-list,
+  cliff-path, updated, blog-thoughts, the resume.md skills block, the
+  cv.md publications placeholder) must pair cleanly and still be
+  present, so a stray hand edit can't corrupt a host file on the next
+  build.
 - `lint_skills.py` — resume.md's generated `<!-- skills -->` block must
   match what `src/content/skills.yaml` (the source of truth, shared with
   the private job-fit tooling) renders. `build_resume` regenerates it on
@@ -268,6 +319,11 @@ no-ops. The hook runs twelve linters:
   content after `</body>`). Tokenizer nits — a bare `&` in KaTeX math, a
   `--` in a comment — are out of scope by design. Replaces the lenient
   `html.parser` balanced-tag smoke check.
+- `lint_palette.py`: palette single-source contract, every consuming
+  file's `palette:*` marker block matches what
+  `src/content/palette.yaml` renders, no `--accent:` is assigned
+  outside a `palette:*` span in any managed file, and the two
+  self-contained blog-post figures' accents match the canonical value.
 - `lint_ideas.py` — the blog idea ledger
   (`src/content/blog-ideas.yaml`) vs the posts directory. Schema (unique
   slug-form ids, valid stage, no unknown keys, em-dash-clean) plus
@@ -567,7 +623,7 @@ loses the race — you don't have to do anything.)
 ./scripts/blog new "My Post Title"     # scaffold draft, open in $EDITOR
 ./scripts/blog list --drafts           # see what's in flight
 ./scripts/blog edit my-post            # reopen a draft (slug fragment works)
-./scripts/blog lint my-post            # scoped lint (lint_blog + lint_vocab + lint_facts)
+./scripts/blog lint my-post            # scoped lint (lint_blog + lint_vocab; lint_facts is cross-surface, skipped)
 ./scripts/blog preview my-post         # browser preview (no KaTeX/Mermaid/Prism — see §2d)
 ./scripts/blog publish my-post --dry-run   # show the plan, change nothing
 ./scripts/blog publish my-post             # lint, flip draft, commit, push to main
@@ -720,7 +776,9 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Stars cliff figure renders inside the Stars Cliff Simulator project body.
 - Academic dot plot renders above publication entries; mobile compressed
   version fires below 760px.
-- Education + Service Gantt renders between Speaking and Education.
+- Education + Service Gantt renders between Speaking and Testimonials
+  (both `#education` and `#service` are commented out, so the figure
+  runs straight into Testimonials with no visible section between).
 - Print preview: nav and career arc hidden, GoatCounter absent, content
   fits two pages, light tokens forced.
 - Lighthouse accessibility ≥ 90 in both modes. Known non-issue: the
@@ -758,11 +816,14 @@ Serve locally (`python3 -m http.server 8765`) and check:
   drop `src/content/blog/<slug>.md` with frontmatter and push.
   Two CI workflows then run automatically: `build_blog.yml` generates `/blog/<slug>/`
   and updates the sitemap; `build_portfolio.yml` regenerates the activity-grid
-  sparkline and the six most recent entries in the homepage writing section
-  between the `<!-- writing-list:start --> ... <!-- writing-list:end -->`
-  markers in `index.html`. To attach an editorial margin note to the homepage
-  entry, add an optional `homepageMarginnote: "..."` field to the post's
-  frontmatter — the build wraps it in a ⊕ toggle next to the title.
+  sparkline plus the two most recent posts as featured entries (the
+  `<!-- writing-list:start --> ... :end -->` markers) and the next six as
+  compact tiles (the separate `<!-- writing-index:start --> ... :end -->`
+  markers), both now living in the hero's `.hero-writing` column rather
+  than a standalone writing section. To attach an editorial margin note to
+  the homepage entry, add an optional `homepageMarginnote: "..."` field to
+  the post's frontmatter — the build wraps it in a ⊕ toggle next to the
+  title (featured entries only; tiles ignore the field).
 - Add a publication: append an entry to `src/content/publications.yaml`
   (set a `sid` to track a live citation count, or use `links` / `note` for a
   static entry) and push. `build_portfolio.yml` regenerates the homepage
