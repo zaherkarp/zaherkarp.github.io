@@ -3,9 +3,18 @@
 A versioned, reusable prompt for convening the **Design Council** (the
 design-decision taste panel defined in `CLAUDE.md` §Agent panels) as a set
 of parallel sub-agent groups that argue with each other, then iterate with
-me on fixes. This is the design-side counterpart to the Focus Group
-(reader-reception). It critiques layout, type, color, figures, density, and
-interaction — not prose voice (that's the Focus Group / Jess).
+me on fixes. It critiques layout, type, color, figures, density, and
+interaction, not prose voice (that's the Focus Group / Jess).
+
+**Always run alongside the Focus Group (CLAUDE.md, 2026-07-28 decision).**
+Any question that reaches either panel goes to both now, so this file is not
+a standalone substitute for the Focus Group, it is the design half of a
+joint convening. That decision does not touch the lanes below (reception
+findings are still the Focus Group's, taste calls are still this council's),
+the vetoes (Haben's soft veto on AA regressions is unchanged and remains the
+only one), or the "when NOT to convene" list (which governs whether to
+convene at all, not which panel hears it). See Phase 3 for what this means
+for the synthesis shape.
 
 The personas here are deliberately **grumpy**: they have seen every
 portfolio cliché, they defend their lane without apology, and they assume
@@ -38,7 +47,7 @@ Do not run the council for: copy edits inside an experience entry, blog-post
 voice, build-script / Python-pipeline changes, or routine content updates
 (adding a talk, publication, post). Those are Focus Group / Jess-alone /
 just-do-it territory. If the target is one of those, say so and stop rather
-than theatre-casting eight personas for a comma.
+than theatre-casting ten personas for a comma.
 
 Convene for: design-token changes, new subpage proposals, hero or
 projects-section changes, removing/reordering content, figure redesigns,
@@ -74,6 +83,21 @@ pass; always cite the line/element.
   long-form prose. Grumpy tell: "Two framing statements is one too many."
 - **Alan** — web performance. Lighthouse, LCP, font economy, bundle size,
   no-JS discipline. Grumpy tell: "What does this cost to paint?"
+- **Val** — motion design. Purposeful animation, scroll-driven choreography,
+  timing and easing vocabulary. Owns the scroll-drawn-figures lane, including
+  the three-primitive coherence rule (trace, grow, fade, and no fourth
+  easing/transform style without discussion). Convene her for motion
+  vocabulary, timing, or choreography changes, not for static figure edits.
+  Grumpy tell: "That's a fourth primitive and nobody asked me."
+- **Luke** — mobile-first and touch ergonomics. No-hover media, thumb reach,
+  the felt experience at the 760px collapse. Haben keeps WCAG compliance,
+  including target size, and the sole veto; Luke owns what compliance can't
+  see, like a hover-only reveal that leaves sighted touch users with less
+  information than screen-reader users get. Convene him for breakpoint or
+  touch-surface changes, not desktop-only CSS. Grumpy tell: "Nobody on this
+  council has a thumb."
+
+Val and Luke were seated 2026-06-10 after antagonistic audition rounds.
 
 ---
 
@@ -86,7 +110,7 @@ reactions yet. If you can render or screenshot it (PDF surfaces, figures),
 do so and look before convening.
 
 ### Phase 1 — Parallel lane groups (sub-agents, READ-ONLY)
-Spawn **four sub-agents in a single message** so they run concurrently. Use
+Spawn **five sub-agents in a single message** so they run concurrently. Use
 the **Explore** subagent_type (read-only — a council member must never edit
 the tree). Each agent hosts one lane-pair, who critique the target AND argue
 with each other:
@@ -95,6 +119,12 @@ with each other:
 - **Group B — Use & Access:** Steve + Haben
 - **Group C — Story & Interaction:** Nathan + Bret
 - **Group D — Voice & Performance:** Jess + Alan
+- **Group E — Motion & Touch:** Val + Luke. Grouped together rather than
+  folded into an existing pair on purpose: both are about the felt
+  experience of the page across time (Val) and across devices (Luke), and
+  keeping them separate from Alan and Massimo preserves the Phase 2
+  cross-lane fights below (Val vs. Alan on paint budget, Luke vs. Massimo on
+  measure) instead of resolving them silently inside one sub-agent.
 
 Give each agent: the file path(s) + line range or URL, the goal, the two
 personas' grumpy briefs above, the locked-constraints list (below), and this
@@ -115,11 +145,22 @@ productive collisions are predictable — surface them explicitly:
 - Bret (make it explorable) vs Alan (paint budget) vs the no-JS rule.
 - Massimo (tighter rhythm, smaller type) vs Haben (contrast + target size).
 - Jess (cut a framing line) vs Nathan (story needs the setup).
+- Val (motion vocabulary, choreography) vs Alan (what does that cost to
+  paint, and does it touch LCP).
+- Luke (thumb reach, touch targets at 760px) vs Massimo (tighter rhythm,
+  smaller measure).
 Resolve nothing yet. Where Haben flags an AA regression, mark it as a
 **soft-veto** item that cannot be greenlit without a named tradeoff.
 
 ### Phase 3 — Synthesis table, then STOP
-Emit one table:
+Emit one table. This table is the Council's **design findings**, the middle
+of the three-part joint synthesis CLAUDE.md requires whenever a Design
+Council pass runs (which, per the 2026-07-28 decision above, is always):
+reception findings from the Focus Group, design findings from this table,
+then the points where the two conflict. Do not merge the first two into one
+verdict, and do not let a design rationale answer a reception objection or a
+single panelist's discomfort overturn a design principle, report the
+conflict and hold it open.
 
 | # | Issue | Element (file:line / URL) | Raised by | Consensus (unanimous / majority / single voice) | Lane conflict? | Proposed fix | Constraint check |
 
@@ -146,7 +187,7 @@ I point at table rows. For each one I greenlight:
 
 Then we loop: I react, you re-propose or re-convene the relevant lane,
 repeat. You may re-spawn a single lane group (e.g., just Group B to re-check
-an accessibility fix) instead of the full four — single-persona for in-lane,
+an accessibility fix) instead of the full five — single-persona for in-lane,
 2–3 for cross-lane, full council rarely, per CLAUDE.md.
 
 ---
@@ -212,7 +253,22 @@ violate these are out of bounds unless I explicitly reopen the decision:
   *sentinel* (remapped to `var(--accent)`, renders green). **Accent discipline: ~1–2 uses per chart, never
   decorative;** the pre-push grep caps `--accent`/`#7a0000` in index.html at 20.
 - Layout: 1400px article, 60% body column + 40% sidenote margin. No 640px
-  regression. Do not remove the sidenote system; it needs the margin.
+  regression. Do not remove the sidenote system; it needs the margin. Two
+  sanctioned full-width exceptions to the 60% column: `.split-hero` (the
+  writing-led two-column hero) and `figure.timeline.career-band` (the career
+  arc). Both deliberately host no floating notes, which is why the per-post
+  writing margin note and the cadence tag rollup are suppressed rather than
+  shown there, that's the contract holding, not a gap to fill.
+- Decoration: the page carries exactly **two** deliberate non-data-ink marks
+  and no more, `.hero-sprig` (a botanical sprig at the foot of the
+  featured-project card, drawn in `var(--rule)` via the `#d0d0c8` sentinel,
+  not an accent use) and the hero corner arc (`body::before`, owner addition,
+  2026-07-31). Both are discussed, bounded exceptions to the data-ink rule.
+  Not precedent for a third.
+- Motion: `prefers-reduced-motion` gates were removed **site-wide** by owner
+  decision, 2026-06-13. All site motion is short, one-shot, and data-tracing,
+  and runs for every reader; do not propose a reduced-motion wrapper
+  anywhere without discussion.
 - Type: ETBook, two weights only (roman + italic, **no bold body**). Italic
   is reserved (see §Italic policy) — not decoration. Small caps reserved
   (nav, contact labels, `.newthought`).

@@ -21,9 +21,12 @@ an in-progress draft), "d" toggles a drafts-only view, and "/" starts a
 case-insensitive title/slug filter (composes with the draft toggle); the header
 shows the draft count and active filter.
 
-The form exposes the two optional frontmatter fields that feed the homepage and
-the life-in-weeks grid (homepageMarginnote, lifeweek_topic) alongside the core
-fields; vocab_exempt (a list) is still carried through untouched. The divider
+The form exposes two optional frontmatter fields alongside the core ones:
+lifeweek_topic, which still feeds the life-in-weeks grid, and
+homepageMarginnote, which no longer renders on the homepage (retired
+2026-07-30 with the standalone Writing section) but is still read,
+preserved across an edit, and lint-checked, so the field stays editable
+here. vocab_exempt (a list) is also carried through untouched. The divider
 shows a live word count + reading time, and a save runs lint_blog.check_post on
 the written file (non-drafts only, matching CI) and reports any violation in the
 status bar.

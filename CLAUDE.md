@@ -148,6 +148,57 @@ including §10 Rollback and versioning: the before/after commit SHAs for this
 whole pass and why they, not a git tag, are the durable rollback point (tag
 push is blocked in this environment's git scope).
 
+**Documentation sweep (2026-08-07, this branch).** Not a design pass: no rule,
+selector, markup, or Python behavior changed, and `index.html` renders
+pixel-identically. The five restructurings above each updated this file and the
+docstrings they touched, but none swept the SECOND ring, so by 2026-08-07 the
+outer documentation described a page that no longer existed. 23 files were
+corrected. The three that mattered: `lint_recognition.py` and `lint_gantt.py`
+said nothing about parsing comment-disabled sections, so their deliberate
+comment-blind regexes read as bugs; `docs/pipelines.md`'s cookbook told you to
+add awards and certifications to two sections that render nothing; and
+`scripts/review/prompts/design-council.md`, which every panel run reads, was
+missing Val and Luke, the joint-convening rule, and three locked constraints
+whose absence was actively generating bad proposals. Also fixed: the hero arc
+geometry, wrong here and in `index.html` in two different ways (see the arc
+mechanics above), the orphaned CSS section number, and the `updated` marker,
+which was documented nowhere. Full record, including a list of things verified
+CORRECT so the next audit does not re-flag them, in
+`docs/documentation-sweep-2026-08-07.md`.
+
+Two verification lessons from that pass, both cheap to re-learn the hard way.
+A full-page screenshot of `index.html` is **not** reproducible run-to-run at
+761px and above, because the scroll-driven figures settle differently when the
+viewport is resized for capture; disable animations with an injected stylesheet
+before comparing, and prove the harness is stable on identical input before
+believing a red result. And render any "before" copy from the repo root, or its
+relative font paths break and every shot differs for no real reason. The
+stronger check needs no browser at all: strip HTML and CSS comments from both
+versions and collapse whitespace, and a comment-only pass is byte-identical.
+
+**Follow-up pass (2026-08-08, same branch): the three code items that sweep
+deliberately left open.** Owner asked for all three fixed. (1) **`cv.html` is
+now in `sitemap.xml`**, as a hardcoded entry beside `resume.html` in
+`build_blog.py`'s `write_sitemap`. It must NOT go in `SUBPAGES`: that list
+holds directory paths resolved as `ROOT / path / "index.html"`, so a
+top-level `.html` file there silently loses its `<lastmod>`, which is why
+`resume.html` was hardcoded to begin with. The adjacent `total_urls` print
+counter went `2` to `4`; it already understated by one. (2) **`lint_palette`
+now has a test**, the last of the twelve gates to get one. (3) **The
+comment-blind parsing is now pinned by a test** in both
+`test_lint_recognition.py` and `test_lint_gantt.py`; see §Recognition
+alignment lint. Suite 145 to 155 tests.
+
+Two things worth carrying forward. **Do not run `build_blog.py` in a session
+container**: every generated blog page carries a `Built <date> from <sha>`
+footer, so a no-op run rewrites ~247 files, and a shallow clone makes
+`git_iso_lastmod` return empty, silently emitting wrong `lastmod` values
+(CI sets `fetch-depth: 0` for exactly this reason). Edit the generator and let
+`build_blog.yml` regenerate the artifact on the next push to main. And **a
+"still passes" test is vacuous on its own**: each comment-disabled fixture is
+paired with a drift case that must still FAIL, because only the failing case
+proves the entries were genuinely parsed rather than skipped.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -232,7 +283,7 @@ The repo layout is conventional; `find` or [README.md](README.md) is
 authoritative on the tree. Things not obvious from the filesystem:
 
 - `.claude/` is gitignored — local agent settings only, never tracked.
-- `index.html` carries inline CSS (~1,740 lines, the `<style>` block). Do not extract.
+- `index.html` carries inline CSS (~1,920 lines, the `<style>` block). Do not extract.
 - `/blog/`, `/blog/archive/`, `resume.pdf`, `sitemap.xml` are GENERATED.
   Sources at `src/content/`. Do not hand-edit the generated outputs.
 - Interactive subpages (`star-rating-predictor/`, `life-in-weeks/`,
@@ -332,9 +383,17 @@ by reading:**
   - The arc is `z-index: 0`, and `main` / `.site-header` carry `z-index: 1`.
     Do NOT "simplify" this to `z-index: -1` on the arc: at -1 it paints behind
     `body`'s own `background: var(--paper)` and disappears completely.
-  - The centre is 30% of the diameter above the page top, not 50%. At 50% the
-    centre lands exactly on the corner, the flat top edge becomes a diameter,
-    and the arc meets it at a hard 90 degrees, reading as a pie slice.
+  - The `top` multiplier and the resulting centre offset are DIFFERENT numbers
+    pointing in OPPOSITE directions, which is why this line was wrong in both
+    index.html and here until 2026-08-07. `top: calc(var(--arc) * -0.30)` puts
+    the circle's top EDGE 30% of a diameter above the page top, which lands its
+    CENTRE 20% of a diameter BELOW it. Measured at 1400px: diameter 644px, top
+    -193.2px, centre +128.8px, so 30% of the circle is cropped and 70% shows.
+    At `-0.5` the centre would sit exactly on the page's top edge, the flat
+    edge would become a diameter, and the arc would meet it at a hard 90
+    degrees, reading as a pie slice; off-centre turns that cut into a chord.
+    Read the computed values back from the browser rather than restating this
+    as a single "N% above" figure.
 
 The `@media (max-width: 480px)` hide is empirical, not a guess: 480px is where
 the arc's painted edge first reaches the nav (322px against a nav ending at
@@ -450,9 +509,15 @@ update rule for the two suppressed notes: the per-post one and, since
 ~1.6fr / current work ~1fr) above 760px, tightening to ~1.4fr/1fr at 761-1000px,
 one column below 760px. The full-width `figure.timeline.career-band` sits
 below the grid (also a full-width exception). The rest of
-the page keeps the 60% column. CSS lives in sections 21 / 21.1 of
-index.html; **§20 and §21's MORE LINE block were deleted 2026-07-30 with
-`.hero-more` itself** (markup, CSS, and its `@media print` hide rule).
+the page keeps the 60% column. CSS lives in sections 20 / 20.1 of
+index.html; **§21's MORE LINE block was deleted 2026-07-30 with `.hero-more`
+itself** (markup, CSS, and its `@media print` hide rule). §20 SPLIT HERO
+survived that deletion, which left `21.1` orphaned under a parent that no
+longer existed; the breakpoints block was renumbered to `20.1` on 2026-08-07,
+so the sequence now reads 20 / 20.1 / 22. The number 21 is deliberately left
+unused rather than reassigned by sliding §22 down: §22 is cited by number from
+this file and from several index.html comments, and a stable dead number costs
+less than a renumber that silently invalidates those references.
 
 **(Text reduction, 2026-07-30) the writing cadence sparkline now lives INSIDE
 `.hero-writing`**, after the "View all writing" line, rather than in its own
@@ -2031,10 +2096,18 @@ The 2026-05-23 run produced four reports in `critiques/`,
 `claude/multi-agent-page-critique-BYmwb`; remaining Tier 3 discussion
 items documented in `reviews/2026-05-23-synthesis.md`.
 
-The multi-agent prompts themselves are deliberately not committed to
-the repo (Option A scope: publish-only pipeline, prompts live with
-the generator). If you want them versioned, drop them into
-`scripts/review/prompts/`.
+Two kinds of prompt, with different statuses, and they are easy to conflate.
+The four multi-agent REPORT prompts (craft critique, alignment summary, hiring
+eval, synthesis) are deliberately not committed (Option A scope: publish-only
+pipeline, prompts live with the generator). The PANEL prompts are committed, at
+`scripts/review/prompts/`: `design-council.md` (the §Agent panels briefing) and
+`assess-items.md` (the item assessor). So that directory exists and is tracked;
+adding a report prompt there is the open option, not creating it.
+
+`design-council.md` is the Design Council's own briefing, read by every panel
+run, so a stale copy misleads the panels rather than just the reader. Keep its
+roster, its locked-constraints block, and the joint-convening rule in sync with
+§Agent panels below whenever that section changes.
 
 ---
 
@@ -2211,14 +2284,28 @@ Two outputs:
 
 **(Text reduction, 2026-07-30) `#service` is commented out, and this linter
 still guards it.** Both gates that read the section slice it with a raw-text
-regex and neither strips HTML comments: `SERVICE_SECTION_RE`
-(`lint_recognition.py:122-124`) and `_section_body` (`lint_gantt.py:179-184`).
-So the homepage-subset-of-CV gate and the Gantt alignment check keep operating
-on the disabled markup exactly as before. Verified empirically, not assumed:
-`lint_gantt` still reports "12 section entry(ies) (5 education + 7 service)
-reconciled against 12 figure mark(s)". This is precisely what made hiding the
-section possible without weakening a guarantee, so **do not "fix" either linter
-to skip comments** without first replacing what it guards.
+regex and neither strips HTML comments: `SERVICE_SECTION_RE` in
+`lint_recognition.py` and `_section_body` in `lint_gantt.py`. (Cite them by
+name, not by line: this passage carried stale line numbers for a week because
+the 2026-08-07 docstring additions shifted both.) So the homepage-subset-of-CV
+gate and the Gantt alignment check keep operating on the disabled markup
+exactly as before. Verified empirically, not assumed: `lint_gantt` still
+reports "12 section entry(ies) (5 education + 7 service) reconciled against 12
+figure mark(s)". This is precisely what made hiding the section possible
+without weakening a guarantee, so **do not "fix" either linter to skip
+comments** without first replacing what it guards.
+
+**As of 2026-08-08 that warning has teeth: a test pins it.**
+`test_lint_recognition.py` and `test_lint_gantt.py` each carry a
+`test_comment_disabled_section_still_parsed` plus a
+`..._still_detects_drift` sibling, whose fixtures wrap the section in
+`<!--`/`-->` exactly as `index.html` does. The paired negative is the load-
+bearing one: a lone "still returns 0" test would pass vacuously, so the drift
+case proves the entries were genuinely parsed AND compared. Confirmed by
+inserting a comment-stripping line into both linters, watching exactly those
+four tests go red while the four live-section tests stayed green, then
+reverting. Before this, the property was protected only by the incidental
+empty-parse guards in each linter.
 
 **The visible service surface is now the Gantt figure**, which carries a mark
 for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
@@ -2410,8 +2497,8 @@ Checks:
 - `python scripts/lint_markers.py` clean (marker integrity: the build-time
   injection markers a generator splices into, `activity-grid`,
   `writing-list`, `writing-index`, `cliff-path`, `pub-list`, `updated`,
-  the life-in-weeks `blog-thoughts` pair, and the cv.md `<!-- publications -->`
-  placeholder, must pair cleanly (no orphan/crossed/nested/unterminated
+  the life-in-weeks `blog-thoughts` pair, the resume.md `skills` pair, and the
+  cv.md `<!-- publications -->` placeholder, must pair cleanly (no orphan/crossed/nested/unterminated
   pairs) and still be present, so a stray hand edit can't corrupt a host
   file on the next build or make a generator silently no-op. Add a new
   region's name to `PAIR_MARKERS` in the same change that adds its markers)
@@ -2506,7 +2593,7 @@ Its dev-only deps are pinned in `scripts/requirements-dev.in` /
 `scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
 CI.
 
-These are **characterization tests**, not a spec: each gate
+These are **characterization tests**, not a spec: each of the twelve gate
 linters is exercised for both a pass case (against the clean repo tree) and a
 violation case, and the build scripts get smoke tests (build_blog pages +
 well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;

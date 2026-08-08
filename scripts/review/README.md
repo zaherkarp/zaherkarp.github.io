@@ -19,9 +19,9 @@ do not produce site changes by themselves.
 
 - `design-council.md` — the **Grumpy Design Council**: convenes the
   design-decision personas (Edward, Massimo, Steve, Haben, Nathan, Bret,
-  Jess, Alan) as four parallel read-only sub-agent groups that argue across
-  lanes, emit a consensus-graded synthesis table, then iterate with you on
-  fixes one row at a time. Invoke: "Run
+  Jess, Alan, Val, Luke) as five parallel read-only sub-agent groups that
+  argue across lanes, emit a consensus-graded synthesis table, then iterate
+  with you on fixes one row at a time. Invoke: "Run
   scripts/review/prompts/design-council.md on `<target>`, goal: `<goal>`."
 - `assess-items.md` — the **item assessor**: reads the open action items on
   a site-review tracking issue, inspects the current committed site, and
@@ -222,9 +222,11 @@ want; the canonical recipes are the four multi-agent prompts:
 - **Synthesis** — cross-report comparison that produces the Tier 1/2/3
   action checklist this workflow reads. Output → `reviews/<date>-synthesis.md`.
 
-The prompts themselves are not committed in this repo yet. If you
-want them versioned, drop them into `scripts/review/prompts/` —
-nothing else in the pipeline depends on a specific location.
+These four report-generation prompts themselves are not committed in this
+repo yet (distinct from the two panel prompts under §Panel prompts above,
+which already live at `scripts/review/prompts/`). If you want the report
+prompts versioned too, drop them into that same directory; nothing else in
+the pipeline depends on a specific location.
 
 ## Failure modes
 

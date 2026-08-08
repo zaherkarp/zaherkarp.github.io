@@ -1,14 +1,21 @@
 name: Build portfolio
 
-# Regenerates three pieces of build-time content in index.html:
-#   - the 24-week activity-grid sparkline
-#   - the homepage Writing section's six most recent post entries
+# Regenerates six pieces of build-time content: five marker regions in
+# index.html, plus one in life-in-weeks/index.html.
+#   - the 24-week activity-grid stem sparkline (now inside the split
+#     hero's .hero-writing column; there is no separate Writing section)
+#   - the two most recent post entries, full featured summaries
 #     (between <!-- writing-list:start --> ... <!-- writing-list:end -->)
+#   - the next six post entries, compact tiles
+#     (between <!-- writing-index:start --> ... <!-- writing-index:end -->)
 #   - Semantic Scholar citation counts on each pub-entry
+#   - the "Updated YYYY-MM" page-closer date stamp
+#   - the life-in-weeks grid's generated blog "thought" dots
+#     (life-in-weeks/index.html, between // blog-thoughts:start/end)
 #
 # Triggers:
 #   - any push that touches index.html, the build script, or a blog post
-#     (the activity grid + writing list depend on post frontmatter, so a
+#     (the activity grid + writing entries depend on post frontmatter, so a
 #     new post under src/content/blog/ auto-populates the homepage on the
 #     same CI run that publishes it via build_blog.yml)
 #   - weekly on Sundays to refresh citation counts even without code changes
@@ -54,7 +61,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Regenerate activity grid, writing list, and citation counts
+      - name: Regenerate activity grid, writing entries, citation counts, page footer, and life-in-weeks thoughts
         run: python scripts/build_portfolio.py
 
       - name: Commit changes (if any)

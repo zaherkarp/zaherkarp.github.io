@@ -86,6 +86,29 @@ def test_sitemap_is_well_formed_xml(built_site):
     assert tree.getroot().tag.endswith("urlset")
 
 
+def test_sitemap_includes_resume_and_cv(built_site):
+    # Both resume.html and cv.html are hardcoded entries in write_sitemap
+    # (see build_blog.py), not SUBPAGES; this pins that they land in the
+    # generated sitemap rather than being silently dropped. A general
+    # "every live page is in the sitemap" check is deliberately not
+    # written here: the canonical page set is genuinely ambiguous
+    # (404.html is excluded via noindex, PDFs are excluded, drafts must
+    # stay out), so that broader guarantee is left to lint_links.py's
+    # existing one-directional check instead.
+    #
+    # The fixture's tmp_path ROOT has no git history for resume.html or
+    # cv.html, so git_iso_lastmod returns None and each renders as a bare
+    # <loc> with no <lastmod> (already true of resume.html today). Assert
+    # on <loc> values only, never lastmod.
+    root, _ = built_site
+    sitemap = root / "sitemap.xml"
+    tree = ET.parse(sitemap)
+    ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    locs = {el.text for el in tree.getroot().findall("s:url/s:loc", ns)}
+    assert "https://zaherkarp.com/resume.html" in locs
+    assert "https://zaherkarp.com/cv.html" in locs
+
+
 def test_feed_is_well_formed_xml(built_site):
     _, out_dir = built_site
     feed = out_dir / "feed.xml"

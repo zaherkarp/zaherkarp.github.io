@@ -4,7 +4,9 @@ build_blog.py
 
 Reads markdown + YAML frontmatter from src/content/blog/*.md,
 renders each to blog/<slug>/index.html using Jinja2 templates,
-rebuilds blog/index.html listing, regenerates sitemap.xml.
+rebuilds blog/index.html (current posts, ARCHIVE_CUTOFF and later)
+and blog/archive/index.html (older posts), a per-tag index page under
+blog/tags/, blog/feed.xml, and regenerates sitemap.xml.
 
 Design notes:
 - Math uses LaTeX-style delimiters: \(...\) for inline and \[...\]
@@ -465,10 +467,15 @@ def write_sitemap(current_posts: list[dict], archive_posts: list[dict], tags: li
         f"{current_posts[0]['publish_date_iso']}T00:00:00Z" if current_posts else None
     )
 
+    # resume.html and cv.html are hardcoded rather than listed in SUBPAGES:
+    # SUBPAGES entries are directory paths resolved by _subpage_lastmod as
+    # ROOT / path / "index.html", which would silently miss these two
+    # top-level files (and their lastmod) if moved there.
     urls: list[dict] = [
         {"loc": f"{SITE_URL}/", "lastmod": homepage_lastmod},
         {"loc": f"{SITE_URL}/blog/", "lastmod": newest_post_iso},
         {"loc": f"{SITE_URL}/resume.html", "lastmod": git_iso_lastmod(ROOT / "resume.html")},
+        {"loc": f"{SITE_URL}/cv.html", "lastmod": git_iso_lastmod(ROOT / "cv.html")},
     ]
     for p in SUBPAGES:
         urls.append({"loc": f"{SITE_URL}{p}", "lastmod": _subpage_lastmod(p)})
@@ -618,7 +625,8 @@ def main() -> int:
     write_sitemap(current_posts, archive_posts, tags)
     archive_url_count = (1 + len(archive_posts)) if archive_posts else 0
     tag_url_count = (1 + len(tags)) if tags else 0
-    total_urls = 2 + len(SUBPAGES) + len(current_posts) + archive_url_count + tag_url_count
+    # 4 hardcoded entries: /, /blog/, resume.html, cv.html.
+    total_urls = 4 + len(SUBPAGES) + len(current_posts) + archive_url_count + tag_url_count
     print(f"wrote sitemap.xml ({total_urls} urls)")
     return 0
 

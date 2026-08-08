@@ -6,7 +6,20 @@ step, and slugify_tag(), the single source of truth for turning a blog tag
 into the URL slug used by the per-tag archive pages (blog/tags/<slug>/).
 Both build_blog.py (which emits the pages) and build_portfolio.py (which
 links to them from the homepage cadence rollup) import slugify_tag so the
-two surfaces can never disagree on a slug.
+two surfaces can never disagree on a slug. Also exposes REPO_ROOT, the
+repo's top-level path, resolved once here so every script (e.g.
+edit_blog.py, for its posts directory) can import it instead of
+re-deriving `Path(__file__).resolve().parent.parent` locally.
+
+Also exposes the blog-post loading conventions shared by every
+src/content/blog/*.md consumer: iter_post_paths() (a sorted, `_`-prefixed-
+file-skipping glob, imported by build_blog.py, build_portfolio.py,
+lint_blog.py, lint_vocab.py, lint_notes.py, and lint_jobfit.py) and
+coerce_date() (a lenient datetime/date/ISO-string coercion, imported by
+lint_jobfit.py and build_jobsearch.py for the private job-search tooling's
+date fields). Draft filtering is deliberately NOT part of iter_post_paths:
+consumers differ on whether they skip, count, or print drafts, so each
+applies that after loading frontmatter.
 
 Also exposes the cross-surface alignment matcher (years_of / tokens_of /
 token_overlap / alignment_match) and the homepage .row-entry field parser,

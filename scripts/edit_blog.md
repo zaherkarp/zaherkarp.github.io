@@ -160,7 +160,7 @@ canonical title-first key order regardless of how you fill them in.
 | Draft | `draft` | A `[x]` checkbox — **Space** (or Enter / `x`) toggles it. New posts default to `true`. |
 | Tags | `tags` | Comma-separated; split into a YAML list on save. Empty → key omitted. |
 | Desc | `description` | Optional. Empty → key omitted. |
-| MarginNote | `homepageMarginnote` | Optional. Homepage writing-list margin note. Must be additive to title+description (`lint_notes.py` enforces). |
+| MarginNote | `homepageMarginnote` | Optional. Not rendered on the homepage (suppressed since the writing list moved into the full-width hero, which carries no floating margin); still read, preserved across edits, and checked for additivity against the post's title and description (`lint_notes.py` enforces). |
 | Lifeweek | `lifeweek_topic` | Optional. Label for the 💭 dot in the life-in-weeks grid. |
 
 Empty optional fields are dropped from the frontmatter rather than

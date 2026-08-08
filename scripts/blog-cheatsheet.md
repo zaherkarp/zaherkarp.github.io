@@ -115,6 +115,13 @@ Slug fragment works — `./scripts/blog edit paper` will resolve to
 `paper-saver-estimating-xgboost-compute-costs-on-aws` if exactly one
 post matches. Ambiguous fragments abort with a list of candidates.
 
+**From your phone:** GitHub app → **Issues → New issue → Blog draft edit**.
+Fill in the slug and paste the new body (title, description, and tags are
+optional overrides). Submit. A workflow replaces the draft's body, lints it,
+commits, comments, and closes the issue. It only touches posts that are
+already `draft: true`. It refuses, loudly, if you point it at a published
+slug or a typo.
+
 ---
 
 ### ...see everything I've written
@@ -187,6 +194,11 @@ If step 6 fails (network blip, branch protection, non-fast-forward):
 do **not** re-run `blog publish` (the flag is already flipped). See
 "Push rejected" below.
 
+**From your phone:** open the same **Blog draft edit** issue used to edit a
+draft (see above), and tick **Publish this now**. The workflow flips
+`draft: false` and moves the ledger row to `published` in the same commit,
+which is the phone equivalent of `blog publish`.
+
 ---
 
 ### ...take a post down (unpublish)
@@ -206,6 +218,13 @@ git push origin main
 
 This is intentional. Un-publishing usually wants human judgment about
 what links broke, whether the post needs a redirect stub, etc.
+
+**There is no mobile unpublish.** The phone pipeline only edits and
+publishes drafts; it refuses to touch a post that is already live. If you
+publish something from your phone by mistake, the fix waits until you're at
+a terminal: run `./scripts/blog draft my-post-title` there, then commit and
+push as above. This is the one place a phone-only workflow can leave you
+stuck.
 
 ---
 
@@ -251,6 +270,11 @@ so it heals automatically. In-prose links from other posts, the rendered
 
 Slug arguments accept fragments — `blog edit paper` resolves to
 `paper-saver-...` if exactly one post matches.
+
+This table is terminal-only. From a phone, idea capture, draft editing, and
+publishing each have a GitHub Issues equivalent; see the matching "I
+want to..." section above for each. There is no phone equivalent for
+`blog draft` (unpublish).
 
 ---
 
