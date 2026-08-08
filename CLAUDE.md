@@ -199,6 +199,34 @@ footer, so a no-op run rewrites ~247 files, and a shallow clone makes
 paired with a drift case that must still FAIL, because only the failing case
 proves the entries were genuinely parsed rather than skipped.
 
+**Patient Safety label fix + Gantt lead-in (2026-08-08, this branch).** Owner
+flagged two things. The Gantt figcaption called the Patient Safety graduate
+certificate a "fellowship"; corrected to "certificate" (the CV's Fellowships
+and Training section holds a different, related 2014 short course, not the
+certificate itself; see §Recognition alignment lint's cv.md excerpt). And the
+BHA lead paragraph's closing sentence, describing the private Client-Side
+Stars Rating Predictor's browser-side architecture, had no connection to the
+Huber psi-formula fold directly beneath it, so the formula read as
+unmotivated; replaced with a sentence that sets up the robust-smoothing
+formula instead, which retired that sentence as one of the tool's two
+documented public surfaces (see §Stars tools distinction, which now names
+one surface, the blog post). A same-session joint Focus Group / Design
+Council audit, run on that finding as the test case, checked every other
+figure and formula on the page for the same defect (funnel-figure,
+cliff-figure, the publications dot plot: all already have a prose lead-in or
+figcaption) and surfaced one more: `figure.gantt-figure` sits directly after
+Speaking's `<hr>` with no lead-in at all, a side effect of `#education` and
+`#service` being commented out 2026-07-30 (their opening sentences, which
+used to introduce the credential/service record, went with them). Both
+panels converged (no contention): real but minor, fix with one line, not a
+section restore. Added a single unstyled `<p>` before the figure: "A record
+of degrees, certificates, and service commitments, shown together because
+several overlapped rather than following in a tidy sequence." Deliberately
+does not restate the figcaption's specific facts (years, entity names, the
+certificate detail) or reuse the disabled sections' old openers, which
+referred to the chart as something already seen ("the chart above") since
+the Gantt used to sit below them, not above.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -1489,33 +1517,33 @@ no-bundler discipline and what it shipped; removing it eliminated that.
      Health Analytics. Cut-point dashboard running against live measure
      feeds for contract-level remediation planning. Source is private.
      As of the 2026-05-21 restructure, this tool no longer has its own
-     project card. Two surfaces on the public site reference it:
-       (a) The BHA role's LEAD PARAGRAPH in the Experience section
-           describes the architectural pattern ("one recent design
-           runs the Stars cut-point projection entirely in the
-           analyst's browser, so member-level data never leaves the
-           machine")
-           as a compliance-driven architecture example. This moved
-           out of that role's "More detail" fold on 2026-07-30 when
-           the fold was retired; the surrounding HEDIS hybrid
-           measures paragraph went with it, so the pattern is now a
-           single clause in visible prose rather than a paragraph.
-           It was deliberately preserved rather than cut BECAUSE
-           this section names it as one of only two public surfaces
-           for the tool. If a future trim reaches this clause, that
-           is a decision to retire a documented surface, not a copy
-           edit; update this section in the same change.
-       (b) The blog post compliance-as-architecture-stars-predictor.md
+     project card. **As of 2026-08-08, only one surface on the public
+     site references it** (previously two; see below for what changed):
+       (a) The blog post compliance-as-architecture-stars-predictor.md
            (PR #40, merged 2026-05-21) names the tool explicitly and
            uses it as a case study for the broader thesis that some
            compliance constraints are best treated as architectural
-           premises rather than bolted-on controls.
-     The two surfaces are intentionally different in framing depth:
-     the Experience fold treats the tool as job-history evidence;
-     the blog post treats it as a methodology essay where the tool is
-     the worked example. Source code remains private; the public
-     artifacts describe what the tool does and why, not its
-     implementation.
+           premises rather than bolted-on controls. This is now the
+           tool's only public surface.
+     **Retired surface (2026-08-08):** the BHA role's lead paragraph in
+     the Experience section used to describe the tool's architectural
+     pattern ("one recent design runs the Stars cut-point projection
+     entirely in the analyst's browser, so member-level data never
+     leaves the machine") as a compliance-driven architecture example.
+     The owner asked for that sentence replaced because the paragraph it
+     sat in gives the Huber psi-formula fold immediately below it no
+     setup, a "comes out of nowhere" complaint on the formula, not on
+     this clause. The clause was the documented justification for
+     keeping the sentence at all (see the prior wording of this note),
+     so the owner's request is the "future trim reaches this clause"
+     case this section warned about, not a plain copy edit. The
+     replacement sentence motivates the Huber formula instead ("Those
+     measures move on volatile trend lines, and the cut-point
+     projection needs an estimator that will not let a single
+     anomalous quarter, a COVID-era shock, for instance, distort the
+     whole forecast."), and no longer references the private tool. The
+     blog post at (a) is unaffected and remains a live, working surface
+     for the tool, so it is not undocumented, just single-sourced now.
   Do not reconstruct a project card for this tool, do not cross-link
   the BHA fold to the Stars Cliff Simulator's methodology posts, and
   do not add the tool back as a small-multiple tile. The
