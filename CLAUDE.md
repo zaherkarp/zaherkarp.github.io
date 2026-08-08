@@ -199,6 +199,34 @@ footer, so a no-op run rewrites ~247 files, and a shallow clone makes
 paired with a drift case that must still FAIL, because only the failing case
 proves the entries were genuinely parsed rather than skipped.
 
+**Patient Safety label fix + Gantt lead-in (2026-08-08, this branch).** Owner
+flagged two things. The Gantt figcaption called the Patient Safety graduate
+certificate a "fellowship"; corrected to "certificate" (the CV's Fellowships
+and Training section holds a different, related 2014 short course, not the
+certificate itself; see §Recognition alignment lint's cv.md excerpt). And the
+BHA lead paragraph's closing sentence, describing the private Client-Side
+Stars Rating Predictor's browser-side architecture, had no connection to the
+Huber psi-formula fold directly beneath it, so the formula read as
+unmotivated; replaced with a sentence that sets up the robust-smoothing
+formula instead, which retired that sentence as one of the tool's two
+documented public surfaces (see §Stars tools distinction, which now names
+one surface, the blog post). A same-session joint Focus Group / Design
+Council audit, run on that finding as the test case, checked every other
+figure and formula on the page for the same defect (funnel-figure,
+cliff-figure, the publications dot plot: all already have a prose lead-in or
+figcaption) and surfaced one more: `figure.gantt-figure` sits directly after
+Speaking's `<hr>` with no lead-in at all, a side effect of `#education` and
+`#service` being commented out 2026-07-30 (their opening sentences, which
+used to introduce the credential/service record, went with them). Both
+panels converged (no contention): real but minor, fix with one line, not a
+section restore. Added a single unstyled `<p>` before the figure: "A record
+of degrees, certificates, and service commitments, shown together because
+several overlapped rather than following in a tidy sequence." Deliberately
+does not restate the figcaption's specific facts (years, entity names, the
+certificate detail) or reuse the disabled sections' old openers, which
+referred to the chart as something already seen ("the chart above") since
+the Gantt used to sit below them, not above.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
