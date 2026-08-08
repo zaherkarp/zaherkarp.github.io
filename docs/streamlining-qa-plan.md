@@ -97,7 +97,7 @@ behavior. Coverage shipped:
 
 | Area | What it exercises |
 | --- | --- |
-| Linters (11 of 12 gates) | Each covered linter is run in a **pass** case (against the real repo tree, which is clean) and a **violation** case (a fixture that should trip it), so both exit paths are pinned. `lint_palette` has no test file yet, a real coverage gap left by its later addition, not closed here. |
+| Linters (12 of 12 gates) | Each linter is run in a **pass** case (against the real repo tree, which is clean) and a **violation** case (a fixture that should trip it), so both exit paths are pinned. `lint_palette` was the one gap, left by its later addition; `test_lint_palette.py` closed it on 2026-08-08, covering all three of its checks (drift, containment, post-figure parity) against a synthetic tree. `test_lint_recognition.py` and `test_lint_gantt.py` also gained fixtures that wrap their sections in HTML comments, pinning the comment-blind parsing that keeps both gates alive now that `#service` and `#education` are disabled in `index.html`. |
 | `build_blog` | Renders pages; the generated `sitemap.xml` and `blog/feed.xml` are asserted to be well-formed XML. |
 | `build_portfolio` | Marker-injection idempotency: running twice against unchanged input is a no-op (the property the pipeline already claims). |
 | `build_resume` | Skills-block regeneration from `skills.yaml`. The WeasyPrint PDF render **self-skips** when `libpango` is absent, so the suite runs green on a machine without the system libraries. |

@@ -39,8 +39,8 @@ def _figure(include_service_mark: bool) -> str:
     return f'<figure class="gantt-figure">\n{body}</figure>\n'
 
 
-def _sections() -> str:
-    return (
+def _sections(commented: bool = False) -> str:
+    body = (
         '<section id="education">\n'
         '  <div class="row-entry">\n'
         '    <div class="row-date">2013 to 2015</div>\n'
@@ -60,13 +60,18 @@ def _sections() -> str:
         "  </div>\n"
         "</section>\n"
     )
+    if commented:
+        # Mirrors index.html's real disable pattern: a bare `<!--` on its
+        # own line before the sections, a bare `-->` on its own line after.
+        return "<!--\n" + body + "-->\n"
+    return body
 
 
-def _page(include_service_mark: bool) -> str:
+def _page(include_service_mark: bool, commented: bool = False) -> str:
     return (
         "<!doctype html><html><body>\n"
         + _figure(include_service_mark)
-        + _sections()
+        + _sections(commented=commented)
         + "</body></html>\n"
     )
 
@@ -84,6 +89,31 @@ def test_every_entry_has_a_mark_passes(monkeypatch, tmp_path, capsys):
 
 def test_service_entry_without_mark_fails(monkeypatch, tmp_path, capsys):
     _install(monkeypatch, tmp_path, _page(include_service_mark=False))
+    rc = lint_gantt.run()
+    assert rc == 1
+    assert "no matching" in capsys.readouterr().err
+
+
+def test_comment_disabled_section_still_parsed(monkeypatch, tmp_path, capsys):
+    """#education and #service are wrapped in HTML comments in index.html
+    (2026-07-30); _section_body must still find and parse them there, or
+    this gate goes silently vacuous. See CLAUDE.md §Gantt figure
+    alignment lint."""
+    _install(
+        monkeypatch, tmp_path,
+        _page(include_service_mark=True, commented=True),
+    )
+    assert lint_gantt.run() == 0, capsys.readouterr().err
+
+
+def test_comment_disabled_section_still_detects_drift(monkeypatch, tmp_path, capsys):
+    """Same property as above, proven non-vacuously: a commented-out
+    #service entry with no matching figure mark must still fail the
+    alignment gate. See CLAUDE.md §Gantt figure alignment lint."""
+    _install(
+        monkeypatch, tmp_path,
+        _page(include_service_mark=False, commented=True),
+    )
     rc = lint_gantt.run()
     assert rc == 1
     assert "no matching" in capsys.readouterr().err

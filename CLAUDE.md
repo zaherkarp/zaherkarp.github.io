@@ -176,6 +176,29 @@ relative font paths break and every shot differs for no real reason. The
 stronger check needs no browser at all: strip HTML and CSS comments from both
 versions and collapse whitespace, and a comment-only pass is byte-identical.
 
+**Follow-up pass (2026-08-08, same branch): the three code items that sweep
+deliberately left open.** Owner asked for all three fixed. (1) **`cv.html` is
+now in `sitemap.xml`**, as a hardcoded entry beside `resume.html` in
+`build_blog.py`'s `write_sitemap`. It must NOT go in `SUBPAGES`: that list
+holds directory paths resolved as `ROOT / path / "index.html"`, so a
+top-level `.html` file there silently loses its `<lastmod>`, which is why
+`resume.html` was hardcoded to begin with. The adjacent `total_urls` print
+counter went `2` to `4`; it already understated by one. (2) **`lint_palette`
+now has a test**, the last of the twelve gates to get one. (3) **The
+comment-blind parsing is now pinned by a test** in both
+`test_lint_recognition.py` and `test_lint_gantt.py`; see §Recognition
+alignment lint. Suite 145 to 155 tests.
+
+Two things worth carrying forward. **Do not run `build_blog.py` in a session
+container**: every generated blog page carries a `Built <date> from <sha>`
+footer, so a no-op run rewrites ~247 files, and a shallow clone makes
+`git_iso_lastmod` return empty, silently emitting wrong `lastmod` values
+(CI sets `fetch-depth: 0` for exactly this reason). Edit the generator and let
+`build_blog.yml` regenerate the artifact on the next push to main. And **a
+"still passes" test is vacuous on its own**: each comment-disabled fixture is
+paired with a drift case that must still FAIL, because only the failing case
+proves the entries were genuinely parsed rather than skipped.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -2261,14 +2284,28 @@ Two outputs:
 
 **(Text reduction, 2026-07-30) `#service` is commented out, and this linter
 still guards it.** Both gates that read the section slice it with a raw-text
-regex and neither strips HTML comments: `SERVICE_SECTION_RE`
-(`lint_recognition.py:122-124`) and `_section_body` (`lint_gantt.py:179-184`).
-So the homepage-subset-of-CV gate and the Gantt alignment check keep operating
-on the disabled markup exactly as before. Verified empirically, not assumed:
-`lint_gantt` still reports "12 section entry(ies) (5 education + 7 service)
-reconciled against 12 figure mark(s)". This is precisely what made hiding the
-section possible without weakening a guarantee, so **do not "fix" either linter
-to skip comments** without first replacing what it guards.
+regex and neither strips HTML comments: `SERVICE_SECTION_RE` in
+`lint_recognition.py` and `_section_body` in `lint_gantt.py`. (Cite them by
+name, not by line: this passage carried stale line numbers for a week because
+the 2026-08-07 docstring additions shifted both.) So the homepage-subset-of-CV
+gate and the Gantt alignment check keep operating on the disabled markup
+exactly as before. Verified empirically, not assumed: `lint_gantt` still
+reports "12 section entry(ies) (5 education + 7 service) reconciled against 12
+figure mark(s)". This is precisely what made hiding the section possible
+without weakening a guarantee, so **do not "fix" either linter to skip
+comments** without first replacing what it guards.
+
+**As of 2026-08-08 that warning has teeth: a test pins it.**
+`test_lint_recognition.py` and `test_lint_gantt.py` each carry a
+`test_comment_disabled_section_still_parsed` plus a
+`..._still_detects_drift` sibling, whose fixtures wrap the section in
+`<!--`/`-->` exactly as `index.html` does. The paired negative is the load-
+bearing one: a lone "still returns 0" test would pass vacuously, so the drift
+case proves the entries were genuinely parsed AND compared. Confirmed by
+inserting a comment-stripping line into both linters, watching exactly those
+four tests go red while the four live-section tests stayed green, then
+reverting. Before this, the property was protected only by the incidental
+empty-parse guards in each linter.
 
 **The visible service surface is now the Gantt figure**, which carries a mark
 for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
@@ -2556,7 +2593,7 @@ Its dev-only deps are pinned in `scripts/requirements-dev.in` /
 `scripts/requirements.txt`); `.github/workflows/tests.yml` runs the suite in
 CI.
 
-These are **characterization tests**, not a spec: each gate
+These are **characterization tests**, not a spec: each of the twelve gate
 linters is exercised for both a pass case (against the clean repo tree) and a
 violation case, and the build scripts get smoke tests (build_blog pages +
 well-formed sitemap/feed XML; build_portfolio marker-injection idempotency;

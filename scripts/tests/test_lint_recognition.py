@@ -10,9 +10,8 @@ from __future__ import annotations
 import lint_recognition
 
 
-def _homepage() -> str:
-    return (
-        "<!doctype html><html><body>\n"
+def _homepage(commented: bool = False) -> str:
+    section = (
         '<section id="service">\n'
         '  <div class="row-entry">\n'
         '    <div class="row-date">2021</div>\n'
@@ -22,7 +21,15 @@ def _homepage() -> str:
         "    </div>\n"
         "  </div>\n"
         "</section>\n"
-        "</body></html>\n"
+    )
+    if commented:
+        # Mirrors index.html's real disable pattern: a bare `<!--` on its
+        # own line before the section, a bare `-->` on its own line after.
+        section = "<!--\n" + section + "-->\n"
+    return (
+        "<!doctype html><html><body>\n"
+        + section
+        + "</body></html>\n"
     )
 
 
@@ -54,6 +61,24 @@ def test_matching_award_passes(monkeypatch, tmp_path, capsys):
 
 def test_homepage_entry_without_cv_counterpart_fails(monkeypatch, tmp_path, capsys):
     _install(monkeypatch, tmp_path, _homepage(), CV_NO_MATCH)
+    rc = lint_recognition.run()
+    assert rc == 1
+    assert "no counterpart" in capsys.readouterr().err
+
+
+def test_comment_disabled_section_still_parsed(monkeypatch, tmp_path, capsys):
+    """#service is wrapped in an HTML comment in index.html (2026-07-30);
+    SERVICE_SECTION_RE must still find and parse it there, or this gate
+    goes silently vacuous. See CLAUDE.md §Recognition alignment lint."""
+    _install(monkeypatch, tmp_path, _homepage(commented=True), CV_MATCH)
+    assert lint_recognition.run() == 0, capsys.readouterr().err
+
+
+def test_comment_disabled_section_still_detects_drift(monkeypatch, tmp_path, capsys):
+    """Same property as above, proven non-vacuously: a commented-out
+    #service entry with no CV counterpart must still fail the subset
+    gate. See CLAUDE.md §Recognition alignment lint."""
+    _install(monkeypatch, tmp_path, _homepage(commented=True), CV_NO_MATCH)
     rc = lint_recognition.run()
     assert rc == 1
     assert "no counterpart" in capsys.readouterr().err
