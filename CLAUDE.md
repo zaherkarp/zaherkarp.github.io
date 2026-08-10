@@ -227,6 +227,37 @@ certificate detail) or reuse the disabled sections' old openers, which
 referred to the chart as something already seen ("the chart above") since
 the Gantt used to sit below them, not above.
 
+**Case layer (2026-08-10, this branch).** The owner commissioned a full IA
+review ("Systems for Consequential Decisions") with a Gate-0 comparison
+against five alternative architectures, a joint Focus Group / Design Council
+convening, and three interview rounds; the decision record is
+`docs/homepage-case-layer-2026-08-10.md`. Outcome: an ANNOTATE-LIGHT case
+layer, a new `<section class="cases">` between the career band and
+Experience, holding three h3-led argument blocks (judgment / execution /
+adoption) that point at evidence already on the page, in the writing, or in
+resume.md, never duplicating it. `#work` MOVED onto the case layer so nav
+"work" lands on cases + record together (nav-order property intact;
+`#experience` keeps its id). The proposition gained a player-coach second
+sentence ("I lead a small data science team and still build.", mirrored into
+`build_og.py`'s `SUBTITLE_LINES` + regenerated `og-default.png`);
+`.hero-lede` dropped its second paragraph; About ¶2 lost its "Right now that
+means…" sentence (its HEDIS gloss moved into Case 02's deck; `mn-role` now
+anchors the methodology sentence). Two long-standing findings drove the
+design: the 2026-05-23 hiring eval's role-calibration gap ("it cannot be
+both", answered by SEPARATION, one altitude per case) and the parked Tier-1
+audience question (the case layer is the 60-second reader's surface; the
+record below stays the hour-long reader's). **The net-zero height budget was
+measured as unreachable and the owner explicitly revised it:** baseline
+9,543px @1400px; measured variants FULL +1,200 / TIGHT +974 / INDEX +532;
+owner chose TIGHT, so the page's reference height is now **10,498px @1400px
+(17,479px @390px)**, after the de-templating copy pass below trimmed 19px off
+the shipped 10,517. Case 02 anchors on prior-era numbers only (50+ health
+systems newly surfaced from resume.md; the migration referenced without
+restating the 24+ hours that lives in the Health Catalyst lead) because the
+owner kept BHA's present tense number-free. Facts surfaced from resume.md
+(public record): the forecast-vs-actual cut-point dashboard "adopted by data
+science and the CEO". Details at §Case layer below.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -508,8 +539,10 @@ system needs the margin to live in.
 Nav wraps on medium screens. Acceptable and intentional. No hamburger
 menu without discussion. **(Direction B, 2026-07-26)** Nav is four items
 (writing, work, about, contact) and spans full width, not the 60% column.
-`work` targets a new empty `<span id="work" class="section-anchor">` placed just
-before `#experience` (which keeps its own id for `lint_facts`); `contact` is
+`work` targets the empty `<span id="work" class="section-anchor">`, which since
+2026-08-10 sits just before `section.cases` (the case layer), so "work" lands on
+the three arguments plus the record beneath them; `#experience` keeps its own id
+for `lint_facts` and the blog nav's `/#experience` links. `contact` is
 back in the bar. The un-navigated section ids (experience, projects,
 publications, speaking, education, service) are still live anchors, reached via
 the dot plot and the blog-post navs; do not delete them. **The `.hero-more`
@@ -561,8 +594,19 @@ nothing on this site links to it.
 
 ### Hero
 
+**(Case layer pass, 2026-08-10.)** The proposition is now TWO sentences: the
+2026-07-29 self-introduction plus a player-coach clause ("I lead a small data
+science team and still build."). `text-wrap: balance` breaks them one per line
+at 1400px. `build_og.py` carries the same pair as `SUBTITLE_LINES`, drawn one
+per line (a single run overflows the 1200px card); re-run it and commit
+`og-default.png` whenever the proposition changes. `.hero-lede` is now ONE
+paragraph: the prior-career thread stays, the "This site holds…"
+expectation-setting line was cut as a funding trim (the case layer now does
+that orientation work).
+
 **(Owner rewrite, 2026-07-29.)** Sequence: nav, `.nameplate` (h1 alone), a
-Tier-1 `<p class="proposition">`, a two-paragraph `.hero-lede`, then the
+Tier-1 `<p class="proposition">`, the `.hero-lede` (two paragraphs until
+2026-08-10, see above), then the
 two-column `.split-hero` grid (recent writing ~62% / current work ~38%), then
 the full-width `figure.timeline.career-band`. (A trailing `.hero-more` "More:"
 line closed the sequence until 2026-07-30, when it was removed.) The
@@ -610,6 +654,72 @@ Everything from `.nameplate` onward is unchanged.
 still, pre-2026-07-26: nav, h1 name, single plain subtitle, full-width career
 arc figure; About-first section order, which outlived that layout and ended
 with the 2026-07-29 text-ordering pass.)
+
+### Case layer
+
+Added 2026-08-10 (decision record: `docs/homepage-case-layer-2026-08-10.md`).
+`<section class="cases">` sits between the career band's closing `<hr>` and
+`section#experience`, carrying the `#work` anchor, an h2 ("The work, in three
+arguments"), and three `.case` blocks. Each case is: bare `<h3>` (authored
+title), `<p class="case-deck">` (muted plain-language deck naming domain +
+capability + altitude), ONE `<p>` argument body (~45 words), and a
+`<p class="case-links">` exhibits row ("In writing: …", 0.95rem). CSS is
+section 23 of the inline style block. Contracts, each load-bearing:
+
+  - **No case may restate a number that already lives in page prose or in a
+    note.** Case copy points at evidence (`#exp-bha`, `#exp-catalyst`,
+    `#projects`, `#publications`, `#exp-sustainable`, the live feed, the
+    posts); the only number stated in a case is one NOT already on the page
+    (currently "50+ health systems", surfaced from resume.md). This is the
+    sidenote additivity rule extended editorially to case prose.
+  - **Attribution wording is preserved from its source surface.** "Adopted by
+    data science and the CEO" is resume.md's own clause; the Huber prototype
+    is deliberately NOT claimed by Case 01 (its caption says "a tested
+    proposal, not a deployed customer-analytics component", so the case only
+    points into the role that holds the fold). Do not punch case copy up.
+  - **Case h3s are invisible to `lint_facts`** because its homepage job
+    parser scopes to `<section id="experience">`. Keep the case layer OUTSIDE
+    that section; never give a case an adjacent `<p class="meta">`.
+  - **No numerals.** The project counter owns the visible 01-06 sequence;
+    `.num` inside the case layer would also double-count the CSS counter.
+  - **No accent, no notes, no figures** in the layer. It is a 60%-column
+    prose section with no full-width children, so the `#projects` 60-vs-90
+    width trap does not arise.
+  - **No shared grammatical mold across the three cases** (de-templating
+    pass, 2026-08-10; full record at `docs/homepage-case-layer-2026-08-10.md`
+    §8). The layer shipped with three gerund-led h3s and two decks sharing
+    "turned into", and the owner read the result as canned. The h3s are now
+    deliberately three different shapes, "What a number can be trusted to
+    say" / "From specification to running code" / "Whether anyone uses it",
+    and read as a sequence ("it" refers back to "running code"). Restoring a
+    matched mold re-creates the defect. The h2 is "How I work": three words,
+    knowingly breaking the two-word heading rule
+    (`docs/homepage-ordering-review-2026-07-29.md:304`) because it is first
+    person and matches the site's voice; do not "correct" it to a bare noun
+    without reopening that decision. The three identical "In writing:" labels
+    ARE kept: functional labels earn repetition, rhetorical structures do not.
+  - **The HEDIS expansion lives in Case 02's body and nowhere else on the
+    page**, since the same pass cut the About sentence that used to carry it.
+    Do not drop the parenthetical when editing that case.
+  - **BHA's present tense stays number-free** (owner decision, 2026-08-10;
+    Case 02 anchors on prior-era public numbers instead). Adding a BHA
+    system number later is a content decision for the owner, not a copy edit.
+  - The height budget that governs the page is the REVISED one: reference
+    10,498px @1400px (owner-approved TIGHT variant, +974px over the old
+    9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
+    +1,200 with all three measured; the de-templating pass trimmed it to
+    10,498). A future pass claiming the page grew or shrank should measure
+    against 10,498, not 9,543.
+
+The three case titles/decks (as revised above) and the exhibit set (01: Lucas
+critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
+compliance-as-architecture; 03: Insight Engine method, practice-automation
+ROI) were locked through the
+2026-08-10 interview rounds. The compliance-as-architecture link is
+thesis-framed and remains the private Stars predictor's ONLY public surface
+(see §Stars tools distinction; the case layer does not re-describe the tool).
+The "Daily Briefing" named in Case 03 is the PUBLIC Daily Briefing tab of the
+live Insight Engine feed (verified 2026-08-10), not an internal BHA surface.
 
 ### Career arc SVG
 

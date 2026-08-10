@@ -51,8 +51,13 @@ W, H = 1200, 630
 NAME = "Zaher Karp"
 # Matches the homepage proposition. The former category-label subtitle
 # ("Healthcare data engineering and Medicare Advantage analytics.") was
-# retired from the page on 2026-07-29; the card follows it.
-SUBTITLE = "I work in healthcare data engineering and analytics."
+# retired from the page on 2026-07-29; the card follows it. Since
+# 2026-08-10 the proposition is two sentences (the player-coach clause),
+# drawn one per line because the pair overflows 1200px as a single run.
+SUBTITLE_LINES = (
+    "I work in healthcare data engineering and analytics.",
+    "I lead a small data science team and still build.",
+)
 DOMAIN = "zaherkarp.com"
 
 
@@ -74,7 +79,10 @@ def render() -> None:
     name_box = draw.textbbox((left, name_y), NAME, font=name_font)
     sub_y = name_box[3] + 40
 
-    draw.text((left, sub_y), SUBTITLE, font=sub_font, fill=MUTED)
+    for line in SUBTITLE_LINES:
+        draw.text((left, sub_y), line, font=sub_font, fill=MUTED)
+        line_box = draw.textbbox((left, sub_y), line, font=sub_font)
+        sub_y = line_box[3] + 14
     draw.text((left, H - 80), DOMAIN, font=foot_font, fill=MUTED)
 
     img.save(OUT, "PNG", optimize=True)

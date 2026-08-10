@@ -2053,6 +2053,38 @@ body::before {
    322px against a nav ending at 329px). Below that it would tint the ground
    under nav text, so it is dropped rather than shrunk further. */
 @media (max-width: 480px) { body::before { display: none; } }
+
+/* ============================================================
+   23. CASE LAYER (annotate-light, 2026-08-10)
+   Three argument blocks between the career band and Experience:
+   judgment / execution / adoption. Each is an h3, a muted
+   plain-language deck line, and ONE paragraph pointing at
+   evidence that already lives on the page or in the writing
+   (no numbers restated from notes, no new figures, no accent,
+   no notes of its own). The section takes the standard 60%
+   column; nothing inside is wider, so the 60-vs-90 width trap
+   documented on #projects does not arise. Case h3s sit OUTSIDE
+   section#experience, so lint_facts's scoped h3+meta parser
+   never sees them. Deliberately NO numerals: the project
+   counter owns the visible 01-06 sequence and a second number
+   sequence would collide with it (and .num would double-count).
+   ============================================================ */
+.cases h2 { margin-top: 2rem; }
+.cases .case { margin: 0 0 1.6rem 0; }
+.cases .case:last-child { margin-bottom: 0; }
+.cases .case h3 { margin: 1.2rem 0 0.2rem 0; }
+.cases .case-deck {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin: 0 0 0.55rem 0;
+}
+.cases .case p { margin-bottom: 0.55rem; }
+.cases .case-links {
+  font-size: 0.95rem;
+  margin: 0;
+}
+.cases .case-links a { margin-right: 0.9rem; }
+.cases .case p:last-child { margin-bottom: 0; }
 </style>
 </head>
 
@@ -2113,11 +2145,10 @@ body::before {
        to the 60% column), so unconstrained paragraphs would run the
        full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I work in healthcare data engineering and analytics.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and still build.</p>
 
   <div class="hero-lede">
     <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
-    <p>This site holds my writing, projects, and a fuller account of the work.</p>
   </div>
 
   <!-- ==========================================================
@@ -2510,6 +2541,54 @@ body::before {
   <hr>
 
   <!-- ==========================================================
+       CASE LAYER (annotate-light, 2026-08-10)
+       Three arguments the record below supports: judgment /
+       execution / adoption. The 60-second reader's surface; the
+       sections beneath stay the hour-long reader's. Approved via
+       the 2026-08-10 IA review (Gate 0 verdict B): cases ANNOTATE
+       the existing record, never duplicate it; every claim points
+       at evidence already on the page, in the writing, or in
+       resume.md (all public record). Attribution wording is
+       preserved from its source surface; the Huber prototype
+       stays in its BHA fold (a tested proposal, so the case
+       deliberately does not claim it as deployed).
+
+       The #work anchor MOVED here from just above
+       section#experience so the nav's "work" item lands on the
+       case layer and the record together. Nav-order property
+       intact: #writing-hero < #work < #about < #contact. The
+       ~250 blog pages that deep-link /#experience are unaffected
+       (that id stays on the section below).
+       ========================================================== -->
+  <span id="work" class="section-anchor"></span>
+  <section class="cases">
+    <h2>How I work</h2>
+
+    <div class="case">
+      <h3>What a number can be trusted to say</h3>
+      <p class="case-deck">Measure methodology and cut-point forecasting in Medicare Advantage Star Ratings.</p>
+      <p>Cut points are equilibria, not trends; forecasts built on them break when the rules move. The <a href="#exp-bha">current role</a> owns that projection problem end to end, the <a href="#projects">Stars Cliff Simulator below</a> teaches its stakes, and <a href="#publications">nine research years</a> sit underneath.</p>
+      <p class="case-links">In writing: <a href="/blog/lucas-critique-stars-forecasting/">the Lucas critique of cut-point forecasts</a> <a href="/blog/what-the-metric-cannot-see/">where quality actually lives</a> <a href="/blog/interrupted-time-series-care-redesign/">interrupted time series</a></p>
+    </div>
+
+    <div class="case">
+      <h3>From specification to running code</h3>
+      <p class="case-deck">CMS quality-measure specifications written as production pipelines over claims, eligibility, pharmacy, and EHR data.</p>
+      <p>HEDIS (Healthcare Effectiveness Data and Information Set) measure logic becomes SQL and Python that can be reviewed, tested, and defended in a client audit, under release governance the <a href="#exp-bha">current role</a> owns. The pattern has scaled: Epic Clarity libraries across 50+ health systems, and the <a href="#exp-catalyst">AWS to Azure migration</a>.</p>
+      <p class="case-links">In writing: <a href="/blog/hedis-measure-etl-patterns/">HEDIS measure-level ETL patterns</a> <a href="/blog/cicd-for-sql-developers/">CI/CD when the code is SQL</a> <a href="/blog/compliance-as-architecture-stars-predictor/">compliance as architecture</a></p>
+    </div>
+
+    <div class="case">
+      <h3>Whether anyone uses it</h3>
+      <p class="case-deck">Analytics that people adopt, from analyst triage to executive review, and the team behind them.</p>
+      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened; a cut-point review dashboard at Baltimore Health Analytics replaced spreadsheet workflows, adopted by data science and the CEO. <a href="#exp-bha">Two data scientists today</a>, <a href="#exp-sustainable">eight editors once</a>, hands still in the code.</p>
+      <p class="case-links">In writing: <a href="/blog/medicare-advantage-insight-engine/">the Insight Engine method</a> <a href="/blog/practice-automation-workflow-roi/">ROI from clinical workflow data</a></p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ==========================================================
        EXPERIENCE
        Five roles, newest first. Each carries a bare <h3> and a
        markup-free <p class="meta"> of "Org · … · Mon YYYY to
@@ -2543,10 +2622,10 @@ body::before {
        The section no longer claims to be the complete record; a
        closing line points at the resume and CV instead.
        ========================================================== -->
-  <!-- #work anchor: the nav "work" item targets the combined
-       experience -> projects area. Kept as an empty span so the
-       Experience <section> retains its own id for lint_facts. -->
-  <span id="work" class="section-anchor"></span>
+  <!-- #work anchor MOVED 2026-08-10 to the case layer above, so
+       the nav's "work" item lands on the cases and the record
+       together. The Experience <section> keeps its own id for
+       lint_facts and the blog nav's /#experience links. -->
   <section id="experience" class="experience">
     <h2>Experience</h2>
 
@@ -2956,7 +3035,7 @@ body::before {
     <p>
       <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
 
-    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement. Right now that means Medicare Star Ratings, HEDIS (Healthcare Effectiveness Data and Information Set) pipelines, and data integration across claims and eligibility sources.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
+    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
     </p>
   </section>
 

@@ -280,6 +280,13 @@ violate these are out of bounds unless I explicitly reopen the decision:
 - Chrome is em-dash-clean. Name appears once visibly (the h1). No "By the
   Numbers" stats table. Sidenotes are homepage-only.
 - Do not propose adding sections; the current section set is intentional.
+  (The set was last changed by owner decision on 2026-08-10, when the
+  `section.cases` case layer was added between the career band and
+  Experience via the full Gate-0 IA review in
+  `docs/homepage-case-layer-2026-08-10.md`. The set INCLUDING the case
+  layer is now the intentional one; its per-case contracts live in
+  CLAUDE.md §Case layer, and the page's reference height is the revised
+  10,498px @1400px recorded there, not the older 9,5xx figures.)
 - Never hand-edit generated output (`blog/`, `resume.*`, `cv.*`,
   `sitemap.xml`) — edit the source and rebuild.
 
