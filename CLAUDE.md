@@ -249,8 +249,9 @@ audience question (the case layer is the 60-second reader's surface; the
 record below stays the hour-long reader's). **The net-zero height budget was
 measured as unreachable and the owner explicitly revised it:** baseline
 9,543px @1400px; measured variants FULL +1,200 / TIGHT +974 / INDEX +532;
-owner chose TIGHT, so the page's reference height is now **10,517px @1400px
-(17,566px @390px)**. Case 02 anchors on prior-era numbers only (50+ health
+owner chose TIGHT, so the page's reference height is now **10,498px @1400px
+(17,479px @390px)**, after the de-templating copy pass below trimmed 19px off
+the shipped 10,517. Case 02 anchors on prior-era numbers only (50+ health
 systems newly surfaced from resume.md; the migration referenced without
 restating the 24+ hours that lives in the Health Catalyst lead) because the
 owner kept BHA's present tense number-free. Facts surfaced from resume.md
@@ -684,18 +685,36 @@ section 23 of the inline style block. Contracts, each load-bearing:
   - **No accent, no notes, no figures** in the layer. It is a 60%-column
     prose section with no full-width children, so the `#projects` 60-vs-90
     width trap does not arise.
+  - **No shared grammatical mold across the three cases** (de-templating
+    pass, 2026-08-10; full record at `docs/homepage-case-layer-2026-08-10.md`
+    §8). The layer shipped with three gerund-led h3s and two decks sharing
+    "turned into", and the owner read the result as canned. The h3s are now
+    deliberately three different shapes, "What a number can be trusted to
+    say" / "From specification to running code" / "Whether anyone uses it",
+    and read as a sequence ("it" refers back to "running code"). Restoring a
+    matched mold re-creates the defect. The h2 is "How I work": three words,
+    knowingly breaking the two-word heading rule
+    (`docs/homepage-ordering-review-2026-07-29.md:304`) because it is first
+    person and matches the site's voice; do not "correct" it to a bare noun
+    without reopening that decision. The three identical "In writing:" labels
+    ARE kept: functional labels earn repetition, rhetorical structures do not.
+  - **The HEDIS expansion lives in Case 02's body and nowhere else on the
+    page**, since the same pass cut the About sentence that used to carry it.
+    Do not drop the parenthetical when editing that case.
   - **BHA's present tense stays number-free** (owner decision, 2026-08-10;
     Case 02 anchors on prior-era public numbers instead). Adding a BHA
     system number later is a content decision for the owner, not a copy edit.
   - The height budget that governs the page is the REVISED one: reference
-    10,517px @1400px (owner-approved TIGHT variant, +974px over the old
-    9,543px baseline, chosen over INDEX +532 and FULL +1,200 with all three
-    measured). A future pass claiming the page grew or shrank should measure
-    against 10,517, not 9,543.
+    10,498px @1400px (owner-approved TIGHT variant, +974px over the old
+    9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
+    +1,200 with all three measured; the de-templating pass trimmed it to
+    10,498). A future pass claiming the page grew or shrank should measure
+    against 10,498, not 9,543.
 
-The three case titles/decks and the exhibit set (01: Lucas critique, Metric,
-ITS; 02: HEDIS ETL patterns, CI/CD series, compliance-as-architecture; 03:
-Insight Engine method, practice-automation ROI) were locked through the
+The three case titles/decks (as revised above) and the exhibit set (01: Lucas
+critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
+compliance-as-architecture; 03: Insight Engine method, practice-automation
+ROI) were locked through the
 2026-08-10 interview rounds. The compliance-as-architecture link is
 thesis-framed and remains the private Stars predictor's ONLY public surface
 (see §Stars tools distinction; the case layer does not re-describe the tool).

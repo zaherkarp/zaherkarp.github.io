@@ -40,20 +40,22 @@ Director-adjacent plus Principal/Lead.
   intact: `#writing-hero` < `#work` < `#about` < `#contact`). CSS section 23.
 - Three cases, TIGHT form (h3 + muted deck + one ~45-word body + a 0.95rem
   exhibits row):
-  1. *Deciding what a number can be trusted to say* — exhibits: Lucas
+  1. *What a number can be trusted to say* — exhibits: Lucas
      critique, The Metric Isn't Wrong, interrupted time series.
-  2. *Making healthcare logic executable and auditable* — exhibits: HEDIS
+  2. *From specification to running code* — exhibits: HEDIS
      measure-level ETL patterns, CI/CD for SQL developers,
      compliance-as-architecture (thesis-framed; that post remains the private
      Stars predictor's only public surface).
-  3. *Building decision surfaces people actually use* — exhibits: the Insight
+  3. *Whether anyone uses it* — exhibits: the Insight
      Engine method, ROI from clinical workflow data.
 - Proposition gained the player-coach sentence ("I lead a small data science
   team and still build."); `build_og.py` mirrors it as `SUBTITLE_LINES` and
   `og-default.png` was regenerated.
 - Funding trims: `.hero-lede` second paragraph removed; About ¶2's "Right now
-  that means…" sentence removed (its HEDIS gloss moved into Case 02's deck;
-  `mn-role` re-anchored to the methodology sentence).
+  that means…" sentence removed (its HEDIS gloss moved into the case layer,
+  and since §8 lives in Case 02's BODY, not its deck; `mn-role` re-anchored to
+  the methodology sentence). The layer is now the page's only home for that
+  expansion, so a future edit must not drop it.
 
 ## 3. Interview decisions (owner, 2026-08-10)
 
@@ -81,11 +83,13 @@ in headless Chromium (animations disabled, served from the repo root):
 | Baseline (pre-change) | 9,543 | — | 15,754 |
 | INDEX (no bodies) | 10,075 | +532 | 16,485 |
 | **TIGHT (shipped)** | **10,517** | **+974** | **17,566** |
+| TIGHT, de-templated (current) | **10,498** | +955 | **17,479** |
 | FULL (long bodies) | 10,743 | +1,200 | 18,077 |
 
 The owner chose TIGHT explicitly, over both the cheaper INDEX (decks without
 bodies assert rather than argue) and the reverted layer. **The page's
-reference height is therefore 10,517px @1400px.** A future length pass should
+reference height is therefore 10,498px @1400px** (10,517 as first shipped,
+less 19px from the de-templating pass in §8). A future length pass should
 measure against that number; treating 9,5xx as the target would silently
 relitigate this decision.
 
@@ -122,3 +126,71 @@ regenerating `og-default.png`, or the social card and the page disagree.
   not cited; if they publish later they are natural Case 01/02 exhibits.
 - The writing-index cap-at-four lever (`docs/homepage-iteration-2026-07-26.md`
   §6) remains open and untaken.
+
+## 8. The de-templating pass (same day, after the owner read it)
+
+The owner's reaction to the shipped layer was that "The work, in three
+arguments" seemed canned, and asked for panel guidance. Both panels were
+convened jointly. The finding that mattered was not the heading: **seven
+strings were in lockstep** — three gerund-led h3s (Deciding / Making /
+Building), two decks sharing the verb phrase "turned into", three identical
+"In writing:" labels, and all three decks verbless. The h2 was the visible
+top of that stack, so fixing it alone would have left the template intact.
+
+Evidence the panels argued from, recorded because it cuts both ways:
+
+- **Against the heading.** All thirteen other h2s on the page are one or two
+  bare nouns; eleven are single words. Massimo's own prior ruling
+  (`docs/homepage-ordering-review-2026-07-29.md:304`) is "headings stay two
+  words, not sentences." At 390px the five-word heading wrapped to two lines.
+- **For it, and not suppressed.** `The robust smoothing, in one formula` — the
+  Huber fold summary — is the *identical* construction, and it is this repo's
+  own accepted answer to the fold-label critique
+  (`critiques/critique-index-2026-07-04.md:116`). The idiom is native to the
+  page at `<summary>` altitude, where a label's job is naming hidden contents.
+  The panels distinguished altitude rather than declaring the construction
+  bad: at h2 the job is marking a boundary, and the layer already framed three
+  times (h2, deck, body) before a claim landed.
+- **Voice evidence.** Across 24 recent posts the owner's own title voice is
+  assertive and verb-driven, making falsifiable statements about named things
+  ("BTEQ Still Has a Job"). "The work, in three arguments" is rhetorical
+  framing that names nothing falsifiable — a different flaw from being clever,
+  and the reason the fix moves claims into prose and leaves headings quiet.
+
+Changes, all copy-only (no ids, CSS, marker regions, or generated output):
+
+| | Before | After |
+|---|---|---|
+| h2 | The work, in three arguments | **How I work** |
+| h3 01 | Deciding what a number can be trusted to say | **What a number can be trusted to say** |
+| h3 02 | Making healthcare logic executable and auditable | **From specification to running code** |
+| h3 03 | Building decision surfaces people actually use | **Whether anyone uses it** |
+| decks | two shared "turned into"; deck 02 carried the HEDIS gloss | three distinct constructions; gloss moved to Case 02's body |
+| Case 03 body | "Player-coach is the honest description: two data scientists…" | "Two data scientists today, eight editors once, hands still in the code." |
+
+Three notes for whoever edits this next:
+
+1. **"How I work" is three words and knowingly breaks Massimo's two-word
+   rule.** The owner chose it over the bare-noun "Work" because it is first
+   person, matches the site's voice, and describes what the three blocks
+   actually are. Do not "correct" it to a bare noun without reopening that.
+2. **The h3s are deliberately in three different grammatical shapes** (noun
+   clause / prepositional phrase / subordinate clause) and read as a sequence
+   — "it" in the third refers back to "running code" in the second. Restoring
+   a matched mold across all three re-creates the defect this pass removed.
+   Treat "no shared grammatical mold across the cases" as a contract.
+3. **The three identical "In writing:" labels were kept on purpose.**
+   Functional labels earn repetition (contact rows and fold summaries do the
+   same); rhetorical structures do not. That is the line, and it is not an
+   oversight to finish later.
+
+Also flagged by the panels and NOT acted on: the reception read that Case 03's
+kept phrasing still leans on resume language, and Nathan's objection that any
+quieter heading weakens the cue that the three blocks are one set. Both were
+judged acceptable against the owner's selections.
+
+Verification after the pass: page 10,517px → **10,498px @1400px** (17,566 →
+17,479 @390px), visible words 1,896 → 1,873. All twelve linters green, full
+guard checks clean, `pytest scripts/tests/` 152 passed / 1 skipped, rendered
+re-check at 1400 light+dark and 390 confirming the heading no longer wraps on
+mobile and the outline, anchors, and nav order are unchanged.

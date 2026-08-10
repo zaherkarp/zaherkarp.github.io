@@ -286,7 +286,7 @@ violate these are out of bounds unless I explicitly reopen the decision:
   `docs/homepage-case-layer-2026-08-10.md`. The set INCLUDING the case
   layer is now the intentional one; its per-case contracts live in
   CLAUDE.md §Case layer, and the page's reference height is the revised
-  10,517px @1400px recorded there, not the older 9,5xx figures.)
+  10,498px @1400px recorded there, not the older 9,5xx figures.)
 - Never hand-edit generated output (`blog/`, `resume.*`, `cv.*`,
   `sitemap.xml`) — edit the source and rebuild.
 
