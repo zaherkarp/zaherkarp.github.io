@@ -301,6 +301,60 @@ objection (§5): `CMS computes cut points from the scores every plan reports`
 states the mechanism without the "cut points **are** equilibria" modeling
 claim, and without the looser `from where every plan lands`.
 
+## 6b. Round three: the page-wide grammar sweep
+
+A full grammar audit of every hand-authored string in `index.html` followed,
+excluding the five generated marker regions, `.stack`/`.meta` lists, and
+headings. Findings were reported to the owner before any edit outside the
+already-touched copy; the owner asked for all seven fixed.
+
+The audit's two case-layer findings were the same two §6a had already fixed
+(it read the file mid-edit), so the layer needed no further work.
+
+| Line | Defect | Before | After |
+|---|---|---|---|
+| 2771 | fragment + dangling participle: *years* did not advance through positions | Nine years in federally funded primary care research, advancing through five positions… | **I spent nine years** in federally funded primary care research, advancing through five positions… |
+| 2771 | pronoun with no antecedent (`mn-uw-cohort`) | …the Wisconsin Longitudinal Study, the largest of **them**. | …the largest of **the studies I supported**. |
+| 2783 | fragment | An editorial services practice in environmental, health, and policy content. | **Sustainable Clarity was** an editorial services practice… |
+| 3043 | fragment | Different instruments, the same underlying question about… | Different instruments **ask** the same underlying question about… |
+| 3292 | fragment (`#publications` lead) | Six peer-reviewed papers in health services research, 2012 to 2019, the most-cited… | Six peer-reviewed papers in health services research **appeared between** 2012 and 2019, the most-cited… |
+| 3417 | fragment (`#speaking` lead) | Seventeen podium presentations, workshops, and posters at national and regional venues between 2010 and 2017, in health services research and… | Seventeen podium presentations, workshops, and posters **cover** health services research and primary care systems engineering, delivered at national and regional venues between 2010 and 2017. |
+| 3509 | fragment (Gantt lead-in): `shown` is a participle, not a finite verb | A record of degrees, certificates, and service commitments, shown together because… | **The chart below gathers** degrees, certificates, and service commitments into one frame, because… |
+
+Notes for whoever edits these next:
+
+- **`3292` and `3417` had to keep their `.newthought` span first**, because the
+  small-caps opener is defined as the paragraph's opening phrase (§Small caps
+  policy). That constraint is why `3417` was recast so its subject acquires an
+  active verb (`cover`) rather than prefixed with "I delivered", which would
+  have displaced the span.
+- **The `mn-uw-cohort` note keeps its label register** (`10,000 adults followed
+  across a 50-year cohort: …`) and was not converted to a full sentence. Only
+  the unreachable pronoun was fixed. Stat-num notes are captions, not prose.
+- **The margin note edit is the one that could have broken `lint_notes`**: its
+  additivity check fails on a five-word run shared with page prose outside the
+  note. `the studies I supported` is four words and collides with nothing in
+  the host paragraph. Verified green, not assumed.
+- `2783` names the employer rather than using "I ran", to avoid three
+  consecutive `I`-initial sentences in a two-sentence paragraph. `lint_facts`
+  parses only `h3` and `p.meta` inside `#experience`, so body prose naming the
+  org is invisible to it.
+
+### The working rule, stated precisely
+
+"Complete sentences" as applied here means **complete sentences in body
+prose**. Fragments remain correct and are untouched in: headings (`h1`–`h3`),
+`.section-subhead`, `<summary>` labels, `p.meta` and `.stack` metadata rows,
+`.case-links` label rows, figure axis labels, figcaptions, `.tile-summary`
+blocks, `div.formula-caption`, and `.stat-num` note captions. That is the
+conventional line, not a compromise: no editor calls `Projects` or
+`Data from the CMS October 2024 release.` a grammar error.
+
+Two further fragments live inside the commented-out `#service` and
+`#certifications` blocks (a verbless clause joined by a semicolon at 3775, and
+three semicolon-separated noun phrases at 3899). Both render nothing today and
+were deliberately left; fix them if either section is ever restored.
+
 ## 7. Verification
 
 Deps installed into `.venv` (the container's system PyYAML blocks a bare
@@ -318,17 +372,19 @@ Deps installed into `.venv` (the container's system PyYAML blocks a bare
   (10,498px @1400, 17,479px @390, 1,873 visible words), so the deltas below are
   trustworthy.
 
-| | Before | Round one | Round two | Net Δ |
-|---|---|---|---|---|
-| height @1400 | 10,498px | 10,436px | **10,511px** | +13 |
-| height @1000 | 11,627px | 11,631px | 11,631px | +4 |
-| height @761 | 13,692px | 13,705px | 13,705px | +13 |
-| height @390 | 17,479px | 17,421px | **17,506px** | +27 |
-| visible words @1400 | 1,873 | 1,882 | 1,891 | +18 |
+| | Before | Round 1 | Round 2 | Round 3 | Net Δ |
+|---|---|---|---|---|---|
+| height @1400 | 10,498px | 10,436px | 10,511px | **10,549px** | +51 |
+| height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | +41 |
+| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | +37 |
+| height @390 | 17,479px | 17,421px | 17,506px | **17,581px** | +102 |
+| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | +32 |
 
-Round one cut 62px; round two put 75px back, because complete sentences cost
-words. The net is +13px at 1400px. **The governing reference height is now
-10,511px, not 10,436 and not 10,498.** Round one's `section.cases` measurement
+Round one cut 62px; rounds two and three added 113 back, because complete
+sentences cost words. The net is +51px at 1400px, and that trade was accepted
+explicitly: this pass was about register and grammar, not length. **The
+governing reference height is now 10,549px** — not 10,511, not 10,436, and
+not 10,498. Round one's `section.cases` measurement
 (945px before, 882px after) is not a clean copy delta and is dropped from this
 table: the "before" was taken while the `.cases` selector collision was still
 rendering the section as an inline-block.
@@ -347,9 +403,14 @@ subtitle lines fit the 1200px card.
   shape how I think about…` is false agency plus a three-item list). It is the
   owner's own 2026-07-29 wording, no Focus Group panelist flagged it, and it is
   outside the 2026-08-10 text the complaint was about.
-- **Experience leads, figcaptions, project prose, section leads.** The
-  structural scan found one straggler (the Gantt lead-in's "rather than
-  following in a tidy sequence"). Left for a future pass.
+- **Experience leads, figcaptions, project prose, section leads: swept for
+  GRAMMAR, not for REGISTER.** Round three (§6b) fixed six fragments and one
+  unreachable pronoun across these surfaces, including the Gantt lead-in that
+  round one had listed here as a straggler. What remains undone is the tone
+  question: no stop-slop pass was run over Experience or the figcaptions, so
+  their register is unexamined. That is the natural next pass.
+- **Figcaptions, `.tile-summary`, `div.formula-caption`, and `.stat-num` note
+  captions keep their verbless form**, deliberately. See §6b for the rule.
 - **stop-slop not vendored.** Applied as a guide and cited here.
 - **`nobody opened` and `How I work` kept**, both against a stop-slop rule, for
   the reasons in §2.
