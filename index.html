@@ -1065,7 +1065,7 @@ figure.funnel-figure figcaption {
    psi-function. Pure CSS, no MathJax; works because the
    formulas in question are short and don't need full LaTeX.
    .formula:        the math line itself, centered, larger size
-   .cases:          column-stacked piecewise definitions
+   .piecewise:      column-stacked piecewise definitions
    .case-line:      one row of a piecewise definition
    .case-cond:      the "if |r| <= k" condition, right-aligned
    .formula-caption: small italic explanation below the formula
@@ -1085,7 +1085,12 @@ figure.funnel-figure figcaption {
   /* explicit italic for variables; the et-book stack handles this */
   font-style: italic;
 }
-.cases {
+/* Scoped to the piecewise formula ONLY. This was `.cases` until
+   2026-08-11, which also matched `section.cases` (the case layer added
+   2026-08-10) and silently gave that whole section display:inline-block,
+   a 1px ink border-left, and a 0.6rem indent, an undesigned third
+   decorative mark against the two-mark limit. Do not rename it back. */
+.piecewise {
   display: inline-block;
   vertical-align: middle;
   border-left: 1px solid var(--ink);
@@ -2145,7 +2150,7 @@ body::before {
        to the 60% column), so unconstrained paragraphs would run the
        full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and still build.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and review its code.</p>
 
   <div class="hero-lede">
     <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
@@ -2565,23 +2570,23 @@ body::before {
     <h2>How I work</h2>
 
     <div class="case">
-      <h3>What a number can be trusted to say</h3>
+      <h3>Cut points move</h3>
       <p class="case-deck">Measure methodology and cut-point forecasting in Medicare Advantage Star Ratings.</p>
-      <p>Cut points are equilibria, not trends; forecasts built on them break when the rules move. The <a href="#exp-bha">current role</a> owns that projection problem end to end, the <a href="#projects">Stars Cliff Simulator below</a> teaches its stakes, and <a href="#publications">nine research years</a> sit underneath.</p>
+      <p>CMS sets cut points from where every plan lands, so a forecast trained on last year's trend misses in the years the rules change. I own that projection in my <a href="#exp-bha">current role</a>, and the <a href="#projects">Stars Cliff Simulator below</a> lets you move a measure and see the rating change. My <a href="#publications">published research</a> comes from the years before that.</p>
       <p class="case-links">In writing: <a href="/blog/lucas-critique-stars-forecasting/">the Lucas critique of cut-point forecasts</a> <a href="/blog/what-the-metric-cannot-see/">where quality actually lives</a> <a href="/blog/interrupted-time-series-care-redesign/">interrupted time series</a></p>
     </div>
 
     <div class="case">
-      <h3>From specification to running code</h3>
-      <p class="case-deck">CMS quality-measure specifications written as production pipelines over claims, eligibility, pharmacy, and EHR data.</p>
-      <p>HEDIS (Healthcare Effectiveness Data and Information Set) measure logic becomes SQL and Python that can be reviewed, tested, and defended in a client audit, under release governance the <a href="#exp-bha">current role</a> owns. The pattern has scaled: Epic Clarity libraries across 50+ health systems, and the <a href="#exp-catalyst">AWS to Azure migration</a>.</p>
+      <h3>Auditable measure logic</h3>
+      <p class="case-deck">CMS quality-measure specifications, running as pipelines over claims, eligibility, pharmacy, and EHR data.</p>
+      <p>I write HEDIS (Healthcare Effectiveness Data and Information Set) measure logic as SQL and Python I can defend in a client audit, under release governance I own in my <a href="#exp-bha">current role</a>. Earlier I authored reusable Epic Clarity report libraries deployed across 50+ health systems, and moved the analytics stack through the <a href="#exp-catalyst">AWS to Azure migration</a>.</p>
       <p class="case-links">In writing: <a href="/blog/hedis-measure-etl-patterns/">HEDIS measure-level ETL patterns</a> <a href="/blog/cicd-for-sql-developers/">CI/CD when the code is SQL</a> <a href="/blog/compliance-as-architecture-stars-predictor/">compliance as architecture</a></p>
     </div>
 
     <div class="case">
-      <h3>Whether anyone uses it</h3>
-      <p class="case-deck">Analytics that people adopt, from analyst triage to executive review, and the team behind them.</p>
-      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened; a cut-point review dashboard at Baltimore Health Analytics replaced spreadsheet workflows, adopted by data science and the CEO. <a href="#exp-bha">Two data scientists today</a>, <a href="#exp-sustainable">eight editors once</a>, hands still in the code.</p>
+      <h3>In use</h3>
+      <p class="case-deck">Dashboards and a daily feed that analysts and executives open, and the team that keeps them running.</p>
+      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened. I built the cut-point review dashboard at Baltimore Health Analytics that replaced spreadsheet workflows, adopted by data science and the CEO.</p>
       <p class="case-links">In writing: <a href="/blog/medicare-advantage-insight-engine/">the Insight Engine method</a> <a href="/blog/practice-automation-workflow-roi/">ROI from clinical workflow data</a></p>
     </div>
   </section>
@@ -2676,7 +2681,7 @@ body::before {
       <div class="formula-block">
         <div class="formula">
           &psi;<sub><i>k</i></sub>(<i>r</i>) =
-          <span class="cases">
+          <span class="piecewise">
             <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
             <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
           </span>
