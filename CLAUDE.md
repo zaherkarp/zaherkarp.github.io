@@ -804,16 +804,17 @@ section 23 of the inline style block. Contracts, each load-bearing:
     was found by reading computed styles in a browser, which is the check to
     repeat after any selector rename.
   - The height budget that governs the page is the REVISED one: reference
-    **10,549px @1400px (17,581px @390px)** as of the 2026-08-11 tone pass.
-    The pass trimmed 62px in round one (to 10,436), the complete-sentence
-    round put 75px back (10,511), and the page-wide grammar sweep added 38
-    more, for a net +51px against the 10,498px the case layer shipped at.
-    Complete sentences cost words; that is the trade and it was accepted.
+    **10,511px @1400px (17,572px @390px)** as of the 2026-08-11 tone pass,
+    across four rounds: −62 (register), +75 (complete sentences), +38
+    (page-wide grammar sweep), −38 (register pass on Experience and the
+    figcaptions), for a net +13px against the 10,498px the case layer
+    shipped at. Complete sentences cost words; that is the trade and it was
+    accepted.
     That
     10,498 was itself the owner-approved TIGHT variant (+974px over the old
     9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
     +1,200 with all three measured). A future pass claiming the page grew or
-    shrank should measure against 10,549, not 10,498 and not 9,543.
+    shrank should measure against 10,511, not 10,498 and not 9,543.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,

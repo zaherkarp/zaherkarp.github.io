@@ -4,8 +4,11 @@ Owner: "The language changes feel very grandiose. How can we make them less
 so? Talk to the committee and group and think about it, maybe use stop-slop
 as a guide."
 
-Target: `section.cases` (the case layer added 2026-08-10) and the hero
-proposition. Rollback point: `fd98a24`.
+Target, as it grew over four rounds: `section.cases` (the case layer added
+2026-08-10) and the hero proposition (§6, register); then the same surfaces for
+grammar (§6a); then every hand-authored paragraph on the page for grammar
+(§6b); then `section#experience` and the six figcaptions for register (§6c).
+Rollback point: `fd98a24`.
 
 ---
 
@@ -355,6 +358,102 @@ Two further fragments live inside the commented-out `#service` and
 three semicolon-separated noun phrases at 3899). Both render nothing today and
 were deliberately left; fix them if either section is ever restored.
 
+## 6c. Round four: register pass on Experience and the figcaptions
+
+Owner: "do the register pass on experience and figcaptions too." Rounds one to
+three had swept these surfaces for grammar only, leaving their tone
+unexamined.
+
+**Routing.** `scripts/review/prompts/design-council.md:46-50` puts "copy edits
+inside an experience entry" on the Council's DO-NOT-CONVENE list, so Experience
+went to a four-panelist Focus Group (one antagonist, one emotional-register
+reader) and the figcaptions went to Jess alone, whose lane covers figure
+captions. Convening the full Council here would have been the theatre that
+file warns against.
+
+**Headline: Experience is not the case layer, and the 2026-08-10 diagnosis does
+not transfer** (unanimous, 4/4). Four of five leads put a first-person actor in
+the first clause. The section has exactly one recurring defect — *the sentence
+whose grammatical subject is a system rather than a person* — and three
+instances of it, one of which the panel then refuted.
+
+### Applied
+
+| Line | Defect | Before | After |
+|---|---|---|---|
+| 2642 | false agency; the section's only brochure string, in first position | A Medicare Advantage quality platform **anchors the work**: Part C and Part D Star Ratings measures… I own the methodology and engineering **behind it**. | A Medicare Advantage quality platform **runs** Part C and Part D Star Ratings measures… I own **its** methodology and engineering. |
+| 2759 | false agency, compounded: one inanimate subject driving two human verbs | **A governed semantic layer absorbed** sevenfold growth… and retired 400+ hours… | **I designed a governed semantic layer that absorbed** sevenfold growth… and retired 400+ hours… |
+| 2421 | false agency, **and a caption asserting something the figure does not draw** | Three overlapping careers **converge into** one continuous data-engineering line. | Three overlapping careers **in parallel lanes**, 2007 to the present, with data engineering the one still running. |
+
+Notes on each:
+
+- **2642 keeps its `.newthought` span in first position**, the same constraint
+  that bound the Publications and Speaking leads in §6b. The fix is the verb,
+  not the subject. It also retires a colon-pivot, one of the cadence markers
+  finding R15 identified.
+- **2759 restores an actor the source already records.** `resume.md:32` reads
+  "**Designed** governed Sisense / Periscope dashboards with shared semantic
+  layers: absorbed 7× user growth and saved 400+ prep hours per quarter." This
+  is the identical defect and identical fix as `The pattern has scaled` in
+  round one (§6, §5) — an agentless construction that is a *weaker* claim in
+  fancier clothes. Both original verbs are kept, so `CLAUDE.md`'s record of
+  these facts stays accurate. `sevenfold growth in dashboard users` names the
+  multiple and its denominator, satisfying §Calibrated claims' no-bare-7x rule.
+- **2421 was a factual defect, not only a stylistic one, and it was verified
+  rather than accepted.** The desktop `tl-horizontal` bands sit at fixed
+  `y=80` (editorial), `y=170` (research), and `y=260` (data engineering, three
+  segments); the mobile `tl-rail` bands sit at fixed `x=55/90/125`. They are
+  parallel at both breakpoints and two of them simply stop. Nothing converges.
+  **This caption is `aria-labelledby` for BOTH SVGs**, so it is the chart's
+  accessible name at every viewport — which is why the replacement stays one
+  short descriptive sentence rather than growing into two. Confirmed after the
+  edit that both SVGs resolve to the new name and their `aria-describedby`
+  targets still exist. The `<desc>` at `index.html:2429` never claimed
+  convergence and needed no change. No verbatim protection exists on this
+  string: §Career arc SVG locks coordinates, stroke widths, annotation
+  geometry, and the accent ban, and says nothing about caption text.
+
+### Refuted or declined, with reasons, so they are not re-flagged
+
+- **`a three-person function became the analytics arm…` (2704) — REFUTED**
+  (3/1). `became` is a copula reporting a change of state, not an action verb,
+  and a three-person function is three people. The actor is present in the
+  adjacent clause (`I moved with the product`). One dissent, on the separate
+  ground that `the analytics arm of` is org-chart diction; recorded, not
+  actioned.
+- **`A tested proposal, not a deployed customer-analytics component.` —
+  PROTECTED and out of scope.** It is `div.formula-caption`, not a
+  `<figcaption>`. It is protected verbatim in three places. And the rule does
+  not fire on it: stop-slop's binary-contrast prohibition targets contrasts
+  that manufacture authority by rejecting a strawman, whereas this `not Y`
+  clause **subtracts** a claim. A construction whose second half reduces the
+  claim cannot be the defect a rule against false authority describes.
+- **`The three figures are modeled, not measured.` — EARNS ITS PLACE.** Same
+  subtractive structure. X-not-Y appears only four times in visible prose
+  page-wide, one of those inside an uneditable testimonial quote. Not a tic.
+- **Jess's optional one-word cut** (dropping the redundant `Modeled` from the
+  funnel caption at 2361, since `modeled, not measured` follows eleven words
+  later) — **DECLINED.** The inline comment at `index.html:2340-2344` records
+  the repetition as deliberate "so the numbers keep their scope if the figure
+  is read alone." Jess rated it "a taste call and not a defect" and invited
+  the overrule. A register pass should not erode a deliberate data-honesty
+  mechanism to save one word. Reopen cheaply if the owner disagrees.
+- **`The infrastructure did not exist when I arrived…` (2759) — KEEP** (3/4),
+  documented so a future sweep does not tidy it. A single factual negative is
+  not stop-slop's negative *listing*, and it is believed for the same reason
+  `nobody opened` survived: concrete and slightly unflattering.
+- **Three stacked three-item lists in the Sustainable Clarity lead** (2783) —
+  real cadence finding (3/4), **no edit**. Every item is a fact, and `up to
+  eight copy editors, designers, and photographers` is the deliberately
+  *un*flattened form. Breaking the cadence costs facts.
+- **`RxNorm validation cut client-audit discrepancies from roughly 30% to
+  under 5%` (2704)** — the antagonist noted the ratio names a metric but no
+  denominator, against §Calibrated claims. Real, but **out of scope for a
+  register pass**: closing it needs a fact only the owner has, and the fix
+  direction is toward more precision, never a bigger number. Raised, parked.
+- **The UW lead (2771) is the model paragraph** for Experience register:
+  first-person, five named funders, no verb chosen for texture.
+
 ## 7. Verification
 
 Deps installed into `.venv` (the container's system PyYAML blocks a bare
@@ -372,19 +471,20 @@ Deps installed into `.venv` (the container's system PyYAML blocks a bare
   (10,498px @1400, 17,479px @390, 1,873 visible words), so the deltas below are
   trustworthy.
 
-| | Before | Round 1 | Round 2 | Round 3 | Net Δ |
-|---|---|---|---|---|---|
-| height @1400 | 10,498px | 10,436px | 10,511px | **10,549px** | +51 |
-| height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | +41 |
-| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | +37 |
-| height @390 | 17,479px | 17,421px | 17,506px | **17,581px** | +102 |
-| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | +32 |
+| | Before | R1 | R2 | R3 | R4 | Net Δ |
+|---|---|---|---|---|---|---|
+| height @1400 | 10,498px | 10,436px | 10,511px | 10,549px | **10,511px** | +13 |
+| height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | 11,631px | +4 |
+| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | 13,766px | +74 |
+| height @390 | 17,479px | 17,421px | 17,506px | 17,581px | **17,572px** | +93 |
+| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | 1,912 | +39 |
 
-Round one cut 62px; rounds two and three added 113 back, because complete
-sentences cost words. The net is +51px at 1400px, and that trade was accepted
-explicitly: this pass was about register and grammar, not length. **The
-governing reference height is now 10,549px** — not 10,511, not 10,436, and
-not 10,498. Round one's `section.cases` measurement
+Round one cut 62px; the two grammar rounds added 113 back, because complete
+sentences cost words; round four gave 38 of it back while *adding* seven words,
+because the BHA lead lost a colon-pivot and reflowed. The net is +13px at
+1400px, and the trade was accepted explicitly: this pass was about register and
+grammar, not length. **The governing reference height is now 10,511px** — not
+10,549, not 10,436, and not 10,498. Round one's `section.cases` measurement
 (945px before, 882px after) is not a clean copy delta and is dropped from this
 table: the "before" was taken while the `.cases` selector collision was still
 rendering the section as an inline-block.
