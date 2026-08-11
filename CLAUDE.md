@@ -804,7 +804,7 @@ section 23 of the inline style block. Contracts, each load-bearing:
     was found by reading computed styles in a browser, which is the check to
     repeat after any selector rename.
   - The height budget that governs the page is the REVISED one: reference
-    **10,511px @1400px (17,572px @390px)** as of the 2026-08-11 tone pass,
+    **10,511px @1400px (17,609px @390px)** as of the 2026-08-11 tone pass,
     across four rounds: −62 (register), +75 (complete sentences), +38
     (page-wide grammar sweep), −38 (register pass on Experience and the
     figcaptions), for a net +13px against the 10,498px the case layer

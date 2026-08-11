@@ -448,9 +448,17 @@ Notes on each:
   *un*flattened form. Breaking the cadence costs facts.
 - **`RxNorm validation cut client-audit discrepancies from roughly 30% to
   under 5%` (2704)** — the antagonist noted the ratio names a metric but no
-  denominator, against §Calibrated claims. Real, but **out of scope for a
-  register pass**: closing it needs a fact only the owner has, and the fix
-  direction is toward more precision, never a bigger number. Raised, parked.
+  denominator, against §Calibrated claims. Parked during the panel round as
+  needing a fact only the owner has, then **closed the same day**: the owner
+  supplied the denominator (medication orders), and the sentence now reads
+  `…client-audit discrepancies **on medication orders** from roughly 30% to
+  under 5%`. Worth noting how the gap survived this long: those two
+  percentages appear on **no other surface**. `resume.md:24` mentions RxNorm
+  without them ("improved EHR data quality with RxNorm standards and fuzzy
+  matching") and `cv.md` not at all, so neither `lint_facts` nor any
+  cross-surface check could have caught an underspecified ratio that exists
+  in exactly one place. Spelled out rather than abbreviated, matching the
+  page's habit of expanding HEDIS and QBP on first use.
 - **The UW lead (2771) is the model paragraph** for Experience register:
   first-person, five named funders, no verb chosen for texture.
 
@@ -475,9 +483,12 @@ Deps installed into `.venv` (the container's system PyYAML blocks a bare
 |---|---|---|---|---|---|---|
 | height @1400 | 10,498px | 10,436px | 10,511px | 10,549px | **10,511px** | +13 |
 | height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | 11,631px | +4 |
-| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | 13,766px | +74 |
-| height @390 | 17,479px | 17,421px | 17,506px | 17,581px | **17,572px** | +93 |
-| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | 1,912 | +39 |
+| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | 13,804px | +112 |
+| height @390 | 17,479px | 17,421px | 17,506px | 17,581px | **17,609px** | +130 |
+| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | 1,915 | +42 |
+
+R4 includes the RxNorm denominator fix below, which added three words without
+moving the 1400px height at all.
 
 Round one cut 62px; the two grammar rounds added 113 back, because complete
 sentences cost words; round four gave 38 of it back while *adding* seven words,
