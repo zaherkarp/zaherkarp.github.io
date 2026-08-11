@@ -205,7 +205,10 @@ the argument that earns it is a slogan, whatever its merits in place.
 
 ## 6. Before and after
 
-| | Before | After |
+Round one is below; **round two (§6a) supersedes every heading and deck in
+this table.**
+
+| | Before | After (round one) |
 |---|---|---|
 | proposition s2 | I lead a small data science team and still build. | I lead a small data science team and review its code. |
 | h3 01 | What a number can be trusted to say | **Cut points move** |
@@ -217,12 +220,14 @@ the argument that earns it is a slogan, whatever its merits in place.
 | deck 03 | Analytics that people adopt, from analyst triage to executive review, and the team behind them. | Dashboards and a daily feed that analysts and executives open, and the team that keeps them running. |
 | body 03 | …replaced spreadsheet workflows, adopted by data science and the CEO. Two data scientists today, eight editors once, hands still in the code. | …I built the cut-point review dashboard at Baltimore Health Analytics that replaced spreadsheet workflows, adopted by data science and the CEO. |
 
-**Heading shapes, checked as distinct** per the mold contract: independent
-declarative clause (`Cut points move`) / bare noun phrase (`Auditable measure
-logic`) / prepositional phrase (`In use`). None gerund-led, so the 2026-08-10
-defect is not restored. Lengths 3 / 3 / 2 words, deliberately not a monotone
-gradient — Jess's objection that an ordered gradient is itself a mold, in the
-metrical dimension.
+**Heading shapes in round one, checked as distinct** per the mold contract:
+independent declarative clause (`Cut points move`) / bare noun phrase
+(`Auditable measure logic`) / prepositional phrase (`In use`). None
+gerund-led, so the 2026-08-10 defect was not restored. **Round two abandoned
+shape-distinctness at this tier entirely; see §6a.** What survives from this
+paragraph is the length rule: 2 / 3 / 3 words now, still deliberately not a
+monotone gradient, per Jess's objection that an ordered gradient is itself a
+mold in the metrical dimension.
 
 **Preserved verbatim**, all contract-protected: the HEDIS parenthetical (the
 page's only home for that expansion), `adopted by data science and the CEO`
@@ -237,6 +242,64 @@ requires. `I built` is new and is sourced: `resume.md:13` records "Built a
 self-service dashboard for forecast-versus-actual Star Ratings cutpoint review",
 and the player-coach claim the proposition makes now has evidence under it
 instead of being asserted twice with none.
+
+## 6a. Round two: complete sentences (same day)
+
+Owner, after reading round one: "also i really need correct grammar and
+complete sentences."
+
+The complaint was correct and round one had made one part of it worse. Three
+findings, all genuine grammar rather than style:
+
+1. **All three decks were fragments punctuated as sentences**, and had been
+   since the layer shipped on 2026-08-10: noun phrases closed with a full stop
+   (`Measure methodology and cut-point forecasting in Medicare Advantage Star
+   Ratings.`), no finite verb in any of them.
+2. **Round one introduced two more fragments in the h3 tier** (`Auditable
+   measure logic`, `In use`) while chasing three distinct grammatical shapes.
+3. **Two defects in round one's own bodies.** In Case 03, `adopted by data
+   science and the CEO` sat immediately after `spreadsheet workflows`, so the
+   participial phrase could attach to the workflows rather than the dashboard.
+   In Case 02, a comma preceded a compound predicate sharing one subject
+   (`I authored …, and moved …`).
+
+**Owner ruled headings EXEMPT.** Headings are conventionally noun phrases; no
+editor calls `Projects` a fragment error, and all thirteen other h2s on this
+page are bare nouns. Decks and bodies carry the complete-sentence rule.
+
+| | Round one | Round two |
+|---|---|---|
+| h3 01 | Cut points move | **Stars measurement** |
+| h3 02 | Auditable measure logic | *(unchanged)* |
+| h3 03 | In use | **Dashboards people open** |
+| deck 01 | Measure methodology and cut-point forecasting in Medicare Advantage Star Ratings. | I work on measure methodology and cut-point forecasting for Medicare Advantage Star Ratings. |
+| deck 02 | CMS quality-measure specifications, running as pipelines over… | CMS quality-measure specifications **run** as pipelines over… |
+| deck 03 | Dashboards and a daily feed that analysts and executives open, and the team behind them. | Analysts and executives open these every day, and my team keeps them running. |
+| body 01 | CMS **sets** cut points **from where every plan lands**… | CMS **computes** cut points **from the scores every plan reports**… |
+| body 02 | …Python I can defend…, governance I own…. Earlier I authored … systems, and moved the stack… | …Python **that** I can defend…, governance **that** I own…. Earlier I authored … systems. **I also moved** the stack… |
+| body 03 | I built the cut-point review dashboard at Baltimore Health Analytics that replaced spreadsheet workflows, adopted by data science and the CEO. | **At Baltimore Health Analytics I built** the cut-point review dashboard that replaced our spreadsheet workflows, **and it was** adopted by data science and the CEO. |
+
+### The contract this breaks, deliberately
+
+Three bare noun phrases are a **matched grammatical mold**, which
+`docs/homepage-case-layer-2026-08-10.md:176-180` forbids outright. Flagged to
+the owner before the edit rather than shipped quietly; the owner chose
+consistency.
+
+The narrowing recorded in `CLAUDE.md` §Case layer is that the contract now
+governs **rhetorical templates, not taxonomies**, and no longer binds the h3
+tier at all. The distinction is load-bearing and worth stating precisely: three
+gerund-led parallel constructions ("Deciding what… / Making… / Building…") are
+a device the reader *hears*, and hearing it is what made the layer read as
+canned. Three nouns naming three domains are the same thing every other
+heading on the site already is. The deck and body tiers keep the
+no-shared-mold rule in full, which is where the 40-portfolios-a-week reader
+actually detected the cadence (finding R15).
+
+`body 01`'s change also retires the last trace of the ex-CMS reader's
+objection (§5): `CMS computes cut points from the scores every plan reports`
+states the mechanism without the "cut points **are** equilibria" modeling
+claim, and without the looser `from where every plan lands`.
 
 ## 7. Verification
 
@@ -255,20 +318,20 @@ Deps installed into `.venv` (the container's system PyYAML blocks a bare
   (10,498px @1400, 17,479px @390, 1,873 visible words), so the deltas below are
   trustworthy.
 
-| | Before | After | Δ |
-|---|---|---|---|
-| height @1400 | 10,498px | **10,436px** | −62 |
-| height @1000 | 11,627px | 11,631px | +4 |
-| height @761 | 13,692px | 13,705px | +13 |
-| height @390 | 17,479px | **17,421px** | −58 |
-| visible words @1400 | 1,873 | 1,882 | +9 |
-| `section.cases` height @1400 | 945px* | 882px | −63 |
+| | Before | Round one | Round two | Net Δ |
+|---|---|---|---|---|
+| height @1400 | 10,498px | 10,436px | **10,511px** | +13 |
+| height @1000 | 11,627px | 11,631px | 11,631px | +4 |
+| height @761 | 13,692px | 13,705px | 13,705px | +13 |
+| height @390 | 17,479px | 17,421px | **17,506px** | +27 |
+| visible words @1400 | 1,873 | 1,882 | 1,891 | +18 |
 
-\* measured under the `.cases` collision, i.e. as inline-block. Not comparable
-as a pure copy delta.
-
-Nine more words on a shorter page: the old headings wrapped to two lines at
-1400px and the bodies carried more line-breaking punctuation.
+Round one cut 62px; round two put 75px back, because complete sentences cost
+words. The net is +13px at 1400px. **The governing reference height is now
+10,511px, not 10,436 and not 10,498.** Round one's `section.cases` measurement
+(945px before, 882px after) is not a clean copy delta and is dropped from this
+table: the "before" was taken while the `.cases` selector collision was still
+rendering the section as an inline-block.
 
 Also confirmed: all three h3s render on **one line at every width** including
 390px (two of the three wrapped to two lines at 1400px before); no horizontal

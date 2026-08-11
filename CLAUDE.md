@@ -266,13 +266,24 @@ was the 2026-08-10 de-templating pass itself: it fixed a PARALLELISM defect
 (three gerund-led h3s) by rewriting them as three differently-shaped
 QUESTIONS, which satisfied the mold rule by moving up in register. **Plainness
 and variety are independent axes and the mold rule constrains only one**;
-§Case layer now carries that corollary. The three h3s became "Cut points move"
-/ "Auditable measure logic" / "In use" (still three shapes, now each naming
-something concrete), all three bodies were rewritten out of the aphorisms
-("teaches its stakes", "nine research years sit underneath", "The pattern has
-scaled", "hands still in the code"), and the proposition's "and still build."
-became "and review its code." Page 10,498px to **10,436px @1400px**; all three
-headings now fit one line at every width, where two wrapped at 1400px before.
+§Case layer now carries that corollary. All three bodies were rewritten out of
+the aphorisms ("teaches its stakes", "nine research years sit underneath",
+"The pattern has scaled", "hands still in the code"), and the proposition's
+"and still build." became "and review its code."
+
+A SECOND ROUND followed on the owner's instruction that the site needs
+"correct grammar and complete sentences". All three decks had shipped
+2026-08-10 as noun phrases closed with a full stop, i.e. fragments punctuated
+as sentences, and the first round had introduced two more in the h3s. The
+decks gained finite verbs; two body defects went with them (an "adopted
+by..." phrase that could attach to the wrong noun, and a comma before a
+compound predicate). Headings are EXEMPT and became three consistent bare
+noun phrases, "Stars measurement" / "Auditable measure logic" / "Dashboards
+people open", which knowingly narrows the no-shared-mold contract to
+rhetorical templates rather than taxonomies; see §Case layer for the
+reasoning. Page 10,498px to **10,511px @1400px** (10,436 after round one,
++75 for the sentences); all three headings fit one line at every width, where
+two wrapped at 1400px before.
 
 The panels split and the split is preserved, not merged: a 12-panelist Focus
 Group wanted the h3s KEPT (they carry the judgment/execution/adoption sequence
@@ -736,23 +747,38 @@ section 23 of the inline style block. Contracts, each load-bearing:
     §8). The layer shipped with three gerund-led h3s and two decks sharing
     "turned into", and the owner read the result as canned. Restoring a
     matched mold re-creates the defect.
-  - **AND no interrogative or aphoristic h3s** (tone pass, 2026-08-11;
-    `docs/homepage-tone-pass-2026-08-11.md`). This corollary exists because
-    the 2026-08-10 fix satisfied the mold rule by moving UP in register: it
+  - **The mold rule above is NARROWED to rhetorical templates, and no longer
+    governs the h3 tier** (owner decision, 2026-08-11;
+    `docs/homepage-tone-pass-2026-08-11.md`). Read the two paragraphs below
+    together; the first is why, the second is what now applies.
+
+    The 2026-08-10 fix satisfied the mold rule by moving UP in register: it
     replaced three gerunds with three differently-shaped QUESTIONS ("What a
     number can be trusted to say" / "From specification to running code" /
     "Whether anyone uses it"), and the owner read the result as grandiose
     within a day. **Plainness and variety are independent axes, and the mold
-    rule above constrains only one of them** — three equally portentous
-    headings in three different shapes satisfy it completely. The h3s are now
-    "Cut points move" (declarative clause) / "Auditable measure logic" (bare
-    noun phrase) / "In use" (prepositional phrase): still three shapes, now
-    each naming something concrete. No h3 may open with a wh- word or carry a
-    pronoun pointing outside its own block, and lengths must not form a
-    monotone gradient (that is a mold in the metrical dimension). §8's own
-    voice evidence is the test to apply: the owner's title voice is
+    rule constrains only one of them** — three equally portentous headings in
+    three different shapes satisfy it completely. That is the trap; do not
+    re-enter it by reaching for shape variety when the complaint is register.
+
+    The h3s are now three BARE NOUN PHRASES: "Stars measurement" /
+    "Auditable measure logic" / "Dashboards people open". That is knowingly a
+    matched mold, and it is allowed, because the distinction that matters is
+    rhetorical template versus taxonomy. Three gerund-led parallel
+    constructions are a rhetorical device the reader hears. Three nouns
+    naming three domains are the site's own heading convention — all thirteen
+    other h2s are bare nouns. The live constraints on this tier are now: no
+    wh- opener, nothing aphoristic or quotable, no pronoun pointing outside
+    the block, each must name a concrete thing, and lengths must not form a
+    monotone gradient. The DECK and BODY tiers still carry the no-shared-mold
+    rule in full. §8's voice evidence remains the test: the owner's voice is
     "assertive and verb-driven, making falsifiable statements about named
     things". Abstraction is the grandiosity, not sentence length.
+  - **Decks and bodies are complete sentences** (owner instruction,
+    2026-08-11). All three decks shipped 2026-08-10 as noun phrases closed
+    with a full stop, which is a fragment punctuated as a sentence. They now
+    carry finite verbs. Headings are exempt and stay noun phrases, per the
+    convention above. This applies to any new case copy.
   - The h2 is "How I work": three words,
     knowingly breaking the two-word heading rule
     (`docs/homepage-ordering-review-2026-07-29.md:304`) because it is first
@@ -778,12 +804,14 @@ section 23 of the inline style block. Contracts, each load-bearing:
     was found by reading computed styles in a browser, which is the check to
     repeat after any selector rename.
   - The height budget that governs the page is the REVISED one: reference
-    **10,436px @1400px (17,421px @390px)** as of the 2026-08-11 tone pass,
-    which trimmed 62px off the 10,498px the case layer shipped at. That
+    **10,511px @1400px (17,506px @390px)** as of the 2026-08-11 tone pass.
+    The pass trimmed 62px in its first round (to 10,436) and the
+    complete-sentence round put 75px back, for a net +13px against the
+    10,498px the case layer shipped at. That
     10,498 was itself the owner-approved TIGHT variant (+974px over the old
     9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
     +1,200 with all three measured). A future pass claiming the page grew or
-    shrank should measure against 10,436, not 10,498 and not 9,543.
+    shrank should measure against 10,511, not 10,498 and not 9,543.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
