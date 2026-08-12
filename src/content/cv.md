@@ -14,8 +14,8 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ### Graduate
 
-- **2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
-- **2013–2015** Graduate Certificate, Patient Safety. University of Wisconsin-Madison. Advisor: Pascale Carayon (PhD; industrial and systems engineering).
+- **2013–2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
+- **2014–2015** Graduate Certificate, Patient Safety. University of Wisconsin-Madison. Advisor: Pascale Carayon (PhD; industrial and systems engineering).
 
 ### Fellowships and Training
 
@@ -32,6 +32,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 - **2025–present** Baltimore Health Analytics, Manager, Data Science and Engineering. Owns the data platform for a Medicare Advantage analytics product, including the regulatory validation layer against CMS technical specifications, and leads a distributed engineering and QA team.
 - **2017–2025** Healthfinch (acquired by Health Catalyst), Analytics Manager. Built and led the analytics data platform supporting value-based care across more than fifty health systems, including the infrastructure migration following the Health Catalyst acquisition.
+- **2007–2014** Sustainable Clarity, Principal. Editorial services practice in environmental, health, and policy content. Managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
 
 ## Past Research Positions
 
