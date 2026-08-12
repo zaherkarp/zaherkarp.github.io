@@ -238,7 +238,8 @@ adoption) that point at evidence already on the page, in the writing, or in
 resume.md, never duplicating it. `#work` MOVED onto the case layer so nav
 "work" lands on cases + record together (nav-order property intact;
 `#experience` keeps its id). The proposition gained a player-coach second
-sentence ("I lead a small data science team and still build.", mirrored into
+sentence ("I lead a small data science team and still build.", reworded
+2026-08-11 to "…and review its code."; mirrored into
 `build_og.py`'s `SUBTITLE_LINES` + regenerated `og-default.png`);
 `.hero-lede` dropped its second paragraph; About ¶2 lost its "Right now that
 means…" sentence (its HEDIS gloss moved into Case 02's deck; `mn-role` now
@@ -257,6 +258,46 @@ restating the 24+ hours that lives in the Health Catalyst lead) because the
 owner kept BHA's present tense number-free. Facts surfaced from resume.md
 (public record): the forecast-vs-actual cut-point dashboard "adopted by data
 science and the CEO". Details at §Case layer below.
+
+**Tone pass (2026-08-11, this branch).** The owner read the day-old case layer
+as "very grandiose" and asked for the panels plus
+[stop-slop](https://github.com/hardikpandya/stop-slop) as a guide. The cause
+was the 2026-08-10 de-templating pass itself: it fixed a PARALLELISM defect
+(three gerund-led h3s) by rewriting them as three differently-shaped
+QUESTIONS, which satisfied the mold rule by moving up in register. **Plainness
+and variety are independent axes and the mold rule constrains only one**;
+§Case layer now carries that corollary. All three bodies were rewritten out of
+the aphorisms ("teaches its stakes", "nine research years sit underneath",
+"The pattern has scaled", "hands still in the code"), and the proposition's
+"and still build." became "and review its code."
+
+A SECOND ROUND followed on the owner's instruction that the site needs
+"correct grammar and complete sentences". All three decks had shipped
+2026-08-10 as noun phrases closed with a full stop, i.e. fragments punctuated
+as sentences, and the first round had introduced two more in the h3s. The
+decks gained finite verbs; two body defects went with them (an "adopted
+by..." phrase that could attach to the wrong noun, and a comma before a
+compound predicate). Headings are EXEMPT and became three consistent bare
+noun phrases, "Stars measurement" / "Auditable measure logic" / "Dashboards
+people open", which knowingly narrows the no-shared-mold contract to
+rhetorical templates rather than taxonomies; see §Case layer for the
+reasoning. Page 10,498px to **10,511px @1400px** (10,436 after round one,
++75 for the sentences); all three headings fit one line at every width, where
+two wrapped at 1400px before.
+
+The panels split and the split is preserved, not merged: a 12-panelist Focus
+Group wanted the h3s KEPT (they carry the judgment/execution/adoption sequence
+answering the 2026-05-23 role-calibration gap, and are "the only section that
+sounds like a person with an opinion"); the Design Council wanted them gone.
+Owner ruled for the Council. Two defects surfaced that were not about
+language: `.cases` was an unscoped class shared with the Huber formula, so the
+whole section rendered as an inline-block with a 1px ink border (fixed, class
+renamed `.piecewise`), and the layer had shipped in breach of its own
+no-restated-numbers contract. Two factual errors were also corrected: "nine
+research years" pointed at a six-paper, eight-year publications record, and
+"The pattern has scaled" attributed healthfinch's Epic Clarity work to the
+current role while dropping resume.md's own "authored reusable … deployed".
+Full record in `docs/homepage-tone-pass-2026-08-11.md`.
 
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
@@ -594,9 +635,16 @@ nothing on this site links to it.
 
 ### Hero
 
-**(Case layer pass, 2026-08-10.)** The proposition is now TWO sentences: the
+**(Case layer pass, 2026-08-10; clause reworded 2026-08-11.)** The proposition
+is now TWO sentences: the
 2026-07-29 self-introduction plus a player-coach clause ("I lead a small data
-science team and still build."). `text-wrap: balance` breaks them one per line
+science team and review its code."). It read "and still build." until the tone
+pass: "still" presupposes an accusation nobody made (Focus Group, 7/12), and
+the elliptical close was the quotable-ending tic the owner was reacting to. The
+replacement is sourced from `resume.md:13` ("staying hands-on in code review")
+and the claim now has evidence under it in Case 03 ("I built the cut-point
+review dashboard"), where before it was asserted twice with none.
+`text-wrap: balance` breaks them one per line
 at 1400px. `build_og.py` carries the same pair as `SUBTITLE_LINES`, drawn one
 per line (a single run overflows the 1200px card); re-run it and commit
 `og-default.png` whenever the proposition changes. `.hero-lede` is now ONE
@@ -657,21 +705,30 @@ with the 2026-07-29 text-ordering pass.)
 
 ### Case layer
 
-Added 2026-08-10 (decision record: `docs/homepage-case-layer-2026-08-10.md`).
+Added 2026-08-10 (decision record: `docs/homepage-case-layer-2026-08-10.md`);
+copy revised 2026-08-11 (`docs/homepage-tone-pass-2026-08-11.md`).
 `<section class="cases">` sits between the career band's closing `<hr>` and
-`section#experience`, carrying the `#work` anchor, an h2 ("The work, in three
-arguments"), and three `.case` blocks. Each case is: bare `<h3>` (authored
+`section#experience`, carrying the `#work` anchor, an h2 ("How I work"), and
+three `.case` blocks. Each case is: bare `<h3>` (authored
 title), `<p class="case-deck">` (muted plain-language deck naming domain +
-capability + altitude), ONE `<p>` argument body (~45 words), and a
+capability + altitude), ONE `<p>` argument body (~45 words; the tone pass left
+Case 01 at three sentences and Cases 02-03 at two, deliberately varied), and a
 `<p class="case-links">` exhibits row ("In writing: …", 0.95rem). CSS is
 section 23 of the inline style block. Contracts, each load-bearing:
 
   - **No case may restate a number that already lives in page prose or in a
     note.** Case copy points at evidence (`#exp-bha`, `#exp-catalyst`,
-    `#projects`, `#publications`, `#exp-sustainable`, the live feed, the
+    `#projects`, `#publications`, the live feed, the
     posts); the only number stated in a case is one NOT already on the page
     (currently "50+ health systems", surfaced from resume.md). This is the
-    sidenote additivity rule extended editorially to case prose.
+    sidenote additivity rule extended editorially to case prose. The layer
+    shipped 2026-08-10 in BREACH of this rule ("Two data scientists today"
+    restated the BHA meta line at `index.html:2634`, itself a §Calibrated
+    claims example); the sentence was cut 2026-08-11, which also retired
+    `#exp-sustainable` as a case-layer exhibit. Reception dissented: the
+    Focus Group read those two numbers as the layer's clearest answer to the
+    role-calibration gap and would have fixed their FLATTENING rather than
+    their repetition. Recorded in the tone pass §3c C2, not resolved.
   - **Attribution wording is preserved from its source surface.** "Adopted by
     data science and the CEO" is resume.md's own clause; the Huber prototype
     is deliberately NOT claimed by Case 01 (its caption says "a tested
@@ -688,11 +745,41 @@ section 23 of the inline style block. Contracts, each load-bearing:
   - **No shared grammatical mold across the three cases** (de-templating
     pass, 2026-08-10; full record at `docs/homepage-case-layer-2026-08-10.md`
     §8). The layer shipped with three gerund-led h3s and two decks sharing
-    "turned into", and the owner read the result as canned. The h3s are now
-    deliberately three different shapes, "What a number can be trusted to
-    say" / "From specification to running code" / "Whether anyone uses it",
-    and read as a sequence ("it" refers back to "running code"). Restoring a
-    matched mold re-creates the defect. The h2 is "How I work": three words,
+    "turned into", and the owner read the result as canned. Restoring a
+    matched mold re-creates the defect.
+  - **The mold rule above is NARROWED to rhetorical templates, and no longer
+    governs the h3 tier** (owner decision, 2026-08-11;
+    `docs/homepage-tone-pass-2026-08-11.md`). Read the two paragraphs below
+    together; the first is why, the second is what now applies.
+
+    The 2026-08-10 fix satisfied the mold rule by moving UP in register: it
+    replaced three gerunds with three differently-shaped QUESTIONS ("What a
+    number can be trusted to say" / "From specification to running code" /
+    "Whether anyone uses it"), and the owner read the result as grandiose
+    within a day. **Plainness and variety are independent axes, and the mold
+    rule constrains only one of them** — three equally portentous headings in
+    three different shapes satisfy it completely. That is the trap; do not
+    re-enter it by reaching for shape variety when the complaint is register.
+
+    The h3s are now three BARE NOUN PHRASES: "Stars measurement" /
+    "Auditable measure logic" / "Dashboards people open". That is knowingly a
+    matched mold, and it is allowed, because the distinction that matters is
+    rhetorical template versus taxonomy. Three gerund-led parallel
+    constructions are a rhetorical device the reader hears. Three nouns
+    naming three domains are the site's own heading convention — all thirteen
+    other h2s are bare nouns. The live constraints on this tier are now: no
+    wh- opener, nothing aphoristic or quotable, no pronoun pointing outside
+    the block, each must name a concrete thing, and lengths must not form a
+    monotone gradient. The DECK and BODY tiers still carry the no-shared-mold
+    rule in full. §8's voice evidence remains the test: the owner's voice is
+    "assertive and verb-driven, making falsifiable statements about named
+    things". Abstraction is the grandiosity, not sentence length.
+  - **Decks and bodies are complete sentences** (owner instruction,
+    2026-08-11). All three decks shipped 2026-08-10 as noun phrases closed
+    with a full stop, which is a fragment punctuated as a sentence. They now
+    carry finite verbs. Headings are exempt and stay noun phrases, per the
+    convention above. This applies to any new case copy.
+  - The h2 is "How I work": three words,
     knowingly breaking the two-word heading rule
     (`docs/homepage-ordering-review-2026-07-29.md:304`) because it is first
     person and matches the site's voice; do not "correct" it to a bare noun
@@ -704,18 +791,38 @@ section 23 of the inline style block. Contracts, each load-bearing:
   - **BHA's present tense stays number-free** (owner decision, 2026-08-10;
     Case 02 anchors on prior-era public numbers instead). Adding a BHA
     system number later is a content decision for the owner, not a copy edit.
+  - **`section.cases` must never share a class with anything else.** Until
+    2026-08-11 the Huber formula's piecewise brace used `<span class="cases">`
+    against an UNSCOPED `.cases` rule, so the whole case layer silently
+    computed to `display: inline-block` with a 1px ink border-left and a
+    0.6rem indent, sitting at `left: 61px` where every other section sits at
+    56px. An undesigned third decorative mark against the two-mark limit. The
+    formula's class is now `.piecewise`; do not rename it back, and do not add
+    a second consumer of `.cases`. No linter can catch this class of bug:
+    `lint_html` checks tree structure and `lint_palette` checks token drift,
+    and a valid rule matching an unintended element is invisible to both. It
+    was found by reading computed styles in a browser, which is the check to
+    repeat after any selector rename.
   - The height budget that governs the page is the REVISED one: reference
-    10,498px @1400px (owner-approved TIGHT variant, +974px over the old
+    **10,549px @1400px (17,728px @390px)** as of the 2026-08-11 tone pass,
+    across five rounds: −62 (register), +75 (complete sentences), +38
+    (page-wide grammar sweep), −38 (register pass on Experience and the
+    figcaptions), +38 (owner-supplied denominators and the provenance
+    resolutions), for a net +51px against the 10,498px the case layer
+    shipped at. Complete sentences cost words; that is the trade and it was
+    accepted.
+    That
+    10,498 was itself the owner-approved TIGHT variant (+974px over the old
     9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
-    +1,200 with all three measured; the de-templating pass trimmed it to
-    10,498). A future pass claiming the page grew or shrank should measure
-    against 10,498, not 9,543.
+    +1,200 with all three measured). A future pass claiming the page grew or
+    shrank should measure against 10,549, not 10,498 and not 9,543.
 
-The three case titles/decks (as revised above) and the exhibit set (01: Lucas
+The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
 compliance-as-architecture; 03: Insight Engine method, practice-automation
-ROI) were locked through the
-2026-08-10 interview rounds. The compliance-as-architecture link is
+ROI) was locked through the
+2026-08-10 interview rounds and is unchanged by the 2026-08-11 tone pass,
+which rewrote the titles, two of the three decks, and all three bodies. The compliance-as-architecture link is
 thesis-framed and remains the private Stars predictor's ONLY public surface
 (see §Stars tools distinction; the case layer does not re-describe the tool).
 The "Daily Briefing" named in Case 03 is the PUBLIC Daily Briefing tab of the
@@ -1292,6 +1399,20 @@ Section height at 1400px: 1277px -> 254px. The summary runs 3 lines at
 773px at 1400, 552 at 1000, **416 at 761** (narrowest, still yielding 40% to
 the sidenote margin), then 532 at 600 once the column goes full width.
 
+**The count is six "publications", not six "papers" (owner ruling, 2026-08-11).**
+`publications.yaml` holds six entries, two of which are stages of one study:
+`wcel` (2012, "preliminary findings", a World Conference on E-Learning
+PROCEEDING) and `jihi` (2014, the journal version, same seven authors). A
+panel read that as a double count; the owner's answer is that "there was a
+fair amount of evolution to the work in those two years", so they are two
+publications, not one result published twice. Both are peer-reviewed, so the
+only defect was the noun. Note the coupling before editing either number:
+`wcel` is the ONLY 2012 entry, so the lead's "between 2012 and 2019" range
+rests entirely on it, and dropping it from the count would move the range to
+2014-2019. Separately unresolved: `resume.md:39` says SEVEN "publications and
+conference proceedings"; the open question is whether a seventh item is
+missing from `publications.yaml`, which feeds both this block and the CV.
+
 **The dot plot stays OUTSIDE the fold** as the visible layer. Its twelve dot
 links target `#pub-*` ids now inside it. Browsers auto-expand a `<details>`
 when navigating to a fragment within it: verified in Chromium 141 for
@@ -1418,7 +1539,7 @@ only accent use; the page-wide count is now **12** of the 20 cap, down from 14.
 **The healthfinch figure was REMOVED in the second 2026-07-30 pass** (the
 owner asked for the page to be shorter, saying its length "probably scares
 people away"). Its two facts moved into that role's lead prose, where they
-still read: sevenfold growth in dashboard users absorbed, and 400+ hours of
+still read: sevenfold growth in ACTIVE dashboard users absorbed, and 400+ hours of
 report prep retired per quarter. Removing it saved ~180px net of the prose it
 added. Note the cost, so it is not re-litigated blind: Experience now shows a
 figure on one of five roles, which sharpens rather than fixes the
@@ -1574,6 +1695,48 @@ numbers are stated as a labeled ratio rather than invented endpoints,
 e.g. the healthfinch figure's `baseline` / `7x baseline`).
 Do not edit these markers toward bigger or vaguer numbers, and hold new
 figures and stats to the same standard.
+
+**Claim provenance rule (adopted 2026-08-11).** Every **number** and every
+**named third-party organization** in index.html's hand-authored prose must be
+traceable to one of:
+  (a) `src/content/resume.md` or `src/content/cv.md`, or
+  (b) a public external citation already linked on the page (a vendor success
+      story, a CMS release, a blog post in this repo).
+Qualitative framing and mechanism description are OUT of scope; this governs
+numbers and named orgs only.
+
+**The fix direction is UP, never OFF.** A flagged claim is sourced INTO
+`cv.md`/`resume.md`, not deleted from the homepage. Sustainable Clarity was
+resolved this way on 2026-08-11 (added to `cv.md` Appointments, homepage
+untouched), and the Focus Group was unanimous that trimming the page to buy a
+provenance property no reader can see is the worst available trade.
+
+**Carve-out (b) is load-bearing and was found by testing the rule against the
+page, not by reasoning about it.** Without it the rule flags Community Health
+Network, St. Joseph Heritage Healthcare, and Valley Medical Group, three named
+clients with numbers that are correctly sourced to Health Catalyst's published
+success stories whose URLs are already on the page. Demanding client names on
+a personal resume would be the wrong fix, so external citation satisfies the
+rule.
+
+Why this rule and not a wider one: `lint_facts` compares index.html only to
+`resume.md` and `cv.md`, so a claim living on exactly ONE surface is invisible
+to it by construction. That is how `RxNorm validation cut client-audit
+discrepancies ... from roughly 30% to under 5%` carried no denominator for
+months with CI green (see `docs/homepage-tone-pass-2026-08-11.md` §6c). The
+2026-08-11 provenance audit counted 16 homepage-only claims; both panels ruled
+that inventory a maintenance list, not a work queue, so the rule exists to stop
+NEW orphans rather than to drive a cleanup sweep.
+
+**Known open failures at adoption**, deliberately left rather than hidden:
+  - `10,000 adults ... the Wisconsin Longitudinal Study` (`mn-uw-cohort`). WLS
+    appears in neither source file; `cv.md`'s Grants section lists NIA, the
+    Wisconsin Partnership Program, Josiah Macy Jr. and UW ICTR but not WLS.
+    Fix by adding it to `cv.md`.
+  - `one of 2 awarded among 45 posters` (Speaking margin stat). `cv.md:86`
+    records the award but neither denominator.
+See §Pre-push checks for the (not yet built) gate; the rule is editorial policy
+until then.
 
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post

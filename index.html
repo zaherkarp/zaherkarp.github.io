@@ -1065,7 +1065,7 @@ figure.funnel-figure figcaption {
    psi-function. Pure CSS, no MathJax; works because the
    formulas in question are short and don't need full LaTeX.
    .formula:        the math line itself, centered, larger size
-   .cases:          column-stacked piecewise definitions
+   .piecewise:      column-stacked piecewise definitions
    .case-line:      one row of a piecewise definition
    .case-cond:      the "if |r| <= k" condition, right-aligned
    .formula-caption: small italic explanation below the formula
@@ -1085,7 +1085,12 @@ figure.funnel-figure figcaption {
   /* explicit italic for variables; the et-book stack handles this */
   font-style: italic;
 }
-.cases {
+/* Scoped to the piecewise formula ONLY. This was `.cases` until
+   2026-08-11, which also matched `section.cases` (the case layer added
+   2026-08-10) and silently gave that whole section display:inline-block,
+   a 1px ink border-left, and a 0.6rem indent, an undesigned third
+   decorative mark against the two-mark limit. Do not rename it back. */
+.piecewise {
   display: inline-block;
   vertical-align: middle;
   border-left: 1px solid var(--ink);
@@ -2145,7 +2150,7 @@ body::before {
        to the 60% column), so unconstrained paragraphs would run the
        full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and still build.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and review its code.</p>
 
   <div class="hero-lede">
     <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
@@ -2413,7 +2418,7 @@ body::before {
        <title>s are preserved; presentation hexes remapped by §17. -->
   <figure class="timeline career-band">
     <figcaption id="tl-caption">
-      Three overlapping careers converge into one continuous data-engineering line.
+      Three overlapping careers in parallel lanes, 2007 to the present, with data engineering the one still running.
     </figcaption>
 
     <!-- DESKTOP: wide horizontal band (viewBox 1200x440), restored from
@@ -2565,23 +2570,23 @@ body::before {
     <h2>How I work</h2>
 
     <div class="case">
-      <h3>What a number can be trusted to say</h3>
-      <p class="case-deck">Measure methodology and cut-point forecasting in Medicare Advantage Star Ratings.</p>
-      <p>Cut points are equilibria, not trends; forecasts built on them break when the rules move. The <a href="#exp-bha">current role</a> owns that projection problem end to end, the <a href="#projects">Stars Cliff Simulator below</a> teaches its stakes, and <a href="#publications">nine research years</a> sit underneath.</p>
+      <h3>Stars measurement</h3>
+      <p class="case-deck">I work on measure methodology and cut-point forecasting for Medicare Advantage Star Ratings.</p>
+      <p>CMS computes cut points from the scores every plan reports, so a forecast trained on last year's trend misses in the years the rules change. I own that projection in my <a href="#exp-bha">current role</a>, and the <a href="#projects">Stars Cliff Simulator below</a> lets you move a measure and see the rating change. My <a href="#publications">published research</a> comes from the years before that.</p>
       <p class="case-links">In writing: <a href="/blog/lucas-critique-stars-forecasting/">the Lucas critique of cut-point forecasts</a> <a href="/blog/what-the-metric-cannot-see/">where quality actually lives</a> <a href="/blog/interrupted-time-series-care-redesign/">interrupted time series</a></p>
     </div>
 
     <div class="case">
-      <h3>From specification to running code</h3>
-      <p class="case-deck">CMS quality-measure specifications written as production pipelines over claims, eligibility, pharmacy, and EHR data.</p>
-      <p>HEDIS (Healthcare Effectiveness Data and Information Set) measure logic becomes SQL and Python that can be reviewed, tested, and defended in a client audit, under release governance the <a href="#exp-bha">current role</a> owns. The pattern has scaled: Epic Clarity libraries across 50+ health systems, and the <a href="#exp-catalyst">AWS to Azure migration</a>.</p>
+      <h3>Auditable measure logic</h3>
+      <p class="case-deck">CMS quality-measure specifications run as pipelines over claims, eligibility, pharmacy, and EHR data.</p>
+      <p>I write HEDIS (Healthcare Effectiveness Data and Information Set) measure logic as SQL and Python that I can defend in a client audit, under release governance that I own in my <a href="#exp-bha">current role</a>. Earlier I authored reusable Epic Clarity report libraries that were deployed across 50+ health systems. I also moved the analytics stack through the <a href="#exp-catalyst">AWS to Azure migration</a>.</p>
       <p class="case-links">In writing: <a href="/blog/hedis-measure-etl-patterns/">HEDIS measure-level ETL patterns</a> <a href="/blog/cicd-for-sql-developers/">CI/CD when the code is SQL</a> <a href="/blog/compliance-as-architecture-stars-predictor/">compliance as architecture</a></p>
     </div>
 
     <div class="case">
-      <h3>Whether anyone uses it</h3>
-      <p class="case-deck">Analytics that people adopt, from analyst triage to executive review, and the team behind them.</p>
-      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened; a cut-point review dashboard at Baltimore Health Analytics replaced spreadsheet workflows, adopted by data science and the CEO. <a href="#exp-bha">Two data scientists today</a>, <a href="#exp-sustainable">eight editors once</a>, hands still in the code.</p>
+      <h3>Dashboards people open</h3>
+      <p class="case-deck">Analysts and executives open these every day, and my team keeps them running.</p>
+      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened. At Baltimore Health Analytics I built the cut-point review dashboard that replaced our spreadsheet workflows, and it was adopted by data science and the CEO.</p>
       <p class="case-links">In writing: <a href="/blog/medicare-advantage-insight-engine/">the Insight Engine method</a> <a href="/blog/practice-automation-workflow-roi/">ROI from clinical workflow data</a></p>
     </div>
   </section>
@@ -2634,7 +2639,7 @@ body::before {
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      <span class="newthought">A Medicare Advantage quality platform</span> anchors the work: Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own the methodology and engineering behind it. Those measures move on volatile trend lines, and the cut-point projection needs an estimator that will not let a single anomalous quarter, a COVID-era shock, for instance, distort the whole forecast.
+      <span class="newthought">A Medicare Advantage quality platform</span> runs Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own its methodology and engineering. Those measures move on volatile trend lines, and the cut-point projection needs an estimator that will not let a single anomalous quarter, a COVID-era shock, for instance, distort the whole forecast.
     </p>
 
     <!-- ==========================================================
@@ -2676,7 +2681,7 @@ body::before {
       <div class="formula-block">
         <div class="formula">
           &psi;<sub><i>k</i></sub>(<i>r</i>) =
-          <span class="cases">
+          <span class="piecewise">
             <span class="case-line"><i>r</i><span class="case-cond">if |<i>r</i>| &le; <i>k</i></span></span>
             <span class="case-line"><i>k</i> &middot; sign(<i>r</i>)<span class="case-cond">if |<i>r</i>| &gt; <i>k</i></span></span>
           </span>
@@ -2696,7 +2701,7 @@ body::before {
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      I moved with the product when Health Catalyst acquired healthfinch in 2020, and a three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies from roughly 30% to under 5%; the AWS to Azure migration took 24+ hours off the weekly load.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      I moved with the product when Health Catalyst acquired healthfinch in 2020, and a three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies on medication orders from roughly 30% to under 5%; re-architecting S3 storage took 24+ hours off a weekly load that ran more than two days.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2751,7 +2756,7 @@ body::before {
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. Promoted to manager after a year, I led the sales-analytics work behind an ROI dashboard that contributed to more than $1M in new recurring revenue. A governed semantic layer absorbed sevenfold growth in dashboard users and retired 400+ hours of report prep a quarter.
+      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. Promoted to manager after a year, I built the ROI dashboard behind the sales-analytics work, and it contributed to more than $1M in new recurring revenue. I designed a governed semantic layer that absorbed sevenfold growth in active dashboard users and automated 400+ hours of report prep a quarter.
     </p>
 
     <p class="stack">SQL &middot; Python &middot; Sisense &middot; AWS &middot; HIPAA &middot; HITRUST</p>
@@ -2763,7 +2768,7 @@ body::before {
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      Nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of them.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research.
+      I spent nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of the studies I supported.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research.
     </p>
 
     <p class="stack">Stata &middot; SAS &middot; REDCap</p>
@@ -2775,7 +2780,7 @@ body::before {
     <p class="meta">Sustainable Clarity &middot; 2007 to 2014</p>
 
     <p>
-      An editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
+      Sustainable Clarity was an editorial services practice in environmental, health, and policy content. I managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
     </p>
 
     <!-- Overflow valve (2026-07-30). With the four "More detail"
@@ -3035,7 +3040,7 @@ body::before {
     <p>
       <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
 
-    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments, the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, Madison WI.</span>
+    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, remote from Madison, Wisconsin.</span>
     </p>
   </section>
 
@@ -3095,7 +3100,7 @@ body::before {
       <a href="#pub-jihi" aria-label="Jump to Journal of Innovation in Health Informatics 2014 publication entry"><circle cx="620" cy="95" r="10" fill="#111"><title>Approaches and challenges to optimizing primary care teams' electronic health record usage (JIHI, 2014), most-cited</title></circle><text class="dp-label" x="620" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Journal of Innovation in Health Informatics 2014</text></a>
 
       <!-- 2016: Pandhi et al Implementation Sci, no count shown -->
-      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>An efficient process of gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
+      <a href="#pub-implsci" aria-label="Jump to Implementation Science 2016 publication entry"><circle cx="830" cy="95" r="4" fill="transparent"><title>The video vignette survey: An efficient process for gathering diverse community opinions to inform an intervention (Implementation Science, 2016)</title></circle><circle cx="830" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="830" y="80" text-anchor="middle" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Implementation Science 2016</text></a>
 
       <!-- 2018: Berkson et al IJHM, no count shown -->
       <a href="#pub-acos" aria-label="Jump to International Journal of Healthcare Management 2018 publication entry"><circle cx="1040" cy="95" r="4" fill="transparent"><title>Medicare Shared Savings Programs: higher cost accountable care organizations are more likely to achieve savings (IJHM, 2018)</title></circle><circle cx="1040" cy="95" r="4" class="dp-ring" pointer-events="none"/><text class="dp-label" x="1188" y="80" text-anchor="end" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">International Journal of Healthcare Management 2018</text></a>
@@ -3284,7 +3289,7 @@ body::before {
     <h2>Publications</h2>
 
     <p>
-      <span class="newthought">Six peer-reviewed papers</span> in health services research, 2012 to 2019, the most-cited of them on primary care teams and electronic health records. The dot plot above charts these papers beside the presentation record.
+      <span class="newthought">Six peer-reviewed publications</span> in health services research appeared between 2012 and 2019, the most-cited of them on primary care teams and electronic health records. The dot plot above charts them beside the presentation record.
     </p>
 
     <details class="fold pub-fold">
@@ -3346,11 +3351,11 @@ body::before {
     <div class="entry" id="pub-implsci">
       <p style="margin-bottom: 0.3rem;">
         <span class="date">2016</span>
-        <em>An efficient process of gathering diverse community opinions to inform an intervention</em>
+        <em>The video vignette survey: An efficient process for gathering diverse community opinions to inform an intervention</em>
         <label for="mn-implsci" class="margin-toggle">&#8853;</label>
         <input type="checkbox" aria-label="Show full-text link for Implementation Science 2016 paper" id="mn-implsci" class="margin-toggle"/>
         <span class="marginnote">
-          <a href="https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6" aria-label="Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)">Full text</a>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4928139/" aria-label="Full text: The video vignette survey (Implementation Science 2016)">Full text</a>
         </span>
       </p>
       <p class="pub-meta">
@@ -3409,7 +3414,7 @@ body::before {
   <section id="speaking">
     <h2>Speaking</h2>
     <p>
-      <span class="newthought">Seventeen podium presentations</span>, workshops, and posters at national and regional venues between 2010 and 2017, in health services research and primary care systems engineering.<label for="mn-speak-peak" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show peak presentation year statistic" id="mn-speak-peak" class="margin-toggle"/><span class="marginnote"><span class="stat-num">7</span>talks in 2015, the busiest year, including a co-authored poster that received the Patient Choice Award, one of 2 awarded among 45 posters at the North American Primary Care Research Group Conference.</span>
+      <span class="newthought">Seventeen podium presentations</span>, workshops, and posters cover health services research and primary care systems engineering, delivered at national and regional venues between 2010 and 2017.<label for="mn-speak-peak" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show peak presentation year statistic" id="mn-speak-peak" class="margin-toggle"/><span class="marginnote"><span class="stat-num">7</span>talks in 2015, the busiest year, including a co-authored poster that received the Patient Choice Award, one of 2 awarded among 45 posters at the North American Primary Care Research Group Conference.</span>
     </p>
 
     <details class="speaking-list">
@@ -3501,10 +3506,10 @@ body::before {
        but every generated blog page links to /#education, and lint_links
        cannot see blog-to-homepage fragments. -->
   <span id="education" class="section-anchor"></span>
-  <p>A record of degrees, certificates, and service commitments, shown together because several overlapped rather than following in a tidy sequence.</p>
+  <p>The chart below gathers degrees, certificates, and service commitments into one frame, because several overlapped rather than following in a tidy sequence.</p>
   <figure class="gantt-figure">
     <figcaption>
-      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two 2014-15 service roles are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
+      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two service roles running through 2014-15 are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
     <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">

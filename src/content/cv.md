@@ -14,8 +14,8 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ### Graduate
 
-- **2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
-- **2013–2015** Graduate Certificate, Patient Safety. University of Wisconsin-Madison. Advisor: Pascale Carayon (PhD; industrial and systems engineering).
+- **2013–2015** Master of Public Health, Biostatistics. University of Wisconsin-Madison. Committee: Nancy Pandhi (MD, MPH, PhD; family medicine and health services research), Sandra Kamnetz (MD; family medicine), Todd Molfenter (PhD; industrial and systems engineering).
+- **2014–2015** Graduate Certificate, Patient Safety. University of Wisconsin-Madison. Advisor: Pascale Carayon (PhD; industrial and systems engineering).
 
 ### Fellowships and Training
 
@@ -32,6 +32,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 - **2025–present** Baltimore Health Analytics, Manager, Data Science and Engineering. Owns the data platform for a Medicare Advantage analytics product, including the regulatory validation layer against CMS technical specifications, and leads a distributed engineering and QA team.
 - **2017–2025** Healthfinch (acquired by Health Catalyst), Analytics Manager. Built and led the analytics data platform supporting value-based care across more than fifty health systems, including the infrastructure migration following the Health Catalyst acquisition.
+- **2007–2014** Sustainable Clarity, Principal. Editorial services practice in environmental, health, and policy content. Managed up to eight copy editors, designers, and photographers, and wrote articles syndicated through Thomson Reuters, LexisNexis, and the New York Times wire.
 
 ## Past Research Positions
 
@@ -53,7 +54,7 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 - **2016** Karp Z, Kamnetz S, Pandhi N. Primary care team perceptions of team-based care and clinic design types across three practices. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2015** Karp Z. Participatory research and community engagement. Field Innovation Team Bootcamp, Provo, UT.
 - **2015** Karp Z, Wietfeldt N, Pandhi N. Approaches to involving diverse community partners and patients in integrated mental health research. Seminar, Access, Quality, and Outcomes Research Network, Appleton, WI.
-- **2015** Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, DeCheck N, Karp Z. An efficient process of gathering diverse community opinions to inform an intervention. Society for Implementation Research Collaboration Conference, Seattle, WA.
+- **2015** Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z. The video vignette survey: An efficient process for gathering diverse community opinions to inform an intervention. Society for Implementation Research Collaboration Conference, Seattle, WA.
 - **2015** Karp Z. Influences of the primary care clinic environment on patients and staff: preliminary findings. Podium presentation, National Collaborative for Improving Primary Care Through Industrial and Systems Engineering (I-PrACTISE), Madison, WI.
 - **2012** Yang W, Pandhi N, Karp Z, Young A, Beasley J, Kraft S, Carayon P. Approaches and challenges to optimizing the use of electronic health records in primary care. World Conference on E-Learning in Corporate, Government, Healthcare, and Higher Education, <span lang="fr">Montréal</span>, QC.
 - **2012** Pandhi N, Yang W, Karp Z. Clinical application specialists: meeting themes. Presentation to UW Health organizational leadership, Middleton, WI.

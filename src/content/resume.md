@@ -36,7 +36,7 @@ Dec 2017 – Jul 2020
 Sep 2009 – Jun 2018
 *Family Medicine, Internal Medicine, Pediatrics, Population Health · SAS, Stata, R, SQL, Epic · Madison, WI*
 
-- Authored the ACO / MSSP (Medicare Shared Savings) analysis using total cost of care and federal cancer-screening reports; 7 publications and conference proceedings
+- Authored the ACO / MSSP (Medicare Shared Savings) analysis using total cost of care and federal cancer-screening reports; 6 peer-reviewed publications
 - Contributed to ~$1.09M in funded research; compliance manager on six grants
 
 ## Education

@@ -74,15 +74,15 @@
 
 - id: implsci
   year: 2016
-  title: "An efficient process of gathering diverse community opinions to inform an intervention"
+  title: "The video vignette survey: An efficient process for gathering diverse community opinions to inform an intervention"
   authors: "Pandhi N, Jacobson N, Serrano N, Hernandez A, Zeidler-Schreiter E, Wietfeldt N, Karp Z."
   venue: "Implementation Science"
   detail: "11(Suppl 1):A13."
   toggle_aria: "Show full-text link for Implementation Science 2016 paper"
   links:
     - label: "Full text"
-      url: "https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6"
-      aria: "Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)"
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4928139/"
+      aria: "Full text: The video vignette survey (Implementation Science 2016)"
 
 - id: jihi
   year: 2014
