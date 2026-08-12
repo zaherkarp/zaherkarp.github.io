@@ -81,7 +81,7 @@
   toggle_aria: "Show full-text link for Implementation Science 2016 paper"
   links:
     - label: "Full text"
-      url: "https://implementationscience.biomedcentral.com/articles/10.1186/s13012-016-0380-6"
+      url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4928139/"
       aria: "Full text: An efficient process of gathering diverse community opinions (Implementation Science 2016)"
 
 - id: jihi
