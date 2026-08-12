@@ -1524,7 +1524,7 @@ only accent use; the page-wide count is now **12** of the 20 cap, down from 14.
 **The healthfinch figure was REMOVED in the second 2026-07-30 pass** (the
 owner asked for the page to be shorter, saying its length "probably scares
 people away"). Its two facts moved into that role's lead prose, where they
-still read: sevenfold growth in dashboard users absorbed, and 400+ hours of
+still read: sevenfold growth in ACTIVE dashboard users absorbed, and 400+ hours of
 report prep retired per quarter. Removing it saved ~180px net of the prose it
 added. Note the cost, so it is not re-litigated blind: Experience now shows a
 figure on one of five roles, which sharpens rather than fixes the
