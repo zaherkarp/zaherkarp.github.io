@@ -804,17 +804,18 @@ section 23 of the inline style block. Contracts, each load-bearing:
     was found by reading computed styles in a browser, which is the check to
     repeat after any selector rename.
   - The height budget that governs the page is the REVISED one: reference
-    **10,511px @1400px (17,609px @390px)** as of the 2026-08-11 tone pass,
-    across four rounds: −62 (register), +75 (complete sentences), +38
+    **10,549px @1400px (17,728px @390px)** as of the 2026-08-11 tone pass,
+    across five rounds: −62 (register), +75 (complete sentences), +38
     (page-wide grammar sweep), −38 (register pass on Experience and the
-    figcaptions), for a net +13px against the 10,498px the case layer
+    figcaptions), +38 (owner-supplied denominators and the provenance
+    resolutions), for a net +51px against the 10,498px the case layer
     shipped at. Complete sentences cost words; that is the trade and it was
     accepted.
     That
     10,498 was itself the owner-approved TIGHT variant (+974px over the old
     9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
     +1,200 with all three measured). A future pass claiming the page grew or
-    shrank should measure against 10,511, not 10,498 and not 9,543.
+    shrank should measure against 10,549, not 10,498 and not 9,543.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
@@ -1397,6 +1398,20 @@ Section height at 1400px: 1277px -> 254px. The summary runs 3 lines at
 1400px and 6 at 390px. Note the column width is NOT monotonic in viewport:
 773px at 1400, 552 at 1000, **416 at 761** (narrowest, still yielding 40% to
 the sidenote margin), then 532 at 600 once the column goes full width.
+
+**The count is six "publications", not six "papers" (owner ruling, 2026-08-11).**
+`publications.yaml` holds six entries, two of which are stages of one study:
+`wcel` (2012, "preliminary findings", a World Conference on E-Learning
+PROCEEDING) and `jihi` (2014, the journal version, same seven authors). A
+panel read that as a double count; the owner's answer is that "there was a
+fair amount of evolution to the work in those two years", so they are two
+publications, not one result published twice. Both are peer-reviewed, so the
+only defect was the noun. Note the coupling before editing either number:
+`wcel` is the ONLY 2012 entry, so the lead's "between 2012 and 2019" range
+rests entirely on it, and dropping it from the count would move the range to
+2014-2019. Separately unresolved: `resume.md:39` says SEVEN "publications and
+conference proceedings"; the open question is whether a seventh item is
+missing from `publications.yaml`, which feeds both this block and the CV.
 
 **The dot plot stays OUTSIDE the fold** as the visible layer. Its twelve dot
 links target `#pub-*` ids now inside it. Browsers auto-expand a `<details>`

@@ -4,10 +4,12 @@ Owner: "The language changes feel very grandiose. How can we make them less
 so? Talk to the committee and group and think about it, maybe use stop-slop
 as a guide."
 
-Target, as it grew over four rounds: `section.cases` (the case layer added
+Target, as it grew over five rounds: `section.cases` (the case layer added
 2026-08-10) and the hero proposition (§6, register); then the same surfaces for
 grammar (§6a); then every hand-authored paragraph on the page for grammar
-(§6b); then `section#experience` and the six figcaptions for register (§6c).
+(§6b); then `section#experience` and the six figcaptions for register (§6c); then a
+provenance audit of every claim against resume.md / cv.md / publications.yaml,
+and the owner rulings that followed (§6d).
 Rollback point: `fd98a24`.
 
 ---
@@ -462,6 +464,105 @@ Notes on each:
 - **The UW lead (2771) is the model paragraph** for Experience register:
   first-person, five named funders, no verb chosen for texture.
 
+## 6d. Round five: the provenance audit and its resolutions
+
+After round four the owner asked whether anything else needed his input. A
+provenance audit mapped every factual claim in the homepage's hand-authored
+prose against `resume.md`, `cv.md`, `publications.yaml`, and `skills.yaml`:
+**21 gated by a linter, 32 dual-surface but ungated, 16 homepage-only, 9
+externally sourced.** A joint panel convening then prioritized the follow-up.
+Both panels agreed the raw counts are a **maintenance inventory, not a work
+queue** (Focus Group R1, unanimous: no reader holds two documents open, so
+only *contradictions* are visible, and only to the recruiter who opens the
+resume next). Six specific items were actioned; the counts were not.
+
+**The panels corrected two of the audit's four "contradictions", which is why
+they were convened before anything was edited:**
+
+- **"advancing through five positions" is correct as written.** `cv.md:38-43`
+  lists six *appointments*, but two are concurrent: `2013–2015 Project
+  Assistant, Family Medicine and Pediatrics` and `2013–2015 Project Assistant,
+  Center for Patient Partnerships`. Collapse the overlap and five sequential
+  positions remain. The CV counts appointments; the homepage counts positions.
+  Unanimous **do not change** — and note the proposed fix (five → six) would
+  have been an edit toward a bigger number, which §Calibrated claims forbids
+  outright. Recorded so this does not recur.
+- **The publications item pointed the other way and carried a hidden second
+  number** (see §6d.4).
+
+### Resolutions
+
+| # | Item | Owner ruling | Result |
+|---|---|---|---|
+| 1 | `$1M` sentence | (no input needed) | `I led the sales-analytics work behind an ROI dashboard` → `I built the ROI dashboard behind the sales-analytics work`. Source-exact: `resume.md:33` reads "Led the sales-analytics initiative; **built an ROI dashboard** that contributed to $1M+". Strongest convergence in the pass: 4/4 antagonists raised it unprompted and first; 10/12 emotional-register called it the only workshopped-sounding line in Experience. Jess's rule: do not fix an overclaim with a hedge, name the object. |
+| 2 | Education dates | **The chart was right, the CV was wrong.** MPH 2013–2015, Patient Safety certificate 2014–2015 | `cv.md:17-18` moved to match the Gantt; bars untouched at their tested coordinates. Edward ranked this above every prose defect in the pass: a bar is a promise that a length means an interval, so a wrong one costs more than any amount of unsourced prose. |
+| 3 | 24+ hours attribution | **S3 re-architecture**, matching `resume.md:22` | `index.html:2704` now reads "re-architecting S3 storage took 24+ hours off a weekly load that ran more than two days". The AWS-to-Azure migration is not orphaned: it survives in the Health Catalyst stack line (`:2750`) and in case 02. |
+| 4 | Publications count | **Keep six; fix the framing only** | `Six peer-reviewed papers` → `Six peer-reviewed **publications**`, and the trailing "these papers" → "them". See below. |
+| 5 | Sustainable Clarity | **Source it into the CV** | Added to `cv.md` Appointments as `2007–2014`, wording mirrored **verbatim** from the homepage so the two surfaces cannot drift. |
+| 6 | Gantt figcaption | (no input needed) | "the two 2014-15 service roles" → "the two service roles running through 2014-15". Decoded from the bars: WORT is 2013–2015 and the mentorship 2014–2017, so neither is a 2014-15 role; 2014-15 is where they overlap. |
+| 7 | `$1M` time window | **Withheld** | Owner's answer was "over a year maybe? not sure". An uncertain qualifier printed as fact is a worse §Calibrated-claims breach than the unqualified figure. |
+
+### 6d.4 The publications count, and why six is right
+
+`publications.yaml` holds six entries, two of which are the same study:
+`wcel` (2012, *"…(preliminary findings)"*, **Proceedings** of World Conference
+on E-Learning) and `jihi` (2014, the journal version, same seven authors
+reordered). The Council read this as a double count and as a conference
+proceeding miscounted as a peer-reviewed paper.
+
+**A second number rides on the first, which neither panel spotted:** `wcel` is
+the *only* 2012 item in the file, so the "between 2012 and 2019" range in the
+same sentence is carried entirely by that proceedings entry. Drop it from the
+count and the range becomes 2014–2019. The two numbers cannot be corrected
+independently.
+
+**Owner ruling: keep six.** His reason is the substantive answer to the
+double-count charge and is recorded here so a future pass does not re-flag it:
+*"there was a fair amount of evolution to the work in those two years."* The
+2012 proceedings and the 2014 journal paper are stages of a developing study,
+not one result published twice. Both are peer-reviewed (AACE proceedings are),
+so the only defect was calling the set "papers" when one is a proceeding.
+`publications` covers both without adding a clause, keeps the range honest,
+and preserves the five-word `.newthought` opener that Steve objected to
+lengthening — his was the Council's own lane arguing against the Council's own
+fix, and reception scored the whole item 0/4 unprompted.
+
+**Still open:** `resume.md:39` says "**7** publications and conference
+proceedings" where `publications.yaml` has six. Not corrected, because the
+resume's category is broader and the honest question is the other one: **is
+there a seventh item that never made it into `publications.yaml`?** If so the
+YAML is incomplete, and since it feeds both the homepage block and the CV,
+that matters more than the resume's number.
+
+### What the panels said NOT to do
+
+- **Do not denominate every ratio** (9/12 plus Steve). Uniform denomination
+  would shrink the strongest claims and read as defensive over-qualification.
+  A denominator helps when it is neutral or flattering (`24+ hours off a load
+  that ran more than two days` resolves to ~50% and reads well) and hurts when
+  it invites arithmetic that shrinks the claim. The page's mixed practice is
+  correct **policy**, not inconsistency. §Calibrated claims requires the metric
+  and denominator be *nameable*, not that both be *printed*; the labeled-ratio
+  form (`baseline` / `7x baseline`) is the documented mechanism for the case
+  where printing them would mislead. Held open: the antagonists (3/12) reject
+  that reading and want everything denominated on principle.
+- **Do not cut, trim, or reduce Sustainable Clarity** (unanimous 12/12, the
+  only unanimous negative in the pass). Eleven of twelve panelists recalled it
+  unprompted at session end; no other fact cleared six. Source it upward,
+  never trim it down.
+- **Do not work the audit counts as a backlog.** Six items, then a policy.
+
+### Proposed standing policy, not yet adopted
+
+The panels' wording: *any **number** or **named third-party organization** on
+the homepage must exist in `resume.md` or `cv.md`; qualitative framing and
+mechanism description need not.* This is the rule that would have caught the
+RxNorm gap (§6c), which survived precisely because those percentages lived on
+exactly one surface. It collapses "16 homepage-only claims" into a short
+actionable list. Reception supports it explicitly **as maintenance, not as a
+reader-facing improvement**. Adopting it implies a tooling change, which is
+outside both panels' remit.
+
 ## 7. Verification
 
 Deps installed into `.venv` (the container's system PyYAML blocks a bare
@@ -479,13 +580,13 @@ Deps installed into `.venv` (the container's system PyYAML blocks a bare
   (10,498px @1400, 17,479px @390, 1,873 visible words), so the deltas below are
   trustworthy.
 
-| | Before | R1 | R2 | R3 | R4 | Net Δ |
-|---|---|---|---|---|---|---|
-| height @1400 | 10,498px | 10,436px | 10,511px | 10,549px | **10,511px** | +13 |
-| height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | 11,631px | +4 |
-| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | 13,804px | +112 |
-| height @390 | 17,479px | 17,421px | 17,506px | 17,581px | **17,609px** | +130 |
-| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | 1,915 | +42 |
+| | Before | R1 | R2 | R3 | R4 | R5 | Net Δ |
+|---|---|---|---|---|---|---|---|
+| height @1400 | 10,498px | 10,436px | 10,511px | 10,549px | 10,511px | **10,549px** | +51 |
+| height @1000 | 11,627px | 11,631px | 11,631px | 11,668px | 11,631px | 11,668px | +41 |
+| height @761 | 13,692px | 13,705px | 13,705px | 13,729px | 13,804px | 13,804px | +112 |
+| height @390 | 17,479px | 17,421px | 17,506px | 17,581px | 17,609px | **17,728px** | +249 |
+| visible words @1400 | 1,873 | 1,882 | 1,891 | 1,905 | 1,915 | 1,924 | +51 |
 
 R4 includes the RxNorm denominator fix below, which added three words without
 moving the 1400px height at all.
