@@ -552,7 +552,7 @@ that matters more than the resume's number.
   never trim it down.
 - **Do not work the audit counts as a backlog.** Six items, then a policy.
 
-### Proposed standing policy, not yet adopted
+### Standing policy: ADOPTED 2026-08-11
 
 The panels' wording: *any **number** or **named third-party organization** on
 the homepage must exist in `resume.md` or `cv.md`; qualitative framing and
@@ -560,8 +560,21 @@ mechanism description need not.* This is the rule that would have caught the
 RxNorm gap (§6c), which survived precisely because those percentages lived on
 exactly one surface. It collapses "16 homepage-only claims" into a short
 actionable list. Reception supports it explicitly **as maintenance, not as a
-reader-facing improvement**. Adopting it implies a tooling change, which is
-outside both panels' remit.
+reader-facing improvement**.
+
+**Adopted, with one amendment the panels did not anticipate.** Tested against
+the page, the rule as worded flags Community Health Network, St. Joseph
+Heritage Healthcare and Valley Medical Group, three named clients with numbers
+that are correctly sourced to Health Catalyst success stories already linked
+on the page. Requiring client names on a personal resume would be the wrong
+fix, so the adopted rule adds carve-out (b): **a public external citation
+already on the page also satisfies it.** With that amendment the rule flags
+exactly two things today (the Wisconsin Longitudinal Study, and the 2-of-45
+poster denominators), both fixed by adding facts to `cv.md` rather than editing
+the homepage. Full text in `CLAUDE.md` §Calibrated claims. The gate that would
+enforce it is designed but NOT built; see
+`docs/proposal-lint-provenance.md`, which also argues the case against
+building it.
 
 ## 7. Verification
 

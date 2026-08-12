@@ -1696,6 +1696,48 @@ e.g. the healthfinch figure's `baseline` / `7x baseline`).
 Do not edit these markers toward bigger or vaguer numbers, and hold new
 figures and stats to the same standard.
 
+**Claim provenance rule (adopted 2026-08-11).** Every **number** and every
+**named third-party organization** in index.html's hand-authored prose must be
+traceable to one of:
+  (a) `src/content/resume.md` or `src/content/cv.md`, or
+  (b) a public external citation already linked on the page (a vendor success
+      story, a CMS release, a blog post in this repo).
+Qualitative framing and mechanism description are OUT of scope; this governs
+numbers and named orgs only.
+
+**The fix direction is UP, never OFF.** A flagged claim is sourced INTO
+`cv.md`/`resume.md`, not deleted from the homepage. Sustainable Clarity was
+resolved this way on 2026-08-11 (added to `cv.md` Appointments, homepage
+untouched), and the Focus Group was unanimous that trimming the page to buy a
+provenance property no reader can see is the worst available trade.
+
+**Carve-out (b) is load-bearing and was found by testing the rule against the
+page, not by reasoning about it.** Without it the rule flags Community Health
+Network, St. Joseph Heritage Healthcare, and Valley Medical Group, three named
+clients with numbers that are correctly sourced to Health Catalyst's published
+success stories whose URLs are already on the page. Demanding client names on
+a personal resume would be the wrong fix, so external citation satisfies the
+rule.
+
+Why this rule and not a wider one: `lint_facts` compares index.html only to
+`resume.md` and `cv.md`, so a claim living on exactly ONE surface is invisible
+to it by construction. That is how `RxNorm validation cut client-audit
+discrepancies ... from roughly 30% to under 5%` carried no denominator for
+months with CI green (see `docs/homepage-tone-pass-2026-08-11.md` §6c). The
+2026-08-11 provenance audit counted 16 homepage-only claims; both panels ruled
+that inventory a maintenance list, not a work queue, so the rule exists to stop
+NEW orphans rather than to drive a cleanup sweep.
+
+**Known open failures at adoption**, deliberately left rather than hidden:
+  - `10,000 adults ... the Wisconsin Longitudinal Study` (`mn-uw-cohort`). WLS
+    appears in neither source file; `cv.md`'s Grants section lists NIA, the
+    Wisconsin Partnership Program, Josiah Macy Jr. and UW ICTR but not WLS.
+    Fix by adding it to `cv.md`.
+  - `one of 2 awarded among 45 posters` (Speaking margin stat). `cv.md:86`
+    records the award but neither denominator.
+See §Pre-push checks for the (not yet built) gate; the rule is editorial policy
+until then.
+
 **Links:**
   Stars Cliff Simulator (public demo): /star-rating-predictor/ + methodology post
   Healthcare Workforce Transition Platform (SkillSprout): GitHub repo + /blog/onet-reskilling-probabilities/
