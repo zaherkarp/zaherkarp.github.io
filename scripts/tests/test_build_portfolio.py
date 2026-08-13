@@ -134,6 +134,85 @@ def test_writing_list_suppresses_hero_marginnote():
     assert "This aside must never reach the hero." not in html
 
 
+def _writing_post(day, slug, selected=False):
+    import datetime
+
+    return {
+        "date": datetime.date(2026, 1, day),
+        "title": f"Post {slug}",
+        "description": "Blurb.",
+        "slug": slug,
+        "marginnote": "",
+        "selected": selected,
+    }
+
+
+def test_select_writing_falls_back_to_recency_when_nothing_flagged():
+    """With no homepageSelected anywhere, ordering must be exactly the
+    reverse-chronological behavior that predated the flag. The fallback is the
+    default path, not a special case."""
+    posts = [_writing_post(1, "oldest"), _writing_post(9, "newest"), _writing_post(5, "middle")]
+    assert [p["slug"] for p in build_portfolio.select_writing(posts)] == [
+        "newest",
+        "middle",
+        "oldest",
+    ]
+
+
+def test_select_writing_promotes_flagged_posts_over_newer_unflagged():
+    """The whole point of the flag: an older selected post outranks a newer
+    unselected one, so publication date alone stops deciding what leads the
+    page."""
+    posts = [
+        _writing_post(20, "recent-but-off-thesis"),
+        _writing_post(2, "old-but-chosen", selected=True),
+        _writing_post(15, "also-recent"),
+    ]
+    assert [p["slug"] for p in build_portfolio.select_writing(posts)] == [
+        "old-but-chosen",
+        "recent-but-off-thesis",
+        "also-recent",
+    ]
+
+
+def test_select_writing_keeps_each_group_newest_first():
+    """Both groups sort newest-first internally, so the rendered dated column
+    never looks like a broken sort."""
+    posts = [
+        _writing_post(3, "sel-old", selected=True),
+        _writing_post(8, "sel-new", selected=True),
+        _writing_post(4, "plain-old"),
+        _writing_post(9, "plain-new"),
+    ]
+    assert [p["slug"] for p in build_portfolio.select_writing(posts)] == [
+        "sel-new",
+        "sel-old",
+        "plain-new",
+        "plain-old",
+    ]
+
+
+def test_writing_list_and_index_share_one_selection_order():
+    """build_writing_list takes the first WRITING_FEATURED of the ordering and
+    build_writing_index takes the next WRITING_TILES, so a flagged post must
+    never appear in both tiers or be skipped between them."""
+    posts = [_writing_post(28 - i, f"p{i}", selected=i < 4) for i in range(10)]
+    featured = build_portfolio.build_writing_list(posts)
+    index = build_portfolio.build_writing_index(posts)
+    ordered = [p["slug"] for p in build_portfolio.select_writing(posts)]
+
+    for slug in ordered[: build_portfolio.WRITING_FEATURED]:
+        assert f"/blog/{slug}/" in featured
+        assert f"/blog/{slug}/" not in index
+    tiles = ordered[
+        build_portfolio.WRITING_FEATURED : build_portfolio.WRITING_FEATURED
+        + build_portfolio.WRITING_TILES
+    ]
+    for slug in tiles:
+        assert f"/blog/{slug}/" in index
+        assert f"/blog/{slug}/" not in featured
+
+
 def test_activity_grid_suppresses_cadence_marginnote():
     """The cadence sparkline moved into the split hero on 2026-07-30, and the
     hero has no floating-note margin (.marginnote positions itself with

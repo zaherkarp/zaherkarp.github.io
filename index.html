@@ -1842,6 +1842,29 @@ nav.top { width: 100%; }
   margin-bottom: 0;
 }
 
+/* Hero action links (2026-08-13). Resume and LinkedIn were previously
+   reachable only from #contact at the very bottom and, for the resume,
+   the footer, so a recruiter who never scrolled past the hero had no
+   route to either. Small caps and --muted keep them subordinate to the
+   proposition above; they are wayfinding, not a call to action, so no
+   accent and no button treatment. #contact is included because it is
+   the surface these two would otherwise send someone hunting for. */
+.hero-lede .hero-links {
+  margin-top: 0.9rem;
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.hero-lede .hero-links a {
+  margin-right: 1.4rem;
+  color: var(--muted);
+}
+.hero-lede .hero-links a:hover,
+.hero-lede .hero-links a:focus {
+  color: var(--ink);
+}
+
 /* Tier-1 proposition: one first-person line, sized between body and
    h1 (Massimo). ETBook roman, not italic (the italic reservation
    does not list a proposition). Since 2026-07-29 this is a plain
@@ -1977,6 +2000,15 @@ figure.timeline.career-band figcaption {
   }
   .proposition { font-size: 1.4rem; }
   figure.timeline.career-band { margin-top: 1.8rem; }
+
+  /* Mobile-only writing index (2026-08-13). Stacked, .split-hero runs
+     ~2,900px, a sixth of the mobile page before any argument starts,
+     and the eight-title list is the largest part of it. Desktop keeps
+     all six index tiles; mobile shows four, so the column still proves
+     a body of work without making the reader scroll a bibliography to
+     reach the career band. Measured at 148px. The full list is one tap
+     away at /blog/, which the "View all writing" line already offers. */
+  .hero-index .writing-tile:nth-of-type(n+5) { display: none; }
 }
 
 /* ============================================================
@@ -2075,21 +2107,67 @@ body::before {
    sequence would collide with it (and .num would double-count).
    ============================================================ */
 .cases h2 { margin-top: 2rem; }
-.cases .case { margin: 0 0 1.6rem 0; }
+
+/* 2026-08-13: the three cases used to be separated by nothing but bottom
+   margin, which read as three undifferentiated prose blocks. A hairline
+   now does the separating and the margin comes down to pay for it, so
+   the structure gets MORE visible while the section gets shorter. Same
+   rule weight and token as the page's <hr>; no new primitive. */
+.cases .case {
+  border-top: 1px solid var(--rule);
+  padding-top: 0.9rem;
+  margin: 0 0 1.1rem 0;
+}
+.cases .case:first-of-type { border-top: none; padding-top: 0; }
 .cases .case:last-child { margin-bottom: 0; }
-.cases .case h3 { margin: 1.2rem 0 0.2rem 0; }
+.cases .case h3 { margin: 0 0 0.2rem 0; }
 .cases .case-deck {
   color: var(--muted);
   font-size: 1.05rem;
   margin: 0 0 0.55rem 0;
+  /* No max-width here on purpose. A shorter deck measure was tried at
+     46/58/66ch and cost 57-85px by wrapping every deck to two lines,
+     against a section that is meant to get shorter. The unequal-widths
+     goal is already met structurally: the exhibits sit in a 50% margin
+     column beside a 60% body column. Measured, not assumed. */
 }
 .cases .case p { margin-bottom: 0.55rem; }
-.cases .case-links {
-  font-size: 0.95rem;
-  margin: 0;
-}
-.cases .case-links a { margin-right: 0.9rem; }
 .cases .case p:last-child { margin-bottom: 0; }
+
+/* Exhibits float into the 40% margin the section otherwise leaves empty.
+   Same geometry as .marginnote (margin-right: -60%, width 50%), but
+   DELIBERATELY NOT that class: lint_notes check 4 forbids block tags
+   inside a note span with no exemptions, and its additivity checks would
+   then start scanning these link texts for five-word runs against the
+   rest of the page. A dedicated class is invisible to that linter.
+   Floating also removes a line from column flow, so the marginal
+   treatment costs no height rather than adding it.
+   Collapses at 850px, the sidenote breakpoint, not 760px, so the margin
+   idioms appear and disappear together. */
+.cases .case-links {
+  float: right;
+  clear: right;
+  width: 50%;
+  margin-right: -60%;
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.cases .case-links a {
+  display: block;
+  margin-right: 0;
+}
+@media (max-width: 850px) {
+  .cases .case-links {
+    float: none;
+    width: auto;
+    margin-right: 0;
+    font-size: 0.95rem;
+  }
+  .cases .case-links a { display: inline; margin-right: 0.9rem; }
+}
 </style>
 </head>
 
@@ -2150,10 +2228,11 @@ body::before {
        to the 60% column), so unconstrained paragraphs would run the
        full 1400px and break the reading measure.
        ========================================================== -->
-  <p class="proposition">I work in healthcare data engineering and analytics. I lead a small data science team and review its code.</p>
+  <p class="proposition">I work in healthcare data engineering and analytics. I build measure pipelines with the team I manage.</p>
 
   <div class="hero-lede">
     <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
+    <p class="hero-links"><a href="/resume.html">Resume</a> <a href="https://linkedin.com/in/zkarp" data-goatcounter-click="hero-linkedin" data-goatcounter-title="LinkedIn profile (hero)">LinkedIn</a> <a href="#contact">Contact</a></p>
   </div>
 
   <!-- ==========================================================
@@ -2185,22 +2264,22 @@ body::before {
          This column is the nav's "writing" target (id=writing-hero,
          2026-07-29). -->
     <div class="hero-writing" id="writing-hero">
-      <h2 class="col-head">Recent writing</h2>
+      <h2 class="col-head">Selected writing</h2>
       <!-- writing-list:start -->
     <div class="entry">
       <div>
-        <span class="date">2026-07-26</span>
-        <h3 class="title"><a href="/blog/bteq-still-has-a-job/">BTEQ Still Has a Job</a></h3>
+        <span class="date">2026-06-27</span>
+        <h3 class="title"><a href="/blog/governing-the-coverage-decision/">Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</a></h3>
       </div>
-      <p class="summary">BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.</p>
+      <p class="summary">A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders.</p>
     </div>
 
     <div class="entry">
       <div>
-        <span class="date">2026-07-15</span>
-        <h3 class="title"><a href="/blog/what-the-metric-cannot-see/">The Metric Isn't Wrong. It's Just Not Where Quality Lives.</a></h3>
+        <span class="date">2026-06-26</span>
+        <h3 class="title"><a href="/blog/credentialing-validity/">Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</a></h3>
       </div>
-      <p class="summary">Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</p>
+      <p class="summary">Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing.</p>
     </div>
     <!-- writing-list:end -->
 
@@ -2212,39 +2291,39 @@ body::before {
       <div class="writing-index hero-index">
         <!-- writing-index:start -->
     <div class="writing-tile">
-      <span class="date">2026-07-09</span>
-      <h3 class="title"><a href="/blog/one-api-call-three-ways-to-split-it/">One API call, three ways to split it: a FRED case study</a></h3>
-      <p class="tile-summary">Pull five FRED series once, cache the raw pull, then fan it out into per-year-per-indicator files three different ways, plus a fourth example: keeping the local store current with real-time incremental pulls instead of re-running the big fetch.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-07-05</span>
-      <h3 class="title"><a href="/blog/should-i-buy-ram-now/">Should I Buy RAM Now?</a></h3>
-      <p class="tile-summary">A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit, built to be honest about how little it can forecast.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-27</span>
-      <h3 class="title"><a href="/blog/governing-the-coverage-decision/">Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders</a></h3>
-      <p class="tile-summary">A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-26</span>
-      <h3 class="title"><a href="/blog/credentialing-validity/">Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise.</a></h3>
-      <p class="tile-summary">Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-06-12</span>
-      <h3 class="title"><a href="/blog/lucas-critique-stars-forecasting/">Your Cut Point Forecast Has a Lucas Critique Problem</a></h3>
-      <p class="tile-summary">Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.</p>
-    </div>
-
-    <div class="writing-tile">
       <span class="date">2026-06-09</span>
       <h3 class="title"><a href="/blog/medicaid-work-requirements-arkansas/">Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</a></h3>
       <p class="tile-summary">Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-04-22</span>
+      <h3 class="title"><a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</a></h3>
+      <p class="tile-summary">Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-02-22</span>
+      <h3 class="title"><a href="/blog/dont-version-facts/">Why You Probably Shouldn't Version Your Fact Table</a></h3>
+      <p class="tile-summary">Most teams version their fact tables because they've modeled their dimensions incorrectly. Understanding the true grain of your table, whether it's event-based or state-based, will save you from double-counting metrics, failed audits, and painful refactoring projects in healthcare data warehouses.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-01-18</span>
+      <h3 class="title"><a href="/blog/cms-star-ratings-meaningful-use/">Why CMS Never Let Star Ratings Touch Meaningful Use</a></h3>
+      <p class="tile-summary">On the surface, it looks like an omission - but CMS understood that capability and outcomes cannot be governed the same way, even when one enables the other. The deliberate separation was probably the right call.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-01-11</span>
+      <h3 class="title"><a href="/blog/gravity-of-star-ratings/">The Gravity of Star Ratings</a></h3>
+      <p class="tile-summary">How outcomes shape programs they never appear in - Star Ratings operate less like a measurement program and more like a financial force that influences clinical workflows, data governance, and analytics investments across healthcare.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2025-11-16</span>
+      <h3 class="title"><a href="/blog/deletes-are-data-too/">Deletes Are Data Too</a></h3>
+      <p class="tile-summary">Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for.</p>
     </div>
     <!-- writing-index:end -->
       </div>
@@ -2363,6 +2442,7 @@ body::before {
         </figure>
 
         <p class="links">
+          <a href="/medicare-advantage-insight-engine/briefing.html" aria-label="Daily Briefing: Medicare Advantage Signal Feed">Daily Briefing</a>
           <a href="/medicare-advantage-insight-engine/" aria-label="Live feed: Medicare Advantage Signal Feed">Live feed</a>
           <a href="https://github.com/zaherkarp/medicare-advantage-insight-engine" data-goatcounter-click="project-medicare-engine-github" data-goatcounter-title="Medicare Insight Engine GitHub" aria-label="GitHub source: Medicare Advantage Insight Engine">Source</a>
           <a href="/blog/medicare-advantage-insight-engine/" aria-label="Methodology post: Medicare Advantage Insight Engine">Methodology post</a>
@@ -2585,8 +2665,8 @@ body::before {
 
     <div class="case">
       <h3>Dashboards people open</h3>
-      <p class="case-deck">Analysts and executives open these every day, and my team keeps them running.</p>
-      <p>The <a href="/medicare-advantage-insight-engine/">Insight Engine's Daily Briefing</a> replaced an emailed digest nobody opened. At Baltimore Health Analytics I built the cut-point review dashboard that replaced our spreadsheet workflows, and it was adopted by data science and the CEO.</p>
+      <p class="case-deck">I build the dashboards and alert feeds analysts work from, and I count one finished when it replaces the workflow it was built for.</p>
+      <p>The <a href="/medicare-advantage-insight-engine/briefing.html">Insight Engine</a> posts scored items to a Teams channel, which retired an emailed digest nobody opened. At Baltimore Health Analytics I built the cut-point review dashboard that replaced our spreadsheet workflows, and it was adopted by data science and the CEO.</p>
       <p class="case-links">In writing: <a href="/blog/medicare-advantage-insight-engine/">the Insight Engine method</a> <a href="/blog/practice-automation-workflow-roi/">ROI from clinical workflow data</a></p>
     </div>
   </section>
@@ -2639,7 +2719,7 @@ body::before {
     <p class="meta">Baltimore Health Analytics &middot; remote &middot; team of two data scientists &middot; Nov 2025 to Present</p>
 
     <p>
-      <span class="newthought">A Medicare Advantage quality platform</span> runs Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own its methodology and engineering. Those measures move on volatile trend lines, and the cut-point projection needs an estimator that will not let a single anomalous quarter, a COVID-era shock, for instance, distort the whole forecast.
+      <span class="newthought">A Medicare Advantage quality platform</span> runs Part C and Part D Star Ratings measures on claims, eligibility, and pharmacy data. I own its measure methodology, pipeline reliability, and release governance, and coordinate delivery with back-end, QA, and front-end partners. The cut-point forecast needs an estimator that no single anomalous quarter can distort.
     </p>
 
     <!-- ==========================================================
@@ -2701,7 +2781,7 @@ body::before {
     <p class="meta">Health Catalyst (acquired healthfinch, 2020) &middot; Aug 2020 to Aug 2025</p>
 
     <p>
-      I moved with the product when Health Catalyst acquired healthfinch in 2020, and a three-person function became the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies on medication orders from roughly 30% to under 5%; re-architecting S3 storage took 24+ hours off a weekly load that ran more than two days.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
+      I moved with the product through the 2020 acquisition, into the analytics arm of a clinical quality platform spanning Epic, Cerner, athenahealth, and Veradigm. RxNorm validation cut client-audit discrepancies on medication orders from roughly 30% to under 5%, and re-architecting S3 storage took 24+ hours off a weekly load that ran more than two days.<label for="mn-hc-caregaps" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show care-gaps-closed statistic for Community Health Network" id="mn-hc-caregaps" class="margin-toggle"/><span class="marginnote"><span class="stat-num">373,000</span>care gaps closed in six months at Community Health Network, one of the platform's published outcomes.</span>
     </p>
 
     <!-- ==========================================================
@@ -2756,7 +2836,7 @@ body::before {
     <p class="meta">healthfinch (acquired by Health Catalyst, 2020) &middot; Dec 2017 to Jul 2020</p>
 
     <p>
-      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. Promoted to manager after a year, I built the ROI dashboard behind the sales-analytics work, and it contributed to more than $1M in new recurring revenue. I designed a governed semantic layer that absorbed sevenfold growth in active dashboard users and automated 400+ hours of report prep a quarter.
+      The infrastructure did not exist when I arrived as the first analytics hire; I built it on AWS to HIPAA and HITRUST controls. The ROI dashboard I built contributed to more than $1M in new recurring revenue, and the governed semantic layer I designed absorbed sevenfold growth in active dashboard users and automated 400+ hours of report prep a quarter.
     </p>
 
     <p class="stack">SQL &middot; Python &middot; Sisense &middot; AWS &middot; HIPAA &middot; HITRUST</p>
@@ -2768,7 +2848,7 @@ body::before {
     <p class="meta">University of Wisconsin School of Medicine and Public Health, Department of Family Medicine and Community Health &middot; Sep 2009 to Jun 2018</p>
 
     <p>
-      I spent nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of the studies I supported.</span> I built infrastructure for studies funded by the National Institute on Aging, the Wisconsin Partnership Program, the Josiah Macy Jr. Foundation, and the UW Institute for Clinical and Translational Research.
+      I spent nine years in federally funded primary care research, advancing through five positions from research specialist to assistant researcher.<label for="mn-uw-cohort" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show cohort size statistic for the Wisconsin Longitudinal Study" id="mn-uw-cohort" class="margin-toggle"/><span class="marginnote"><span class="stat-num">10,000</span>adults followed across a 50-year cohort: the Wisconsin Longitudinal Study, the largest of the studies I supported.</span> I built the data infrastructure for studies funded by the National Institute on Aging and the Wisconsin Partnership Program.
     </p>
 
     <p class="stack">Stata &middot; SAS &middot; REDCap</p>
@@ -2813,14 +2893,12 @@ body::before {
 
     <p class="section-subhead">Featured</p>
 
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">Project 01, the Medicare Advantage Insight Engine, opens the page under Current work; the count continues here.</p>
-
     <div class="project">
       <span class="num"></span>
       <div class="body">
         <h3>Stars Cliff Simulator</h3>
         <p>
-          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP (Quality Bonus Payment) threshold, a tenth of a star can be worth $50 million for a mid-size contract. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser. No data leaves the user's machine.
+          A public demo of the Medicare Advantage Stars cliff: at the 4.0 QBP (Quality Bonus Payment) threshold, a tenth of a star can be worth $50 million for a mid-size contract. An ordinal logistic regression, parameterized to match the CMS 2025 weighting scheme for teaching purposes, runs in the browser, so no data leaves the user's machine.
         </p>
 
         <!-- ==========================================================
@@ -3038,9 +3116,7 @@ body::before {
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, spent nearly a decade in mixed-methods health services research at UW&ndash;Madison beginning in 2009,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet.</p>
-
-    <p>The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through logistic and linear regression in population health, through time series analysis in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, remote from Madison, Wisconsin.</span>
+      <span class="newthought">I started in writing</span> and editing,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through regression in population health, to time series in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, remote from Madison, Wisconsin.</span>
     </p>
   </section>
 
@@ -3053,7 +3129,7 @@ body::before {
        ========================================================== -->
   <figure class="fullwidth timeline">
     <figcaption>
-      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count; open dots have no count on record. The Patient Choice Award noted on the presentations lane is described under Speaking below.
+      Peer-reviewed publications and conference presentations, 2010 to 2019. Publications sized by citation count; open dots have no count on record. The Patient Choice Award noted on the presentations lane is described in the margin below.
     </figcaption>
 
     <svg class="dp-wide" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Academic activity dot plot showing 6 publications and 17 presentations across 2010 to 2019" aria-describedby="dp-w-desc">
@@ -3442,7 +3518,6 @@ body::before {
   </section>
 
   <hr>
-
   <!-- ==========================================================
        EDUCATION + SERVICE COMBINED GANTT
        The two prose sections below are organized as date-left
@@ -3512,14 +3587,14 @@ body::before {
       Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two service roles running through 2014-15 are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
-    <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
+    <svg viewBox="0 0 600 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
 
       <!-- LANE LABELS, left edge -->
-      <text x="6" y="74" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic">education</text>
-      <text x="6" y="224" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic">service</text>
+      <text x="6" y="62" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic">education</text>
+      <text x="6" y="194" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic">service</text>
 
       <!-- LANE DIVIDER -->
-      <line x1="80" y1="135" x2="540" y2="135" stroke="#d0d0c8" stroke-width="0.5"/>
+      <line x1="80" y1="110" x2="540" y2="110" stroke="#d0d0c8" stroke-width="0.5"/>
 
       <!-- ============================================================
            EDUCATION LANE
@@ -3529,28 +3604,28 @@ body::before {
 
       <!-- BA English Literature, 2003-2007.
            x: 90 to 90 + (2007-2003)*19 = 90 to 166 -->
-      <line x1="90" y1="30" x2="166" y2="30" stroke="#111" stroke-width="4" style="--seq:0"/>
-      <text x="170" y="34" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">BA, English Literature</text>
+      <line x1="90" y1="26" x2="166" y2="26" stroke="#111" stroke-width="4" style="--seq:0"/>
+      <text x="170" y="30" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">BA, English Literature</text>
 
       <!-- MPH Biostatistics, 2013-2015.
            x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="280" y1="50" x2="318" y2="50" stroke="#111" stroke-width="4" style="--seq:2"/>
-      <text x="322" y="54" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">MPH, Biostatistics</text>
+      <line x1="280" y1="42" x2="318" y2="42" stroke="#111" stroke-width="4" style="--seq:2"/>
+      <text x="322" y="46" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">MPH, Biostatistics</text>
 
       <!-- Graduate Cert Patient Safety, 2014-2015.
            x: 90 + (2014-2003)*19 = 299 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="299" y1="70" x2="318" y2="70" stroke="#111" stroke-width="4" style="--seq:3"/>
-      <text x="322" y="74" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Grad Cert, Patient Safety</text>
+      <line x1="299" y1="58" x2="318" y2="58" stroke="#111" stroke-width="4" style="--seq:3"/>
+      <text x="322" y="62" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Grad Cert, Patient Safety</text>
 
       <!-- Oxford qualitative methods, 2014 (single year).
            Square centered at x = 90 + (2014-2003)*19 = 299, y=90 -->
-      <rect x="296" y="87" width="6" height="6" fill="#111" style="--seq:3"/>
-      <text x="306" y="94" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Oxford, qualitative methods</text>
+      <rect x="296" y="71" width="6" height="6" fill="#111" style="--seq:3"/>
+      <text x="306" y="78" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Oxford, qualitative methods</text>
 
       <!-- Entrepreneurial Boot Camp, 2015 (single year).
            Square centered at x = 90 + (2015-2003)*19 = 318, y=110 -->
-      <rect x="315" y="107" width="6" height="6" fill="#111" style="--seq:4"/>
-      <text x="325" y="114" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Entrepreneurial Boot Camp</text>
+      <rect x="315" y="87" width="6" height="6" fill="#111" style="--seq:4"/>
+      <text x="325" y="94" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Entrepreneurial Boot Camp</text>
 
       <!-- ============================================================
            SERVICE LANE
@@ -3559,55 +3634,55 @@ body::before {
 
       <!-- WORT board chair, 2013-2015.
            x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318 -->
-      <line x1="280" y1="160" x2="318" y2="160" stroke="#111" stroke-width="4" style="--seq:2"/>
-      <text x="322" y="164" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">WORT board chair</text>
+      <line x1="280" y1="142" x2="318" y2="142" stroke="#111" stroke-width="4" style="--seq:2"/>
+      <text x="322" y="146" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">WORT board chair</text>
 
       <!-- UG research mentor, 2014-2017.
            x: 90 + (2014-2003)*19 = 299 to 90 + (2017-2003)*19 = 356 -->
-      <line x1="299" y1="180" x2="356" y2="180" stroke="#111" stroke-width="4" style="--seq:3"/>
-      <text x="360" y="184" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">UG research mentor</text>
+      <line x1="299" y1="158" x2="356" y2="158" stroke="#111" stroke-width="4" style="--seq:3"/>
+      <text x="360" y="162" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">UG research mentor</text>
 
       <!-- Digital Fellow, 2016 (single year).
            Square at x = 90 + (2016-2003)*19 = 337, y=200 -->
-      <rect x="334" y="197" width="6" height="6" fill="#111" style="--seq:5"/>
-      <text x="344" y="204" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Digital Fellow</text>
+      <rect x="334" y="171" width="6" height="6" fill="#111" style="--seq:5"/>
+      <text x="344" y="178" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Digital Fellow</text>
 
       <!-- Road Home board, 2016-2020.
            x: 90 + (2016-2003)*19 = 337 to 90 + (2020-2003)*19 = 413 -->
-      <line x1="337" y1="220" x2="413" y2="220" stroke="#111" stroke-width="4" style="--seq:5"/>
-      <text x="417" y="224" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Road Home board</text>
+      <line x1="337" y1="190" x2="413" y2="190" stroke="#111" stroke-width="4" style="--seq:5"/>
+      <text x="417" y="194" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Road Home board</text>
 
       <!-- Alumni Hall Service Award, 2017 (single).
            Square at x = 90 + (2017-2003)*19 = 356, y=240 -->
-      <rect x="353" y="237" width="6" height="6" fill="#111" style="--seq:6"/>
-      <text x="363" y="244" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Alumni Hall Service Award</text>
+      <rect x="353" y="203" width="6" height="6" fill="#111" style="--seq:6"/>
+      <text x="363" y="210" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Alumni Hall Service Award</text>
 
       <!-- Peer reviewer, 2019 to now.
            x: 90 + (2019-2003)*19 = 394 to 90 + (2026-2003)*19 = 527.
            Label is right-anchored to the left of the bar so it clears
            the Spirit of Charlie square on the row below. -->
-      <line x1="394" y1="260" x2="527" y2="260" stroke="#111" stroke-width="4" style="--seq:7"/>
-      <text x="390" y="264" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111" text-anchor="end">peer reviewer (ongoing)</text>
+      <line x1="394" y1="222" x2="527" y2="222" stroke="#111" stroke-width="4" style="--seq:7"/>
+      <text x="390" y="226" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111" text-anchor="end">peer reviewer (ongoing)</text>
 
       <!-- Spirit of Charlie Award, 2021 (single year).
            Square at x = 90 + (2021-2003)*19 = 432, y=280 -->
-      <rect x="429" y="277" width="6" height="6" fill="#111" style="--seq:8"/>
-      <text x="439" y="284" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Spirit of Charlie Award</text>
+      <rect x="429" y="235" width="6" height="6" fill="#111" style="--seq:8"/>
+      <text x="439" y="242" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">Spirit of Charlie Award</text>
 
       <!-- ============================================================
            YEAR AXIS at y=310.
            Plot every 5 years to avoid clutter, plus key
            transition years 2014, 2015 for the dense cluster.
            ============================================================ -->
-      <line x1="90" y1="310" x2="540" y2="310" stroke="#111" stroke-width="0.8"/>
+      <line x1="90" y1="262" x2="540" y2="262" stroke="#111" stroke-width="0.8"/>
 
       <g font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#6a6a6a" text-anchor="middle">
-        <g><line x1="90"  y1="307" x2="90"  y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="90"  y="326">2003</text></g>
-        <g><line x1="185" y1="307" x2="185" y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="185" y="326">2008</text></g>
-        <g><line x1="280" y1="307" x2="280" y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="280" y="326">2013</text></g>
-        <g><line x1="375" y1="307" x2="375" y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="375" y="326">2018</text></g>
-        <g><line x1="470" y1="307" x2="470" y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="470" y="326">2023</text></g>
-        <g><line x1="527" y1="307" x2="527" y2="313" stroke="#6a6a6a" stroke-width="0.6"/><text x="527" y="326">now</text></g>
+        <g><line x1="90"  y1="259" x2="90"  y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="90"  y="278">2003</text></g>
+        <g><line x1="185" y1="259" x2="185" y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="185" y="278">2008</text></g>
+        <g><line x1="280" y1="259" x2="280" y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="280" y="278">2013</text></g>
+        <g><line x1="375" y1="259" x2="375" y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="375" y="278">2018</text></g>
+        <g><line x1="470" y1="259" x2="470" y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="470" y="278">2023</text></g>
+        <g><line x1="527" y1="259" x2="527" y2="265" stroke="#6a6a6a" stroke-width="0.6"/><text x="527" y="278">now</text></g>
       </g>
 
       <!-- ============================================================
@@ -3617,7 +3692,7 @@ body::before {
            Sits below the lane divider, above the service lane,
            in the "white space" of that vertical band.
            ============================================================ -->
-      <text x="308" y="148" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic" text-anchor="middle">2014-15: three credentials, two roles</text>
+      <text x="308" y="123" font-family="et-book, Palatino, Georgia, serif" font-size="13" fill="#6a6a6a" font-style="italic" text-anchor="middle">2014-15: three credentials, two roles</text>
     </svg>
   </figure>
 
@@ -3942,12 +4017,6 @@ body::before {
         He consistently pushes himself to deliver thoughtful, high-quality work because he genuinely wants to make a difference, for the team, for the client, and for healthcare and patients.
       </blockquote>
       <div class="attribution">Joanna Laucirica, PMP, Director, Customer Operations, Health Catalyst</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          It's rare to come across someone like Zaher, not just for his intelligence, but for the care, curiosity, and sense of responsibility he brings to everything he does. Zaher has a natural ability to think deeply about problems, often catching nuances others miss, and he balances that with a strong commitment to execution. He leads with integrity and consistently aims to do what's right, even when it takes more effort.
-        </p>
-      </details>
     </div>
 
     <div class="testimonial">
@@ -3955,12 +4024,6 @@ body::before {
         Despite being the only engineer on the team, Zaher consistently delivered high-quality work. He is intelligent, thorough, and deeply committed to understanding customer needs.
       </blockquote>
       <div class="attribution">Jessica McCay, Director of Customer Success, Health Catalyst</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          Zaher was solely responsible for ensuring timely, accurate data delivery across multiple Electronic Health Record environments: Cerner, Epic, athenahealth, and Veradigm. He successfully led the migration of analytics from Sisense to Pop Insights, and implemented automated weekly data refreshes for Cerner, significantly improving efficiency and reliability. He often joined client calls to clarify requests and wasn't afraid to push back when necessary to protect data integrity and long-term scalability.
-        </p>
-      </details>
     </div>
 
     <div class="testimonial">
@@ -3968,12 +4031,6 @@ body::before {
         The feedback Zaher provides is always prompt and constructive, and he consistently assigns projects well suited to my abilities and to continuing their growth, maximizing my opportunities to learn.
       </blockquote>
       <div class="attribution">William Barber, copy editor reporting to Zaher at Sustainable Clarity, 2013</div>
-      <details class="fold">
-        <summary>More</summary>
-        <p>
-          Zaher is an excellent supervisor and editing mentor. While I have worked for him, he has provided a wealth of support and knowledge, helping to drastically improve my proofreading and copy editing craft.
-        </p>
-      </details>
     </div>
   </section>
 

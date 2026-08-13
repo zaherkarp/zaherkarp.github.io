@@ -2,6 +2,7 @@
 title: "Why CMS Never Let Star Ratings Touch Meaningful Use"
 description: "On the surface, it looks like an omission - but CMS understood that capability and outcomes cannot be governed the same way, even when one enables the other. The deliberate separation was probably the right call."
 publishDate: 2026-01-18
+homepageSelected: true
 tags: ["healthcare", "policy", "cms", "meaningful-use", "star-ratings", "ehr"]
 ---
 

@@ -2,6 +2,7 @@
 title: "Governing the Coverage Decision: A Metamodel for LLM Accountability in Payers and Payviders"
 description: "A governance framework that maps each failure mode of an LLM coverage decision to a preventive, detective, or corrective control tied to an operative CMS authority, for health plans and integrated payviders."
 publishDate: 2026-06-27
+homepageSelected: true
 tags: ["ai-governance", "medicare-advantage", "payer", "llm", "utilization-management", "cms"]
 ---
 
