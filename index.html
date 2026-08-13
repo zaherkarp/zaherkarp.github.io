@@ -2133,12 +2133,19 @@ body::before {
    now does the separating and the margin comes down to pay for it, so
    the structure gets MORE visible while the section gets shorter. Same
    rule weight and token as the page's <hr>; no new primitive. */
+/* --case-pad is read back by .case-links below. An absolutely positioned
+   child anchors to its containing block's PADDING box, i.e. above this
+   padding, so an exhibit row at top:0 lands 0.9rem higher than its own h3 on
+   every case except the first, which has no padding. Naming the value once
+   and reusing it keeps the two in step; hard-coding top:0.9rem would break
+   the first case instead. */
 .cases .case {
+  --case-pad: 0.9rem;
   border-top: 1px solid var(--rule);
-  padding-top: 0.9rem;
+  padding-top: var(--case-pad);
   margin: 0 0 1.1rem 0;
 }
-.cases .case:first-of-type { border-top: none; padding-top: 0; }
+.cases .case:first-of-type { border-top: none; --case-pad: 0; }
 .cases .case:last-child { margin-bottom: 0; }
 .cases .case h3 { margin: 0 0 0.2rem 0; }
 .cases .case-deck {
@@ -2164,13 +2171,26 @@ body::before {
    treatment costs no height rather than adding it.
    Collapses at 850px, the sidenote breakpoint, not 760px, so the margin
    idioms appear and disappear together. */
+/* Exhibits sit in the 40% margin, absolutely positioned and top-anchored to
+   their own case, NOT floated. They shipped as `float: right; clear: right`
+   and drifted: a float is placed after the content preceding it, and
+   clear:right pushes each one below the previous float, so every exhibit row
+   rendered 272px (1363px) to 413px (900px) BELOW its own h3, and 13px below
+   the bottom of its own `.case`. Level with the wrong block, and worse the
+   narrower the viewport.
+
+   This is the same defect, and the same fix, as the testimonial attributions
+   above; see the note there. The general rule both cases teach: when a margin
+   device is applied to a REPEATED element, verify the pairing, not just the
+   placement. An item that lands in the margin can still be attached to the
+   wrong thing. */
+.cases .case { position: relative; }   /* containing block for the exhibits */
 .cases .case-links {
-  float: right;
-  clear: right;
+  position: absolute;
+  top: var(--case-pad);   /* see the note on .case; keeps all three level */
+  left: 100%;
   width: 50%;
-  margin-right: -60%;
-  margin-top: 0.2rem;
-  margin-bottom: 0;
+  margin: 0 0 0 2.2rem;
   font-size: 0.85rem;
   line-height: 1.45;
   color: var(--muted);
@@ -2190,10 +2210,11 @@ body::before {
   line-height: 1.75;
 }
 @media (max-width: 850px) {
+  .cases .case { position: static; }
   .cases .case-links {
-    float: none;
+    position: static;
     width: auto;
-    margin-right: 0;
+    margin: 0.6rem 0 0 0;
     font-size: 0.95rem;
   }
   /* back to running text, so the 1.75 target-size floor above does not
@@ -2263,7 +2284,7 @@ body::before {
   <p class="proposition">I work in healthcare data engineering and analytics. I build measure pipelines with the team I manage.</p>
 
   <div class="hero-lede">
-    <p>Before this, I worked in editorial production and public-health research. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
+    <p>Before this, I worked in editorial production, then in health services research and implementation science. That path continues to shape how I think about measurement, software, and the people who have to use both.</p>
     <p class="hero-links"><a href="/resume.html">Resume</a> <a href="https://linkedin.com/in/zkarp" data-goatcounter-click="hero-linkedin" data-goatcounter-title="LinkedIn profile (hero)">LinkedIn</a> <a href="https://github.com/zaherkarp" data-goatcounter-click="hero-github" data-goatcounter-title="GitHub profile (hero)">GitHub</a></p>
   </div>
 
@@ -3181,7 +3202,7 @@ body::before {
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing,<label for="mn-weeks" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note linking to the life-in-weeks grid" id="mn-weeks" class="margin-toggle"/><span class="marginnote">I keep a small grid that plots this arc, professional and personal, against the weeks of a single life: <a href="/life-in-weeks/">life in weeks</a>.</span> and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it. In practice this means reading transcripts, labeling passages, comparing labels across transcripts, and letting structure emerge.</span> in qualitative research, through regression in population health, to time series in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.<label for="mn-role" class="margin-toggle">&#8853;</label><input type="checkbox" aria-label="Show note on current role at Baltimore Health Analytics" id="mn-role" class="margin-toggle"/><span class="marginnote">Current role: Manager of Data Science &amp; Engineering at Baltimore Health Analytics, remote from Madison, Wisconsin.</span>
+      <span class="newthought">I started in writing</span> and editing, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it.</span> in qualitative research, through regression in population health, to time series in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.
     </p>
   </section>
 
@@ -3855,6 +3876,13 @@ body::before {
       <a href="/resume.html">Resume</a>
       <span class="sep" aria-hidden="true">·</span>
       <a href="/colophon/">Colophon</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <!-- Life in weeks moved here from an About margin note (2026-08-13):
+           it is a side experiment rather than biography, and this row is
+           already where the site keeps its small pages. This is the only
+           link to it on the homepage; /blog/ also lists it under
+           Experiments. -->
+      <a href="/life-in-weeks/">Life in weeks</a>
       <span class="sep" aria-hidden="true">·</span>
       <a href="#contact">Contact</a>
     </nav>

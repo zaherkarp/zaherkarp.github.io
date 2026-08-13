@@ -322,6 +322,26 @@ nav {
   margin: 2rem 0;
 }
 
+/* Long unbreakable tokens wrap rather than widening the page. Several posts
+   cite sources as bare URLs, and markdown-it auto-links them, so the visible
+   link text is a single 500-600px token with no space in it. At 390px that
+   pushed governing-the-coverage-decision to 667px and
+   medicaid-work-requirements-arkansas to 574px of horizontal scroll, taking
+   the chrome and prose with it.
+
+   `break-word` rather than `anywhere`: both break a too-long token, but
+   `anywhere` also shrinks min-content width, which changes how flex and
+   table layouts size themselves. Only the overflow behaviour is wanted here.
+   Ordinary prose is unaffected either way, since the rule fires only for a
+   word that cannot fit on a line by itself.
+
+   Code keeps its own behaviour below: `pre` already scrolls (overflow-x on
+   .blog-body pre), and breaking a code line mid-token would misrepresent the
+   code, so it opts back out. */
+.blog-body { overflow-wrap: break-word; }
+.blog-body pre,
+.blog-body pre code { overflow-wrap: normal; }
+
 .blog-body code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.88em;
@@ -388,6 +408,25 @@ nav {
   margin: 1.75rem 0 1.75rem calc(50% - min(400px, 46vw));
 }
 .blog-body figure svg { width: 100%; height: auto; display: block; }
+/* ...but not the tiny inline swatches in a caption's legend. The rule above
+   is meant for a figure's main chart and stretches any descendant svg to the
+   full column, and a CSS `width` beats an svg's own `width="9"` presentation
+   attribute, so a 9px legend dot in
+   medicare-advantage-market-exits-timing.md was being blown up to the whole
+   caption width. Each dot sits in a `white-space:nowrap` span with its
+   label, so the span could not wrap and the post scrolled sideways at 553px
+   against a 390px viewport.
+
+   Worth recording because the symptom pointed at the wrong culprit: the
+   nowrap span looks like the problem and shortening it does reduce the
+   overflow, which is exactly convincing enough to stop there with the real
+   bug still in place. The swatches are inline content, so they are sized by
+   their own attributes here. */
+.blog-body figcaption svg {
+  width: auto;
+  height: auto;
+  display: inline-block;
+}
 .blog-body figcaption {
   font-size: var(--size-caption);
   color: var(--muted);
@@ -408,11 +447,30 @@ nav {
 .blog-body svg [fill="#d0d0c8"]   { fill: var(--rule); }
 .blog-body svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
+/* Tables scroll inside their own box rather than widening the page. A wide
+   table is the one piece of post content that cannot be made to wrap: the
+   measles/flu parameter table in two-states-one-pathogen.md has five columns
+   and pushed the document to 452px against a 390px viewport, so the WHOLE
+   page scrolled sideways, chrome and prose included.
+
+   `display: block` is what makes the element scrollable, since markdown-it
+   emits a bare <table> with no wrapper to put `overflow-x` on and this is a
+   CSS-only fix (no regeneration of ~250 pages, and it reaches all 8 posts
+   that carry tables at once). The rows keep their own internal table layout,
+   so the grid still aligns; only the outer box changes. `max-width: 100%`
+   is what actually bounds it, and `width: auto` (kept from before) leaves
+   narrow tables their natural width instead of stretching them.
+
+   No visible change on a table that already fits: the scroll container only
+   scrolls when it has to. */
 .blog-body table {
   border-collapse: collapse;
   font-size: var(--size-caption);
   margin: 1.25rem 0;
   width: auto;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
 }
 .blog-body thead { border-top: 1px solid var(--muted); border-bottom: 1px solid var(--rule); }
 .blog-body th {
