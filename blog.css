@@ -408,6 +408,25 @@ nav {
   margin: 1.75rem 0 1.75rem calc(50% - min(400px, 46vw));
 }
 .blog-body figure svg { width: 100%; height: auto; display: block; }
+/* ...but not the tiny inline swatches in a caption's legend. The rule above
+   is meant for a figure's main chart and stretches any descendant svg to the
+   full column, and a CSS `width` beats an svg's own `width="9"` presentation
+   attribute, so a 9px legend dot in
+   medicare-advantage-market-exits-timing.md was being blown up to the whole
+   caption width. Each dot sits in a `white-space:nowrap` span with its
+   label, so the span could not wrap and the post scrolled sideways at 553px
+   against a 390px viewport.
+
+   Worth recording because the symptom pointed at the wrong culprit: the
+   nowrap span looks like the problem and shortening it does reduce the
+   overflow, which is exactly convincing enough to stop there with the real
+   bug still in place. The swatches are inline content, so they are sized by
+   their own attributes here. */
+.blog-body figcaption svg {
+  width: auto;
+  height: auto;
+  display: inline-block;
+}
 .blog-body figcaption {
   font-size: var(--size-caption);
   color: var(--muted);
