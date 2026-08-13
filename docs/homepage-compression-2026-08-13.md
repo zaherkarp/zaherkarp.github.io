@@ -149,8 +149,15 @@ requisition.
   this as a deliberate trade, not a missed target.
 - **Blog nav alignment** (~250 generated pages have a 9-item nav describing a
   different site structure, and link `/#education` and `/#service`, which are
-  commented out and land on the Gantt). Flagged, not actioned: it needs a template
-  change and a CI regeneration.
+  commented out and land on the Gantt). ~~Flagged, not actioned: it needs a template
+  change and a CI regeneration.~~ **Partly resolved 2026-08-13:** the two dead
+  items were dropped from `scripts/templates/blog/base.html` and from the two
+  hand-authored pages sharing that nav (`colophon/`, `case-study-care-redesign/`),
+  taking the blog nav 9 items to 7; `build_blog.yml` regenerates the ~250 pages on
+  merge. The remaining half of the finding stands: the 7-item nav still describes a
+  different site structure than the homepage's four items
+  (writing/work/about/contact), and reconciling the two is a structural change for
+  the panels, not a link fix.
 - **The methodology post's volume paragraph** now reads stale against the status
   page. Internally honest (scoped "so far", dated 2026-05-13) but the card links
   straight to it. A dated addendum is a separate decision.

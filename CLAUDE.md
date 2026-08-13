@@ -2731,12 +2731,25 @@ empty-parse guards in each linter.
 for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
 the retired section's lead sentence, naming the two 2014-15 roles, and points at
 `/cv.html` for orgs and citations. **The `id="service"` anchor MOVED** out of
-the disabled section to sit immediately before that figure, because all ~250
-generated blog pages link to `/#service`
-(`scripts/templates/blog/base.html:50-51`) and **`lint_links` cannot see
+the disabled section to sit immediately before that figure, because at the time
+all ~250 generated blog pages linked to `/#service`
+(`scripts/templates/blog/base.html`) and **`lint_links` cannot see
 blog-to-homepage fragments** - it validates only index.html's own fragments and
 homepage-to-blog links. Removing the id would have left 250 dead nav links with
-CI green. Keep the anchor wherever the service record is visible.
+CI green.
+
+**Those nav items were dropped 2026-08-13** (owner request), from the blog
+template and from the two hand-authored pages carrying the same nav markup,
+`colophon/index.html` and `case-study-care-redesign/index.html`. The blog nav
+went 9 items to 7. It was NOT aligned to the homepage's four
+(writing/work/about/contact); that is a bigger structural change and would need
+the panels. The `#service` and `#education` anchors were KEPT even though
+nothing on the site links to them any more: external bookmarks and inbound
+links may still point there, and an empty span costs nothing. So the invariant
+is now weaker than "keep the anchor wherever the service record is visible" -
+it is simply do not delete these two ids. Note the lint gap runs in both
+directions: `lint_links` could not see the dead links before, and cannot see
+the now-unreferenced ids either, so neither state is CI-visible.
 
 Fluff was trimmed from both sections in the same pass, before `#service` was
 disabled (so a restore brings back the clean version): notes that merely

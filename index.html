@@ -3681,17 +3681,21 @@ body::before {
          Year axis:      y = 310  (viewBox height 340)
        ========================================================== -->
   <!-- #service anchor, relocated 2026-07-30. The Service and Recognition
-       SECTION below is commented out, but every generated blog page links to
-       /#service (scripts/templates/blog/base.html), and lint_links cannot see
-       blog-to-homepage fragments, so removing the id would leave ~250 pages
-       with a dead nav link and CI green. Pointing it at the Gantt is the
-       honest target: that figure carries a mark for every service entry and
-       is now the only VISIBLE service surface on the page. -->
+       SECTION below is commented out; the id points at the Gantt instead,
+       which is the honest target because that figure carries a mark for
+       every service entry and is now the only VISIBLE service surface.
+       Until 2026-08-13 the stated reason for keeping the id was that every
+       generated blog page linked to /#service; those nav items were dropped
+       (scripts/templates/blog/base.html, plus the colophon and case-study
+       pages), so NOTHING on this site links here now. Keep the id anyway:
+       external bookmarks and inbound links may still point at /#service,
+       and an id costs nothing. Note lint_links cannot see either side of
+       this, because it validates index.html's own fragments only, never
+       blog-to-homepage ones. -->
   <span id="service" class="section-anchor"></span>
   <!-- #education anchor, relocated 2026-07-30 for the same reason as
-       #service just above: the Education SECTION below is commented out,
-       but every generated blog page links to /#education, and lint_links
-       cannot see blog-to-homepage fragments. -->
+       #service just above, and unlinked site-wide on the same 2026-08-13
+       pass. Kept for external inbound links. -->
   <span id="education" class="section-anchor"></span>
   <p>The chart below gathers degrees, certificates, and service commitments into one frame, because several overlapped rather than following in a tidy sequence.</p>
   <figure class="gantt-figure">
@@ -3830,8 +3834,10 @@ body::before {
        what it guards.
 
        The id="education" anchor moved up beside id="service"'s, for the
-       identical reason: every generated blog page links to /#education
-       and lint_links cannot see blog-to-homepage fragments.
+       identical reason: at the time, every generated blog page linked to
+       /#education. Those nav items were dropped 2026-08-13, so nothing on
+       this site links there now; the anchor is kept for external inbound
+       links. See the note at the anchor itself.
 
        The trailing horizontal rule is INSIDE the disabled region, same
        reasoning as SERVICE below (see that banner for the reasoning,
@@ -3925,8 +3931,10 @@ body::before {
        a mark for every entry here (lint_gantt enforces that). Its
        figcaption absorbed this section's lead sentence and points at the
        CV for orgs and citations. The id="service" anchor moved up to sit
-       beside that figure, because every generated blog page links to
-       /#service and lint_links cannot see blog-to-homepage fragments.
+       beside that figure, because at the time every generated blog page
+       linked to /#service. Those nav items were dropped 2026-08-13, so
+       nothing on this site links there now; the anchor is kept for
+       external inbound links. See the note at the anchor itself.
 
        The trailing horizontal rule is INSIDE the disabled region. That
        mattered when this section was first disabled: Education (the
