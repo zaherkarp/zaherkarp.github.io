@@ -1,8 +1,8 @@
 ---
-title: "Security Starts With the Problem You’re Trying to Solve  "
-description: "A brief description of your blog post (1-2 sentences)"
+title: "Security Starts With the Problem You’re Trying to Solve"
+description: "Healthcare security conversations jump straight to controls. The prior question, for a vendor running shared analytics across multiple payer clients, is what a compromised component can reach next, and whether a breach in one client context crosses into another."
 publishDate: 2026-01-25
-tags: ["data governance", "security"]  # Optional: add relevant tags
+tags: ["data governance", "security"]
 ---
 
 # Security Starts With the Problem You’re Trying to Solve  

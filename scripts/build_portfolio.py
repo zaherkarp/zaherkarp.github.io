@@ -130,8 +130,35 @@ def load_posts() -> list[dict]:
             "marginnote": fm.metadata.get("homepageMarginnote", ""),
             "tags": tags,
             "lifeweek_topic": str(fm.metadata.get("lifeweek_topic", "")).strip(),
+            "selected": bool(fm.metadata.get("homepageSelected")),
         })
     return posts
+
+
+def select_writing(posts: list[dict]) -> list[dict]:
+    """Order posts for the homepage writing column: chosen first, then recent.
+
+    The hero column is "Selected writing", not "Recent writing" (2026-08-13).
+    Publication date alone was deciding what led the page, which is how the
+    most recent post came to be a Teradata utility note sitting above the
+    healthcare and methodology work the page is actually arguing for.
+
+    A post opts in with `homepageSelected: true` in its frontmatter. Selected
+    posts sort ahead of the rest, and BOTH groups sort newest-first inside
+    themselves, so the rendered list still reads as a descending date column
+    rather than looking like a broken sort. Callers slice this once: the
+    first WRITING_FEATURED become full entries, the next WRITING_TILES
+    become the compact dated index.
+
+    With no post flagged this returns plain reverse-chronological order, so
+    the pre-selection behavior is the fallback, not a special case. /blog/
+    stays chronological either way; it is built by build_blog.py and never
+    consults this field.
+    """
+    return sorted(
+        posts,
+        key=lambda p: (0 if p.get("selected") else 1, -p["date"].toordinal()),
+    )
 
 
 def last_sunday(today: date) -> date:
@@ -231,10 +258,11 @@ def _strip_em_dashes(s: str) -> str:
 
 
 def build_writing_list(posts: list[dict]) -> str:
-    """Emit the homepage Writing section's two most recent featured entries.
+    """Emit the homepage writing column's two lead featured entries.
 
-    Sorted by publishDate desc. Drafts and `_`-prefixed sources are
-    already filtered out in load_posts(). These are the prominent
+    Ordered by select_writing(): `homepageSelected` posts first, newest-first
+    within that group, then everything else newest-first. Drafts and
+    `_`-prefixed sources are already filtered out in load_posts(). These are the prominent
     entries: the title is an h3 (heading parity with project tiles and a
     screen-reader nav anchor) and the summary is the frontmatter
     `description`, the same curated, standard-length blurb the tiles use,
@@ -252,9 +280,9 @@ def build_writing_list(posts: list[dict]) -> str:
     else. The frontmatter field is still read and preserved by the blog
     tooling; it simply no longer surfaces on the homepage.
     """
-    recent = sorted(posts, key=lambda p: p["date"], reverse=True)[:WRITING_FEATURED]
+    featured = select_writing(posts)[:WRITING_FEATURED]
     blocks: list[str] = []
-    for p in recent:
+    for p in featured:
         date_str = p["date"].isoformat()
         title = _esc(_strip_em_dashes(p["title"]))
         summary = _esc(_strip_em_dashes(p["description"]))
@@ -273,7 +301,7 @@ def build_writing_list(posts: list[dict]) -> str:
 
 def build_writing_index(posts: list[dict]) -> str:
     """Emit the .writing-index small-multiples grid: the WRITING_TILES posts
-    immediately after the featured pair.
+    immediately after the featured pair, in the same select_writing() order.
 
     Mirrors the projects-index tile pattern but keys each tile by date
     (the `.writing-tile` class deliberately has no `.num` span, so the
@@ -281,8 +309,8 @@ def build_writing_index(posts: list[dict]) -> str:
     affordance, so `homepageMarginnote` is intentionally ignored here to
     keep tiles compact.
     """
-    by_date = sorted(posts, key=lambda p: p["date"], reverse=True)
-    tiles = by_date[WRITING_FEATURED:WRITING_FEATURED + WRITING_TILES]
+    ordered = select_writing(posts)
+    tiles = ordered[WRITING_FEATURED:WRITING_FEATURED + WRITING_TILES]
     blocks: list[str] = []
     for p in tiles:
         date_str = p["date"].isoformat()

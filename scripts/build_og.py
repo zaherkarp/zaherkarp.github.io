@@ -56,7 +56,7 @@ NAME = "Zaher Karp"
 # drawn one per line because the pair overflows 1200px as a single run.
 SUBTITLE_LINES = (
     "I work in healthcare data engineering and analytics.",
-    "I lead a small data science team and review its code.",
+    "I build measure pipelines with the team I manage.",
 )
 DOMAIN = "zaherkarp.com"
 

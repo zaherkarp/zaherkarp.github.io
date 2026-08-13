@@ -2,6 +2,7 @@
 title: "Credentialing Looks Rigorous. Its Performance Scores Are Mostly Noise."
 description: "Physician credentialing and ongoing performance monitoring have high face validity. But adverse events are rare and per-physician caseloads are small, so the scores are dominated by noise, and the measured yield of the monitoring is close to nothing."
 publishDate: 2026-06-26
+homepageSelected: true
 tags: ["healthcare", "credentialing", "statistics", "reliability"]
 draft: false
 ---

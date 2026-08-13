@@ -2,6 +2,7 @@
 title: "Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas"
 description: "Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work."
 publishDate: 2026-06-09
+homepageSelected: true
 tags: ["medicaid", "health-policy", "work-requirements", "meta-analysis", "difference-in-differences", "causal-inference"]
 lifeweek_topic: "Medicaid work requirements"
 homepageMarginnote: "Arkansas was the first state to attach work requirements to Medicaid."
