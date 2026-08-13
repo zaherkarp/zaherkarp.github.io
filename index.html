@@ -2222,9 +2222,19 @@ body::before {
   line-height: 1.45;
   color: var(--muted);
 }
+/* line-height, not padding, carries the WCAG 2.2 2.5.8 target size here.
+   As display:block rows in the margin these links stack directly adjacent,
+   so each one's line box IS its touch target: at the inherited 1.45 they
+   measured 21px against the 24px floor, and axe/Lighthouse failed all
+   eight. 1.75 puts each row at ~25px. Do not lower it back toward the
+   .case-links line-height above without re-running the target-size check;
+   the two values are deliberately different and only this one is a
+   compliance floor. Costs no column height (the links are floated into
+   the margin), and the 850px inline form below is exempt as running text. */
 .cases .case-links a {
   display: block;
   margin-right: 0;
+  line-height: 1.75;
 }
 @media (max-width: 850px) {
   .cases .case-links {
@@ -2233,7 +2243,9 @@ body::before {
     margin-right: 0;
     font-size: 0.95rem;
   }
-  .cases .case-links a { display: inline; margin-right: 0.9rem; }
+  /* back to running text, so the 1.75 target-size floor above does not
+     apply and should not be paid for in height */
+  .cases .case-links a { display: inline; margin-right: 0.9rem; line-height: inherit; }
 }
 </style>
 </head>
