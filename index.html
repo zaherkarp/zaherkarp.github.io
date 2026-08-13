@@ -3635,6 +3635,26 @@ body::before {
          Lane divider:   y = 135
          Year axis:      y = 310  (viewBox height 340)
        ========================================================== -->
+  <!-- #education and #service anchors, RESTORED 2026-08-13 (owner) after
+       being deleted earlier the same day with the prose sections that used
+       to carry them. Nothing on this site links here: the blog and subpage
+       nav dropped both items in the same pass. They exist for EXTERNAL
+       inbound links and bookmarks, which without them land at the top of
+       the page instead of on the record they were pointing at.
+
+       Two empty spans rather than an id on <figure class="gantt-figure">
+       itself, because an element carries one id and these are two. Placing
+       both here keeps the pair symmetrical and lands them on the lead
+       paragraph, so the figure and its figcaption are fully in view; an id
+       on the figure would scroll its top edge to the viewport top and cut
+       the sentence that introduces it.
+
+       .section-anchor is display:block; height:0 with scroll-margin-top,
+       so this costs no layout. lint_links check 1b now validates any
+       /#education or /#service link elsewhere in the repo against these
+       ids, which it could not do when they were last removed. -->
+  <span id="education" class="section-anchor"></span>
+  <span id="service" class="section-anchor"></span>
   <p>The chart below gathers degrees, certificates, and service commitments into one frame, because several overlapped rather than following in a tidy sequence.</p>
   <figure class="gantt-figure">
     <figcaption>

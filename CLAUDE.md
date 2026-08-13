@@ -639,12 +639,16 @@ hand-authored pages that carry the same markup, `colophon/index.html` and
 `case-study-care-redesign/index.html`. It went 9 items → 7 (dropping the dead
 `/#education` and `/#service`) → 4 on the same day. Those pages keep their own
 Title Case convention; the homepage's lowercase labels are small-capped by CSS
-and were not imposed on them. `#education` and `#service` were DELETED with
-their sections, and `/#experience`, `/#projects`, `/#publications`,
-`/#speaking` are no longer linked from any blog page. **`lint_links` check 1b
+and were not imposed on them. `/#experience`, `/#projects`, `/#publications`,
+`/#speaking` are no longer linked from any blog page, and `#education` /
+`#service` are linked from nowhere on the site at all — they were deleted
+with their sections and restored the same day for external bookmarks only
+(see §Recognition alignment lint). **`lint_links` check 1b
 now validates every `href="/#..."` on those pages against index.html's live
 ids**, so deleting a homepage anchor that the nav still points at fails CI —
-which it could not do before.
+which it could not do before. Note what it still cannot see: an id that
+nothing links to. Both directions of the `#education`/`#service` story were
+invisible to CI, and only the dead-link half is covered now.
 
 **(Text ordering, 2026-07-29)** `writing` targets `#writing-hero`, the id on the
 hero's `.hero-writing` column, NOT `#writing` (which it scrolled past, landing
@@ -2780,10 +2784,23 @@ request), from the blog template and from the two hand-authored pages
 carrying the same nav markup, `colophon/index.html` and
 `case-study-care-redesign/index.html`. Later the same day the nav was aligned
 to the homepage's four items (`writing / work / about / contact`), 9 → 7 → 4.
-**The `#service` and `#education` anchors were then DELETED** with the
-sections; an external bookmark to `/#service` now lands at the top of the
-homepage rather than on the Gantt. That was the accepted cost of the cleanup,
-not an oversight.
+**The `#service` and `#education` anchors were DELETED with the sections and
+then RESTORED the same day** (owner), as two empty `.section-anchor` spans
+immediately before the Gantt's lead paragraph. Deleting them meant an
+external bookmark to `/#service` landed at the top of the homepage instead of
+on the record it pointed at; that was accepted as a cost at the time and then
+reversed. Nothing on this site links to either id, and that is expected: they
+exist for EXTERNAL inbound links only.
+
+Two spans rather than an `id` on `figure.gantt-figure` itself, because an
+element carries one id and these are two, and because anchoring to the lead
+paragraph keeps the figure AND its figcaption in view. Verified by loading
+`index.html#education` and `#service` at 1363px and 390px: both land the lead
+34px below the viewport top (its 2rem `scroll-margin-top`) with the
+figcaption and the SVG on screen. An id on the figure would scroll its top
+edge to the viewport top and cut the sentence that introduces it. The spans
+are `display: block; height: 0`, so page height is unchanged (9,810px @1363px
+/ 16,954px @390px before and after).
 
 **The `lint_links` blind spot that made all of this invisible is now
 closed.** It used to validate only index.html's own fragments and
