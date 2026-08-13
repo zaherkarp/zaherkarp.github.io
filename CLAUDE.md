@@ -299,6 +299,47 @@ research years" pointed at a six-paper, eight-year publications record, and
 current role while dropping resume.md's own "authored reusable … deployed".
 Full record in `docs/homepage-tone-pass-2026-08-11.md`.
 
+**Compression pass (2026-08-13, this branch).** The owner asked for a shorter
+homepage, then mid-pass added two constraints that changed the answer: the
+figures stay, and testimonials get REFORMATTED rather than cut. Everything
+before that was subtraction (which chart, which quote, which fold); what
+replaced it is the finding that **the page owns a 40% margin that only
+sidenotes were using**, and moving secondary material into it buys height at
+zero content cost. Two applications, both measured, both saving MORE than the
+deletions they replaced: testimonial attributions to the margin (−198px, vs
+−185px for deleting the 2013 direct-report quote, so the section shrank AND
+kept the page's only direct-report voice), and the five Experience `.stack`
+lines to the margin (−191px, via new `.role-block` wrappers). Page 10,721 →
+**9,928px @1363px (−7.4%)**, 17,286px @390px. All seven charts, all three
+testimonial voices, the case layer, Speaking, Publications and Contact
+survive intact.
+
+Also in the pass: the current role restructured to scope → decision rights →
+cross-functional delivery → shipped-and-adopted outcome → technical approach
+(it previously carried NO shipped outcome), with Case 03 no longer restating
+that adoption; the Insight Engine figcaption gaining an observed layer while
+its modeled body paragraph stays byte-identical; and the three meta
+descriptions gaining the leadership claim they lacked against `resume.md`.
+
+**The headline number is honest but the direction of travel was not
+monotonic**, so do not read −7.4% as the sum of the savings. Compression and
+credibility pulled opposite ways: the two margin moves landed within 1px of
+projection (−198/−191), while the current-role outcome (+60px) and the
+Insight Engine figcaption (+110px) spent 170px of it. The figcaption was
+never costed because the plan reasoned it was "cheaper per pixel than prose",
+true per word but it was four sentences in the NARROWEST column on the page;
+it was tightened 254px → ~144px across four measured drafts. Both additions
+were kept deliberately: an expert reader marks down an unanchored modeled
+funnel faster than a long page.
+
+**−15% is not reachable** while keeping the charts, the three testimonials
+and the case bodies. Measured, not estimated: deleting every chart on the
+page would still not reach 26%. Record as a deliberate trade, not a missed
+target. Full decision record, including the rejected two-column testimonial
+grid (+60px) and the reproduction recipe, in
+`docs/homepage-compression-2026-08-13.md`. Design decisions below tagged
+"(Compression, 2026-08-13)" mark superseding wording.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -814,8 +855,15 @@ section 23 of the inline style block. Contracts, each load-bearing:
     That
     10,498 was itself the owner-approved TIGHT variant (+974px over the old
     9,543px baseline as shipped at 10,517, chosen over INDEX +532 and FULL
-    +1,200 with all three measured). A future pass claiming the page grew or
-    shrank should measure against 10,549, not 10,498 and not 9,543.
+    +1,200 with all three measured).
+
+    **Superseded by the 2026-08-13 compression pass: the reference height is
+    now 9,928px @1363px (17,286px @390px).** Note the WIDTH changed with it,
+    from 1400px to 1363px, because that pass measured at a 1363px viewport
+    throughout; the two are not directly comparable and a future pass should
+    say which it used. Against that pass's own baseline the page went
+    10,721 → 9,928px (−7.4%). Measure against 9,928 @1363px, not 10,549,
+    10,498 or 9,543.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
@@ -1160,12 +1208,24 @@ Presentation dots stay unlabeled (de-emphasized) but share the dim/scale.
 Only opacity/transform/stroke-width change.
 
 Arrival cue (CSS section "18.4", added 2026-06-10): a band click jumps to
-its role anchor, and `.role-anchor:target + h3` plays a one-shot 1.6s
+its role anchor, and **`.role-anchor:target + .role-block > h3`** (was
+`.role-anchor:target + h3` until 2026-08-13) plays a one-shot 1.6s
 ink-wash fade (7% ink, `role-arrive` keyframe) so the landing acknowledges
 the click. Fade family only, no accent, no persistent state; sanctioned by
 Val as an application of the existing fade primitive to text (the page's
 one background-color animation; do not extend the pattern elsewhere
 without convening her). Ungated, like all site motion since 2026-06-13.
+
+**This selector is coupled to the Experience markup and NO linter guards
+it.** The 2026-08-13 pass wrapped each role in `.role-block`, which stopped
+the `h3` being the anchor's sibling; the original selector silently matched
+nothing and the cue died. `lint_links` stays green either way, because it
+checks that `#exp-catalyst` resolves to a real id, which it still does, and
+a selector that matches nothing is perfectly valid CSS. If you ever change
+the nesting between `.role-anchor` and its `h3`, update this selector in the
+same edit and verify by loading `index.html#exp-catalyst` and reading back
+the computed `animation-name` on the target heading. Do not verify it by
+eye: the fade is 1.6s and one-shot.
 
 Scroll-animated figures (Chromium-only enhancement): the two Experience
 outcome bars, the Projects cliff curve (stroke traces, area fill fades), and
@@ -1446,11 +1506,32 @@ Both are secondary annotations where muted small type is doing real work.
 Three testimonials: two from Health Catalyst directors (recent technical
 work) and one from a direct report at Sustainable Clarity, 2013 (the
 management craft cited in that role's entry). Italic blockquote pullquote
-with thin left border (1px var(--rule)), attribution flush-right below
-the quote, full version behind a `<details class="fold">`.
-Attribution alignment: `text-align: right` per Tufte tradition. The
-prior left-aligned alignment was changed in the rebuild.
+with thin left border (1px var(--rule)).
 This is intentional and complete. Do not treat as a gap to fill.
+
+**(Compression, 2026-08-13) The attribution now sits in the 40% margin, and
+it is ABSOLUTELY POSITIONED, not floated.** `.testimonial` is
+`position: relative`; `.attribution` is `position: absolute; top: 0;
+left: 100%`. Below 850px (the sidenote breakpoint, not 760px) both revert to
+static and the attribution returns to flow beneath its quote, flush-right per
+Tufte tradition. Section 780 → 379px.
+
+**Do not "simplify" this to `float: right; clear: right`.** That was tried
+and rejected on render: floats stack downward, so each attribution drifts
+below the previous one, and by the third quote Joanna Laucirica's name sat
+nearer the SECOND pullquote than her own. An unattributed testimonial is
+worth nothing, so this is a correctness defect, not a cosmetic one. The
+general rule the pass adds: when a margin device is applied to a repeated
+element, verify the PAIRING, not just the placement. A margin item that
+renders in the margin can still be attached to the wrong thing.
+
+**A two-column grid was measured and rejected (+60px).** Inside the 60%
+column each quote gets ~390px and wraps more than the side-by-side saves. Do
+not re-propose it from the intuition that two columns are more compact.
+
+(Superseded: the three `<details class="fold">` "More" folds were retired
+earlier in the same pass, and the attribution is no longer flush-right below
+the quote on desktop.)
 
 ### Experience entry expand rule
 
@@ -1476,6 +1557,29 @@ a decision about evidence, not about height.
 BHA 490px, Health Catalyst 684px, healthfinch 456px, UW 445px, Sustainable
 Clarity 290px. Catalyst is the outlier at 29% because it alone still has a
 figure; see §Outcome figures for the open lever.
+
+**(Compression, 2026-08-13) Each role is now wrapped in `<div
+class="role-block">`, and its `.stack` line sits in the 40% margin**
+(absolutely positioned, top-anchored to the role's `h3`; static and back in
+flow below 850px). Section −191px. Four roles carry a stack; Sustainable
+Clarity has none.
+
+Three things keep the alignment uniform, and every one was found by measuring
+role 0 against the rest rather than by reading the markup. **The section
+`<h2>` stays OUTSIDE the wrapper** (it shares a chunk with the first role
+when the section is split on `<hr>`, and wrapping it put role 0's stack level
+with the word "Experience" instead of its own heading). **The empty
+`.role-anchor` spans stay outside too**, because an empty inline as first
+child generates a line box that pushes the `h3` down. And **the `h3`'s top
+margin moves onto the wrapper** (`.role-block { margin-top: 1.7rem }`,
+`.role-block > h3 { margin-top: 0 }`) so wrapper top and `h3` top coincide.
+All four stacks now sit a uniform 6px from their own `h3`.
+
+Verify by measuring each stack against ITS OWN `h3`, not by screenshot: two
+prototypes read as "nearly right" in a render while role 0 sat at −48px and
+the rest at +6px. A right float was tried first and rejected for the same
+drift defect documented at §Testimonials. Changing this nesting also breaks
+the arrival cue: see §Scroll-drawn figures, Arrival cue.
 
 **(Text reduction, first pass, 2026-07-30.) One of five entries folds now, not four.**
 Only Health Catalyst keeps a `<details class="fold">`, and its summary reads
@@ -1823,6 +1927,21 @@ no-bundler discipline and what it shipped; removing it eliminated that.
   reasoning: a private internal tool reads better as job history
   plus a standalone methodology post than as a portfolio entry with
   no inspectable artifact.
+
+  **OPEN QUESTION raised 2026-08-13, flagged rather than assumed.** The
+  compression pass added a sentence to the BHA role naming "the
+  forecast-versus-actual cut-point review dashboard ... adopted as a shared
+  review surface", sourced closely from `resume.md:15`, which states it and
+  its adoption publicly. That is squarely within what the owner already
+  publishes, and it is none of the three things forbidden above (no project
+  card, no methodology cross-link, no tile). **But it is not established
+  whether that dashboard and the Client-Side Stars Rating Predictor are the
+  same underlying tool.** The descriptions are close: this section calls the
+  predictor a "cut-point dashboard running against live measure feeds for
+  contract-level remediation planning". If they ARE the same, the "only one
+  public surface" claim above is now understated and should read two, with
+  the Experience sentence as the second. If they are NOT, nothing changes.
+  Only the owner can settle it; do not resolve it by editing either surface.
 
 ---
 
