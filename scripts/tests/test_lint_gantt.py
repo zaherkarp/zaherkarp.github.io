@@ -1,10 +1,18 @@
-"""Layer 2 -- lint_gantt figure/section alignment detection.
+"""Layer 2 -- lint_gantt figure/CV alignment detection.
 
-Builds an index.html fixture with a gantt figure plus #education and
-#service sections. The figure encodes years positionally via the chart
-transform x(year) = 90 + (year - 2003) * 19. When every section entry has a
-matching mark, run() passes; drop the service mark and the service entry has
-no counterpart, so run() fails.
+Builds an index.html fixture holding a gantt figure, plus a cv.md fixture.
+The figure encodes years positionally via the chart transform
+x(year) = 90 + (year - 2003) * 19, so each mark's year is read back from its
+x-coordinate rather than from any text.
+
+The gate direction flipped on 2026-08-13, when index.html's #education and
+#service sections were deleted and cv.md became the record: every figure
+MARK must now have a CV counterpart (figure subset of CV), where it used to
+be every section entry needing a mark. The reverse direction is the
+informational coverage report and never fails.
+
+The comment-disabled fixtures that used to live here are gone with the
+sections they mirrored.
 """
 
 from __future__ import annotations
@@ -23,97 +31,107 @@ def _bar_x(year: int) -> int:
     return X0 + (year - BASE) * PX
 
 
-def _figure(include_service_mark: bool) -> str:
+def _figure(include_service_mark: bool = True, service_year: int = 2021) -> str:
     # Education bar 2013-2015 in the education lane (y < 135).
     edu = (
         f'  <line x1="{_bar_x(2013)}" y1="30" x2="{_bar_x(2015)}" y2="30" '
         'stroke="#111" stroke-width="4"/>\n'
         '  <text x="322" y="34">Public Health MPH, Biostatistics</text>\n'
     )
-    # Service square 2021 in the service lane (y > 135).
+    # Service square in the service lane (y > 135).
     svc = (
-        f'  <rect x="{_square_x(2021)}" y="160" width="6" height="6" fill="#111"/>\n'
-        '  <text x="439" y="166">Spirit of Charlie</text>\n'
+        f'  <rect x="{_square_x(service_year)}" y="160" width="6" height="6" '
+        'fill="#111"/>\n'
+        '  <text x="439" y="166">Spirit of Charlie Award</text>\n'
     )
     body = edu + (svc if include_service_mark else "")
     return f'<figure class="gantt-figure">\n{body}</figure>\n'
 
 
-def _sections(commented: bool = False) -> str:
-    body = (
-        '<section id="education">\n'
-        '  <div class="row-entry">\n'
-        '    <div class="row-date">2013 to 2015</div>\n'
-        '    <div class="row-body">\n'
-        '      <span class="row-title">Master of Public Health, Biostatistics</span>\n'
-        '      <span class="row-org">University of Wisconsin-Madison</span>\n'
-        "    </div>\n"
-        "  </div>\n"
-        "</section>\n"
-        '<section id="service">\n'
-        '  <div class="row-entry">\n'
-        '    <div class="row-date">2021</div>\n'
-        '    <div class="row-body">\n'
-        '      <span class="row-title">Spirit of Charlie Award</span>\n'
-        '      <span class="row-org">Spirit of Charlie Foundation</span>\n'
-        "    </div>\n"
-        "  </div>\n"
-        "</section>\n"
-    )
-    if commented:
-        # Mirrors index.html's real disable pattern: a bare `<!--` on its
-        # own line before the sections, a bare `-->` on its own line after.
-        return "<!--\n" + body + "-->\n"
-    return body
+def _page(**kwargs) -> str:
+    return "<!doctype html><html><body>\n" + _figure(**kwargs) + "</body></html>\n"
 
 
-def _page(include_service_mark: bool, commented: bool = False) -> str:
-    return (
-        "<!doctype html><html><body>\n"
-        + _figure(include_service_mark)
-        + _sections(commented=commented)
-        + "</body></html>\n"
-    )
+CV_MATCH = (
+    "# CV\n\n"
+    "## Education\n\n"
+    "- **2013-2015** Master of Public Health, Biostatistics. "
+    "University of Wisconsin-Madison.\n\n"
+    "## Awards and Honors\n\n"
+    "- **2021** Spirit of Charlie Award. Health Catalyst.\n"
+)
+
+# Same education record, but the award is missing from the CV entirely.
+CV_NO_AWARD = (
+    "# CV\n\n"
+    "## Education\n\n"
+    "- **2013-2015** Master of Public Health, Biostatistics. "
+    "University of Wisconsin-Madison.\n\n"
+    "## Awards and Honors\n\n"
+    "- **2010** Best Poster Prize. Some Unrelated Conference.\n"
+)
 
 
-def _install(monkeypatch, tmp_path, page):
-    ip = tmp_path / "index.html"
+def _install(monkeypatch, tmp_path, page, cv=CV_MATCH):
+    ip, cp = tmp_path / "index.html", tmp_path / "cv.md"
     ip.write_text(page, encoding="utf-8")
+    cp.write_text(cv, encoding="utf-8")
     monkeypatch.setattr(lint_gantt, "INDEX", ip)
+    monkeypatch.setattr(lint_gantt, "CV", cp)
 
 
-def test_every_entry_has_a_mark_passes(monkeypatch, tmp_path, capsys):
-    _install(monkeypatch, tmp_path, _page(include_service_mark=True))
+def test_every_mark_has_a_cv_counterpart_passes(monkeypatch, tmp_path, capsys):
+    _install(monkeypatch, tmp_path, _page())
     assert lint_gantt.run() == 0, capsys.readouterr().err
 
 
-def test_service_entry_without_mark_fails(monkeypatch, tmp_path, capsys):
-    _install(monkeypatch, tmp_path, _page(include_service_mark=False))
+def test_mark_without_cv_counterpart_fails(monkeypatch, tmp_path, capsys):
+    _install(monkeypatch, tmp_path, _page(), cv=CV_NO_AWARD)
     rc = lint_gantt.run()
     assert rc == 1
-    assert "no matching" in capsys.readouterr().err
+    assert "no counterpart in cv.md" in capsys.readouterr().err
 
 
-def test_comment_disabled_section_still_parsed(monkeypatch, tmp_path, capsys):
-    """#education and #service are wrapped in HTML comments in index.html
-    (2026-07-30); _section_body must still find and parse them there, or
-    this gate goes silently vacuous. See CLAUDE.md §Gantt figure
-    alignment lint."""
-    _install(
-        monkeypatch, tmp_path,
-        _page(include_service_mark=True, commented=True),
+def test_mark_drawn_at_wrong_x_fails(monkeypatch, tmp_path, capsys):
+    """The years come from the GEOMETRY, so a mark drawn at the wrong
+    x-coordinate decodes to the wrong year and stops matching its CV entry.
+    This is what makes the lint more than a text diff: the label below is
+    still spelled exactly right."""
+    _install(monkeypatch, tmp_path, _page(service_year=2018))
+    rc = lint_gantt.run()
+    assert rc == 1
+    err = capsys.readouterr().err
+    assert "Spirit of Charlie Award" in err
+
+
+def test_matching_is_lane_agnostic(monkeypatch, tmp_path, capsys):
+    """A SERVICE-lane mark backed by a CV entry filed under ## Education must
+    pass. cv.md files fellowships under Education while the chart draws them
+    in the service lane (the real case is "Digital Fellow"), and failing that
+    pair would be a disagreement about filing, not about facts. See the
+    lane-agnostic note in lint_gantt's docstring."""
+    cv = (
+        "# CV\n\n"
+        "## Education\n\n"
+        "- **2013-2015** Master of Public Health, Biostatistics. "
+        "University of Wisconsin-Madison.\n\n"
+        "### Fellowships and Training\n\n"
+        "- **2021** Spirit of Charlie Award. Health Catalyst.\n"
     )
+    _install(monkeypatch, tmp_path, _page(), cv=cv)
     assert lint_gantt.run() == 0, capsys.readouterr().err
 
 
-def test_comment_disabled_section_still_detects_drift(monkeypatch, tmp_path, capsys):
-    """Same property as above, proven non-vacuously: a commented-out
-    #service entry with no matching figure mark must still fail the
-    alignment gate. See CLAUDE.md §Gantt figure alignment lint."""
-    _install(
-        monkeypatch, tmp_path,
-        _page(include_service_mark=False, commented=True),
+def test_cv_only_entries_are_informational(monkeypatch, tmp_path, capsys):
+    """The chart is a curated subset, so CV entries with no mark report but
+    never fail -- the reverse of the gate direction."""
+    cv = CV_MATCH + (
+        "\n## Service and Professional Activities\n\n"
+        "### Mentoring\n\n"
+        "- **2016-2017** G. Padgett. Undergraduate Research Scholar Program.\n"
     )
-    rc = lint_gantt.run()
-    assert rc == 1
-    assert "no matching" in capsys.readouterr().err
+    _install(monkeypatch, tmp_path, _page(), cv=cv)
+    assert lint_gantt.run() == 0
+    out = capsys.readouterr().out
+    assert "not on the chart" in out
+    assert "Padgett" in out

@@ -2,26 +2,33 @@
 """lint_gantt.py
 
 Keeps the homepage Education + Service Gantt figure
-(index.html `figure.gantt-figure`) in lockstep with the two prose
-sections it summarizes, WITHOUT a shared data file. The figure is a
-hand-coded SVG; this script reads it and the sections and compares.
+(index.html `figure.gantt-figure`) in lockstep with the comprehensive
+record in the CV (src/content/cv.md), WITHOUT a shared data file. The
+figure is a hand-coded SVG; this script reads it and the CV and
+compares.
 
-Both `<section id="education">` and `<section id="service">` have been
-wrapped in HTML comments in index.html since 2026-07-30 (each judged
-redundant with this figure once its terse labels absorbed every
-entry's title and date). `_section_body` below still parses them
-because it slices raw text and does not strip HTML comments; that is
-deliberate, not an oversight. With the sections hidden, the Gantt
-figure is now the ONLY VISIBLE surface for that content, which raises
-the stakes on this check rather than lowering them: stripping comments
-first would leave nothing to parse, so the gate would pass vacuously
-on the page's one remaining view into this record. Do not "fix" the
-comment-blindness without first replacing what it guards.
+WHAT THIS USED TO CHECK, AND WHY IT MOVED. Until 2026-08-13 this lint
+compared the figure against two prose sections on the homepage,
+`<section id="education">` and `<section id="service">`. Those sections
+were commented out on 2026-07-30 (each judged redundant with this
+figure once its terse labels absorbed every entry's title and date) and
+the lint went on reading them THROUGH the comment, because its section
+slicer matched raw text. They were DELETED on 2026-08-13, which retired
+that trick along with the markup. cv.md is now the comprehensive record
+and this figure is the page's only visible surface for it, so the
+comparison is figure-against-CV and the gate direction flips to match:
 
-The figure has two lanes that mirror two sections:
+  BEFORE  every section entry must have a mark   (section subset of figure)
+  AFTER   every mark must have a CV counterpart  (figure subset of CV)
 
-  education lane (y < 135)   <->  <section id="education">
-  service lane   (y > 135)   <->  <section id="service">  (#service)
+The new direction is the one that suits a curated chart. cv.md holds far
+more than the chart shows (short courses, individual mentees, minor
+service), and that is intended, so requiring a mark per CV entry would
+fail permanently. Requiring a CV record per mark is the guarantee worth
+keeping: nothing is displayed publicly that the comprehensive record
+does not support. The reverse direction survives as the informational
+coverage report, which is where a newly added CV award shows up as a
+candidate for the chart.
 
 Each data mark encodes its year(s) positionally, via the chart's own
 coordinate transform x(year) = 90 + (year - 2003) * 19:
@@ -32,22 +39,26 @@ coordinate transform x(year) = 90 + (year - 2003) * 19:
     and end years are read back from x1 and x2.
 
 Each mark is paired with the <text> label that immediately follows it
-in source.
+in source. Reading the year back from the geometry is what makes this
+more than a text diff: a mark drawn at the wrong x decodes to the wrong
+year and stops matching its CV entry.
 
-GATE (hard fail, blocks push): every Education-section entry must have a
-matching mark in the education lane, and every #service entry a matching
-mark in the service lane. "Matching" = share at least one year AND at
-least two significant tokens between the section entry (title + org) and
-the figure label, which tolerates the figure's terse labels ("UG
-research mentor" vs the section's "Undergraduate Research Mentor") with
-no synonym table. A failure means a section entry was added or renamed
-without updating the figure -- exactly the drift this guards.
+MATCHING IS LANE-AGNOSTIC, and that is deliberate. The figure splits
+marks into an education lane (y < 135) and a service lane (y > 135),
+but cv.md files things by a different taxonomy: "Digital Fellow" is
+drawn in the SERVICE lane and recorded under `### Fellowships and
+Training`, which is nested inside `## Education`. Constraining a mark to
+its own lane's CV section would fail that pair for a disagreement about
+filing, not about facts. The lane is still reported in messages.
 
-A reverse coverage note (figure marks with no section entry) prints on a
-manual run; it never fails.
+GATE (hard fail, blocks push): every figure mark must have a counterpart
+in cv.md's Education / Service / Awards record. "Matching" = share at
+least one year AND at least two significant tokens, which tolerates the
+figure's terse labels ("UG research mentor" vs the CV's "Undergraduate
+Research Scholar Mentor") with no synonym table.
 
-This is the "pipeline, not a redraw-by-memory" answer to the figure
-falling out of date when the Service and Recognition section grows.
+A reverse coverage note (cv.md entries with no mark) prints on a manual
+run; it never fails.
 """
 
 from __future__ import annotations
@@ -58,13 +69,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from _common import (
-    ROW_DATE_RE,
-    ROW_ENTRY_RE,
-    ROW_ORG_RE,
-    ROW_TITLE_RE,
     alignment_match,
+    cv_items,
+    gantt_marks,
     install_git_hooks,
-    row_field,
     years_of,
 )
 from _common import tokens_of as _tokens_of
@@ -73,12 +81,18 @@ install_git_hooks()
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index.html"
+CV = ROOT / "src" / "content" / "cv.md"
+
+# The CV sections a Gantt mark may be backed by. Education carries the
+# `### Fellowships and Training` subsection, which is where several
+# service-lane marks are filed; see the lane-agnostic note in the docstring.
+CV_SECTIONS = (
+    (r"^(?P<hashes>##)\s+Education\s*$", "Education"),
+    (r"^(?P<hashes>##)\s+Service and Professional Activities\s*$", "Service"),
+    (r"^(?P<hashes>##)\s+Awards and Honors\s*$", "Awards and Honors"),
+)
 
 MIN_SHARED_TOKENS = 2
-LANE_DIVIDER_Y = 135
-X0 = 90
-PX_PER_YEAR = 19
-BASE_YEAR = 2003
 
 # Minimal stoplist: the figure labels are terse, so unlike
 # lint_recognition.py this does NOT drop institutional words (it must
@@ -109,10 +123,6 @@ def years_in(s: str) -> frozenset[int]:
     return frozenset(years_of(s))
 
 
-def year_at_x(x: float) -> int:
-    return round(BASE_YEAR + (x - X0) / PX_PER_YEAR)
-
-
 @dataclass(frozen=True)
 class Item:
     label: str
@@ -122,7 +132,10 @@ class Item:
     source: str
 
     def matches(self, other: "Item") -> bool:
-        if self.lane != other.lane:
+        # Lanes are compared only when BOTH sides are figure marks. A CV entry
+        # carries lane="cv" because cv.md's filing does not track the chart's
+        # two-lane split; see the lane-agnostic note in the module docstring.
+        if "cv" not in (self.lane, other.lane) and self.lane != other.lane:
             return False
         return alignment_match(self.years, self.tokens,
                                other.years, other.tokens,
@@ -130,98 +143,55 @@ class Item:
 
 
 # ─── figure parser ────────────────────────────────────────────────────────
-
-FIGURE_RE = re.compile(r'<figure class="gantt-figure">(?P<body>.*?)</figure>',
-                       re.DOTALL)
-# A data mark (rect square or thick-line bar) immediately followed by its
-# <text> label. Axis ticks (stroke-width 0.6/0.8), the divider (0.5) and
-# standalone labels are excluded by the stroke-width / fill filter below.
-MARK_RE = re.compile(
-    r'(?P<mark><(?:rect|line)\b[^>]*/>)\s*<text\b[^>]*>(?P<label>[^<]*)</text>',
-    re.DOTALL,
-)
-
-
-def _attr(mark: str, name: str) -> float | None:
-    m = re.search(rf'\b{name}="(-?\d+(?:\.\d+)?)"', mark)
-    return float(m.group(1)) if m else None
+# The SVG slicing and the x-to-year decode live in _common (shared with
+# lint_recognition, which reconciles the service lane against the CV's
+# recognition record); only the tokenizing is gantt-local.
 
 
 def parse_figure(text: str) -> list[Item]:
-    fig = FIGURE_RE.search(text)
-    if not fig:
-        return []
-    base = fig.start("body")
+    return [
+        Item(
+            label=normalize(mk.label).strip(),
+            lane=mk.lane,
+            years=mk.years,
+            tokens=tokens_of(normalize(mk.label)),
+            source=f"index.html:{mk.line}",
+        )
+        for mk in gantt_marks(text)
+    ]
+
+
+# ─── CV parser ────────────────────────────────────────────────────────────
+# cv.md list-item slicing comes from _common (shared with lint_recognition);
+# the tokenizing below is gantt-local, because this lint compares against the
+# figure's terse labels and so keeps institutional words its sibling drops.
+
+
+def parse_cv(text: str) -> list[Item]:
+    """Every dated entry in the CV's Education / Service / Awards record.
+
+    lane="cv" on all of them: matching is deliberately lane-agnostic (see the
+    module docstring), and Item.matches only compares lanes when both sides
+    carry a figure lane.
+    """
     items: list[Item] = []
-    for m in MARK_RE.finditer(fig.group("body")):
-        mark = m.group("mark")
-        label = normalize(m.group("label")).strip()
-        line = text.count("\n", 0, base + m.start()) + 1
-        if mark.startswith("<rect"):
-            if 'fill="#111"' not in mark:
-                continue
-            x = _attr(mark, "x")
-            y = _attr(mark, "y")
-            if x is None or y is None:
-                continue
-            years = frozenset({year_at_x(x + 3)})   # square is 6 wide
-        else:  # <line>
-            if 'stroke-width="4"' not in mark:
-                continue
-            x1, x2, y = _attr(mark, "x1"), _attr(mark, "x2"), _attr(mark, "y1")
-            if x1 is None or x2 is None or y is None:
-                continue
-            years = frozenset({year_at_x(x1), year_at_x(x2)})
-        lane = "education" if y < LANE_DIVIDER_Y else "service"
-        items.append(Item(
-            label=label or "(unlabeled)",
-            lane=lane,
-            years=years,
-            tokens=tokens_of(label),
-            source=f"index.html:{line}",
-        ))
-    return items
-
-
-# ─── section parser ───────────────────────────────────────────────────────
-# The .row-entry field regexes + row_field come from _common (shared with
-# lint_recognition); the <section id> slice below is gantt-local.
-#
-# Matches raw text and does NOT strip HTML comments, on purpose: both
-# #education and #service are commented out in index.html (2026-07-30),
-# and this is how the lint still sees their entries. See the module
-# docstring above.
-
-
-def _section_body(text: str, section_id: str) -> tuple[str, int] | None:
-    m = re.search(rf'<section id="{section_id}">(?P<body>.*?)</section>',
-                  text, re.DOTALL)
-    if not m:
-        return None
-    return m.group("body"), m.start("body")
-
-
-def parse_section(text: str, section_id: str, lane: str) -> list[Item]:
-    found = _section_body(text, section_id)
-    if not found:
-        return []
-    body, base = found
-    items: list[Item] = []
-    for m in ROW_ENTRY_RE.finditer(body):
-        row = m.group("row")
-        date = row_field(ROW_DATE_RE, row)
-        title = row_field(ROW_TITLE_RE, row)
-        org = row_field(ROW_ORG_RE, row)
-        if not title:
-            continue
-        line = text.count("\n", 0, base + m.start()) + 1
-        items.append(Item(
-            label=f"{normalize(title).strip()} ({normalize(date).strip()})",
-            lane=lane,
-            years=years_in(date),
-            tokens=tokens_of(f"{title} {org}"),
-            source=f"index.html:{line}",
-        ))
+    for pattern, name in CV_SECTIONS:
+        for it in cv_items(text, pattern, name):
+            # First sentence reads as a label; fall back to the opening words
+            # when it is just an initial ("G. Padgett. ...").
+            first = re.split(r"\.\s", it.body, maxsplit=1)[0].strip().rstrip(".")
+            if len(first.split()) < 3:
+                first = " ".join(it.body.split()[:8]).rstrip(".,;")
+            items.append(Item(
+                label=f"{first} ({it.range})",
+                lane="cv",
+                years=years_in(it.range),
+                # The subsection heading joins the body: the `### Peer Review`
+                # entries name journals and never state the role, so the body
+                # alone shares nothing with a "peer reviewer" chart label.
+                tokens=tokens_of(f"{it.body} {it.section}"),
+                source=f"cv.md:{it.line} §{it.section}",
+            ))
     return items
 
 
@@ -234,47 +204,54 @@ def run() -> int:
     text = INDEX.read_text(encoding="utf-8")
 
     marks = parse_figure(text)
-    education = parse_section(text, "education", "education")
-    service = parse_section(text, "service", "service")
-    sections = education + service
-
     if not marks:
         print("error: no data marks parsed from figure.gantt-figure",
               file=sys.stderr)
         return 1
-    if not sections:
-        print("error: no entries parsed from #education / #service sections",
-              file=sys.stderr)
+
+    if not CV.exists():
+        print("gantt lint: cv.md absent; nothing to reconcile")
+        return 0
+    cv = parse_cv(CV.read_text(encoding="utf-8"))
+    if not cv:
+        print("error: no entries parsed from cv.md Education / Service / "
+              "Awards sections", file=sys.stderr)
         return 1
 
+    # ── Gate: every figure mark must have a CV counterpart ──
     failures: list[str] = []
-    for s in sections:
-        if not any(s.matches(mk) for mk in marks):
+    for mk in marks:
+        if not any(mk.matches(c) for c in cv):
             failures.append(
-                f"{s.source}: {s.lane} entry \"{s.label}\" has no matching "
-                f"mark in the Gantt figure (figure.gantt-figure). Add a "
-                f"{'square' if len(s.years) <= 1 else 'bar'} for it, or "
-                f"reconcile the label/year so the surfaces agree."
+                f"{mk.source}: {mk.lane}-lane mark \"{mk.label}\" has no "
+                f"counterpart in cv.md (Education / Service / Awards). Add it "
+                f"to the CV, or reconcile the label/year so the surfaces "
+                f"agree. The mark's year(s) are read back from its "
+                f"x-coordinate, so check the geometry too."
             )
 
-    # Reverse coverage (informational): figure marks with no section entry.
-    orphans = [mk for mk in marks if not any(mk.matches(s) for s in sections)]
+    # ── Coverage report (informational): CV entries not on the chart ──
+    uncovered = [c for c in cv if not any(c.matches(mk) for mk in marks)]
 
     if failures:
         print("Gantt figure lint found drift:\n", file=sys.stderr)
         for f in failures:
             print(f"  {f}", file=sys.stderr)
-        print(f"\n{len(failures)} section entry(ies) missing from the "
-              f"Gantt figure.", file=sys.stderr)
+        print(f"\n{len(failures)} figure mark(s) missing from cv.md.",
+              file=sys.stderr)
         return 1
 
-    print(f"gantt lint: {len(sections)} section entry(ies) "
-          f"({len(education)} education + {len(service)} service) reconciled "
-          f"against {len(marks)} figure mark(s)")
-    if orphans:
-        print("  (informational) figure marks with no section entry:")
-        for mk in orphans:
-            print(f"    - {mk.label}  [{mk.source}]")
+    education = sum(1 for mk in marks if mk.lane == "education")
+    service = len(marks) - education
+    print(f"gantt lint: {len(marks)} figure mark(s) "
+          f"({education} education + {service} service) reconciled against "
+          f"{len(cv)} cv.md entry(ies); "
+          f"{len(uncovered)} cv.md item(s) not on the chart")
+    if uncovered:
+        print("  (informational; the chart is a curated subset -- short "
+              "courses, individual mentees and minor service stay CV-only)")
+        for c in uncovered:
+            print(f"    - {c.label}  [{c.source}]")
     return 0
 
 

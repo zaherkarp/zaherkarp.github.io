@@ -529,11 +529,11 @@ run.
 | `lint_vocab.py` | canonical CMS program-name casing (Star Ratings, Medicare Advantage, HEDIS…) across blog, resume, cv, homepage |
 | `lint_facts.py` | cross-surface fact drift between `resume.md`, `cv.md`, `index.html` h3+meta, and JSON-LD (playbook: `scripts/lint_facts.md`) |
 | `lint_notes.py` | sidenote / margin-note additivity; `homepageMarginnote` additive to title+description; `publications.yaml` `note` free of venue/year repeats; margin block discipline (no block-level tags inside a note span) |
-| `lint_recognition.py` | homepage `#service` ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML) |
-| `lint_gantt.py` | the homepage Education+Service Gantt carries a mark for every `#education` and `#service` entry (both sections are HTML-comment-disabled since 2026-07-30; the figure is now their only visible surface) |
+| `lint_recognition.py` | the Gantt figure's SERVICE lane ⊆ `cv.md` Awards/Fellowships/Service (year + token overlap, no shared YAML). Read `#service` until that section was deleted 2026-08-13 |
+| `lint_gantt.py` | every mark in the homepage Education+Service Gantt has a counterpart in `cv.md`'s Education/Service/Awards record, with each mark's year decoded from its x-coordinate. The gate direction flipped (figure ⊆ CV) when `#education` and `#service` were deleted 2026-08-13 and the figure became the only visible surface |
 | `lint_markers.py` | the build-time injection markers pair cleanly (no orphan/crossed/nested/unterminated pairs) and are still present, so a stray hand edit can't corrupt a host file or make a generator no-op |
 | `lint_skills.py` | resume.md's generated `<!-- skills -->` block equals what `skills.yaml` renders, so the public resume's Skills line can't drift from its source (shared with the private job-fit tooling); `build_resume` regenerates it on main but not on PRs |
-| `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
+| `lint_links.py` | internal link + anchor integrity: every fragment href in `index.html` resolves to a real `id=` there, every `href="/#..."` on any other page (blog output, subpages, the blog template) resolves to a live homepage id, every homepage `/blog/...` link resolves to built blog output, every `sitemap.xml` `<loc>` resolves to a real file (scoped to `/blog/` for homepage file links; `/medicare-advantage-insight-engine/` is served by a separate repo) |
 | `lint_html.py` | HTML structural well-formedness: `index.html` + generated `blog/` / `resume.html` / `cv.html` parse with tinyhtml5 (present via WeasyPrint) with no tree-builder structural errors (misnested/unclosed/orphan tags, loose table cells, content after `</body>`); tokenizer nits (bare `&` in KaTeX, `--` in a comment) out of scope by design |
 | `lint_palette.py` | every consuming file's `palette:*` block matches `src/content/palette.yaml`; no `--accent:` assigned outside a `palette:*` span; the two self-contained blog-post figures match the canonical accent |
 | `lint_ideas.py` | the blog idea ledger vs the posts directory: schema (unique slug-form ids, valid stage, no unknown keys, `added` not in the future, em-dash-clean title/note) plus referential integrity — a `drafting` row points at a real `draft: true` post, a `published` row at a live one, an `idea` row carries no slug, and no two rows claim one post. The reverse direction (draft posts with no row) is an informational report that never fails |
@@ -570,8 +570,11 @@ Design note on `lint_recognition` vs `lint_facts`: job surfaces
 (`resume.md` ↔ `index.html`) are authored in lockstep, so `lint_facts` uses
 strict equality. Recognition surfaces (homepage ↔ CV) are phrased
 independently, so `lint_recognition` and `lint_gantt` match on year +
-significant-token overlap instead. Don't share their stoplists — see
-CLAUDE.md §Recognition alignment lint / §Gantt figure alignment lint.
+significant-token overlap instead. Both now read the same terse chart labels
+against the same CV, so their stoplists CONVERGED on 2026-08-13 and the old
+"don't share them" rule is retired; what still separates them is scope, not
+tokenizing. See CLAUDE.md §Recognition alignment lint / §Gantt figure
+alignment lint.
 
 ---
 
@@ -665,28 +668,29 @@ add margin stats where a genuinely buried number exists.
 
 ### Add an award / recognition
 
-Two surfaces, reconciled by two linters. **As of 2026-07-30 the homepage
-`<section id="service">` is wrapped in an HTML comment** (kept verbatim so a
-future restore stays correct, but it renders nowhere today). The
-**Education+Service Gantt figure is now the only VISIBLE public surface**
-for recognition entries; its figcaption points readers at `/cv.html` for
-orgs and citations. Both linters still parse the commented-out section with
-a raw-text regex that does not strip HTML comments, so they keep guarding it
-exactly as if it were live.
+Two surfaces, reconciled by two linters. **The homepage `<section
+id="service">` was commented out 2026-07-30 and DELETED 2026-08-13**, along
+with `<section id="education">` and `<section id="certifications">`. The
+**Education+Service Gantt figure is the only VISIBLE public surface** for
+recognition entries; its figcaption points readers at `/cv.html` for orgs and
+citations. Both linters read `cv.md` directly now. (Between those two dates
+they parsed the commented-out sections with a raw-text regex that did not
+strip HTML comments; that trick died with the markup.)
 
 1. Add the full record to `cv.md` (`## Awards and Honors`,
    `### Fellowships and Training`, or `## Service and Professional
    Activities`).
-2. If it should appear publicly, add a `.row-entry` inside the commented-out
-   homepage `<section id="service">` (so a future restore is correct) **and**
-   a mark to the Education+Service Gantt (`figure.gantt-figure`), which is
-   what a reader actually sees: compute `x = 90 + (year - 2003) * 19`, add
-   the square (`<rect fill="#111">`) or bar (`<line stroke-width="4">`) +
-   label, extend the lane/axis if rows run out.
+2. If it should appear publicly, add a mark to the Education+Service Gantt
+   (`figure.gantt-figure`), which is what a reader actually sees: compute
+   `x = 90 + (year - 2003) * 19`, add the square (`<rect fill="#111">`) or
+   bar (`<line stroke-width="4">`) + label, extend the lane/axis if rows run
+   out. There is no longer a prose section to update alongside it.
 3. Run `python scripts/lint_recognition.py` and `python scripts/lint_gantt.py`.
 
 The homepage is a curated subset of the CV (homepage ⊆ CV), so CV-only items
-are fine; a public item with no CV record fails the push. See CLAUDE.md
+are fine; a public item with no CV record fails the push. Since 2026-08-13 the
+chart is the only homepage surface for this record, so step 2 is not optional
+polish: skip it and the item simply is not published. See CLAUDE.md
 §Recognition alignment lint and §Gantt figure alignment lint.
 
 ### Add a certification

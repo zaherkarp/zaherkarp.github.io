@@ -1,38 +1,39 @@
 #!/usr/bin/env python3
 """lint_recognition.py
 
-Cross-surface recognition lint. Keeps the homepage "Service and
-Recognition" section (index.html #service) aligned with the
-comprehensive record in the CV (src/content/cv.md), WITHOUT a shared
-data file. Both surfaces stay hand-authored; this script parses both
-and compares them.
+Cross-surface recognition lint. Keeps what the homepage SHOWS of the
+awards / fellowships / service record aligned with the comprehensive
+record in the CV (src/content/cv.md), WITHOUT a shared data file. Both
+surfaces stay hand-authored; this script parses both and compares them.
 
-As of 2026-07-30, `<section id="service">` is wrapped in an HTML
-comment in index.html (redundant with the Gantt figure once its
-labels absorbed every entry's title and date); the homepage parser
-below still finds it because it slices raw text and does not strip
-HTML comments. That is deliberate, not an oversight: stripping
-comments first would leave nothing to parse, so this gate would pass
-vacuously while CI stayed green. Do not "fix" the comment-blindness
-without first replacing what it guards.
+WHAT THIS USED TO READ, AND WHY IT MOVED. Until 2026-08-13 the homepage
+surface was `<section id="service">`, a list of .row-entry blocks. That
+section was commented out on 2026-07-30, and this lint went on reading
+it THROUGH the comment because its slicer matched raw text. The section
+was DELETED on 2026-08-13, which retired that trick along with the
+markup. The homepage's remaining view into this record is the SERVICE
+LANE of the Education + Service Gantt figure, so that is what this lint
+now reads. The guarantee is unchanged in direction and meaning:
+
+  BEFORE  every #service entry needs a CV record
+  AFTER   every service-lane Gantt mark needs a CV record
 
 Two surfaces, three CV sections reconciled:
 
-  homepage  index.html  <section id="service"> .row-entry blocks
+  homepage  index.html  figure.gantt-figure, service lane (y > 135)
   CV        cv.md       ## Awards and Honors
                         ### Fellowships and Training  (under ## Education)
                         ## Service and Professional Activities (all ###)
 
 Two outputs:
 
-  1. SUBSET GATE (hard fail, blocks push): every entry shown in the
-     homepage #service section must have a counterpart somewhere in the
-     CV's awards / fellowships / service record. The homepage is a
-     curated highlight reel, so it is allowed to show FEWER items than
-     the CV, but it must not show anything the comprehensive CV omits.
-     A failure here means the two surfaces have drifted (an award shown
-     publicly with no CV record, or a renamed entry that no longer
-     matches).
+  1. SUBSET GATE (hard fail, blocks push): every service-lane mark must
+     have a counterpart somewhere in the CV's awards / fellowships /
+     service record. The homepage is a curated highlight reel, so it is
+     allowed to show FEWER items than the CV, but it must not show
+     anything the comprehensive CV omits. A failure here means the two
+     surfaces have drifted (something shown publicly with no CV record,
+     or a renamed entry that no longer matches).
 
   2. COVERAGE REPORT (informational, never fails): CV recognition
      entries with no homepage counterpart, so genuine gaps surface as a
@@ -41,16 +42,25 @@ Two outputs:
      courses, individual mentees, minor service) are EXPECTED to stay
      CV-only; the report is an advisory list to scan, not a to-do.
 
+RELATIONSHIP TO lint_gantt.py, which now also reads this figure against
+this CV. The overlap is deliberate, and the two are not redundant. That
+lint checks EVERY mark, in both lanes, against the whole Education /
+Service / Awards record, and its job is that the chart's geometry
+decodes to years the CV agrees with. This one checks the SERVICE lane
+against the RECOGNITION sections specifically, so a service mark backed
+only by, say, a degree in `## Education` fails here while passing there.
+It also owns the recognition-side coverage report. If the two ever have
+to be merged, the property to preserve is that tighter scoping.
+
 Matching: unlike lint_facts.py (which demands strict equality between
-surfaces authored in lockstep), the recognition surfaces are phrased
+surfaces authored in lockstep), these surfaces are phrased
 independently -- the CV says "Undergraduate Research Scholar Mentor"
-where the homepage says "Undergraduate Research Mentor", "Institute of
-Industrial and Systems Engineers ..." where the homepage says "IISE
-...". So an entry matches a CV entry when they share at least one year
-AND at least two significant tokens (stopwords, short tokens, and bare
-years dropped). This tolerates wording differences without a
-hand-maintained synonym table, while still being specific enough that
-unrelated same-year entries do not collide.
+where the chart says "UG research mentor". So an entry matches when
+they share at least one year AND at least two significant tokens
+(stopwords, short tokens, and bare years dropped). This tolerates
+wording differences without a hand-maintained synonym table, while
+still being specific enough that unrelated same-year entries do not
+collide.
 """
 
 from __future__ import annotations
@@ -61,13 +71,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from _common import (
-    ROW_DATE_RE,
-    ROW_ENTRY_RE,
-    ROW_ORG_RE,
-    ROW_TITLE_RE,
     alignment_match,
+    cv_items,
+    gantt_marks,
     install_git_hooks,
-    row_field,
     years_of,
 )
 from _common import tokens_of as _tokens_of
@@ -83,18 +90,23 @@ MIN_SHARED_TOKENS = 2
 # Stopwords + common geography that would otherwise let two unrelated
 # same-year entries share tokens. Kept deliberately small; the year +
 # two-token rule does most of the work.
+#
+# This list SHRANK on 2026-08-13, and the old "do not share the two
+# stoplists" note against lint_gantt is retired with it. The aggressive
+# version below dropped generic institutional words ("university", "health",
+# "research", ...) because it compared two VERBOSE surfaces -- a homepage
+# .row-entry against a CV line -- where those words were noise that let
+# unrelated same-year entries collide. The homepage surface is now the Gantt's
+# terse chart labels, so those words are no longer noise but the entire
+# signal: dropping "research" makes "UG research mentor" share nothing with
+# "Undergraduate Research Scholar Mentor". The two lints therefore read the
+# same kind of label and now carry the same minimal stoplist. Verified by
+# removing them and watching the service lane go from 2 unmatched marks to 0.
 STOP = {
     "of", "and", "the", "for", "at", "in", "to", "a", "an", "on", "by",
     "with", "from", "as", "two", "terms", "elected", "raised", "early",
-    "madison", "chicago", "illinois", "heber", "city", "wi", "il", "ut",
-    "utah", "north", "america",
-    # Generic institutional / academic words: too common to be
-    # distinguishing on their own (otherwise two unrelated same-year
-    # entries collide on e.g. "medicine"+"health"). The distinguishing
-    # tokens for real matches live in the title proper.
-    "university", "school", "medicine", "health", "public", "research",
-    "department", "community", "institute", "center", "program",
-    "national", "college", "course", "training", "short",
+    "ongoing", "madison", "chicago", "illinois", "heber", "city", "wi",
+    "il", "ut", "utah", "north", "america",
 }
 
 
@@ -125,101 +137,56 @@ class Entry:
 
 
 # ─── homepage parser ──────────────────────────────────────────────────────
-# The .row-entry field regexes + row_field come from _common (shared with
-# lint_gantt); only the #service section slice is local here.
-#
-# Matches raw text and does NOT strip HTML comments, on purpose: #service
-# has been commented out in index.html since 2026-07-30, and this regex
-# still finds it inside the comment. See the module docstring above.
-
-SERVICE_SECTION_RE = re.compile(
-    r'<section id="service">(?P<body>.*?)</section>', re.DOTALL
-)
+# The Gantt SVG slicing and the x-to-year decode come from _common (shared
+# with lint_gantt); this lint keeps only the SERVICE lane, which is the
+# homepage's remaining view into the awards / fellowships / service record.
 
 
 def parse_homepage(text: str) -> list[Entry]:
-    sec = SERVICE_SECTION_RE.search(text)
-    if not sec:
-        return []
-    base = sec.start("body")
-    entries: list[Entry] = []
-    for m in ROW_ENTRY_RE.finditer(sec.group("body")):
-        row = m.group("row")
-        date = row_field(ROW_DATE_RE, row)
-        title = row_field(ROW_TITLE_RE, row)
-        org = row_field(ROW_ORG_RE, row)
-        if not title:
-            continue
-        line = text.count("\n", 0, base + m.start()) + 1
-        entries.append(Entry(
-            label=f"{normalize(title).strip()} ({normalize(date).strip()})",
-            years=frozenset(years_of(date)),
-            # Match on title + org only; the optional row-note is descriptive
-            # prose and would add spurious token overlap.
-            tokens=frozenset(tokens_of(f"{title} {org}")),
-            source=f"index.html:{line}",
-        ))
-    return entries
+    return [
+        Entry(
+            label=normalize(mk.label).strip(),
+            years=mk.years,
+            tokens=frozenset(tokens_of(mk.label)),
+            source=f"index.html:{mk.line}",
+        )
+        for mk in gantt_marks(text)
+        if mk.lane == "service"
+    ]
 
 
 # ─── CV parser ────────────────────────────────────────────────────────────
+# cv.md list-item slicing comes from _common (shared with lint_gantt). The
+# three sections here are the RECOGNITION record specifically, which is what
+# scopes this lint more tightly than its sibling; see the module docstring.
 
-# A list item in any of the reconciled CV sections:
-#   - **2016–2020** Body text. Org, City.
-CV_ITEM_RE = re.compile(
-    r"^-\s+\*\*(?P<range>[^*]+)\*\*\s+(?P<body>.+?)\s*$", re.MULTILINE
+CV_SECTIONS = (
+    (r"^(?P<hashes>##)\s+Awards and Honors\s*$", "Awards and Honors"),
+    (r"^(?P<hashes>###)\s+Fellowships and Training\s*$", "Fellowships and Training"),
+    (r"^(?P<hashes>##)\s+Service and Professional Activities\s*$",
+     "Service and Professional Activities"),
 )
-
-
-def _section_body(text: str, heading_pattern: str) -> tuple[str, int] | None:
-    """Return (body, char_offset) for a `## Heading` (or `### Heading`)
-    section, sliced to the next heading of equal-or-higher level."""
-    m = re.search(heading_pattern, text, re.MULTILINE)
-    if not m:
-        return None
-    level = len(m.group("hashes"))
-    # Stop at the next heading whose level is <= this one.
-    rest = text[m.end():]
-    stop = re.search(rf"^#{{1,{level}}}\s", rest, re.MULTILINE)
-    body = rest[: stop.start()] if stop else rest
-    return body, m.end()
-
-
-def _parse_cv_section(text: str, body: str, base: int, section: str) -> list[Entry]:
-    entries: list[Entry] = []
-    for m in CV_ITEM_RE.finditer(body):
-        rng = m.group("range").strip()
-        bod = m.group("body").strip()
-        line = text.count("\n", 0, base + m.start()) + 1
-        # Readable label: first sentence, but fall back to the first
-        # several words when the leading "sentence" is just an initial
-        # (e.g. CV mentee lines begin "G. Padgett. ...").
-        first = re.split(r"\.\s", bod, maxsplit=1)[0].strip().rstrip(".")
-        if len(first.split()) < 3:
-            first = " ".join(bod.split()[:8]).rstrip(".,;")
-        entries.append(Entry(
-            label=f"{first} ({rng})",
-            years=frozenset(years_of(rng)),
-            tokens=frozenset(tokens_of(bod)),
-            source=f"cv.md:{line} §{section}",
-        ))
-    return entries
 
 
 def parse_cv(text: str) -> list[Entry]:
     entries: list[Entry] = []
-    sections = [
-        (r"^(?P<hashes>##)\s+Awards and Honors\s*$", "Awards and Honors"),
-        (r"^(?P<hashes>###)\s+Fellowships and Training\s*$", "Fellowships and Training"),
-        (r"^(?P<hashes>##)\s+Service and Professional Activities\s*$",
-         "Service and Professional Activities"),
-    ]
-    for pat, name in sections:
-        found = _section_body(text, pat)
-        if not found:
-            continue
-        body, base = found
-        entries += _parse_cv_section(text, body, base, name)
+    for pattern, name in CV_SECTIONS:
+        for it in cv_items(text, pattern, name):
+            # Readable label: first sentence, but fall back to the first
+            # several words when the leading "sentence" is just an initial
+            # (e.g. CV mentee lines begin "G. Padgett. ...").
+            first = re.split(r"\.\s", it.body, maxsplit=1)[0].strip().rstrip(".")
+            if len(first.split()) < 3:
+                first = " ".join(it.body.split()[:8]).rstrip(".,;")
+            entries.append(Entry(
+                label=f"{first} ({it.range})",
+                years=frozenset(years_of(it.range)),
+                # The subsection heading joins the body: the `### Peer Review`
+                # entries name journals and never state the role, so the body
+                # alone shares nothing with a "peer reviewer" chart label.
+                tokens=frozenset(tokens_of(f"{it.body} {it.section}")),
+                source=f"cv.md:{it.line} §{it.section}",
+            ))
     return entries
 
 
@@ -239,8 +206,8 @@ def run() -> int:
     cv = parse_cv(cv_text)
 
     if not home:
-        print('error: no .row-entry blocks parsed from index.html '
-              '<section id="service">', file=sys.stderr)
+        print("error: no service-lane marks parsed from index.html "
+              "figure.gantt-figure", file=sys.stderr)
         return 1
     if not cv:
         print("error: no entries parsed from cv.md recognition sections",
