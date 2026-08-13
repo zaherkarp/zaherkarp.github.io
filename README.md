@@ -287,15 +287,16 @@ no-ops. The hook runs twelve linters:
 - `lint_notes.py` — sidenote/margin-note additivity (a note may not
   restate a number or phrase already in the page prose) and margin
   block discipline (no block-level tags inside a note span).
-- `lint_recognition.py` — the homepage "Service and Recognition"
-  section must stay a subset of the comprehensive record in `cv.md`.
-- `lint_gantt.py` — the homepage Education + Service Gantt figure must
-  carry a mark for every `#education` and `#service` entry. BOTH sections are
-  commented out since 2026-07-30 (Education was found ~90% redundant with the
-  figure once Service's trim made the comparison obvious) and both linters
-  still read them (raw-text slice, no comment stripping), so the figure is now
-  the only visible surface for either. `lint_recognition.py` never covered
-  `#education` in the first place.
+- `lint_recognition.py` — the SERVICE lane of the homepage Gantt figure
+  must stay a subset of the comprehensive record in `cv.md`, scoped to its
+  Awards / Fellowships / Service sections.
+- `lint_gantt.py` — every mark in the homepage Education + Service Gantt
+  figure must have a counterpart in `cv.md`, with each mark's year decoded
+  from its x-coordinate so a mark drawn in the wrong place fails too. Both
+  linters read the prose sections `#education` and `#service` until those
+  were deleted on 2026-08-13 (commented out since 2026-07-30, and read
+  through the comment by a raw-text slice until the markup went). The figure
+  is now the only visible surface for that record.
 - `lint_markers.py` — the build-time injection markers a generator
   splices into (activity-grid, writing-list, writing-index, pub-list,
   cliff-path, updated, blog-thoughts, the resume.md skills block, the
@@ -307,7 +308,9 @@ no-ops. The hook runs twelve linters:
   the private job-fit tooling) renders. `build_resume` regenerates it on
   main but not on PRs, so this gate keeps them in sync.
 - `lint_links.py` — internal link + anchor integrity: every fragment
-  href in `index.html` resolves to a real `id=` there, every homepage
+  href in `index.html` resolves to a real `id=` there, every `href="/#..."`
+  on any other page (generated blog output, subpages, and the blog template
+  they are built from) resolves to a live homepage id, every homepage
   `/blog/...` link resolves to built blog output, and every
   `sitemap.xml` `<loc>` resolves to a real file. Scoped to `/blog/` for
   homepage file links (`/medicare-advantage-insight-engine/` is served
@@ -766,8 +769,8 @@ Serve locally (`python3 -m http.server 8765`) and check:
   horizontal scroll).
 - All 8 `<details>` folds open/close (2 experience + projects index +
   publications + speaking + 3 testimonials). Education's and Service's folds
-  went dark with their sections on 2026-07-30 (see below); their content is
-  still guarded by `lint_gantt`, just not clickable on the page. The
+  went dark with their sections on 2026-07-30 and were deleted 2026-08-13;
+  their content is still guarded by `lint_gantt`, against `cv.md`. The
   experience folds are BHA's "The robust smoothing, in one formula" and Health
   Catalyst's "Published customer outcomes"; both name their contents rather
   than reading "More detail".
@@ -777,8 +780,9 @@ Serve locally (`python3 -m http.server 8765`) and check:
 - Academic dot plot renders above publication entries; mobile compressed
   version fires below 760px.
 - Education + Service Gantt renders between Speaking and Testimonials
-  (both `#education` and `#service` are commented out, so the figure
-  runs straight into Testimonials with no visible section between).
+  (the `#education`, `#service` and `#certifications` sections were deleted
+  2026-08-13, so the figure runs straight into Testimonials with one rule
+  between and no section).
 - Print preview: nav and career arc hidden, GoatCounter absent, content
   fits two pages, light tokens forced.
 - Lighthouse accessibility ≥ 90 in both modes. Known non-issue: the

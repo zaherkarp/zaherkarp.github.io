@@ -624,14 +624,27 @@ menu without discussion. **(Direction B, 2026-07-26)** Nav is four items
 `work` targets the empty `<span id="work" class="section-anchor">`, which since
 2026-08-10 sits just before `section.cases` (the case layer), so "work" lands on
 the three arguments plus the record beneath them; `#experience` keeps its own id
-for `lint_facts` and the blog nav's `/#experience` links. `contact` is
+for `lint_facts`. `contact` is
 back in the bar. The un-navigated section ids (experience, projects,
-publications, speaking, education, service) are still live anchors, reached via
-the dot plot and the blog-post navs; do not delete them. **The `.hero-more`
+publications, speaking) are still live anchors, reached via
+the dot plot; do not delete them. **The `.hero-more`
 "More:" line that used to reach four of them was REMOVED 2026-07-30** (see the
 dated entry above): its targets sat 3 to 9 screens away, which all six
-reception panelists read as a promise the scroll could not keep. `#projects` is
-still reached from every blog page's nav (`/#projects`).
+reception panelists read as a promise the scroll could not keep.
+
+**(2026-08-13) The BLOG AND SUBPAGE nav now matches this one**, four items in
+the same order (`Writing` → `/blog/`, `Work` → `/#work`, `About` → `/#about`,
+`Contact` → `/#contact`), in `scripts/templates/blog/base.html` and in the two
+hand-authored pages that carry the same markup, `colophon/index.html` and
+`case-study-care-redesign/index.html`. It went 9 items → 7 (dropping the dead
+`/#education` and `/#service`) → 4 on the same day. Those pages keep their own
+Title Case convention; the homepage's lowercase labels are small-capped by CSS
+and were not imposed on them. `#education` and `#service` were DELETED with
+their sections, and `/#experience`, `/#projects`, `/#publications`,
+`/#speaking` are no longer linked from any blog page. **`lint_links` check 1b
+now validates every `href="/#..."` on those pages against index.html's live
+ids**, so deleting a homepage anchor that the nav still points at fails CI —
+which it could not do before.
 
 **(Text ordering, 2026-07-29)** `writing` targets `#writing-hero`, the id on the
 hero's `.hero-writing` column, NOT `#writing` (which it scrolled past, landing
@@ -1469,9 +1482,17 @@ publications, not one result published twice. Both are peer-reviewed, so the
 only defect was the noun. Note the coupling before editing either number:
 `wcel` is the ONLY 2012 entry, so the lead's "between 2012 and 2019" range
 rests entirely on it, and dropping it from the count would move the range to
-2014-2019. Separately unresolved: `resume.md:39` says SEVEN "publications and
-conference proceedings"; the open question is whether a seventh item is
-missing from `publications.yaml`, which feeds both this block and the CV.
+2014-2019.
+
+**The six-vs-seven question is CLOSED (owner, 2026-08-13): six is correct.**
+`resume.md` briefly claimed seven "publications and conference proceedings".
+The seventh was a piece of work that was started and never finished, so it
+was never publishable and no entry is missing from `publications.yaml`.
+`resume.md:39` already reads "6 peer-reviewed publications" (corrected in
+`36ec9f9`), so nothing needed changing on any surface; only this note and
+`docs/homepage-tone-pass-2026-08-11.md` §6 were still carrying the question
+as open. Do not re-open it by counting `publications.yaml` against an older
+copy of the resume.
 
 **The dot plot stays OUTSIDE the fold** as the visible layer. Its twelve dot
 links target `#pub-*` ids now inside it. Browsers auto-expand a `<details>`
@@ -2660,36 +2681,59 @@ figures still hardcode `#7a0000` remapped to `var(--accent)`; only the
 
 ## Recognition alignment lint
 
-`scripts/lint_recognition.py` keeps the homepage "Service and Recognition"
-section (`index.html` `<section id="service">`, the `.row-entry` blocks;
-**that section is COMMENTED OUT as of 2026-07-30 and the linter still reads
-it, deliberately, see below**)
-aligned with the comprehensive record in `src/content/cv.md` — awards,
-fellowships, and service — WITHOUT a shared data file. Both surfaces stay
+`scripts/lint_recognition.py` keeps what the homepage SHOWS of the awards,
+fellowships and service record aligned with the comprehensive record in
+`src/content/cv.md`, WITHOUT a shared data file. Both surfaces stay
 hand-authored pure HTML/Markdown; the linter parses each and compares.
 This is the deliberate "pipeline, not YAML" answer to the homepage/CV drift
 that let the Spirit of Charlie award, Digital Fellow, and IPM award sit on
 the CV but never reach the homepage.
+
+**(2026-08-13) The homepage surface is now the Gantt figure's SERVICE LANE,
+not a prose section.** It used to be `<section id="service">` and its
+`.row-entry` blocks. That section was commented out on 2026-07-30 and the
+linter went on reading it THROUGH the comment; on 2026-08-13 the markup was
+DELETED outright, which retired the comment-blind trick along with it. The
+guarantee is unchanged in direction and meaning, only in what it reads:
+
+    BEFORE  every #service entry needs a CV record
+    AFTER   every service-lane Gantt mark needs a CV record
 
 Two CV sections plus one Education subsection are reconciled: `## Awards and
 Honors`, `### Fellowships and Training`, and `## Service and Professional
 Activities` (all `###` subsections).
 
 Matching is intentionally NOT the strict equality `lint_facts.py` uses
-(those job surfaces are authored in lockstep; these recognition surfaces are
-phrased independently). An entry matches a CV entry when they share at least
-one **year** AND at least **two significant tokens** (a small stopword list
-drops generic institutional words like "university"/"medicine"/"health" and
-bare years). This tolerates "Undergraduate Research Mentor" vs CV
-"Undergraduate Research Scholar Mentor", or "IISE ..." vs CV "Institute of
-Industrial and Systems Engineers ...", with no hand-maintained synonym
-table. If a future entry genuinely needs help, widen `STOP` or raise
-`MIN_SHARED_TOKENS` — do not add a per-entry alias map (that's the
-maintenance burden this design avoids).
+(those job surfaces are authored in lockstep; these surfaces are phrased
+independently). An entry matches when they share at least one **year** AND
+at least **two significant tokens**. This tolerates the chart's "UG research
+mentor" against the CV's "Undergraduate Research Scholar Mentor" with no
+hand-maintained synonym table. If a future entry genuinely needs help, widen
+`STOP` or raise `MIN_SHARED_TOKENS` — do not add a per-entry alias map
+(that's the maintenance burden this design avoids).
+
+**The two stoplists CONVERGED on 2026-08-13 and the old "do not share them"
+rule is retired.** `lint_recognition`'s used to be aggressive, dropping
+generic institutional words ("university", "health", "research"), because it
+compared two VERBOSE surfaces where those words let unrelated same-year
+entries collide. Its surface is now the same terse chart labels `lint_gantt`
+reads, where those words are not noise but the entire signal: dropping
+"research" leaves "UG research mentor" sharing nothing with "Undergraduate
+Research Scholar Mentor". Both lints now carry the same minimal stoplist.
+Verified by removing the generic words and watching the service lane go from
+2 unmatched marks to 0.
+
+**A CV entry's `###` subsection heading is part of its token set.** The
+`### Peer Review` entries name journals and never state the role, so the
+body alone shares nothing with a "peer reviewer" chart label. The heading
+carries the meaning the body omits, which is exactly how a human reads a CV.
+The same pass also gave those two entries a role ("Reviewer.") in `cv.md`,
+since every other CV entry states one; that was a source fix, per the
+provenance rule's "fix direction is UP, never OFF".
 
 Two outputs:
-  - **Subset gate (hard fail, blocks push):** every homepage `#service`
-    entry must have a CV counterpart. The homepage is a curated highlight
+  - **Subset gate (hard fail, blocks push):** every service-lane Gantt mark
+    must have a CV counterpart. The homepage is a curated highlight
     reel, so it may show *fewer* items than the CV (homepage ⊆ CV); a
     failure means something is shown publicly with no CV record, or a rename
     broke the match. Wire-up: §Pre-push checks step 3c.
@@ -2702,54 +2746,53 @@ Two outputs:
     direction that surfaces a genuine gap when a new CV award hasn't been
     promoted to the homepage.
 
-**(Text reduction, 2026-07-30) `#service` is commented out, and this linter
-still guards it.** Both gates that read the section slice it with a raw-text
-regex and neither strips HTML comments: `SERVICE_SECTION_RE` in
-`lint_recognition.py` and `_section_body` in `lint_gantt.py`. (Cite them by
-name, not by line: this passage carried stale line numbers for a week because
-the 2026-08-07 docstring additions shifted both.) So the homepage-subset-of-CV
-gate and the Gantt alignment check keep operating on the disabled markup
-exactly as before. Verified empirically, not assumed: `lint_gantt` still
-reports "12 section entry(ies) (5 education + 7 service) reconciled against 12
-figure mark(s)". This is precisely what made hiding the section possible
-without weakening a guarantee, so **do not "fix" either linter to skip
-comments** without first replacing what it guards.
+**How this lint differs from `lint_gantt`, which now also reads this figure
+against this CV.** The overlap is deliberate and the two are not redundant.
+`lint_gantt` checks EVERY mark, in both lanes, against the whole Education /
+Service / Awards record, and its distinct job is that the chart's *geometry*
+decodes to years the CV agrees with. This one checks the SERVICE lane against
+the RECOGNITION sections specifically, so a service mark backed only by, say,
+a degree in `## Education` fails here while passing there. It also owns the
+recognition-side coverage report. `test_scoped_to_recognition_sections` pins
+that tighter scoping; if the two lints are ever merged, it is the property
+that must survive.
 
-**As of 2026-08-08 that warning has teeth: a test pins it.**
-`test_lint_recognition.py` and `test_lint_gantt.py` each carry a
-`test_comment_disabled_section_still_parsed` plus a
-`..._still_detects_drift` sibling, whose fixtures wrap the section in
-`<!--`/`-->` exactly as `index.html` does. The paired negative is the load-
-bearing one: a lone "still returns 0" test would pass vacuously, so the drift
-case proves the entries were genuinely parsed AND compared. Confirmed by
-inserting a comment-stripping line into both linters, watching exactly those
-four tests go red while the four live-section tests stayed green, then
-reverting. Before this, the property was protected only by the incidental
-empty-parse guards in each linter.
+**(Superseded 2026-08-13) The comment-blindness contract is GONE**, along
+with the four tests that pinned it. From 2026-07-30 both linters read the
+disabled sections THROUGH their HTML comments, because each sliced raw text
+without stripping comments, and `test_comment_disabled_section_still_parsed`
+plus a `..._still_detects_drift` sibling in each test file held that property
+down. Deleting the markup on 2026-08-13 removed the thing being read, so
+those four tests went with it and both linters now parse `cv.md` instead. The
+lesson that outlives the mechanism is the paired-negative one: a lone "still
+returns 0" test passes vacuously, so every "this is still parsed" case needs
+a drift case beside it proving the entries were genuinely compared. The
+replacement tests keep that shape, and were checked by neutering each gate
+and confirming exactly the drift cases went red.
 
-**The visible service surface is now the Gantt figure**, which carries a mark
+**The visible service surface is the Gantt figure**, which carries a mark
 for every entry (that is what `lint_gantt` enforces). Its figcaption absorbed
-the retired section's lead sentence, naming the two 2014-15 roles, and points at
-`/cv.html` for orgs and citations. **The `id="service"` anchor MOVED** out of
-the disabled section to sit immediately before that figure, because at the time
-all ~250 generated blog pages linked to `/#service`
-(`scripts/templates/blog/base.html`) and **`lint_links` cannot see
-blog-to-homepage fragments** - it validates only index.html's own fragments and
-homepage-to-blog links. Removing the id would have left 250 dead nav links with
-CI green.
+the retired section's lead sentence, naming the two 2014-15 roles, and points
+at `/cv.html` for orgs and citations.
 
-**Those nav items were dropped 2026-08-13** (owner request), from the blog
-template and from the two hand-authored pages carrying the same nav markup,
-`colophon/index.html` and `case-study-care-redesign/index.html`. The blog nav
-went 9 items to 7. It was NOT aligned to the homepage's four
-(writing/work/about/contact); that is a bigger structural change and would need
-the panels. The `#service` and `#education` anchors were KEPT even though
-nothing on the site links to them any more: external bookmarks and inbound
-links may still point there, and an empty span costs nothing. So the invariant
-is now weaker than "keep the anchor wherever the service record is visible" -
-it is simply do not delete these two ids. Note the lint gap runs in both
-directions: `lint_links` could not see the dead links before, and cannot see
-the now-unreferenced ids either, so neither state is CI-visible.
+**The nav items pointing at these sections were dropped 2026-08-13** (owner
+request), from the blog template and from the two hand-authored pages
+carrying the same nav markup, `colophon/index.html` and
+`case-study-care-redesign/index.html`. Later the same day the nav was aligned
+to the homepage's four items (`writing / work / about / contact`), 9 → 7 → 4.
+**The `#service` and `#education` anchors were then DELETED** with the
+sections; an external bookmark to `/#service` now lands at the top of the
+homepage rather than on the Gantt. That was the accepted cost of the cleanup,
+not an oversight.
+
+**The `lint_links` blind spot that made all of this invisible is now
+closed.** It used to validate only index.html's own fragments and
+homepage-to-blog links, so ~250 blog pages linking `/#education` and
+`/#service` were unguarded in both directions: the lint could not see the
+dead links, and could not see the orphaned ids either. `lint_links` check 1b
+now resolves every `href="/#..."` on every other page in the repo — generated
+blog output, hand-authored subpages, and the blog template they are built
+from — against index.html's live ids. See §Pre-push checks.
 
 Fluff was trimmed from both sections in the same pass, before `#service` was
 disabled (so a restore brings back the clean version): notes that merely
@@ -2771,8 +2814,9 @@ the chart, the MPH's $18,000 grant and the Patient Safety entry's Carayon/AHRQ
 detail. Both were folded into the Gantt figcaption, then the section was
 disabled exactly like `#service` (same banner shape, same restore instructions,
 `id="education"` relocated beside `id="service"`'s anchor). `lint_gantt` still
-reconciles both lanes against the figure (raw-text regex, no comment
-stripping); `lint_recognition` never covered `#education` in the first place.
+reconciled both lanes against the figure; `lint_recognition` never covered
+`#education` in the first place. **All of that markup was DELETED 2026-08-13**
+and `cv.md` is now the record for both lanes.
 
 **Disabling THREE consecutive sections (education, service, certifications)
 removed a rule the page's rhythm depended on**, and this was caught by
@@ -2781,92 +2825,104 @@ because the three sections after it each supplied one on their way out. With
 all three hidden, the Gantt ran straight into Testimonials with zero live
 `<hr>` between them (a 48px gap from margins alone, no divider) — every other
 section boundary on the page keeps one. Fixed with a single `<hr>` placed
-OUTSIDE all three disabled blocks, right before the Testimonials banner, so it
-is not a duplicate if any of the three is restored later and does not live
-inside any one section's restore instructions.
+OUTSIDE all three disabled blocks. That rule survived the 2026-08-13 deletion
+and is now simply the Gantt's own closing rule; the warning it used to carry
+about a partial restore doubling it no longer applies, because there is
+nothing left to restore.
 
-**A merged single "highlights" section was proposed and REJECTED.** A prose-line
-version (the retired Certifications pattern) would run ~170px against 450px, but
-it has no `.row-entry` blocks, so `lint_recognition.parse_homepage()` returns an
-empty list and BOTH gates pass vacuously - green while guarding nothing. Keeping
-them meaningful means re-pointing both at `cv.md` and rewriting two test files,
-and the whole exercise beats the simple comment-out by ~55px. Two variants were
-also checked and fail: highlights-unfolded measures the same as
-everything-folded, and nesting `<section id="service">` inside a merged fold
-breaks the outer slice because `_section_body` is non-greedy.
+**A merged single "highlights" section was proposed and REJECTED** on
+2026-07-30. A prose-line version (the retired Certifications pattern) would
+run ~170px against 450px, but it had no `.row-entry` blocks, so
+`lint_recognition.parse_homepage()` would return an empty list and BOTH gates
+would pass vacuously - green while guarding nothing. Keeping them meaningful
+meant re-pointing both at `cv.md` and rewriting two test files, judged not
+worth ~55px at the time. **That re-pointing was done anyway on 2026-08-13**,
+for the deletion rather than for a merged section, so the cost side of this
+trade has since been paid and the vacuous-gate objection no longer blocks
+anything here.
 
-**Certifications are out of scope (2026-06-12), and the section is now
-COMMENTED OUT (owner, 2026-07-30):** homepage
-`<section id="certifications">` (a deliberately small h2 + one
-newest-first semicolon-separated prose line, after #service; a
-details.fold version was tried and replaced the same day on Design
-Council feedback) pairs with cv.md `## Certifications`.
+**Certifications are out of scope (2026-06-12); the section was commented
+out 2026-07-30 and DELETED 2026-08-13 (owner).** The homepage once carried
+`<section id="certifications">`, a deliberately small h2 plus one
+newest-first semicolon-separated prose line after #service (a details.fold
+version was tried and replaced the same day on Design Council feedback).
+**`cv.md` `## Certifications` is now the only record.** Deleting it was safe
+without further edits because no CSS targeted the section (it carried no
+classes) and nothing linked to `#certifications`.
 
-The homepage section is wrapped in an HTML comment. It no longer renders,
-but the markup is kept verbatim in place so the content survives in the
-file and through every pipeline. **`cv.md` is now the live record.** An
-HTML comment, not `display: none`, was the owner's instruction and is also
-the correct mechanism: the content leaves the DOM entirely, so it is not
-read by screen readers, not indexed, and not printed, whereas
-`display: none` would still expose it to assistive tech. Restoring it means
-deleting two delimiter lines; nothing else is required, because no CSS
-targets the section (it carries no classes) and nothing links to
-`#certifications`.
+Two mechanical rules were learned the hard way while that block was
+comment-disabled. They no longer apply to this section, but they generalize
+to any future use of the comment-out mechanism, which is why they are kept.
+**The trailing `<hr>` must stay inside the disabled region** or two adjacent
+rules render. And **never write comment delimiters, or a literal rule tag, as
+prose inside the explanatory banner above it**: comments cannot nest, so a
+stray close sequence ends the banner early and dumps its remaining text onto
+the page as live markup. That happened while writing the banner, and it
+rendered a spurious `<hr>` plus a long unbroken row of equals signs that
+overflowed the page horizontally at 761px and below. **`lint_html` passed the
+whole time** the bug was live, because the result was structurally valid
+HTML, merely wrong. Only a headless render caught it, which is the §Agent
+panels "render before arguing about a rendered thing" rule applying to
+verification as much as to design.
 
-Two mechanical rules for that block, both learned the hard way in the same
-pass. **The trailing `<hr>` must stay inside the disabled region** or two
-adjacent rules render between `#service` and `#testimonials`. And **never
-write comment delimiters, or a literal rule tag, as prose inside the
-explanatory banner above it**: comments cannot nest, so a stray close
-sequence ends the banner early and dumps its remaining text onto the page as
-live markup. That happened while writing the banner, and it rendered a
-spurious `<hr>` plus a long unbroken row of equals signs that overflowed the
-page horizontally at 761px and below. **`lint_html` passed the whole time** the
-bug was live, because the result was structurally valid HTML, merely wrong.
-Only a headless render caught it, which is the §Agent panels
-"render before arguing about a rendered thing" rule applying to verification
-as much as to design.
-
-Neither linter covers the pair; keep the two lists in sync BY HAND
-(currently four entries: Databricks 2024, Sumo Logic x2 2020, Six Sigma
-Yellow Belt 2015). Six Sigma moved here out of #service and the CV's
-Awards and Honors; the IPM award became CV-only in the same pass; the
-Gantt carries neither. DataCamp course completions are deliberately
-omitted as entry-level. The section has no figure, no margin notes, and
-no nav entry by design.
+No linter covers certifications. There is no longer a second list to keep in
+sync — `cv.md` `## Certifications` holds all four entries (Databricks 2024,
+Sumo Logic x2 2020, Six Sigma Yellow Belt 2015) and is authoritative. Six
+Sigma moved into certifications out of #service and the CV's Awards and
+Honors; the IPM award became CV-only in the same pass; the Gantt carries
+neither. DataCamp course completions are deliberately omitted as
+entry-level.
 
 ---
 
 ## Gantt figure alignment lint
 
 `scripts/lint_gantt.py` keeps the homepage Education + Service Gantt
-(`index.html` `figure.gantt-figure`) in lockstep with the two prose
-sections it summarizes, WITHOUT a shared data file. The figure has two
-lanes — education (`y < 135`) mirrors `<section id="education">` (also commented
-out since 2026-07-30, for the same redundancy reason as service; see below),
-service
-(`y > 135`) mirrors `<section id="service">` (#service, commented out since
-2026-07-30 but still parsed; see §Recognition alignment lint. The figure is now
-that content's only VISIBLE surface, which raises the stakes on this lint rather
-than lowering them). Each data mark
+(`index.html` `figure.gantt-figure`) in lockstep with the comprehensive
+record in `src/content/cv.md`, WITHOUT a shared data file. Each data mark
 encodes its year(s) positionally through the chart's own transform
 `x(year) = 90 + (year - 2003) * 19`: a single-year square's year is read
 back from its centre x, a multi-year bar's start/end from x1/x2. Each
-mark is paired with the `<text>` label that follows it in source.
+mark is paired with the `<text>` label that follows it in source. Reading
+the year back from the geometry is what makes this more than a text diff —
+a mark drawn at the wrong x decodes to the wrong year and stops matching,
+even when its label is spelled perfectly (`test_mark_drawn_at_wrong_x_fails`).
 
 This exists because the figure fell out of date: three recognition items
 (Spirit of Charlie, Digital Fellow, IPM award) were added to `#service`
 without a corresponding square/bar, and nothing caught it.
 
-**Gate (hard fail, blocks push):** every `#education` entry must have a
-matching mark in the education lane, every `#service` entry a matching
-mark in the service lane. Matching = share ≥1 year AND ≥2 significant
-tokens between the section entry (title + org) and the terse figure label
-("UG research mentor" matches "Undergraduate Research Mentor"). A reverse
-coverage note (figure marks with no section entry) prints on a manual run
-and never fails. The lint uses its OWN minimal stoplist — unlike
-`lint_recognition.py` it must keep "research" so the abbreviated labels
-still match — so do not share the two stoplists.
+**(2026-08-13) The gate direction FLIPPED when the prose sections were
+deleted.** The figure's two lanes used to mirror `<section id="education">`
+(`y < 135`) and `<section id="service">` (`y > 135`); both were commented out
+2026-07-30, read through the comment for two weeks, then deleted:
+
+    BEFORE  every section entry must have a mark   (section ⊆ figure)
+    AFTER   every mark must have a CV counterpart  (figure ⊆ CV)
+
+The new direction is the one that suits a curated chart. `cv.md` holds far
+more than the chart shows (short courses, individual mentees, minor service)
+and that is intended, so requiring a mark per CV entry would fail
+permanently. Requiring a CV record per mark is the guarantee worth keeping:
+nothing is displayed publicly that the comprehensive record does not support.
+The reverse direction survives as the informational coverage report, which is
+where a newly added CV award shows up as a candidate for the chart.
+
+**Gate (hard fail, blocks push):** every figure mark must have a counterpart
+in `cv.md`'s Education / Service / Awards record. Matching = share ≥1 year
+AND ≥2 significant tokens between the CV entry and the terse figure label
+("UG research mentor" matches "Undergraduate Research Scholar Mentor"). A
+reverse coverage note (CV entries with no mark) prints on a manual run and
+never fails.
+
+**Matching is LANE-AGNOSTIC, deliberately.** `cv.md` files things by a
+different taxonomy than the chart draws them: "Digital Fellow" sits in the
+SERVICE lane but is recorded under `### Fellowships and Training`, nested
+inside `## Education`. Constraining a mark to its own lane's CV section would
+fail that pair over a disagreement about filing, not about facts. The lane is
+still reported in messages, and `test_matching_is_lane_agnostic` pins this.
+`lint_recognition` is the one that keeps a tighter scope, on the service lane
+only; see that section for the split.
 
 **Editing the figure:** the SVG is hand-coordinated. The service lane is
 7 rows at `y = 160..280` step 20, the axis sits at `y = 310`, viewBox is
@@ -2910,23 +2966,26 @@ Checks:
   sidenote/marginnote span, no exemptions; retires the by-hand grep in
   §Sidenote system)
 - `python scripts/lint_recognition.py` clean (recognition alignment: every
-  homepage `#service` "Service and Recognition" entry must have a
-  counterpart in cv.md's Awards / Fellowships / Service record. Both
-  surfaces stay hand-authored, no shared YAML; the linter parses both and
-  matches on year + significant-token overlap, so wording differences
-  ("Undergraduate Research Mentor" vs CV "Undergraduate Research Scholar
-  Mentor") don't trip it. The gate is one-directional (homepage ⊆ CV: the
-  homepage is a curated highlight reel and may show fewer items), so a
-  failure means something is shown publicly with no CV record. The
+  SERVICE-lane mark in the homepage Gantt must have a counterpart in cv.md's
+  Awards / Fellowships / Service record. Both surfaces stay hand-authored,
+  no shared YAML; the linter parses both and matches on year +
+  significant-token overlap, so wording differences (the chart's "UG research
+  mentor" vs CV "Undergraduate Research Scholar Mentor") don't trip it. The
+  gate is one-directional (homepage ⊆ CV: the homepage is a curated highlight
+  reel and may show fewer items), so a failure means something is shown
+  publicly with no CV record. Scoped more tightly than lint_gantt: a service
+  mark backed only by a non-recognition CV section fails here. The
   reverse-direction coverage report of CV-only items is informational
   (never fails) and prints on a manual run. See §Recognition alignment lint)
-- `python scripts/lint_gantt.py` clean (Gantt figure alignment: the
-  homepage Education + Service Gantt (`figure.gantt-figure`) must carry a
-  mark for every `#education` and `#service` entry. The figure is a
-  hand-coded SVG; the linter reads each entry's year back from its mark's
-  x-coordinate via the chart transform and matches against the section
-  entries on year + token overlap, so the figure can't silently fall out
-  of date when a section grows. See §Gantt figure alignment lint)
+- `python scripts/lint_gantt.py` clean (Gantt figure alignment: every mark in
+  the homepage Education + Service Gantt (`figure.gantt-figure`) must have a
+  counterpart in cv.md's Education / Service / Awards record. The figure is a
+  hand-coded SVG; the linter reads each mark's year back from its
+  x-coordinate via the chart transform and matches on year + token overlap,
+  so the figure can't silently misdate or outrun the CV. Matching is
+  lane-agnostic because cv.md's filing differs from the chart's two lanes.
+  The reverse direction, CV entries not on the chart, is informational.
+  See §Gantt figure alignment lint)
 - `python scripts/lint_markers.py` clean (marker integrity: the build-time
   injection markers a generator splices into, `activity-grid`,
   `writing-list`, `writing-index`, `cliff-path`, `pub-list`, `updated`,
@@ -2945,12 +3004,20 @@ Checks:
 - `python scripts/lint_links.py` clean (internal link + anchor integrity:
   every fragment href in index.html resolves to a real `id=` there (ids
   inside HTML comments / `<style>` / `<script>` don't count as targets),
-  every homepage `/blog/...` link resolves to built blog output on disk,
-  and every sitemap.xml `<loc>` resolves to a real file in the repo. The
-  homepage file-link check is deliberately scoped to `/blog/` because
+  every `href="/#..."` on any OTHER page in the repo also resolves to a live
+  homepage id, every homepage `/blog/...` link resolves to built blog output
+  on disk, and every sitemap.xml `<loc>` resolves to a real file in the repo.
+  The homepage file-link check is deliberately scoped to `/blog/` because
   `/medicare-advantage-insight-engine/` is served by a separate repo's
   GitHub Pages under the shared domain (see §Links) and has no directory
-  here. Retires the "all internal anchor links resolve" eyeball check)
+  here. Retires the "all internal anchor links resolve" eyeball check.
+  **The inbound check (1b) was added 2026-08-13** and closes the blind spot
+  that let ~250 generated blog pages carry `/#education` and `/#service` in
+  their nav, unguarded in both directions, while those sections were
+  commented out and then deleted. It covers the generated blog output, the
+  hand-authored subpages, and `scripts/templates/blog/base.html` itself, so
+  a bad fragment fails on the commit that introduces it rather than on the
+  CI run that propagates it to every post)
 - `python scripts/lint_html.py` clean (HTML structural well-formedness:
   index.html and the generated blog / resume.html / cv.html pages parse
   with tinyhtml5 and carry no tree-builder structural errors, i.e.

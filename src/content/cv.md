@@ -111,8 +111,8 @@ Healthcare data engineering and analytics in regulated environments. Particular 
 
 ### Peer Review
 
-- **2019–present** Institute of Industrial and Systems Engineers Transactions on Healthcare Systems Engineering.
-- **2019–present** Health Environments Research and Design Journal.
+- **2019–present** Reviewer. Institute of Industrial and Systems Engineers Transactions on Healthcare Systems Engineering.
+- **2019–present** Reviewer. Health Environments Research and Design Journal.
 
 ### Mentoring
 

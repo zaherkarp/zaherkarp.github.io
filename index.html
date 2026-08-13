@@ -144,7 +144,7 @@
 /* ============================================================
    3. BASE TYPOGRAPHY
    Root font-size sets the rem unit. Body comes out at 1.4rem
-   (~24px) and chrome (nav, captions, stack lines, row-entry
+   (~24px) and chrome (nav, captions, stack lines, figure
    metadata) at ~16-18px. The demo originally used 15px here,
    which left chrome small at typical DPI; 17px brings the
    subordinate type up without shifting the body comfort point
@@ -1212,53 +1212,6 @@ figure.funnel-figure figcaption {
     font-size: 1rem;
     text-align: right;
   }
-}
-
-/* ============================================================
-   DATE-LEFT ROWS
-   Education and Service both use the same layout: year span on
-   the left, content on the right. Two-column semantic <dl> is
-   the correct element, but we use flex on an .entry for finer
-   visual control. Both sections are commented out as of
-   2026-07-30 (see their disabled-section banners below), so this
-   rule set is currently dead CSS, kept in place so the markup
-   renders correctly if either section is restored.
-   ============================================================ */
-.row-entry {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.8rem;
-  align-items: baseline;
-}
-.row-entry .row-date {
-  flex: 0 0 7rem;
-  font-variant-numeric: oldstyle-nums;
-  color: var(--muted);
-  font-size: 1.05rem;
-}
-.row-entry .row-body {
-  flex: 1;
-}
-.row-entry .row-title {
-  display: block;
-  font-weight: normal;
-  margin-bottom: 0.1rem;
-}
-.row-entry .row-org {
-  display: block;
-  color: var(--muted);
-  font-size: 1rem;
-  margin-bottom: 0.2rem;
-}
-.row-entry .row-note {
-  display: block;
-  color: var(--muted);
-  font-size: 1rem;
-  margin-top: 0.2rem;
-}
-@media (max-width: 760px) {
-  .row-entry { flex-direction: column; gap: 0.2rem; }
-  .row-entry .row-date { flex: none; }
 }
 
 /* ============================================================
@@ -3648,11 +3601,13 @@ body::before {
          - Faint horizontal rule between lanes; lane labels left
          - "Now" cap on the rightmost ranges still active
 
-       The two lanes mirror the two prose sections below: the education
-       lane reflects the Education section, the service lane reflects the
-       Service and Recognition section (#service). Keep them in lockstep;
-       scripts/lint_gantt.py fails a push when an Education or #service
-       entry has no counterpart bar/square here.
+       The two lanes used to mirror two prose sections below this figure.
+       Those sections were commented out 2026-07-30 and DELETED 2026-08-13,
+       so this figure is now the page's ONLY surface for that record and
+       src/content/cv.md is the comprehensive one. Keep the two in lockstep:
+       scripts/lint_gantt.py fails a push when a mark here has no
+       counterpart in cv.md's Education / Service / Awards record, and
+       reports cv.md entries that never reached the chart.
 
        Entry encoding (Education lane, top to bottom):
          BA English Literature        2003 to 2007  bar
@@ -3680,23 +3635,6 @@ body::before {
          Lane divider:   y = 135
          Year axis:      y = 310  (viewBox height 340)
        ========================================================== -->
-  <!-- #service anchor, relocated 2026-07-30. The Service and Recognition
-       SECTION below is commented out; the id points at the Gantt instead,
-       which is the honest target because that figure carries a mark for
-       every service entry and is now the only VISIBLE service surface.
-       Until 2026-08-13 the stated reason for keeping the id was that every
-       generated blog page linked to /#service; those nav items were dropped
-       (scripts/templates/blog/base.html, plus the colophon and case-study
-       pages), so NOTHING on this site links here now. Keep the id anyway:
-       external bookmarks and inbound links may still point at /#service,
-       and an id costs nothing. Note lint_links cannot see either side of
-       this, because it validates index.html's own fragments only, never
-       blog-to-homepage ones. -->
-  <span id="service" class="section-anchor"></span>
-  <!-- #education anchor, relocated 2026-07-30 for the same reason as
-       #service just above, and unlinked site-wide on the same 2026-08-13
-       pass. Kept for external inbound links. -->
-  <span id="education" class="section-anchor"></span>
   <p>The chart below gathers degrees, certificates, and service commitments into one frame, because several overlapped rather than following in a tidy sequence.</p>
   <figure class="gantt-figure">
     <figcaption>
@@ -3812,308 +3750,14 @@ body::before {
     </svg>
   </figure>
 
-  <!-- ==========================================================
-       EDUCATION - DISABLED, NOT DELETED (owner, 2026-07-30)
-       Commented out for the same reason and by the same mechanism as
-       SERVICE below: after today's trim, the Gantt figure's terse
-       labels already state all five entries' TITLE ("MPH,
-       Biostatistics", "Oxford, qualitative methods", etc.); dates are
-       read positionally against the axis and are never written out, so
-       this section had become ~90% redundant with the figure directly
-       above it. Verified before disabling: only two facts anywhere in
-       this fold were not already in the chart, the $18,000 MPH grant
-       and the Carayon/AHRQ Patient Safety detail, and both were folded
-       into the Gantt figcaption before this section was hidden.
-
-       WHY THIS STILL LINTS. lint_gantt.py's _section_body slices this
-       section with a raw-text regex and does not strip HTML comments,
-       so the Gantt alignment check keeps reconciling all 5 education
-       marks against this content exactly as before. lint_recognition.py
-       never covered #education in the first place (SERVICE_SECTION_RE
-       only). Do NOT "fix" lint_gantt to skip comments without replacing
-       what it guards.
-
-       The id="education" anchor moved up beside id="service"'s, for the
-       identical reason: at the time, every generated blog page linked to
-       /#education. Those nav items were dropped 2026-08-13, so nothing on
-       this site links there now; the anchor is kept for external inbound
-       links. See the note at the anchor itself.
-
-       The trailing horizontal rule is INSIDE the disabled region, same
-       reasoning as SERVICE below (see that banner for the reasoning,
-       corrected there for why the "rule already precedes" justification
-       no longer holds now that both sections are disabled).
-
-       To restore: delete the bare comment-open line below and the bare
-       comment-close line after the disabled rule, then move the
-       id="education" anchor back onto the section.
-
-       Do NOT write comment delimiters, or a literal rule tag, as prose
-       in this banner; see the SERVICE banner below for why.
-
-       Content notes, still accurate: year-span-left, content-right
-       layout; committee and advisor names stored as a muted row-note
-       rather than a sidenote since they are a natural extension of the
-       degree info, not a tangent.
-       ========================================================== -->
-<!--
-  <section id="education">
-    <h2>Education</h2>
-
-    <p>A literature degree first, then a concentrated graduate stretch: the MPH, the patient-safety certificate, and the Oxford interviewing training all landed in 2014 and 2015.</p>
-
-    <details class="fold">
-      <summary>Degrees, certificates, and fellowships</summary>
-
-    <div class="row-entry">
-      <div class="row-date">2013 to 2015</div>
-      <div class="row-body">
-        <span class="row-title">Master of Public Health (MPH), Biostatistics</span>
-        <span class="row-org">University of Wisconsin-Madison</span>
-        <span class="row-note">Health Innovation Program Research Trainee. Wrote a grant proposal awarded $18,000.</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2014 to 2015</div>
-      <div class="row-body">
-        <span class="row-title">Graduate Certificate, Patient Safety, Industrial and Systems Engineering</span>
-        <span class="row-org">University of Wisconsin-Madison</span>
-        <span class="row-note">Advisor: Pascale Carayon PhD. Trained through the AHRQ-funded Systems Engineering Initiative for Patient Safety.</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2014</div>
-      <div class="row-body">
-        <span class="row-title">Contemporary Qualitative Interviewing Methods</span>
-        <span class="row-org">University of Oxford</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2015</div>
-      <div class="row-body">
-        <span class="row-title">Wisconsin Entrepreneurial Boot Camp Fellow</span>
-        <span class="row-org">University of Wisconsin School of Business</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2003 to 2007</div>
-      <div class="row-body">
-        <span class="row-title">Bachelor of Arts, English Literature</span>
-        <span class="row-org">University of Wisconsin-Madison</span>
-      </div>
-    </div>
-    </details>
-  </section>
-
-  <hr>
--->
-
-  <!-- ==========================================================
-       SERVICE AND RECOGNITION - DISABLED, NOT DELETED (owner, 2026-07-30)
-       Commented out to shorten the page, kept verbatim so the content
-       survives in the file and through the pipelines. cv.md is the live
-       record. Certifications below is disabled the same way.
-
-       WHY THIS STILL LINTS. Both gates that read this section slice it
-       with a raw-text regex and neither strips HTML comments:
-       lint_recognition.py SERVICE_SECTION_RE and lint_gantt.py
-       _section_body. So the homepage-subset-of-CV gate and the Gantt
-       alignment check keep working on the disabled markup exactly as
-       before. That is deliberate, and it is the reason this could be
-       hidden without weakening a guarantee. Do NOT "fix" either linter
-       to skip comments without replacing what it guards.
-
-       THE VISIBLE SERVICE SURFACE IS NOW THE GANTT above, which carries
-       a mark for every entry here (lint_gantt enforces that). Its
-       figcaption absorbed this section's lead sentence and points at the
-       CV for orgs and citations. The id="service" anchor moved up to sit
-       beside that figure, because at the time every generated blog page
-       linked to /#service. Those nav items were dropped 2026-08-13, so
-       nothing on this site links there now; the anchor is kept for
-       external inbound links. See the note at the anchor itself.
-
-       The trailing horizontal rule is INSIDE the disabled region. That
-       mattered when this section was first disabled: Education (the
-       section immediately above) was still live at that point, so its
-       own trailing rule butted directly against this one, and keeping
-       this rule inside the comment kept the two from doubling.
-       Education was disabled 20 minutes later, so the rule immediately
-       above this banner is now ALSO inside a commented-out block and
-       currently renders nothing on its own. The trailing rule stays
-       inside this block regardless, so each of the three disabled
-       sections carries its own rule rather than needing a hand-added
-       one if it is restored alone; see the standalone rule before
-       Testimonials below for a doubling case a partial restore still
-       has to check by hand.
-
-       To restore: delete the bare comment-open line below and the bare
-       comment-close line after the disabled rule, then move the
-       id="service" anchor back onto the section.
-
-       Do NOT write comment delimiters, or a literal rule tag, as prose
-       in this banner. Comments cannot nest, so a stray close sequence
-       ends it early and dumps the rest onto the page as live markup.
-       That happened once while writing the Certifications banner.
-
-       Content notes: the award/fellowship entries (Spirit of Charlie,
-       Alumni Hall, Digital Fellow) sat cleanly alongside the larger
-       commitments without their own section; the IPM award is CV-only.
-       ========================================================== -->
-<!--
-  <section id="service">
-    <h2>Service and Recognition</h2>
-
-    <p>Peer review, board terms, mentoring, and awards; the two roles the chart above flags in 2014 and 2015 are the undergraduate research mentorship and the WORT board chair.</p>
-
-    <details class="fold">
-      <summary>Peer review, boards, mentoring, and awards</summary>
-
-    <div class="row-entry">
-      <div class="row-date">2019 to present</div>
-      <div class="row-body">
-        <span class="row-title">Peer Reviewer</span>
-        <span class="row-org">IISE Transactions on Healthcare Systems Engineering &middot; Health Environments Research and Design Journal</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2016 to 2020</div>
-      <div class="row-body">
-        <span class="row-title">Board of Directors</span>
-        <span class="row-org">The Road Home of Dane County</span>
-        <span class="row-note">Homelessness prevention and housing stability, Dane County, Wisconsin.</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2014 to 2017</div>
-      <div class="row-body">
-        <span class="row-title">Undergraduate Research Scholar Mentor</span>
-        <span class="row-org">UW School of Medicine and Public Health</span>
-        <span class="row-note">Mentored three undergraduate research scholars.</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2013 to 2015</div>
-      <div class="row-body">
-        <span class="row-title">Community Advisory Board Chair</span>
-        <span class="row-org">WORT 89.9 FM</span>
-        <span class="row-note">Elected chair for two terms; independent community radio, Madison.</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2021</div>
-      <div class="row-body">
-        <span class="row-title">Spirit of Charlie Award</span>
-        <span class="row-org">Health Catalyst</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2017</div>
-      <div class="row-body">
-        <span class="row-title">Alumni Hall Service Award</span>
-        <span class="row-org">Department of Family Medicine and Community Health, UW SMPH</span>
-      </div>
-    </div>
-
-    <div class="row-entry">
-      <div class="row-date">2016</div>
-      <div class="row-body">
-        <span class="row-title">Digital Fellow</span>
-        <span class="row-org">Organizing for Action</span>
-        <span class="row-note">Digital content production fellowship, advanced track; a cohort of 25 chosen from more than 2,000 applicants.</span>
-      </div>
-    </div>
-
-    </details>
-  </section>
-
-  <hr>
--->
-
-  <!-- ==========================================================
-       CERTIFICATIONS - DISABLED, NOT DELETED (owner, 2026-07-30)
-       The section below is intentionally commented out. It no
-       longer renders, but it is kept here verbatim so the content
-       survives in the file and through every pipeline.
-
-       Because it is an HTML comment rather than display:none, the
-       content leaves the DOM entirely: not read by screen readers,
-       not indexed, not printed. That is what "no longer visible"
-       has to mean; display:none would still expose it to
-       assistive tech.
-
-       The trailing horizontal rule is INSIDE the disabled block on
-       purpose. That mattered when this section was first disabled:
-       Service (the section immediately above) was still live at that
-       point, so its own trailing rule butted directly against this
-       one, and keeping this rule inside the comment kept the two from
-       doubling. Service was disabled in a later pass the same day, so
-       today the rule immediately above this banner is ALSO inside a
-       commented-out block and renders nothing on its own. The trailing
-       rule stays inside this block regardless, for the same
-       restore-symmetry reason given in the SERVICE banner above; see
-       the standalone rule below (before Testimonials) for a doubling
-       case a partial restore still has to check by hand.
-
-       To restore: delete the bare comment-open line just below
-       this banner, and the bare comment-close line after the
-       disabled rule. Nothing else is required. No CSS targets this
-       section (it carries no classes, only generic section, h2 and
-       p rules), and nothing links to #certifications.
-
-       Do NOT write comment delimiters, or a literal rule tag, as
-       prose inside this banner. Comments cannot nest, so a stray
-       close sequence here ends the banner early and dumps the rest
-       of it onto the page as live markup. That happened once while
-       writing this block: the leaked text rendered a spurious rule
-       and a long unbroken row of equals signs that overflowed the
-       page horizontally at 761px and below.
-
-       src/content/cv.md ## Certifications remains the live record
-       and is unaffected. No linter covers this pair either way
-       (lint_recognition and lint_gantt scope to #service only), so
-       keep the two in sync by hand if a certification is added.
-
-       Original notes, still accurate: deliberately small, one
-       newest-first prose line, no fold, no figures, no margin
-       notes. DataCamp course completions deliberately omitted as
-       entry-level; Databricks listed by issue year per CV
-       convention (HR focus-group call, 2026-06-12).
-       ========================================================== -->
-<!--
-  <section id="certifications">
-    <h2>Certifications</h2>
-    <p>Databricks Fundamentals accreditation (2024); Sumo Logic Search Mastery and Fundamentals certifications (2020); Certified Six Sigma Yellow Belt, American Society for Quality (2015).</p>
-  </section>
-
-  <hr>
--->
-
-  <!-- A live rule, deliberately OUTSIDE all three disabled blocks above.
-       Originally the Gantt figure carried no rule of its own; the three
-       sections that followed it each supplied one. With education,
-       service, and certifications all commented out on 2026-07-30, that
-       left zero live rules between the Gantt and Testimonials, breaking
-       the section-then-rule rhythm every other boundary on the page
-       keeps. This one rule restores it for today's actual state (all
-       three sections disabled), but it is NOT immune to a partial
-       restore: restoring any one of the three sections alone (per its
-       own banner's restore instructions) brings that section's own
-       trailing rule back live, and since the sections after it stay
-       disabled and invisible, that rule lands immediately next to this
-       one with nothing rendering between them, two adjacent rules. Not
-       moved to avoid that, because it is also what keeps a rule between
-       the Gantt and Testimonials in the current all-disabled state. A
-       partial restore of any of the three needs the restorer to check
-       for, and remove, the resulting doubled rule by hand. -->
+  <!-- The Gantt's own closing rule, keeping the section-then-rule rhythm
+       every other boundary on the page holds. It was added 2026-07-30 as a
+       standalone rule because Education, Service and Certifications were
+       commented out in place that day and each took its trailing rule into
+       the comment with it; those three blocks were DELETED 2026-08-13 and
+       cv.md is now the sole record for that content, so this is simply the
+       rule that closes the figure. The old warning about a partial restore
+       doubling it no longer applies: there is nothing left to restore. -->
   <hr>
 
   <!-- ==========================================================

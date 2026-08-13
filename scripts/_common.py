@@ -22,11 +22,15 @@ consumers differ on whether they skip, count, or print drafts, so each
 applies that after loading frontmatter.
 
 Also exposes the cross-surface alignment matcher (years_of / tokens_of /
-token_overlap / alignment_match) and the homepage .row-entry field parser,
-the single source of truth now shared by lint_recognition.py, lint_gantt.py,
-and lint_jobfit.py. Each lint passes its OWN stoplist to tokens_of (the
-`stop` parameter is required), so the stoplists stay per-lint and their
-matching behavior is unchanged.
+token_overlap / alignment_match) and the cv.md section item parser
+(cv_section_body / cv_items / CvItem), the single source of truth shared by
+lint_recognition.py, lint_gantt.py, and lint_jobfit.py. Each lint passes its
+OWN stoplist to tokens_of (the `stop` parameter is required), so the
+stoplists stay per-lint.
+
+The cv.md parser replaced a homepage .row-entry HTML parser on 2026-08-13,
+when index.html's #education and #service sections were deleted; see the
+comment above cv_items for why the subsection heading travels with each item.
 """
 
 from __future__ import annotations
@@ -34,6 +38,7 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
@@ -151,24 +156,164 @@ def alignment_match(a_years, a_tokens, b_years, b_tokens, *, min_shared=2) -> bo
     return token_overlap(a_tokens, b_tokens, min_shared=min_shared)
 
 
-# ─── homepage .row-entry field parser ──────────────────────────────────────
-# Both lint_recognition and lint_gantt read the homepage #service / #education
-# <div class="row-entry"> blocks with the same four regexes and field getter.
-# Shared here so the .row-entry contract has one update point; each lint still
-# owns its own section slicing (the CV-markdown vs HTML-section difference).
+# ─── cv.md section item parser ─────────────────────────────────────────────
+# Replaces the homepage .row-entry field parser that lived here until
+# 2026-08-13. That parser read the <div class="row-entry"> blocks inside
+# index.html's #education and #service sections; those sections were
+# commented out 2026-07-30 and DELETED 2026-08-13, leaving the Gantt figure
+# as the page's only surface for that record and src/content/cv.md as the
+# comprehensive one. Both lint_recognition and lint_gantt now reconcile the
+# figure against the CV, so the shared shape is a CV list item, not an HTML
+# row. Each lint still owns its own stoplist and tokenizer.
 
-ROW_ENTRY_RE = re.compile(
-    r'<div class="row-entry">(?P<row>.*?)</div>\s*</div>', re.DOTALL
+CV_ITEM_RE = re.compile(
+    r"^-\s+\*\*(?P<range>[^*]+)\*\*\s+(?P<body>.+?)\s*$", re.MULTILINE
 )
-ROW_DATE_RE = re.compile(r'<div class="row-date">(?P<v>[^<]*)</div>')
-ROW_TITLE_RE = re.compile(r'<span class="row-title">(?P<v>[^<]*)</span>')
-ROW_ORG_RE = re.compile(r'<span class="row-org">(?P<v>[^<]*)</span>')
+_CV_HEADING_RE = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*$")
 
 
-def row_field(pattern: re.Pattern, row: str) -> str:
-    """The captured `v` group of `pattern` in `row`, or "" if absent."""
-    m = pattern.search(row)
-    return m.group("v") if m else ""
+# ─── Gantt figure mark parser ─────────────────────────────────────────────
+# The homepage Education + Service Gantt is a hand-coded SVG whose marks
+# encode their year(s) positionally, through the chart's own transform
+# x(year) = 90 + (year - 2003) * 19. Reading the year back from the geometry
+# is what makes the alignment lints more than a text diff: a mark drawn at
+# the wrong x decodes to the wrong year and stops matching its CV entry.
+
+GANTT_LANE_DIVIDER_Y = 135
+GANTT_X0 = 90
+GANTT_PX_PER_YEAR = 19
+GANTT_BASE_YEAR = 2003
+
+_GANTT_FIGURE_RE = re.compile(
+    r'<figure class="gantt-figure">(?P<body>.*?)</figure>', re.DOTALL
+)
+# A data mark (rect square or thick-line bar) immediately followed by its
+# <text> label.
+_GANTT_MARK_RE = re.compile(
+    r'(?P<mark><(?:rect|line)\b[^>]*/>)\s*<text\b[^>]*>(?P<label>[^<]*)</text>',
+    re.DOTALL,
+)
+
+
+def gantt_year_at_x(x: float) -> int:
+    return round(GANTT_BASE_YEAR + (x - GANTT_X0) / GANTT_PX_PER_YEAR)
+
+
+@dataclass(frozen=True)
+class GanttMark:
+    """One data mark in the homepage Gantt figure."""
+
+    label: str                # raw <text> label, not entity-normalized
+    lane: str                 # "education" (y < 135) | "service"
+    years: frozenset[int]     # decoded from the mark's x-coordinate(s)
+    line: int                 # 1-indexed line in index.html
+
+
+@dataclass(frozen=True)
+class CvItem:
+    """One `- **years** body` line in a cv.md section."""
+
+    range: str        # "2016-2020", "2019-present", "2016, 2017"
+    body: str
+    section: str      # nearest ### subsection, else the ## section name
+    line: int         # 1-indexed line in cv.md, for error messages
+
+
+def cv_section_body(text: str, heading_pattern: str) -> tuple[str, int] | None:
+    """(body, char_offset) for a `## Heading` / `### Heading` section, sliced
+    to the next heading of equal-or-higher level. `heading_pattern` must
+    capture a `hashes` group so the level is known."""
+    m = re.search(heading_pattern, text, re.MULTILINE)
+    if not m:
+        return None
+    level = len(m.group("hashes"))
+    rest = text[m.end():]
+    stop = re.search(rf"^#{{1,{level}}}\s", rest, re.MULTILINE)
+    body = rest[: stop.start()] if stop else rest
+    return body, m.end()
+
+
+def _gantt_attr(mark: str, name: str) -> float | None:
+    m = re.search(rf'\b{name}="(-?\d+(?:\.\d+)?)"', mark)
+    return float(m.group(1)) if m else None
+
+
+def gantt_marks(text: str) -> list[GanttMark]:
+    """Every data mark in index.html's `figure.gantt-figure`, with its year(s)
+    decoded from its own x-coordinate.
+
+    Shared by lint_gantt (which reconciles all marks against cv.md) and
+    lint_recognition (which reconciles the service lane against the CV's
+    recognition record). Labels are returned RAW; each lint applies its own
+    HTML-entity normalization and stoplist.
+
+    Axis ticks (stroke-width 0.6/0.8) and the lane divider (0.5) are excluded
+    by the fill / stroke-width filters, so only real data marks come back.
+    """
+    fig = _GANTT_FIGURE_RE.search(text)
+    if not fig:
+        return []
+    base = fig.start("body")
+    marks: list[GanttMark] = []
+    for m in _GANTT_MARK_RE.finditer(fig.group("body")):
+        mark = m.group("mark")
+        line = text.count("\n", 0, base + m.start()) + 1
+        if mark.startswith("<rect"):
+            if 'fill="#111"' not in mark:
+                continue
+            x, y = _gantt_attr(mark, "x"), _gantt_attr(mark, "y")
+            if x is None or y is None:
+                continue
+            years = frozenset({gantt_year_at_x(x + 3)})   # square is 6 wide
+        else:  # <line>
+            if 'stroke-width="4"' not in mark:
+                continue
+            x1 = _gantt_attr(mark, "x1")
+            x2 = _gantt_attr(mark, "x2")
+            y = _gantt_attr(mark, "y1")
+            if x1 is None or x2 is None or y is None:
+                continue
+            years = frozenset({gantt_year_at_x(x1), gantt_year_at_x(x2)})
+        marks.append(GanttMark(
+            label=m.group("label").strip() or "(unlabeled)",
+            lane="education" if y < GANTT_LANE_DIVIDER_Y else "service",
+            years=years,
+            line=line,
+        ))
+    return marks
+
+
+def cv_items(text: str, heading_pattern: str, section_name: str) -> list[CvItem]:
+    """Every dated list item under a cv.md section, tagged with its nearest
+    subsection heading.
+
+    The subsection is carried because it holds meaning the item body omits:
+    the entries under `### Peer Review` name journals and never say what the
+    role was, so a caller matching against a terse chart label should
+    tokenize `body + " " + section` rather than the body alone.
+    """
+    found = cv_section_body(text, heading_pattern)
+    if not found:
+        return []
+    body, base = found
+    items: list[CvItem] = []
+    current = section_name
+    cursor = 0                      # running offset into `body`, so repeated
+    for line in body.split("\n"):   # line text can't misreport a line number
+        head = _CV_HEADING_RE.match(line)
+        if head:
+            current = head.group("title")
+        else:
+            item = CV_ITEM_RE.match(line)
+            if item:
+                items.append(CvItem(
+                    range=item.group("range").strip(),
+                    body=item.group("body").strip(),
+                    section=current,
+                    line=text.count("\n", 0, base + cursor) + 1,
+                ))
+        cursor += len(line) + 1
+    return items
 
 
 def install_git_hooks() -> None:

@@ -527,12 +527,19 @@ and preserves the five-word `.newthought` opener that Steve objected to
 lengthening — his was the Council's own lane arguing against the Council's own
 fix, and reception scored the whole item 0/4 unprompted.
 
-**Still open:** `resume.md:39` says "**7** publications and conference
+~~**Still open:** `resume.md:39` says "**7** publications and conference
 proceedings" where `publications.yaml` has six. Not corrected, because the
 resume's category is broader and the honest question is the other one: **is
 there a seventh item that never made it into `publications.yaml`?** If so the
 YAML is incomplete, and since it feeds both the homepage block and the CV,
-that matters more than the resume's number.
+that matters more than the resume's number.~~
+
+**CLOSED 2026-08-13 (owner): six is correct, and the YAML is complete.** The
+answer to the honest question is no. The seventh item was work that was
+started and never finished, so it was never publishable and never belonged in
+`publications.yaml`. The resume had already been corrected to "6 peer-reviewed
+publications" in `36ec9f9`; this note was the last surface still carrying the
+question.
 
 ### What the panels said NOT to do
 
