@@ -408,11 +408,30 @@ nav {
 .blog-body svg [fill="#d0d0c8"]   { fill: var(--rule); }
 .blog-body svg [stroke="#d0d0c8"] { stroke: var(--rule); }
 
+/* Tables scroll inside their own box rather than widening the page. A wide
+   table is the one piece of post content that cannot be made to wrap: the
+   measles/flu parameter table in two-states-one-pathogen.md has five columns
+   and pushed the document to 452px against a 390px viewport, so the WHOLE
+   page scrolled sideways, chrome and prose included.
+
+   `display: block` is what makes the element scrollable, since markdown-it
+   emits a bare <table> with no wrapper to put `overflow-x` on and this is a
+   CSS-only fix (no regeneration of ~250 pages, and it reaches all 8 posts
+   that carry tables at once). The rows keep their own internal table layout,
+   so the grid still aligns; only the outer box changes. `max-width: 100%`
+   is what actually bounds it, and `width: auto` (kept from before) leaves
+   narrow tables their natural width instead of stretching them.
+
+   No visible change on a table that already fits: the scroll container only
+   scrolls when it has to. */
 .blog-body table {
   border-collapse: collapse;
   font-size: var(--size-caption);
   margin: 1.25rem 0;
   width: auto;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
 }
 .blog-body thead { border-top: 1px solid var(--muted); border-bottom: 1px solid var(--rule); }
 .blog-body th {
