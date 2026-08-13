@@ -322,6 +322,26 @@ nav {
   margin: 2rem 0;
 }
 
+/* Long unbreakable tokens wrap rather than widening the page. Several posts
+   cite sources as bare URLs, and markdown-it auto-links them, so the visible
+   link text is a single 500-600px token with no space in it. At 390px that
+   pushed governing-the-coverage-decision to 667px and
+   medicaid-work-requirements-arkansas to 574px of horizontal scroll, taking
+   the chrome and prose with it.
+
+   `break-word` rather than `anywhere`: both break a too-long token, but
+   `anywhere` also shrinks min-content width, which changes how flex and
+   table layouts size themselves. Only the overflow behaviour is wanted here.
+   Ordinary prose is unaffected either way, since the rule fires only for a
+   word that cannot fit on a line by itself.
+
+   Code keeps its own behaviour below: `pre` already scrolls (overflow-x on
+   .blog-body pre), and breaking a code line mid-token would misrepresent the
+   code, so it opts back out. */
+.blog-body { overflow-wrap: break-word; }
+.blog-body pre,
+.blog-body pre code { overflow-wrap: normal; }
+
 .blog-body code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.88em;
