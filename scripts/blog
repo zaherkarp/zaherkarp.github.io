@@ -76,6 +76,7 @@ from lint_vocab import (  # noqa: E402
 )
 from build_blog import (  # noqa: E402
     TEMPLATES_DIR,
+    make_jinja_env,
     make_markdown,
     parse_post,
     render_post,
@@ -942,14 +943,9 @@ def render_post_to_tempfile(path: Path) -> Path:
     Side-effect-free: never touches /blog/ build output and never mutates
     the post file (the in-memory draft flag is overridden for rendering
     only)."""
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-    env = Environment(
-        loader=FileSystemLoader(str(TEMPLATES_DIR)),
-        autoescape=select_autoescape(["html"]),
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
+    # Shared with build_blog so preview renders through the same environment
+    # the real build uses, filters included. Do not rebuild it locally.
+    env = make_jinja_env()
     md = make_markdown()
     post = parse_post(path, md)
     # In-memory only; the .md file on disk is never touched.
