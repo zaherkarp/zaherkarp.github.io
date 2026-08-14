@@ -1,6 +1,6 @@
 ---
 title: "How This Site Builds Itself"
-description: "A pure HTML and CSS portfolio site with no framework still has a build system. Five Python build scripts, six linters, a self-installing pre-push hook, and a handful of patterns that turn out to have names in the textbook."
+description: "A pure HTML and CSS portfolio site with no framework still has a build system. Six Python build scripts, twelve linters, a self-installing pre-push hook, and a handful of patterns that turn out to have names in the textbook."
 publishDate: 2026-05-19
 draft: true
 tags: ["portfolio", "static-site", "github-actions", "python", "ci-cd", "pipelines", "concurrency"]
@@ -67,7 +67,7 @@ The publish command has one guard worth calling out, because it encodes a footgu
 
 ## The blog pipeline
 
-This is the largest of the five. It reads markdown with YAML frontmatter, lints it, renders it through markdown-it-py and Jinja2, and writes one `blog/<slug>/index.html` per post, plus the listing pages, an RSS `feed.xml`, and a `sitemap.xml`. It also splits the archive: posts from 2009 through 2011 (the undergraduate-era journalism pieces) go to `/blog/archive/` so the main listing reads as a coherent data-engineering portfolio.
+This is the largest of the six. It reads markdown with YAML frontmatter, lints it, renders it through markdown-it-py and Jinja2, and writes one `blog/<slug>/index.html` per post, plus the listing pages, an RSS `feed.xml`, and a `sitemap.xml`. It also splits the archive: posts from 2009 through 2011 (the undergraduate-era journalism pieces) go to `/blog/archive/` so the main listing reads as a coherent data-engineering portfolio.
 
 ```mermaid
 flowchart LR
@@ -220,7 +220,7 @@ The three newer linters extend that same idea to surfaces that are easy to let d
 
 Those two are worth a note, because they moved after I first wrote this section and the move is instructive. Both originally reconciled the figure against the prose sections beside it on the homepage, in the direction section-must-have-a-mark. Then the prose sections were cut for length and the figure became the only visible record, which inverted the question: there was no longer a section to check against, and the thing worth guaranteeing was that nothing is displayed publicly without a record behind it. So both now read the CV, in the direction mark-must-have-a-record. The lesson is that a consistency check has a direction, the direction encodes which surface you trust, and deleting a surface can invert it. A gate that keeps passing after the thing it compared against is gone is not a gate.
 
-The shape across all six is the same: a check that runs as early as possible (pre-push, the earliest place that can still block a mistake), backed up by a second run in CI for anything that reaches `main` another way. That is shift-left and defense-in-depth, named patterns, applied to a personal site.
+The shape across all twelve is the same: a check that runs as early as possible (pre-push, the earliest place that can still block a mistake), backed up by a second run in CI for anything that reaches `main` another way. That is shift-left and defense-in-depth, named patterns, applied to a personal site.
 
 ## When two builds race
 
