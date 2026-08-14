@@ -14,7 +14,7 @@ The reason I bring this up is that "no framework" is often confused with "no bui
 
 ## The shape
 
-There are five Python build scripts in `scripts/` and six linters that guard them. Three of the build scripts run in CI on every relevant push. Two are manual. The linters run twice: once locally before a push, once again in CI.
+There are six Python build scripts in `scripts/` and twelve linters that guard them. Three of the build scripts run in CI on every relevant push. Three are manual. The linters run twice: once locally before a push, once again in CI.
 
 ```mermaid
 flowchart LR
@@ -185,23 +185,19 @@ Two scripts are deliberately off CI, because their inputs change rarely and the 
 
 ## The lint suite
 
-Six linters run before every push, via a self-installing pre-push hook, and a subset runs again in CI. None of them produce output files. They either pass or abort the operation.
+Twelve linters run before every push, via a self-installing pre-push hook, and the same twelve run again in CI. None of them produce output files. They either pass or abort the operation. They started as three and grew one at a time, each after something drifted.
 
 ```mermaid
 flowchart LR
     A[git push] --> B["hooks/pre-push"]
-    B --> C[lint_blog]
-    B --> D[lint_vocab]
-    B --> E[lint_facts]
-    B --> N[lint_notes]
-    B --> R[lint_recognition]
-    B --> G[lint_gantt]
-    C --> F{all pass?}
-    D --> F
+    B --> C["content: blog, vocab"]
+    B --> E["cross-surface: facts, skills, recognition, gantt"]
+    B --> N["page integrity: notes, links, markers, html"]
+    B --> P2["generated tokens: palette, ideas"]
+    C --> F{all 12 pass?}
     E --> F
     N --> F
-    R --> F
-    G --> F
+    P2 --> F
     F -->|yes| P[push proceeds]
     F -->|no| X[push aborts]
 ```
