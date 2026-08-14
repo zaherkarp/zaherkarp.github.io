@@ -340,6 +340,35 @@ grid (+60px) and the reproduction recipe, in
 `docs/homepage-compression-2026-08-13.md`. Design decisions below tagged
 "(Compression, 2026-08-13)" mark superseding wording.
 
+**Redundancy pass (2026-08-14, this branch).** The owner asked to reduce
+redundancy, with two steers: prioritize the VISUALIZATIONS (keep a number in
+its chart, cut it from the surrounding prose), and reframe Case 01 away from
+"Stars" toward statistics. Eight prose-only edits, no SVG mark, `id`, sidenote,
+or vocab canonical touched, so every gate stayed green by construction. The
+flagship was the Education/Service Gantt, where the "2014-15 overlap" was
+asserted FOUR times (lead-in, figcaption, SVG `aria-label`, and the in-chart
+density annotation): the **lead-in `<p>` was REMOVED** (superseding the
+2026-08-08 pass that added it; the figure now stands like the career band, with
+its figcaption as the only prose), and the figcaption was trimmed to stop
+re-naming bars the chart already labels (the $18,000 grant + Carayon/AHRQ
+certificate stay, the only facts not in the chart). The Insight-Engine funnel
+prose dropped ~200/~20/~5 (now only in the SVG); the Stars-cliff figcaption
+dropped the $50M restatement (kept in the prose hook and the "+$50M" SVG label);
+**Case 01 became "Statistical measurement" / "I develop the statistical methods
+behind healthcare quality measurement and cut-point forecasting"** (was "Stars
+measurement" / "...for Medicare Advantage Star Ratings"; the domain stays in the
+body). Plus four smaller prose trims: the Speaking fold parenthetical, Case 03's
+restated cut-point-dashboard arc, the About opener that restated the hero-lede's
+career arc, and the Publications lead's most-cited clause. Two look-alike
+redundancies were deliberately KEPT: the 373,000 care-gaps `.stat-num` (the
+additivity exception, which surfaces a number from a closed fold) and the
+six-venue Publications fold summary (locked; the dot-plot venue labels are
+hover-only). Page **9,928 → 9,537px @1363px (−391px)**, 17,364 → 16,480px
+@390px, measured before/after on this branch. Full record in
+`docs/homepage-redundancy-2026-08-14.md`. Design decisions below tagged
+"(Redundancy, 2026-08-14)" mark superseding wording; the Case-layer h3 list and
+the reference height are updated in place below.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -819,8 +848,10 @@ section 23 of the inline style block. Contracts, each load-bearing:
     three different shapes satisfy it completely. That is the trap; do not
     re-enter it by reaching for shape variety when the complaint is register.
 
-    The h3s are now three BARE NOUN PHRASES: "Stars measurement" /
-    "Auditable measure logic" / "Dashboards people open". That is knowingly a
+    The h3s are now three BARE NOUN PHRASES: "Statistical measurement" (was
+    "Stars measurement" until the 2026-08-14 redundancy pass reframed Case 01
+    off "Stars"; the domain moved to the body) / "Auditable measure logic" /
+    "Dashboards people open". That is knowingly a
     matched mold, and it is allowed, because the distinction that matters is
     rhetorical template versus taxonomy. Three gerund-led parallel
     constructions are a rhetorical device the reader hears. Three nouns
@@ -881,6 +912,11 @@ section 23 of the inline style block. Contracts, each load-bearing:
     say which it used. Against that pass's own baseline the page went
     10,721 → 9,928px (−7.4%). Measure against 9,928 @1363px, not 10,549,
     10,498 or 9,543.
+
+    **Superseded again by the 2026-08-14 redundancy pass: the reference
+    height is now 9,537px @1363px (16,480px @390px),** measured before/after
+    on this branch (9,928 → 9,537 @1363px, −391px). Measure against
+    9,537 @1363px.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,

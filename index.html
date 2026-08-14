@@ -2460,7 +2460,7 @@ body::before {
       <div class="body">
         <h3>Medicare Advantage Insight Engine</h3>
         <p>
-          A modeled funnel puts a Stars analyst near 200 news items a week, about 20 clearing a relevance screen, four or five worth acting on. Those numbers come from a reasoned model, not measurement. The engine scores each item on six named features, from source authority to recency, and posts what clears the threshold to a Teams webhook with a per-feature breakdown.
+          The engine scores each incoming healthcare news item on six named features, from source authority to recency, and posts what clears the threshold to a Teams webhook with a per-feature breakdown.
         </p>
 
         <!-- ==========================================================
@@ -2471,8 +2471,9 @@ body::before {
              relevance screen to the few items that matter; the worked
              accept/reject example and its per-feature bars now live
              only in the methodology post (linked below). The three
-             figures (~200/week, ~20, ~5) are the model's, and all
-             three already appear in the prose above; the figcaption
+             figures (~200/week, ~20, ~5) are the model's and live
+             only in this figure now; the prose above describes the
+             scoring mechanism without restating them. The figcaption
              repeats the modeled-not-measured caveat deliberately, so
              the numbers keep their scope if the figure is read alone.
 
@@ -2721,8 +2722,8 @@ body::before {
     <h2>How I work</h2>
 
     <div class="case">
-      <h3>Stars measurement</h3>
-      <p class="case-deck">I work on measure methodology and cut-point forecasting for Medicare Advantage Star Ratings.</p>
+      <h3>Statistical measurement</h3>
+      <p class="case-deck">I develop the statistical methods behind healthcare quality measurement and cut-point forecasting.</p>
       <p>CMS computes cut points from the scores every plan reports, so a forecast trained on last year's trend misses in the years the rules change. I own that projection in my <a href="#exp-bha">current role</a>, and the <a href="#projects">Stars Cliff Simulator below</a> lets you move a measure and see the rating change. My <a href="#publications">published research</a> comes from the years before that.</p>
       <p class="case-links">In writing: <a href="/blog/lucas-critique-stars-forecasting/">the Lucas critique of cut-point forecasts</a> <a href="/blog/what-the-metric-cannot-see/">where quality actually lives</a> <a href="/blog/interrupted-time-series-care-redesign/">interrupted time series</a></p>
     </div>
@@ -2737,7 +2738,7 @@ body::before {
     <div class="case">
       <h3>Dashboards people open</h3>
       <p class="case-deck">I build the dashboards and alert feeds analysts work from, and I count one finished when it replaces the workflow it was built for.</p>
-      <p>The <a href="/medicare-advantage-insight-engine/briefing.html">Insight Engine</a> posts scored items to a Teams channel, which retired an emailed digest nobody opened. The cut-point review dashboard in my <a href="#exp-bha">current role</a> went the same way, from a spreadsheet everyone maintained separately to one surface people actually open.</p>
+      <p>The <a href="/medicare-advantage-insight-engine/briefing.html">Insight Engine</a> posts scored items to a Teams channel, which retired an emailed digest nobody opened. The cut-point review dashboard in my <a href="#exp-bha">current role</a> went the same way.</p>
       <p class="case-links">In writing: <a href="/blog/medicare-advantage-insight-engine/">the Insight Engine method</a> <a href="/blog/practice-automation-workflow-roi/">ROI from clinical workflow data</a></p>
     </div>
   </section>
@@ -3019,7 +3020,7 @@ body::before {
              ========================================================== -->
         <figure class="cliff-figure">
           <figcaption>
-            Most Medicare Advantage contracts in the CMS 2025 Star Ratings cluster just below the 4.0 cutoff that can trigger $50M in QBP bonus payments for a mid-size contract. Data from the CMS October 2024 release.
+            Most Medicare Advantage contracts in the CMS 2025 Star Ratings cluster just below the 4.0 QBP cutoff. Data from the CMS October 2024 release.
           </figcaption>
 
           <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Density curve of MA-PD contract Star Ratings showing most contracts below the 4.0 QBP cutoff, from CMS 2025 release">
@@ -3202,7 +3203,7 @@ body::before {
   <section id="about">
     <h2>About</h2>
     <p>
-      <span class="newthought">I started in writing</span> and editing, and moved into data engineering when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it.</span> in qualitative research, through regression in population health, to time series in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.
+      <span class="newthought">I moved into data engineering</span> when I realized the tools I needed to study complex healthcare systems didn't exist yet. The methodological thread runs from grounded theory<label for="sn-grounded" class="margin-toggle sidenote-number"></label><input type="checkbox" aria-label="Show note on grounded theory methodology" id="sn-grounded" class="margin-toggle"/><span class="sidenote">Grounded theory, developed by Glaser and Strauss in 1967, builds theory inductively from coded qualitative data rather than testing hypotheses against it.</span> in qualitative research, through regression in population health, to time series in Stars forecasting. Different instruments ask the same underlying question about how complex systems behave under measurement.
     </p>
   </section>
 
@@ -3451,7 +3452,7 @@ body::before {
     <h2>Publications</h2>
 
     <p>
-      <span class="newthought">Six peer-reviewed publications</span> in health services research appeared between 2012 and 2019, the most-cited of them on primary care teams and electronic health records. The dot plot above charts them beside the presentation record.
+      <span class="newthought">Six peer-reviewed publications</span> in health services research appeared between 2012 and 2019. The dot plot above charts them beside the presentation record.
     </p>
 
     <details class="fold pub-fold">
@@ -3580,7 +3581,7 @@ body::before {
     </p>
 
     <details class="speaking-list">
-      <summary>Full list (17 presentations, 2010 to 2017; year shown once per group)</summary>
+      <summary>Full list (year shown once per group)</summary>
       <ol>
         <li><span class="year">2017</span><span class="venue">National Collaborative for Improving Primary Care Through Industrial and Systems Engineering</span><span class="place">Madison, WI</span></li>
         <li><span class="year"></span><span class="venue">UW Institute for Clinical and Translational Research, Dissemination and Implementation Short Course</span><span class="place">Madison, WI</span></li>
@@ -3665,10 +3666,10 @@ body::before {
 
        Two empty spans rather than an id on <figure class="gantt-figure">
        itself, because an element carries one id and these are two. Placing
-       both here keeps the pair symmetrical and lands them on the lead
-       paragraph, so the figure and its figcaption are fully in view; an id
-       on the figure would scroll its top edge to the viewport top and cut
-       the sentence that introduces it.
+       both here keeps the pair symmetrical and lands a deep link just
+       above the figure, so the figure and its figcaption sit fully in view
+       under their scroll-margin-top; an id on the figure itself would
+       instead scroll its top edge to the viewport top.
 
        .section-anchor is display:block; height:0 with scroll-margin-top,
        so this costs no layout. lint_links check 1b now validates any
@@ -3676,10 +3677,9 @@ body::before {
        ids, which it could not do when they were last removed. -->
   <span id="education" class="section-anchor"></span>
   <span id="service" class="section-anchor"></span>
-  <p>The chart below gathers degrees, certificates, and service commitments into one frame, because several overlapped rather than following in a tidy sequence.</p>
   <figure class="gantt-figure">
     <figcaption>
-      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges; the two service roles running through 2014-15 are the undergraduate research mentorship and the WORT board chair, and the MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
+      Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges. The MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
     <svg viewBox="0 0 600 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
