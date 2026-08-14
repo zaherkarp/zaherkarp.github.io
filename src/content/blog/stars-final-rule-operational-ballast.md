@@ -6,8 +6,6 @@ tags: ["medicare-advantage", "stars", "quality-measurement", "health-policy"]
 draft: true
 ---
 
-This is the first of two articles on the 2026 Medicare Advantage Star Ratings upheaval: this one covers the final rule, the measures it removes, and the contracts most exposed. The second covers the Clover Health ruling and the three-rulebook planning problem it creates for Stars analytics.
-
 For years, operational and administrative measures were the quiet ballast of a Star Rating. Call center performance, complaint rates, appeals timeliness, member retention. Most plans scored well on them, year after year, and that reliable performance pulled contract averages up and damped volatility. They were a large part of the reason a contract with middling clinical results could still hold four stars.
 
 The Centers for Medicare & Medicaid Services (CMS) removed nearly all of them in the Contract Year 2027 final rule issued on April 2, 2026. The proposed rule had listed twelve measures for retirement; the final rule carried eleven of them through, sparing only the diabetic eye exam measure after commenters argued that retinal screening is a load-bearing piece of comprehensive diabetes care. The eleven break down as seven operational and administrative measures, two process measures, and two patient experience measures: timely appeals decisions, appeals review, the call center interpreter and TTY measures on both the Part C and Part D sides, plan complaints, Medicare Plan Finder accuracy, members choosing to leave the plan, Special Needs Plan care management, statin therapy for cardiovascular disease, and the CAHPS customer service and rating of health care quality measures. Three retire at Star Year 2028 and the remaining eight at Star Year 2029.
