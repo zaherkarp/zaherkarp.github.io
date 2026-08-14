@@ -12,7 +12,18 @@ __pycache__/
 .vscode/
 .idea/
 *.swp
-.claude/
+
+# Claude Code. Local agent state stays out of the repo; SHARED slash commands
+# are tracked one file at a time. The allowlist is per-file on purpose: a
+# directory-level carve-out would also surface personal commands kept in
+# .claude/commands/ as untracked, which is how a private file reaches a public
+# repo by accident. Add one `!` line per command you mean to share.
+# (`.claude/*`, not `.claude/`, because git cannot re-include anything under an
+# excluded DIRECTORY, only under an excluded glob of its children.)
+.claude/*
+!.claude/commands/
+.claude/commands/*
+!.claude/commands/thalia-review.md
 
 # Env
 .env

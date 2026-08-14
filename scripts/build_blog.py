@@ -523,11 +523,17 @@ def clean_output_dir() -> None:
         OUT_DIR.mkdir(parents=True)
 
 
-def main() -> int:
-    if not POSTS_DIR.exists():
-        print(f"error: {POSTS_DIR} does not exist", file=sys.stderr)
-        return 1
+def make_jinja_env() -> Environment:
+    """Build the Jinja environment the blog templates are rendered in.
 
+    A factory rather than an inline block because `scripts/blog preview`
+    renders the same templates and must render them the same way. It used to
+    construct its own copy of this environment, which then failed to grow the
+    `tag_slug` filter when post.html started using it, so preview raised
+    "No filter named 'tag_slug'" on every post carrying tags, which is all of
+    them. One source is the fix that cannot silently drift again; a second
+    copy kept in sync by hand is the one that already did.
+    """
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=select_autoescape(["html"]),
@@ -537,6 +543,15 @@ def main() -> int:
     # Lets the post template build /blog/tags/<slug>/ hrefs from a raw tag
     # using the same slug rule the tag pages are written under.
     env.filters["tag_slug"] = slugify_tag
+    return env
+
+
+def main() -> int:
+    if not POSTS_DIR.exists():
+        print(f"error: {POSTS_DIR} does not exist", file=sys.stderr)
+        return 1
+
+    env = make_jinja_env()
 
     md = make_markdown()
     now_utc = datetime.now(timezone.utc)
