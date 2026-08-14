@@ -422,6 +422,20 @@ label.margin-toggle:not(.sidenote-number) { display: none; }
    work, so the 1.4.10 Reflow path is untouched. */
 @media (min-width: 851px) {
   input.margin-toggle { display: none; }
+
+  /* Speaking's margin stat is a tall note (7 to 9 wrapped lines) anchored in
+     a short section, so its right float dangles past the section into the
+     Education/Service Gantt below it. Measured, the gap from the note's bottom
+     to the Gantt figcaption shrank from 45px at 1440 to 21px at 1363 and went
+     NEGATIVE (the note overlapping the figure) at 1000px and below. Two parts,
+     both scoped to this floating regime: the figure clears the right float so
+     it can never sit beside the note, and the note carries a bottom margin so
+     the clearance lands the figure a uniform ~43px below it at every width
+     (matching the natural wide-screen gap) rather than touching. Both are inert
+     at <=850px, where the stat note renders in flow (float:none) with no right
+     float to clear. Verified at 1440/1363/1000/900/860px. */
+  figure.gantt-figure { clear: right; }
+  #speaking .marginnote { margin-bottom: 2.5rem; }
 }
 
 /* Narrow viewport: collapse notes, reveal via toggle.
@@ -1943,11 +1957,20 @@ h2.col-head {
    the featured pair. So the opening surfaces two summaries plus six
    more dated titles instead of hiding them behind a disclosure. */
 .hero-writing .entry { margin-bottom: 1.5rem; }
+/* "Recent" head over the writing index (2026-08-14, owner). The dividing rule
+   and its padding moved here from .hero-index so the boundary sits ABOVE the
+   label (end of the two curated "Selected writing" posts, start of the recent
+   list), not between the label and its own tiles. margin-top opens the gap
+   after the featured pair; the base h2.col-head supplies the small-caps muted
+   treatment and the 1rem bottom margin to the tiles. */
+h2.col-head.hero-index-head {
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
 .hero-index {
   max-width: 100%;
   margin: 0.2rem 0 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--rule);
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 0.55rem 1.6rem;
 }
@@ -2336,11 +2359,19 @@ body::before {
     </div>
     <!-- writing-list:end -->
 
-      <!-- More recent titles, surfaced (formerly the "More writing" fold in
+      <!-- Recent-by-date titles (formerly the "More writing" fold in
            #writing). The writing-index markers MOVED here; the build
            repopulates them in place. Tile summaries are hidden in the hero
            via CSS (.hero-index .tile-summary { display:none }) so this reads
-           as a compact dated title list, not a second summary block. -->
+           as a compact dated title list, not a second summary block.
+
+           The "Recent" head (2026-08-14, owner) scopes the "Selected writing"
+           head above to just the two curated featured posts: these six are the
+           next-most-recent by date, not hand-selected, so they read under their
+           own label. The dividing rule sits on this head (.hero-index-head), so
+           it reads as the boundary between the two tiers, not a rule between the
+           label and its tiles. -->
+      <h2 class="col-head hero-index-head">Recent</h2>
       <div class="writing-index hero-index">
         <!-- writing-index:start -->
     <div class="writing-tile">
