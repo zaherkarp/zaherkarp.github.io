@@ -3126,6 +3126,17 @@ content. The streamlining + QA program that motivates them (tests, CI tuning,
 consolidation, new gates) is documented in
 [docs/streamlining-qa-plan.md](docs/streamlining-qa-plan.md).
 
+One test file is deliberately not characterization and does not fit that
+description: `test_claude_md_repo_facts.py` guards a block of THIS file, the
+§Thalia Repo facts summary of the frontmatter schema, against the sources it
+restates. It exists because that block is a hand-maintained second copy on the
+one surface a fresh session reads first, and it earned its place immediately by
+catching `homepageSelected` documented nowhere. A gate belongs here, rather
+than in `scripts/`, when what it protects is a claim in the documentation:
+`lint.yml` runs the linters that guard the site, and a linter that failed over
+a paragraph in CLAUDE.md would block a push over prose. Prefer a linter for
+anything that guards the rendered site.
+
 ---
 
 ## What NOT to do
@@ -3429,12 +3440,25 @@ is authoritative. Keep current when the site changes.
 
   `draft` defaults to false when absent, and 57 of the 74 posts omit it, so
   absence means published. Key order and quoting vary across posts and nothing
-  enforces either. Three optional keys exist: `homepageMarginnote` (surfaces on
-  the homepage writing entry and must be additive to the post's own title and
-  description, enforced by `lint_notes`), `lifeweek_topic` (labels the post's
-  dot in /life-in-weeks/), and `vocab_exempt` (per-post opt-out from
-  `lint_vocab`, for quotes and citations that genuinely use a non-canonical
-  program name).
+  enforces either. Four optional keys are live: `homepageSelected` pins a post
+  ahead of the rest in the homepage hero's "Selected writing" column, with both
+  groups still sorted newest-first inside themselves, while /blog/ stays
+  chronological and never consults it (see `build_portfolio.select_writing`);
+  `homepageMarginnote` is still read, preserved, and checked by `lint_notes`
+  for additivity against the post's own title and description, but no longer
+  renders on the homepage, since the writing list moved into the full-width
+  hero where a floating note has no margin to sit in (see §Writing section
+  update rule); `lifeweek_topic` labels the post's dot in /life-in-weeks/; and
+  `vocab_exempt` is a per-post opt-out from `lint_vocab`, for quotes and
+  citations that genuinely use a non-canonical program name. A fifth key,
+  `subtitle`, sits on two 2025 posts and is read by nothing: no script, no
+  template, no stylesheet. Treat it as inert, not as a feature to extend.
+
+  Keeping this list honest is `scripts/tests/test_claude_md_repo_facts.py`,
+  which fails when a post uses a key this section does not name, and when the
+  paste above stops matching the post it quotes. It was written after this
+  block shipped naming three optional keys and missing `homepageSelected`
+  entirely.
 - **Drafts convention.** Recommendation: keep the one the site already has,
   `draft: true` in frontmatter, paired with the ledger row in
   `src/content/blog-ideas.yaml`. The slug is the join key. `blog new` and `blog
