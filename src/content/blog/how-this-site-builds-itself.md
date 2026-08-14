@@ -8,7 +8,7 @@ tags: ["portfolio", "static-site", "github-actions", "python", "ci-cd", "pipelin
 
 # How This Site Builds Itself
 
-There is a thing people say about static sites: they are just files. No database, no framework, no build, you just edit the HTML and push. That is true for the surface of this site, and not quite true for any of the source that produces it. The homepage is hand-authored HTML, but the blog is not HTML at all in the repo. It is markdown with frontmatter, linted on the way in and rendered on the way out. The resume is not a PDF in the repo. It is markdown that becomes a PDF on every push, and so is the CV next to it. The activity sparkline above the writing section, the eight most recent post entries, the citation counts on each publication: none of those are hand-maintained. They are outputs of scripts that run in CI and commit themselves back.
+There is a thing people say about static sites: they are just files. No database, no framework, no build, you just edit the HTML and push. That is true for the surface of this site, and not quite true for any of the source that produces it. The homepage is hand-authored HTML, but the blog is not HTML at all in the repo. It is markdown with frontmatter, linted on the way in and rendered on the way out. The resume is not a PDF in the repo. It is markdown that becomes a PDF on every push, and so is the CV next to it. The activity sparkline in the writing column, the eight post entries beside it, the citation counts on each publication: none of those are hand-maintained. They are outputs of scripts that run in CI and commit themselves back.
 
 The reason I bring this up is that "no framework" is often confused with "no build system." It is not the same thing. A framework is a set of opinions about how a build system should be assembled. Removing the framework does not remove the build system. It just hands you the assembly job. This post is about how I did that assembly for this site, what each pipeline does, and a thing I did not expect when I started: that almost every pattern I reached for by instinct turned out to have a name in the literature. The build is small and homemade, but it is made of the same primitives a much larger system is made of, and seeing them at this scale is part of why I keep it homemade.
 
@@ -108,9 +108,9 @@ DOCS = [
 The interesting transform here is a regex post-pass that restructures role headers. The markdown looks like this:
 
 ```markdown
-**Health Catalyst** | Senior Data Engineer
-March 2020 – February 2025
-*Python, SQL Server, Power BI, T-SQL*
+**Health Catalyst** | Healthcare Analytics Manager
+Aug 2020 – Aug 2025
+*AWS (S3, Redshift, QuickSight) · Azure / Databricks · dbt, Python, T-SQL*
 ```
 
 Markdown-it renders that as a single `<p>` with `<br>`-separated inlines. That works, but it is hard to style; print CSS cannot target "the third inline span inside this paragraph" without a structural hook. The post-pass rewrites it into a `<header class="role">` with three labelled child elements, and the print CSS targets each cleanly. Writing a full markdown-it plugin for this one shape would be overkill, and the regex is scoped tightly enough (it matches the exact `strong | text <br> text <br> em` shape) that it will not false-match other content. This is the engineering judgment that gets moralized away in style guides that say "never parse HTML with regex": the rule is real, but it is a rule about *parsing arbitrary structure*. Transforming one rigid, self-produced shape is a different problem, and the targeted tool is the right size for it.
@@ -122,7 +122,7 @@ The CI runner needs `libpango-1.0-0` and `libpangoft2-1.0-0` installed before We
 This is the one that turned out to be the most fun to write. It owns several regions of `index.html` and one region of the life-in-weeks page, splicing generated content into each between marker comments while leaving the hand-authored prose around them alone:
 
 - A 24-week activity sparkline showing recent posting cadence.
-- The two most recent non-draft posts as featured entries, plus the next six as compact tiles.
+- The writing column: two posts as full featured entries, plus the next six as compact tiles. Ordering is opt-in rather than purely chronological. A post can carry `homepageSelected: true` and sort ahead of the rest, with both groups still newest-first inside themselves, so the column reads as a descending date list rather than a broken sort. Publication date alone used to decide what led the page, which is how a Teradata utility note came to sit above the healthcare work the page is actually arguing for. The blog listing stays strictly chronological and never consults the field.
 - Semantic Scholar citation counts on each publication entry.
 - A "thought" dot per post injected into the life-in-weeks grid.
 - A month-precision "Updated" stamp in the footer.
@@ -181,7 +181,7 @@ The interesting consequence is that the homepage is never *wrong* about the blog
 
 Two scripts are deliberately off CI, because their inputs change rarely and the failure mode of forgetting to run them is cosmetic, not broken content.
 
-`scripts/build_og.py` rebuilds `og-default.png` (the Open Graph card, 1200 by 630) from inlined design tokens via Pillow. The card content (name, subtitle, domain) changes about once a year. `scripts/build_cliff.py` redraws the Medicare Advantage Star Ratings density curve on the homepage from the canonical CMS distribution in `src/data/`, using a pure-Python Gaussian kernel density estimate so the script has no dependencies beyond the standard library; it gets re-run when CMS releases new ratings each October. Both write into marker regions, both are idempotent, and both are honest about the tradeoff: "you will remember to run it" is an acceptable contract when the worst case is a slightly stale image, and an unacceptable one when the worst case is a published post that never reaches the homepage. Knowing which builds can be manual is itself a design decision, not an oversight.
+`scripts/build_og.py` rebuilds `og-default.png` (the Open Graph card, 1200 by 630) via Pillow, reading its colors from `src/content/palette.yaml`. It used to inline them, on the reasoning that a one-off renderer does not need the indirection, and it duly went stale: the site changed accent colors and the card kept painting the old palette for months, invisible to the palette linter because that only inspects files carrying marker spans. Reading the source makes that class of drift impossible rather than merely detectable, which is the better trade whenever it is available. The card content (name, subtitle, domain) changes about once a year. `scripts/build_cliff.py` redraws the Medicare Advantage Star Ratings density curve on the homepage from the canonical CMS distribution in `src/data/`, using a pure-Python Gaussian kernel density estimate so the script has no dependencies beyond the standard library; it gets re-run when CMS releases new ratings each October. Both write into marker regions, both are idempotent, and both are honest about the tradeoff: "you will remember to run it" is an acceptable contract when the worst case is a slightly stale image, and an unacceptable one when the worst case is a published post that never reaches the homepage. Knowing which builds can be manual is itself a design decision, not an oversight.
 
 ## The lint suite
 
