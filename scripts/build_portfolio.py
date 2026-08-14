@@ -228,7 +228,7 @@ def build_activity_grid(posts: list[dict]) -> str:
     # The tags stay reachable at /blog/tags/.
     # Tests: test_activity_grid_suppresses_cadence_marginnote.
     return (
-        '<p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 1.4rem;">\n'
+        '<p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.4rem;">\n'
         '      24 weeks\n'
         '      <svg class="cadence" viewBox="0 0 280 20" width="280" height="20" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
