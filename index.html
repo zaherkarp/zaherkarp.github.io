@@ -3718,7 +3718,7 @@ body::before {
          Entrepreneurial Boot Camp    2015          square
 
        Entry encoding (Service lane, top to bottom):
-         WORT board chair             2013 to 2015  bar
+         WORT community advisory board chair  2013 to 2015  bar
          UG research mentor           2014 to 2017  bar
          Digital Fellow               2016          square
          Road Home board              2016 to 2020  bar
@@ -3833,10 +3833,13 @@ body::before {
            Seven entries, top to bottom by start year.
            ============================================================ -->
 
-      <!-- WORT board chair, 2013-2015.
-           x: 180 + (2013-2003)*38 = 560 to 180 + (2015-2003)*38 = 636 -->
+      <!-- WORT community advisory board chair, 2013-2015.
+           x: 180 + (2013-2003)*38 = 560 to 180 + (2015-2003)*38 = 636.
+           Label right-anchored to the LEFT of the bar: the accurate name is
+           long, and the service lane is empty before 2013, so it runs left
+           into that gap instead of colliding with UG research mentor below. -->
       <line x1="560" y1="162" x2="636" y2="162" stroke="#111" stroke-width="4" style="--seq:2"/>
-      <text x="644" y="167" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WORT board chair</text>
+      <text x="552" y="167" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111" text-anchor="end">WORT community advisory board chair</text>
 
       <!-- UG research mentor, 2014-2017.
            x: 180 + (2014-2003)*38 = 598 to 180 + (2017-2003)*38 = 712 -->
@@ -3864,6 +3867,13 @@ body::before {
            the Spirit of Charlie square on the row below. -->
       <line x1="788" y1="252" x2="1054" y2="252" stroke="#111" stroke-width="4" style="--seq:7"/>
       <text x="780" y="257" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111" text-anchor="end">peer reviewer (ongoing)</text>
+      <!-- Ongoing cue: a small arrowhead past the bar's end (the "now" tick)
+           says the role continues into the present. Without it, the bar
+           terminating just past the last NUMBERED tick (2023) read as ending
+           in 2023. It is a <polygon>, not a stroke-width="4" bar or a
+           fill="#111" rect, so lint_gantt and the scroll-draw selectors
+           ignore it; the same arrowhead idiom the colophon diagram uses. -->
+      <polygon points="1054,246 1067,252 1054,258" fill="#111"/>
 
       <!-- Spirit of Charlie Award, 2021 (single year).
            Square centered at x = 180 + (2021-2003)*38 = 864, row y=270 -->
@@ -3955,10 +3965,11 @@ body::before {
            Seven entries, top to bottom by start year.
            ============================================================ -->
 
-      <!-- WORT board chair, 2013-2015.
-           x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318 -->
+      <!-- WORT community advisory board chair, 2013-2015.
+           x: 90 + (2013-2003)*19 = 280 to 90 + (2015-2003)*19 = 318.
+           Right-anchored left of the bar, matching the wide variant. -->
       <line x1="280" y1="142" x2="318" y2="142" stroke="#111" stroke-width="4" style="--seq:2"/>
-      <text x="322" y="146" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111">WORT board chair</text>
+      <text x="274" y="146" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111" text-anchor="end">WORT community advisory board chair</text>
 
       <!-- UG research mentor, 2014-2017.
            x: 90 + (2014-2003)*19 = 299 to 90 + (2017-2003)*19 = 356 -->
@@ -3986,6 +3997,8 @@ body::before {
            the Spirit of Charlie square on the row below. -->
       <line x1="394" y1="222" x2="527" y2="222" stroke="#111" stroke-width="4" style="--seq:7"/>
       <text x="390" y="226" font-family="et-book, Palatino, Georgia, serif" font-size="14" fill="#111" text-anchor="end">peer reviewer (ongoing)</text>
+      <!-- Ongoing cue, matching the wide variant (see the note there). -->
+      <polygon points="527,218 537,222 527,226" fill="#111"/>
 
       <!-- Spirit of Charlie Award, 2021 (single year).
            Square at x = 90 + (2021-2003)*19 = 432, y=280 -->
