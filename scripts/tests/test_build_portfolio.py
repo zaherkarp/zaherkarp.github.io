@@ -192,25 +192,72 @@ def test_select_writing_keeps_each_group_newest_first():
     ]
 
 
-def test_writing_list_and_index_share_one_selection_order():
-    """build_writing_list takes the first WRITING_FEATURED of the ordering and
-    build_writing_index takes the next WRITING_TILES, so a flagged post must
-    never appear in both tiers or be skipped between them."""
+def test_writing_tiers_do_not_overlap():
+    """The two tiers are chosen by different orderings now, so the only thing
+    stopping a flagged lead post from also filling a Recent slot is
+    build_writing_index excluding the featured slugs. Pin that: every featured
+    post is absent from the index, and every index post is absent from the
+    featured pair."""
     posts = [_writing_post(28 - i, f"p{i}", selected=i < 4) for i in range(10)]
-    featured = build_portfolio.build_writing_list(posts)
-    index = build_portfolio.build_writing_index(posts)
-    ordered = [p["slug"] for p in build_portfolio.select_writing(posts)]
+    featured_html = build_portfolio.build_writing_list(posts)
+    index_html = build_portfolio.build_writing_index(posts)
 
-    for slug in ordered[: build_portfolio.WRITING_FEATURED]:
-        assert f"/blog/{slug}/" in featured
-        assert f"/blog/{slug}/" not in index
-    tiles = ordered[
-        build_portfolio.WRITING_FEATURED : build_portfolio.WRITING_FEATURED
-        + build_portfolio.WRITING_TILES
+    featured = [
+        p["slug"]
+        for p in build_portfolio.select_writing(posts)[: build_portfolio.WRITING_FEATURED]
     ]
+    tiles = [
+        p["slug"]
+        for p in build_portfolio.select_recent(posts, set(featured))[
+            : build_portfolio.WRITING_TILES
+        ]
+    ]
+    assert not set(featured) & set(tiles)
+
+    for slug in featured:
+        assert f"/blog/{slug}/" in featured_html
+        assert f"/blog/{slug}/" not in index_html
     for slug in tiles:
-        assert f"/blog/{slug}/" in index
-        assert f"/blog/{slug}/" not in featured
+        assert f"/blog/{slug}/" in index_html
+        assert f"/blog/{slug}/" not in featured_html
+
+
+def test_writing_index_ignores_homepage_selected():
+    """The regression this pipeline shipped: `homepageSelected` ordered the
+    index too, so flagged posts filled every slot under a head that says
+    "Recent" and newer unflagged posts never reached the page. A flagged post
+    that is not one of the featured pair must rank purely on its date."""
+    posts = [
+        _writing_post(28, "lead-a", selected=True),
+        _writing_post(27, "lead-b", selected=True),
+        _writing_post(2, "old-but-flagged", selected=True),
+        _writing_post(20, "newer-unflagged"),
+    ]
+    index_html = build_portfolio.build_writing_index(posts)
+    assert index_html.index("/blog/newer-unflagged/") < index_html.index(
+        "/blog/old-but-flagged/"
+    )
+
+
+def test_writing_index_is_strictly_newest_first():
+    """The tiles render a visible date column, so the Recent tier must be in
+    descending date order regardless of which posts carry the flag."""
+    posts = [
+        _writing_post(28, "lead-a", selected=True),
+        _writing_post(27, "lead-b", selected=True),
+        _writing_post(5, "third"),
+        _writing_post(20, "first", selected=True),
+        _writing_post(12, "second"),
+    ]
+    featured = {
+        p["slug"]
+        for p in build_portfolio.select_writing(posts)[: build_portfolio.WRITING_FEATURED]
+    }
+    assert [p["slug"] for p in build_portfolio.select_recent(posts, featured)] == [
+        "first",
+        "second",
+        "third",
+    ]
 
 
 def test_activity_grid_suppresses_cadence_marginnote():

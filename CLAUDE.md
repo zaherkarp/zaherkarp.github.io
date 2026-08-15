@@ -369,6 +369,44 @@ hover-only). Page **9,928 → 9,537px @1363px (−391px)**, 17,364 → 16,480px
 "(Redundancy, 2026-08-14)" mark superseding wording; the Case-layer h3 list and
 the reference height are updated in place below.
 
+**Writing tiers and chart sizing (2026-08-15, this branch).** Two unrelated
+owner reports. **(1) The hero's "Recent" tier was not recent.** Both tiers
+sliced ONE `select_writing()` ordering, so `homepageSelected` decided the
+"Recent" grid as well as the "Selected writing" pair; eight posts carried the
+flag against eight total slots, so the entire column had gone hand-curated and
+the four genuinely most recent posts appeared nowhere. The flag now reaches the
+featured pair and stops (`select_recent`, newest-first minus that pair). The
+markup comment above the grid had claimed the correct behavior since
+2026-08-14; only the code was wrong. **(2) The Education/Service Gantt was
+smaller than its neighbours.** All three wide charts now render to the same 90%
+edge. The Gantt could not simply be widened: its SVG was authored against a
+600-unit viewBox, so scaling it to ~1159px would have taken its `font-size` 14
+labels to ~25px against ~16px on both neighbours, so its x axis was stretched
+onto a 1200-unit viewBox instead (`x(year) = 180 + (year-2003)*38`) and the type
+left at chart scale. The career arc's CHART dropped to 90% while its FIGURE
+stayed 100%, so its top rule still brackets the hero with `.split-hero`'s.
+
+**One consequence was found by rendering and would not have been found by
+reading:** spending the Gantt's room horizontally leaves less of it vertically,
+so at a 322px phone column the wide chart's labels rendered ~4px against the old
+chart's ~7.5px. It had been the page's best-behaved chart at narrow widths,
+purely because it was the only wide chart with a narrow viewBox, and the first
+cut made it the worst. Fixed by giving it the `tl-horizontal`/`tl-rail` and
+`dp-wide`/`dp-mobile` treatment its neighbours already had: `svg.gantt-narrow`
+is the pre-rescale chart verbatim, so mobile is byte-for-byte what it was. That
+forced `_common.gantt_marks` to scope to the wide variant
+(the two transforms disagree) and a new `lint_gantt.variant_label_drift` gate to
+stop the unparsed copy drifting; see §Gantt figure alignment lint.
+
+**The swap sits at 900px, not the 760px its neighbours use** (owner, after the
+first cut shipped at 760). The residual cost that choice removes was real and
+measured: at 760 the wide chart stayed on through 761-900px rendering 8.3-9.9px
+type, the window where it reads worst. At 900 the same widths render 14.6-17.4px.
+What is traded for it is that between 761 and 900px this figure shows its narrow
+form while the career band and dot plot still show their wide ones, so the three
+charts disagree in that window; legibility won. Page 9,116 → 9,019px @1363px.
+Suite 155 → 182 tests.
+
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
 ---
@@ -919,8 +957,19 @@ section 23 of the inline style block. Contracts, each load-bearing:
 
     **Superseded again by the 2026-08-14 redundancy pass: the reference
     height is now 9,537px @1363px (16,480px @390px),** measured before/after
-    on this branch (9,928 → 9,537 @1363px, −391px). Measure against
-    9,537 @1363px.
+    on this branch (9,928 → 9,537 @1363px, −391px).
+
+    **Superseded again by the 2026-08-15 chart-sizing pass: the reference
+    height is 9,019px @1363px (15,252px @390px).** Measure against those.
+    Note the 9,537 above was never re-measured after the passes that landed
+    between it and this one, so the pass's OWN before/after is the honest
+    number: 9,116 → 9,019 @1363px (−97px), from the career arc's chart
+    dropping to 90% (−47px) and the Gantt's re-layout onto a wider, shorter
+    viewBox (−18px), the rest being reflow. @390px the same pass went
+    15,293 → 15,252, and ALL of that −41px came from the writing tiers
+    changing which posts render, not from the charts: below 760px both the
+    arc and the Gantt swap to narrow variants, and neither variant's
+    geometry moved.
 
 The exhibit set (01: Lucas
 critique, Metric, ITS; 02: HEDIS ETL patterns, CI/CD series,
@@ -937,7 +986,23 @@ live Insight Engine feed (verified 2026-08-10), not an internal BHA surface.
 
 **(Direction B, 2026-07-26)** The career timeline is a full-width band below the
 split hero (`figure.timeline.career-band`, NOT inside the grid). Two SVGs swap at
-760px:
+760px.
+
+**(2026-08-15, owner) The FIGURE and the CHART are two different widths, and
+that is deliberate.** `figure.timeline.career-band` keeps `width: 100%`;
+`svg.tl-horizontal` is capped at `max-width: 90%`. All three of the page's wide
+charts (career band, publications dot plot, Education/Service Gantt) now render
+to the same 90% edge, while the figure keeps its full-width `border-top` so that
+rule still lines up with `.split-hero`'s rule above it, the two together
+bracketing the hero. Narrowing the figure instead would leave a 90% hairline
+sitting under a 100% one. The band's SVG `font-size` attributes were bumped
+15/17/20 -> 17/19/22 in the same pass, which HOLDS rendered label size at
+~16.4/18.4/21.3px, where the 2026-08-13 type pass had put it (16.1/18.2/21.5px);
+without the bump the 10% narrower chart would have taken them 10% down. The
+`tl-rail` was NOT touched: it renders at a fixed 320px cap, so its type never
+moved.
+
+The two SVGs:
   - **Wide horizontal `tl-horizontal` `viewBox="0 0 1200 440"` for desktop
     (>760px).** RESTORED verbatim (from git, `77db71e^`) from the
     pre-Timeline-Split hero arc rather than authored from scratch: three
@@ -1413,7 +1478,20 @@ that mirrors the Projects section (§Project numbering and layout),
 both generated by `scripts/build_portfolio.py` from
 `src/content/blog/*.md` frontmatter (publishDate, draft, title,
 description). Do not hand-edit the entries between any of these markers;
-the next CI run overwrites them. Two tiers:
+the next CI run overwrites them.
+
+**The two tiers are chosen by DIFFERENT orderings (2026-08-15), and that
+separation is the point.** `select_writing()` (`homepageSelected` first,
+newest-first inside each group) picks the featured pair under the "Selected
+writing" head; `select_recent()` (strictly newest-first, minus the featured
+slugs) picks the tiles under the "Recent" head. Until this date both tiers
+sliced ONE `select_writing()` ordering, `[:2]` and `[2:8]`, so the flag also
+decided what the column labelled recent. Eight posts carried the flag against
+eight total slots, so the whole column had gone hand-curated, no unflagged
+post reached the homepage at all, and the four genuinely most recent posts
+appeared nowhere. Do not re-merge the two orderings. The featured slugs are
+EXCLUDED rather than sliced past, so a flagged-but-old lead post cannot also
+take a Recent slot. Two tiers:
 
   - **Featured** (`WRITING_FEATURED = 2`): the two most recent non-draft
     posts, between `<!-- writing-list:start --> ... <!-- writing-list:end -->`
@@ -1446,8 +1524,9 @@ the next CI run overwrites them. Two tiers:
     still carries `id="writing-hero"`, the nav's `writing` target.
     (Superseded here: the 2026-07-29 wording that `#writing` holds the
     sparkline, is retitled "Writing cadence", and carries a lead.)
-  - **Index** (`WRITING_TILES = 6`): the next six posts after the
-    featured pair, between `<!-- writing-index:start --> ... <!-- writing-index:end -->`
+  - **Index** (`WRITING_TILES = 6`): the six most recent posts BY DATE,
+    excluding the featured pair, between
+    `<!-- writing-index:start --> ... <!-- writing-index:end -->`
     markers. **(Direction B, 2026-07-26)** these markers ALSO moved into the
     hero `.hero-writing` column, below the featured pair, inside a
     `<div class="writing-index hero-index">` (NOT a `<details>` fold anymore).
@@ -2938,12 +3017,49 @@ entry-level.
 (`index.html` `figure.gantt-figure`) in lockstep with the comprehensive
 record in `src/content/cv.md`, WITHOUT a shared data file. Each data mark
 encodes its year(s) positionally through the chart's own transform
-`x(year) = 90 + (year - 2003) * 19`: a single-year square's year is read
+`x(year) = 180 + (year - 2003) * 38`: a single-year square's year is read
 back from its centre x, a multi-year bar's start/end from x1/x2. Each
 mark is paired with the `<text>` label that follows it in source. Reading
 the year back from the geometry is what makes this more than a text diff —
 a mark drawn at the wrong x decodes to the wrong year and stops matching,
 even when its label is spelled perfectly (`test_mark_drawn_at_wrong_x_fails`).
+
+**The transform lives in `scripts/_common.py`** (`GANTT_X0`,
+`GANTT_PX_PER_YEAR`, `GANTT_BASE_YEAR`, `GANTT_LANE_DIVIDER_Y`) and the tests
+IMPORT those constants rather than restating them. They used to hardcode
+`90, 19, 2003`, which would have gone stale silently at the 2026-08-15
+re-layout: a fixture built on the old transform still decodes to years
+consistent with itself, so the tests would have kept passing while pinning a
+geometry the page no longer draws.
+
+**The figure carries TWO SVG variants and only one is parsed** (2026-08-15).
+`svg.gantt-wide` (viewBox `0 0 1200 334`, the transform above) renders above
+900px; `svg.gantt-narrow` (viewBox `0 0 600 292`, `x(year) = 90 + (year -
+2003) * 19`, the pre-rescale chart verbatim) renders at or below it, the same
+swap `tl-horizontal`/`tl-rail` and `dp-wide`/`dp-mobile` already make.
+
+**The 900px breakpoint is deliberately NOT the 760px its two neighbours use**
+(owner, 2026-08-15). The wide chart spends its room horizontally, so its type
+shrinks faster than theirs as the column narrows; measured at 761px it renders
+~8.3px where the narrow chart renders ~14.6px, and at 900px it is ~10px
+against ~17.4px. A 760px swap would keep the wide form through exactly the
+window where it reads worst. The accepted cost is that between 761 and 900px
+this figure shows its narrow form while the career band and the dot plot still
+show their wide ones. Note the figure's own `max-width` override stays at
+760px and is a SEPARATE question: it tracks where the sidenote margin
+disappears, not where this chart stops reading. Do not "align" the two numbers
+without re-measuring. A side effect worth knowing: a print viewport is ~816px,
+so the printed page now carries the NARROW chart, which reads better there
+than the wide one would (~19px against ~9.8px).
+`_common.gantt_marks` slices to the WIDE svg before finding marks, because
+running the narrow one's 600-unit coordinates through the wide transform
+misdates every mark (BA 2003-2007 would decode as 2001-2005) and fails the
+gate. That scoping would leave the narrow copy free to drift, so
+`lint_gantt.variant_label_drift` checks that the two variants carry the same
+label set and fails the gate when they do not. Labels only: their coordinate
+systems differ by design, so geometry cannot be compared. **Edit both or
+neither.** A figure with fewer than two variants is exempt, which is what
+keeps the bare-mark test fixtures working.
 
 This exists because the figure fell out of date: three recognition items
 (Spirit of Charlie, Digital Fellow, IPM award) were added to `#service`
@@ -2981,14 +3097,37 @@ still reported in messages, and `test_matching_is_lane_agnostic` pins this.
 `lint_recognition` is the one that keeps a tighter scope, on the service lane
 only; see that section for the split.
 
-**Editing the figure:** the SVG is hand-coordinated. The service lane is
-7 rows at `y = 160..280` step 20, the axis sits at `y = 310`, viewBox is
-`0 0 600 340`. To add an entry, compute its x from the transform above,
-add the square/bar + label, extend the lane and axis if the rows run out,
-and run `python scripts/lint_gantt.py`. New squares (`<rect fill="#111">`)
-and bars (`<line stroke-width="4">`) inherit the scroll-draw animation
-automatically (blanket selectors, no per-element staggering; see
-§Scroll-drawn figures).
+**Editing the figure:** both SVGs are hand-coordinated, and an entry has to
+be added to BOTH or `variant_label_drift` fails the push. In
+`svg.gantt-wide`: education rows at `y = 30..102` step 18, lane divider
+`y = 125`, density annotation `y = 140`, service lane 7 rows at
+`y = 162..270` step 18, axis at `y = 297` with tick labels at `y = 315`,
+viewBox `0 0 1200 334`; a mark's `y` IS its row centre, a square's `y` is
+centre − 3, and text baselines sit at centre + 5. `svg.gantt-narrow` keeps
+the older geometry (rows `y = 26..90` and `y = 142..238` step 16, divider
+110, axis 262, viewBox `0 0 600 292`). Compute x from each variant's own
+transform, add the square/bar + label, extend the lane and axis if the rows
+run out, and run `python scripts/lint_gantt.py`. New squares
+(`<rect fill="#111">`) and bars (`<line stroke-width="4">`) inherit the
+scroll-draw animation automatically (blanket selectors keyed on
+`figure.gantt-figure`, so they reach both variants; no per-element
+staggering, see §Scroll-drawn figures).
+
+**Two values must never be rescaled**: bars stay `stroke-width="4"` and
+squares stay 6 wide. `_common.gantt_marks` filters bars on that literal
+string and decodes a square's centre as `x + 3`, and the CSS §18/18.1
+scroll-draw selectors key on `line[stroke-width="4"]` and `rect fill="#111"`.
+The 2026-08-15 re-layout doubled every x and scaled y and font-size by ~1.14
+around them.
+
+**The figure's class attribute must stay exactly `class="gantt-figure"`.**
+`_common._GANTT_FIGURE_RE` matches that literal string, so widening the
+figure by adding `fullwidth` would silently zero BOTH this lint and
+`lint_recognition` (they would parse no marks and the gate would report an
+error rather than drift), and adding `timeline` would also hide the figure in
+`@media print`. The 90% width is spelled out in `figure.gantt-figure`'s own
+rule instead, with its own 760px override rather than one borrowed from
+`.fullwidth`.
 
 ---
 
@@ -3477,8 +3616,11 @@ is authoritative. Keep current when the site changes.
   `draft` defaults to false when absent, and 57 of the 74 posts omit it, so
   absence means published. Key order and quoting vary across posts and nothing
   enforces either. Four optional keys are live: `homepageSelected` pins a post
-  ahead of the rest in the homepage hero's "Selected writing" column, with both
-  groups still sorted newest-first inside themselves, while /blog/ stays
+  into the homepage hero's "Selected writing" column, which is only two entries
+  deep, so the flag decides that pair and nothing else. It has NO effect on the
+  "Recent" tile grid beneath it, which is strictly newest-first minus that pair
+  (`build_portfolio.select_recent`, 2026-08-15; before that one ordering fed
+  both tiers and eight flagged posts filled all eight slots). /blog/ stays
   chronological and never consults it (see `build_portfolio.select_writing`);
   `homepageMarginnote` is still read, preserved, and checked by `lint_notes`
   for additivity against the post's own title and description, but no longer

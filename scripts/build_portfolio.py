@@ -12,18 +12,22 @@ index.html, plus one in life-in-weeks/index.html.
     frontmatter (publishDate, draft). No external requests.
 
   <!-- writing-list:start --> ... <!-- writing-list:end -->  (index.html)
-    The two most recent non-draft posts, rendered as the full featured
-    entries inside the split hero's `.hero-writing` column (there is no
-    longer a standalone Writing section; see build_writing_list()).
-    Sourced from the blog frontmatter. `homepageMarginnote` is still
-    read and preserved but is NOT rendered here; the hero has no
-    floating-note margin for it to live in.
+    The two lead posts under the "Selected writing" head, rendered as
+    full featured entries inside the split hero's `.hero-writing` column
+    (there is no longer a standalone Writing section; see
+    build_writing_list()). Ordered by select_writing(), so
+    `homepageSelected` decides this pair. Sourced from the blog
+    frontmatter. `homepageMarginnote` is still read and preserved but is
+    NOT rendered here; the hero has no floating-note margin for it to
+    live in.
 
   <!-- writing-index:start --> ... <!-- writing-index:end -->  (index.html)
-    The next six posts after the featured pair, rendered as compact
+    The six posts under the "Recent" head, rendered as compact
     .writing-tile small multiples in the sibling .writing-index grid,
-    also inside .hero-writing. Same frontmatter source; margin notes
-    are featured-only, so tiles omit homepageMarginnote too.
+    also inside .hero-writing. Ordered by select_recent(): strictly
+    newest-first, minus the featured pair, so `homepageSelected` has no
+    say here. Same frontmatter source; margin notes are featured-only,
+    so tiles omit homepageMarginnote too.
 
   <!-- pub-list:start --> ... <!-- pub-list:end -->  (index.html)
     The Publications block, generated from src/content/publications.yaml
@@ -84,8 +88,8 @@ TOPIC_ACRONYMS = {
 # accrete the longitudinal series the cache discards. Append-only by date,
 # idempotent within a day (a re-run overwrites the same file).
 SNAPSHOTS_DIR = ROOT / "data" / "snapshots"
-WRITING_FEATURED = 2     # most-recent posts shown as full featured entries
-WRITING_TILES = 6        # next posts shown as compact .writing-tile multiples
+WRITING_FEATURED = 2     # "Selected writing": full entries, select_writing order
+WRITING_TILES = 6        # "Recent": compact .writing-tile multiples, by date
 # Activity sparkline window: 24 weeks ending at the most recent Sunday.
 # Tufte-inspired inline sparkline that replaces the prior 52-week heatmap
 # grid. The pre-2025 journalism pieces live in the blog but aren't part
@@ -146,9 +150,14 @@ def select_writing(posts: list[dict]) -> list[dict]:
     A post opts in with `homepageSelected: true` in its frontmatter. Selected
     posts sort ahead of the rest, and BOTH groups sort newest-first inside
     themselves, so the rendered list still reads as a descending date column
-    rather than looking like a broken sort. Callers slice this once: the
-    first WRITING_FEATURED become full entries, the next WRITING_TILES
-    become the compact dated index.
+    rather than looking like a broken sort.
+
+    This orders the FEATURED tier only. It used to order both tiers, sliced
+    [:WRITING_FEATURED] and [WRITING_FEATURED:...], which meant the flag also
+    decided what the column labelled "Recent". Eight posts carried the flag
+    against eight total slots, so the whole column went hand-curated and every
+    genuinely recent post fell off the page. The "Recent" tier now comes from
+    select_recent(), which ignores the flag.
 
     With no post flagged this returns plain reverse-chronological order, so
     the pre-selection behavior is the fallback, not a special case. /blog/
@@ -158,6 +167,21 @@ def select_writing(posts: list[dict]) -> list[dict]:
     return sorted(
         posts,
         key=lambda p: (0 if p.get("selected") else 1, -p["date"].toordinal()),
+    )
+
+
+def select_recent(posts: list[dict], exclude: set[str]) -> list[dict]:
+    """Order posts for the hero's "Recent" tier: newest-first, minus `exclude`.
+
+    `homepageSelected` deliberately has NO effect here. It decides what LEADS
+    the column (select_writing); letting it also decide what the column calls
+    recent is what put a six-month-old post under a "Recent" head while four
+    newer ones went unshown. `exclude` holds the featured slugs, so the two
+    tiers never render the same post twice.
+    """
+    return sorted(
+        (p for p in posts if p["slug"] not in exclude),
+        key=lambda p: -p["date"].toordinal(),
     )
 
 
@@ -300,8 +324,13 @@ def build_writing_list(posts: list[dict]) -> str:
 
 
 def build_writing_index(posts: list[dict]) -> str:
-    """Emit the .writing-index small-multiples grid: the WRITING_TILES posts
-    immediately after the featured pair, in the same select_writing() order.
+    """Emit the .writing-index small-multiples grid: the WRITING_TILES most
+    recent posts by date, excluding the featured pair.
+
+    This tile grid sits under a "Recent" head, so it is ordered by date and
+    nothing else. `homepageSelected` governs only the featured pair above it
+    (see select_recent). The featured slugs are excluded rather than sliced
+    past, so a flagged-but-old lead post cannot also occupy a Recent slot.
 
     Mirrors the projects-index tile pattern but keys each tile by date
     (the `.writing-tile` class deliberately has no `.num` span, so the
@@ -309,8 +338,8 @@ def build_writing_index(posts: list[dict]) -> str:
     affordance, so `homepageMarginnote` is intentionally ignored here to
     keep tiles compact.
     """
-    ordered = select_writing(posts)
-    tiles = ordered[WRITING_FEATURED:WRITING_FEATURED + WRITING_TILES]
+    featured = {p["slug"] for p in select_writing(posts)[:WRITING_FEATURED]}
+    tiles = select_recent(posts, featured)[:WRITING_TILES]
     blocks: list[str] = []
     for p in tiles:
         date_str = p["date"].isoformat()
