@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Colophon, Zaher Karp</title>
-<meta name="description" content="How this site is engineered: a pure HTML and CSS portfolio with no framework, built by five Python pipelines, guarded by twelve linters and a pre-push hook, and treated as an engineering artifact in its own right.">
+<meta name="description" content="How this site is engineered: a pure HTML and CSS portfolio with no framework, built by five build pipelines, guarded by twelve linters and a pre-push hook, and treated as an engineering artifact in its own right.">
 <link rel="canonical" href="https://zaherkarp.com/colophon/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://gc.zgo.at">
@@ -183,8 +183,8 @@
       eventually miss.</p>
       <div class="spec">
         <div><span class="k">lint_facts.py</span><span class="v">Cross-checks employer, title, and dates across the resume, the homepage, and the structured JSON-LD metadata. The same fact stated in three places must agree.</span></div>
-        <div><span class="k">lint_recognition.py</span><span class="v">Every award or service entry shown on the homepage must have a counterpart in the comprehensive CV record. The public highlight reel is a strict subset of the full one.</span></div>
-        <div><span class="k">lint_gantt.py</span><span class="v">The hand-coded Education and Service timeline figure must carry a mark for every entry in the prose sections it summarizes, read back from the chart's own coordinate transform. Those two prose sections are commented out today, so the figure is their only visible surface.</span></div>
+        <div><span class="k">lint_recognition.py</span><span class="v">Every award or service commitment shown on the homepage timeline must have a counterpart in the comprehensive CV record. The public highlight reel is a strict subset of the full one.</span></div>
+        <div><span class="k">lint_gantt.py</span><span class="v">The hand-coded Education and Service timeline figure is the only place that record now appears on the homepage, so every mark must trace to an entry in the comprehensive CV, its year read back from the chart's own coordinate transform. A mark drawn at the wrong spot decodes to the wrong year and fails the check.</span></div>
         <div><span class="k">lint_notes.py</span><span class="v">A margin note may not restate a number or a phrase already in the page's prose, so the asides stay additive rather than redundant.</span></div>
         <div><span class="k">lint_vocab.py</span><span class="v">Program names from CMS, like Star Ratings and Medicare Advantage, render in their canonical capitalization across every post and page.</span></div>
         <div><span class="k">lint_blog.py</span><span class="v">Catches the source-side markdown mistakes that render as garbage: leaked HTML comments, blank lines inside an inline SVG, a diagram written as a blockquote.</span></div>
@@ -204,8 +204,9 @@
 
       <h2>Color</h2>
       <p>The whole site draws its color from one place. A single file,
-      palette.yaml, names the brand colors, once for light mode and once for
-      dark, and a small generator writes those values into the color tokens of
+      palette.yaml, names the brand palette, a moss green called Lichen, once
+      for light mode and once for dark, and a small generator writes those
+      values into the color tokens of
       every file that needs them: the homepage, the blog stylesheet, the error
       page, the interactive subpages, the resume and CV templates, even the
       favicon. Each file keeps its own local token names, so one source value
