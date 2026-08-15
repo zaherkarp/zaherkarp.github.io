@@ -2367,47 +2367,51 @@ body::before {
 
            The "Recent" head (2026-08-14, owner) scopes the "Selected writing"
            head above to just the two curated featured posts: these six are the
-           next-most-recent by date, not hand-selected, so they read under their
-           own label. The dividing rule sits on this head (.hero-index-head), so
+           most recent by date MINUS that pair, not hand-selected, so they read
+           under their own label. homepageSelected reaches the pair above and
+           stops there; until 2026-08-15 it ordered this grid too, which put a
+           six-month-old post under a head that says Recent while four newer
+           ones went unshown (build_portfolio.select_recent).
+           The dividing rule sits on this head (.hero-index-head), so
            it reads as the boundary between the two tiers, not a rule between the
            label and its tiles. -->
       <h2 class="col-head hero-index-head">Recent</h2>
       <div class="writing-index hero-index">
         <!-- writing-index:start -->
     <div class="writing-tile">
+      <span class="date">2026-07-26</span>
+      <h3 class="title"><a href="/blog/bteq-still-has-a-job/">BTEQ Still Has a Job</a></h3>
+      <p class="tile-summary">BTEQ remains a useful tool for SQL-centered Teradata workflows that need session continuity, volatile tables, and controlled ordering. It fits a narrower niche than before, but that niche is still real.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-07-15</span>
+      <h3 class="title"><a href="/blog/what-the-metric-cannot-see/">The Metric Isn't Wrong. It's Just Not Where Quality Lives.</a></h3>
+      <p class="tile-summary">Two failures compound in healthcare quality measurement: enforcing a metric carries a shadow price paid in clinical judgment, and the metric itself is a lossy projection of many-dimensional care onto a single number. The mid-2000s pneumonia antibiotic timing measure and Medicare Advantage adherence scoring show both, and why the part the number discards is where quality actually lives.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-07-09</span>
+      <h3 class="title"><a href="/blog/one-api-call-three-ways-to-split-it/">One API call, three ways to split it: a FRED case study</a></h3>
+      <p class="tile-summary">Pull five FRED series once, cache the raw pull, then fan it out into per-year-per-indicator files three different ways, plus a fourth example: keeping the local store current with real-time incremental pulls instead of re-running the big fetch.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-07-05</span>
+      <h3 class="title"><a href="/blog/should-i-buy-ram-now/">Should I Buy RAM Now?</a></h3>
+      <p class="tile-summary">A backtested, conformally-calibrated buy-or-wait model on the real Keepa price history for one DDR5 kit, built to be honest about how little it can forecast.</p>
+    </div>
+
+    <div class="writing-tile">
+      <span class="date">2026-06-12</span>
+      <h3 class="title"><a href="/blog/lucas-critique-stars-forecasting/">Your Cut Point Forecast Has a Lucas Critique Problem</a></h3>
+      <p class="tile-summary">Most Stars forecasting is reduced-form modeling of plan behavior under a specific CMS rule set. When the rules change, plans re-optimize, and relationships estimated from history break at exactly the moment the forecast matters most.</p>
+    </div>
+
+    <div class="writing-tile">
       <span class="date">2026-06-09</span>
       <h3 class="title"><a href="/blog/medicaid-work-requirements-arkansas/">Did Medicaid Work Requirements Work? A Meta-Analysis of Arkansas</a></h3>
       <p class="tile-summary">Arkansas removed roughly 18,000 adults from Medicaid in 2018 and produced no measurable gain in employment. A forest-plot synthesis of the natural experiment, and why the binding constraint was paperwork, not work.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-04-22</span>
-      <h3 class="title"><a href="/blog/two-states-one-pathogen/">Two States, One Pathogen: A Browser-Side Stochastic SEIRV Simulator</a></h3>
-      <p class="tile-summary">Methodology and intuition behind the browser-based SEIRV epidemic simulator on this site. Poisson tau-leaping, state-level coverage, and why the ribbon matters more than any single run.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-02-22</span>
-      <h3 class="title"><a href="/blog/dont-version-facts/">Why You Probably Shouldn't Version Your Fact Table</a></h3>
-      <p class="tile-summary">Most teams version their fact tables because they've modeled their dimensions incorrectly. Understanding the true grain of your table, whether it's event-based or state-based, will save you from double-counting metrics, failed audits, and painful refactoring projects in healthcare data warehouses.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-01-18</span>
-      <h3 class="title"><a href="/blog/cms-star-ratings-meaningful-use/">Why CMS Never Let Star Ratings Touch Meaningful Use</a></h3>
-      <p class="tile-summary">On the surface, it looks like an omission - but CMS understood that capability and outcomes cannot be governed the same way, even when one enables the other. The deliberate separation was probably the right call.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2026-01-11</span>
-      <h3 class="title"><a href="/blog/gravity-of-star-ratings/">The Gravity of Star Ratings</a></h3>
-      <p class="tile-summary">How outcomes shape programs they never appear in - Star Ratings operate less like a measurement program and more like a financial force that influences clinical workflows, data governance, and analytics investments across healthcare.</p>
-    </div>
-
-    <div class="writing-tile">
-      <span class="date">2025-11-16</span>
-      <h3 class="title"><a href="/blog/deletes-are-data-too/">Deletes Are Data Too</a></h3>
-      <p class="tile-summary">Deletes are the quiet failure mode in data pipelines. Here are the main ways to detect them and the tradeoffs you’re actually signing up for.</p>
     </div>
     <!-- writing-index:end -->
       </div>
