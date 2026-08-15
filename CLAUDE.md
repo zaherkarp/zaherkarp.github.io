@@ -393,14 +393,19 @@ chart's ~7.5px. It had been the page's best-behaved chart at narrow widths,
 purely because it was the only wide chart with a narrow viewBox, and the first
 cut made it the worst. Fixed by giving it the `tl-horizontal`/`tl-rail` and
 `dp-wide`/`dp-mobile` treatment its neighbours already had: `svg.gantt-narrow`
-is the pre-rescale chart verbatim, swapped in at 760px, so mobile is byte-for-
-byte what it was. That forced `_common.gantt_marks` to scope to the wide variant
+is the pre-rescale chart verbatim, so mobile is byte-for-byte what it was. That
+forced `_common.gantt_marks` to scope to the wide variant
 (the two transforms disagree) and a new `lint_gantt.variant_label_drift` gate to
-stop the unparsed copy drifting; see §Gantt figure alignment lint. **Known
-residual cost, accepted:** between 761 and ~900px the Gantt renders 8.3-9.9px
-type where it used to render ~16px. That is the same band the dot plot already
-occupies at those widths (9.4-11.2px), so it is now consistent with the page
-rather than exempt from it. Page 9,116 → 9,019px @1363px. Suite 155 → 182 tests.
+stop the unparsed copy drifting; see §Gantt figure alignment lint.
+
+**The swap sits at 900px, not the 760px its neighbours use** (owner, after the
+first cut shipped at 760). The residual cost that choice removes was real and
+measured: at 760 the wide chart stayed on through 761-900px rendering 8.3-9.9px
+type, the window where it reads worst. At 900 the same widths render 14.6-17.4px.
+What is traded for it is that between 761 and 900px this figure shows its narrow
+form while the career band and dot plot still show their wide ones, so the three
+charts disagree in that window; legibility won. Page 9,116 → 9,019px @1363px.
+Suite 155 → 182 tests.
 
 **Deployment:** GitHub Pages, served at zaherkarp.com via CNAME.
 
@@ -3029,9 +3034,23 @@ geometry the page no longer draws.
 
 **The figure carries TWO SVG variants and only one is parsed** (2026-08-15).
 `svg.gantt-wide` (viewBox `0 0 1200 334`, the transform above) renders above
-760px; `svg.gantt-narrow` (viewBox `0 0 600 292`, `x(year) = 90 + (year -
+900px; `svg.gantt-narrow` (viewBox `0 0 600 292`, `x(year) = 90 + (year -
 2003) * 19`, the pre-rescale chart verbatim) renders at or below it, the same
 swap `tl-horizontal`/`tl-rail` and `dp-wide`/`dp-mobile` already make.
+
+**The 900px breakpoint is deliberately NOT the 760px its two neighbours use**
+(owner, 2026-08-15). The wide chart spends its room horizontally, so its type
+shrinks faster than theirs as the column narrows; measured at 761px it renders
+~8.3px where the narrow chart renders ~14.6px, and at 900px it is ~10px
+against ~17.4px. A 760px swap would keep the wide form through exactly the
+window where it reads worst. The accepted cost is that between 761 and 900px
+this figure shows its narrow form while the career band and the dot plot still
+show their wide ones. Note the figure's own `max-width` override stays at
+760px and is a SEPARATE question: it tracks where the sidenote margin
+disappears, not where this chart stops reading. Do not "align" the two numbers
+without re-measuring. A side effect worth knowing: a print viewport is ~816px,
+so the printed page now carries the NARROW chart, which reads better there
+than the wide one would (~19px against ~9.8px).
 `_common.gantt_marks` slices to the WIDE svg before finding marks, because
 running the narrow one's 600-unit coordinates through the wide transform
 misdates every mark (BA 2003-2007 would decode as 2001-2005) and fails the

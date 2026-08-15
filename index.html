@@ -1071,13 +1071,24 @@ figure.gantt-figure svg {
   height: auto;
   display: block;
 }
-/* Wide/narrow swap at the same 760px the career arc and the dot plot use.
-   The wide chart spends its room horizontally, so in a phone column its
-   labels render ~4px; the narrow one is the pre-rescale 600-unit chart,
-   which reads at ~7.5px there. Only .gantt-wide is parsed by the alignment
-   lints (see the figure's own comment). */
+/* Wide/narrow swap at 900px (owner, 2026-08-15), DELIBERATELY not the 760px
+   the career arc and the dot plot swap at. The wide chart spends its room
+   horizontally, so its labels shrink faster than theirs as the column
+   narrows: at 761px it renders ~8.3px where the narrow chart renders
+   ~14.6px, and in a 322px phone column ~4px against ~7.5px. 760 would keep
+   the wide form through the whole 761-900px window, which is where it is
+   least readable. The cost of 900 is that between 761 and 900 this figure
+   shows its narrow form while its two neighbours still show their wide
+   ones; legibility was judged the better trade.
+
+   The figure's own max-width override stays at 760px and is a separate
+   question: it tracks where the sidenote margin disappears, not where this
+   chart stops reading.
+
+   Only .gantt-wide is parsed by the alignment lints (see the figure's own
+   comment). */
 figure.gantt-figure svg.gantt-narrow { display: none; }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   figure.gantt-figure svg.gantt-wide { display: none; }
   figure.gantt-figure svg.gantt-narrow { display: block; }
 }
@@ -3728,8 +3739,9 @@ body::before {
          Year axis:      y = 297, tick labels y = 315  (viewBox height 334)
        Text baselines sit at row centre + 5.
 
-       TWO VARIANTS, swapped at 760px like the career arc and the dot plot:
-       svg.gantt-wide (the geometry above) and svg.gantt-narrow (the
+       TWO VARIANTS, swapped at 900px (NOT the 760px the career arc and the
+       dot plot use; see the CSS rule for why this figure needs a higher
+       one): svg.gantt-wide (the geometry above) and svg.gantt-narrow (the
        pre-rescale 600-unit chart, verbatim). Both draw the same twelve
        marks. Only the WIDE one is decoded by scripts/_common.gantt_marks;
        lint_gantt.variant_label_drift is what keeps the narrow copy honest.
@@ -3884,12 +3896,14 @@ body::before {
       <text x="617" y="140" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic" text-anchor="middle">2014-15: three credentials, two roles</text>
     </svg>
 
-    <!-- NARROW VARIANT, <=760px. The pre-2026-08-15 chart, verbatim:
+    <!-- NARROW VARIANT, <=900px. The pre-2026-08-15 chart, verbatim:
          600-unit viewBox, x(year) = 90 + (year - 2003) * 19, font-size 14.
          The wide form above trades vertical room for horizontal room, so
          at a 322px phone column its labels render ~4px. This is the same
          swap svg.tl-horizontal/svg.tl-rail and svg.dp-wide/svg.dp-mobile
-         already make, and for the same reason.
+         already make, but at a HIGHER breakpoint (900 vs their 760),
+         because this chart's labels shrink faster than theirs: it renders
+         ~17.4px here at 900px against the wide form's ~10px.
 
          Only svg.gantt-wide is parsed by scripts/_common.gantt_marks: the
          two SVGs use DIFFERENT transforms, so decoding both against one
