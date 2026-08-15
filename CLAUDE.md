@@ -3389,6 +3389,17 @@ review happens because someone asked for one, never because a model decided a
 draft looked reviewable. That file is the only tracked thing under `.claude/`;
 see §File structure for the ignore carve-out.
 
+**Continuity between sessions lives at `docs/thalia-desk.md`.** Read it before
+touching a draft, whatever surface you arrive on: the slash command, a scheduled
+routine, or a plain conversation. It carries only what cannot be recomputed from
+the repo, meaning voice observations, dated decisions, and options already
+offered and declined. Staleness, lint status, `[CLAIM?]` counts and PR state are
+deliberately absent, because each is one command away and a stale second copy
+misleads; the file's own header states the discipline and the line cap it holds
+itself to. Pass 9 of the review command updates it, and that is the one file outside
+the draft a review may touch. Its risk is rot, so replace superseded lines
+rather than appending to them.
+
 ### Editorial standards for post prose
 
 - First person, practitioner tone. Exploratory is fine, marketing language is
