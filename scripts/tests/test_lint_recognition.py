@@ -14,8 +14,9 @@ used to live here are gone with the section they mirrored.
 from __future__ import annotations
 
 import lint_recognition
-
-X0, PX, BASE = 90, 19, 2003
+from _common import GANTT_BASE_YEAR as BASE
+from _common import GANTT_PX_PER_YEAR as PX
+from _common import GANTT_X0 as X0
 
 
 def _square_x(year: int) -> int:
@@ -27,8 +28,10 @@ def _homepage(service_label: str = "Spirit of Charlie Award",
               include_education_mark: bool = False) -> str:
     """A gantt figure with one service-lane mark, optionally an education one.
 
-    y=160 is below the lane divider (135), so it is a service mark; y=30 is
-    above it, so it is an education mark this lint must ignore.
+    y=160 is below GANTT_LANE_DIVIDER_Y, so it is a service mark; y=30 is
+    above it, so it is an education mark this lint must ignore. Both stay
+    valid either side of a chart re-layout as long as the divider stays
+    between them, which is why the number is not restated here.
     """
     edu = (
         f'  <rect x="{_square_x(2007)}" y="30" width="6" height="6" fill="#111"/>\n'

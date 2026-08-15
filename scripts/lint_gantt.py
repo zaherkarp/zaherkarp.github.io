@@ -31,7 +31,9 @@ coverage report, which is where a newly added CV award shows up as a
 candidate for the chart.
 
 Each data mark encodes its year(s) positionally, via the chart's own
-coordinate transform x(year) = 90 + (year - 2003) * 19:
+coordinate transform x(year) = GANTT_X0 + (year - GANTT_BASE_YEAR) *
+GANTT_PX_PER_YEAR (currently 180 + (year - 2003) * 38; the constants
+live in _common.py and move with the chart):
 
   - a single-year credential is a <rect ... fill="#111"/> square; its
     year is read back from the square's centre x.
@@ -43,8 +45,19 @@ in source. Reading the year back from the geometry is what makes this
 more than a text diff: a mark drawn at the wrong x decodes to the wrong
 year and stops matching its CV entry.
 
+TWO SVG VARIANTS, ONE DECODED. Since 2026-08-15 the figure holds
+svg.gantt-wide (desktop) and svg.gantt-narrow (<=760px), drawing the
+same twelve marks on DIFFERENT transforms so each reads well at its own
+size. _common.gantt_marks decodes only the wide one; running the
+narrow one's 600-unit coordinates through the wide transform would
+misdate every mark. That scoping would leave the narrow copy free to
+drift, so variant_label_drift() below compares the two variants' label
+sets and fails the gate when they disagree. Labels only: their
+coordinate systems differ by design. Edit both variants or neither.
+
 MATCHING IS LANE-AGNOSTIC, and that is deliberate. The figure splits
-marks into an education lane (y < 135) and a service lane (y > 135),
+marks into an education lane and a service lane (either side of
+GANTT_LANE_DIVIDER_Y),
 but cv.md files things by a different taxonomy: "Digital Fellow" is
 drawn in the SERVICE lane and recorded under `### Fellowships and
 Training`, which is nested inside `## Education`. Constraining a mark to
@@ -195,6 +208,46 @@ def parse_cv(text: str) -> list[Item]:
     return items
 
 
+# ─── variant drift ────────────────────────────────────────────────────────
+
+_SVG_RE = re.compile(r'<svg class="(?P<cls>gantt-\w+)"[^>]*>(?P<body>.*?)</svg>',
+                     re.DOTALL)
+_TEXT_RE = re.compile(r"<text\b[^>]*>(?P<label>[^<]*)</text>")
+
+
+def variant_label_drift(text: str) -> list[str]:
+    """Labels present in one Gantt SVG variant but not the other.
+
+    The figure carries two renderings of one dataset: svg.gantt-wide for
+    desktop and svg.gantt-narrow at <=760px, on different transforms. Only
+    the wide one is decoded against cv.md (see _common.gantt_marks), which
+    would leave the narrow one free to drift, so its labels are checked
+    against the wide one's here. Labels only: the two use different
+    coordinate systems by design, so geometry cannot be compared directly.
+
+    Returns [] when the figure has fewer than two variants, so the fixtures
+    and any future single-SVG figure are unaffected.
+    """
+    fig = re.search(r'<figure class="gantt-figure">(.*?)</figure>', text, re.DOTALL)
+    if not fig:
+        return []
+    found = {m.group("cls"): m.group("body") for m in _SVG_RE.finditer(fig.group(1))}
+    if len(found) < 2:
+        return []
+    labels = {
+        cls: {t.group("label").strip() for t in _TEXT_RE.finditer(body)
+              if t.group("label").strip()}
+        for cls, body in found.items()
+    }
+    wide, narrow = labels.get("gantt-wide", set()), labels.get("gantt-narrow", set())
+    out = []
+    for lbl in sorted(wide - narrow):
+        out.append(f'"{lbl}" is in svg.gantt-wide but not svg.gantt-narrow')
+    for lbl in sorted(narrow - wide):
+        out.append(f'"{lbl}" is in svg.gantt-narrow but not svg.gantt-wide')
+    return out
+
+
 # ─── main ─────────────────────────────────────────────────────────────────
 
 def run() -> int:
@@ -207,6 +260,16 @@ def run() -> int:
     if not marks:
         print("error: no data marks parsed from figure.gantt-figure",
               file=sys.stderr)
+        return 1
+
+    drift = variant_label_drift(text)
+    if drift:
+        print("Gantt figure lint found drift between the wide and narrow "
+              "SVG variants:\n", file=sys.stderr)
+        for d in drift:
+            print(f"  {d}", file=sys.stderr)
+        print("\nThe two variants draw the same record at different sizes; "
+              "edit both or neither.", file=sys.stderr)
         return 1
 
     if not CV.exists():

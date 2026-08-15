@@ -20,7 +20,8 @@ now reads. The guarantee is unchanged in direction and meaning:
 
 Two surfaces, three CV sections reconciled:
 
-  homepage  index.html  figure.gantt-figure, service lane (y > 135)
+  homepage  index.html  figure.gantt-figure, service lane (below
+            GANTT_LANE_DIVIDER_Y), svg.gantt-wide only
   CV        cv.md       ## Awards and Honors
                         ### Fellowships and Training  (under ## Education)
                         ## Service and Professional Activities (all ###)

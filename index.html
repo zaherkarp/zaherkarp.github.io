@@ -1041,20 +1041,45 @@ figure.cliff-figure figcaption {
    follows Speaking, ahead of the (commented-out, 2026-07-30)
    Education and Service sections; since those two sections no
    longer render, this figure is now the visible content between
-   Speaking and Testimonials. Section-width (not fullwidth) so it
-   matches the prose column it summarizes.
+   Speaking and Testimonials. It is a full-width child of <main>, not
+   a child of any <section>, so the 60% column never applied to it.
+
+   90% (2026-08-15, owner) is the same value .fullwidth gives the
+   publications dot plot, so the two charts render to the same edge.
+   It was 700px, which read as a smaller chart than its neighbours.
+   The class attribute must stay exactly `class="gantt-figure"`:
+   _common._GANTT_FIGURE_RE matches that literal string, so adding
+   `fullwidth` here would silently zero lint_gantt and
+   lint_recognition, and `timeline` would also hide the figure in
+   @media print. Hence the 90% is spelled out here and the 760px
+   override below is its own rule rather than borrowed from
+   .fullwidth. The SVG was re-laid-out onto a 1200-unit viewBox in
+   the same pass so its labels stayed at chart scale; see the figure's
+   own comment for that geometry.
    ============================================================ */
 figure.gantt-figure {
   margin: 2rem 0 2.5rem 0;
-  max-width: 700px;   /* roughly matches main reading column;
-                         narrower than fullwidth charts since it's
-                         summarizing one section, not anchoring
-                         the page */
+  max-width: 90%;
+}
+@media (max-width: 760px) {
+  /* The side margin is gone below 760px, so the chart takes the full
+     column, matching .fullwidth's override at the same breakpoint. */
+  figure.gantt-figure { max-width: 100%; }
 }
 figure.gantt-figure svg {
   width: 100%;
   height: auto;
   display: block;
+}
+/* Wide/narrow swap at the same 760px the career arc and the dot plot use.
+   The wide chart spends its room horizontally, so in a phone column its
+   labels render ~4px; the narrow one is the pre-rescale 600-unit chart,
+   which reads at ~7.5px there. Only .gantt-wide is parsed by the alignment
+   lints (see the figure's own comment). */
+figure.gantt-figure svg.gantt-narrow { display: none; }
+@media (max-width: 760px) {
+  figure.gantt-figure svg.gantt-wide { display: none; }
+  figure.gantt-figure svg.gantt-narrow { display: block; }
 }
 figure.gantt-figure figcaption {
   font-style: italic;
@@ -1994,7 +2019,15 @@ figure.timeline.career-band {
   padding-top: 1.6rem;
   border-top: 1px solid var(--rule);
 }
-figure.timeline.career-band svg.tl-horizontal { max-width: 100%; }
+/* The FIGURE stays 100% and the SVG is capped at 90% (2026-08-15, owner),
+   which are deliberately different numbers. The chart matches the dot plot
+   and the Gantt at 90%; the figure keeps its full-width border-top so that
+   rule still lines up with the .split-hero rule above it, which the two
+   together use to bracket the hero. Narrowing the figure instead would
+   leave a 90% rule sitting under a 100% one. The band's font-size
+   attributes were bumped (15/17/20 -> 17/19/22) in the same pass to hold
+   rendered label size where the previous type pass put it. */
+figure.timeline.career-band svg.tl-horizontal { max-width: 90%; }
 figure.timeline.career-band figcaption {
   margin-bottom: 1rem;
   text-align: left;
@@ -2618,30 +2651,30 @@ body::before {
       <!-- ROW 1: Editorial and writing, 2007 to 2014.
            Left-anchored label at (60, 55), band immediately below
            at y=80 spanning x=60 to x=460. -->
-      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="64" width="400" height="32" fill="transparent"/><text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt" style="--arc-len:400"><title>Editorial and writing, 2007 to 2014</title></line></a>
+      <a href="#exp-sustainable" style="--seq:0" aria-label="Editorial and writing, 2007 to 2014. Jump to the Sustainable Clarity role."><rect x="60" y="64" width="400" height="32" fill="transparent"/><text x="60" y="55" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111">Editorial and writing</text><line x1="60" y1="80" x2="460" y2="80" stroke="#111" stroke-width="10" stroke-linecap="butt" style="--arc-len:400"><title>Editorial and writing, 2007 to 2014</title></line></a>
 
       <!-- ROW 2: Research, UW-Madison, 2009 to 2018.
            65 units below Row 1 to leave a clear gap. Label starts
            at the band's left edge (x=175). En-dash, not em-dash. -->
-      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="175" y="154" width="510" height="32" fill="transparent"/><text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10" style="--arc-len:510"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
+      <a href="#exp-uw" style="--seq:1" aria-label="Research, UW-Madison, 2009 to 2018. Jump to the Researcher role."><rect x="175" y="154" width="510" height="32" fill="transparent"/><text x="175" y="145" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111">Research, UW&ndash;Madison</text><line x1="175" y1="170" x2="685" y2="170" stroke="#111" stroke-width="10" style="--arc-len:510"><title>Research, UW-Madison, 2009 to 2018</title></line></a>
 
       <!-- ROW 3: Data engineering, 2017 to now.
            Three abutting segments on a single row because the role
            transitions were continuous in time. Labels centered
            over each segment (text-anchor="middle"). BHA segment
            is short so its label uses a smaller size to fit. -->
-      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="630" y="244" width="170" height="32" fill="transparent"/><text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10" style="--arc-len:170"><title>healthfinch, 2017 to 2020</title></line></a>
+      <a href="#exp-healthfinch" style="--seq:2" aria-label="healthfinch, 2017 to 2020. Jump to the healthfinch role."><rect x="630" y="244" width="170" height="32" fill="transparent"/><text x="715" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">healthfinch</text><line x1="630" y1="260" x2="800" y2="260" stroke="#111" stroke-width="10" style="--arc-len:170"><title>healthfinch, 2017 to 2020</title></line></a>
 
-      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="800" y="244" width="285" height="32" fill="transparent"/><text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="20" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10" style="--arc-len:285"><title>Health Catalyst, 2020 to 2025</title></line></a>
+      <a href="#exp-catalyst" style="--seq:2.3" aria-label="Health Catalyst, 2020 to 2025. Jump to the Health Catalyst role."><rect x="800" y="244" width="285" height="32" fill="transparent"/><text x="942" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="22" font-style="italic" fill="#111" text-anchor="middle">Health Catalyst</text><line x1="800" y1="260" x2="1085" y2="260" stroke="#111" stroke-width="10" style="--arc-len:285"><title>Health Catalyst, 2020 to 2025</title></line></a>
 
-      <a href="#exp-bha" style="--seq:2.6" aria-label="BHA, Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="1085" y="244" width="55" height="32" fill="transparent"/><text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="17" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10" style="--arc-len:55"><title>Baltimore Health Analytics, 2025 to present</title></line></a>
+      <a href="#exp-bha" style="--seq:2.6" aria-label="BHA, Baltimore Health Analytics, 2025 to present. Jump to the current role."><rect x="1085" y="244" width="55" height="32" fill="transparent"/><text x="1112" y="235" font-family="et-book, Palatino, Georgia, serif" font-size="19" font-style="italic" fill="#111" text-anchor="middle">BHA</text><line x1="1085" y1="260" x2="1140" y2="260" stroke="#111" stroke-width="10" style="--arc-len:55"><title>Baltimore Health Analytics, 2025 to present</title></line></a>
 
       <!-- YEAR AXIS at y=320. Axis rule slightly heavier (1.5pt)
            than the earlier draft (1pt) so it reads at a distance
            with the thicker bands above it. Short ticks above and
            below each marked year. Year labels 35pt below axis. -->
       <line x1="40" y1="320" x2="1160" y2="320" stroke="#111" stroke-width="1.5"/>
-      <g font-family="et-book, Palatino, Georgia, serif" font-size="17" fill="#6a6a6a" text-anchor="middle">
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="19" fill="#6a6a6a" text-anchor="middle">
         <g><line x1="60"   y1="314" x2="60"   y2="326" stroke="#6a6a6a"/><text x="60"   y="355">2007</text></g>
         <g><line x1="175"  y1="314" x2="175"  y2="326" stroke="#6a6a6a"/><text x="175"  y="355">2009</text></g>
         <g><line x1="460"  y1="314" x2="460"  y2="326" stroke="#6a6a6a"/><text x="460"  y="355">2014</text></g>
@@ -2670,7 +2703,7 @@ body::before {
            x=117 is interpolated between 2007 (x=60) and 2009
            (x=175). Band at y=80, so tick 85 to 98, text at y=115. -->
       <line x1="117" y1="85" x2="117" y2="98" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="117" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="middle">news-wire syndication</text>
+      <text x="117" y="115" font-family="et-book, Palatino, Georgia, serif" font-size="17" font-style="italic" fill="#6a6a6a" text-anchor="middle">news-wire syndication</text>
 
       <!-- UW research era: MPH in Biostatistics, 2013-2015.
            Annotation placed at x=460 (the 2014 year tick, which
@@ -2678,7 +2711,7 @@ body::before {
            tick 175 to 188, text at y=205. Clears Row 3 (which
            begins at x=630). -->
       <line x1="460" y1="175" x2="460" y2="188" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="460" y="205" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="middle">MPH, Biostatistics</text>
+      <text x="460" y="205" font-family="et-book, Palatino, Georgia, serif" font-size="17" font-style="italic" fill="#6a6a6a" text-anchor="middle">MPH, Biostatistics</text>
 
       <!-- Data-engineering inflection: acquisition, 2020. x=800 is the
            healthfinch/Catalyst segment boundary on Row 3 (y=260), so
@@ -2689,7 +2722,7 @@ body::before {
            Fixed to the shared geometry rule above; still clears the
            axis line at y=320 by 25 units. -->
       <line x1="800" y1="265" x2="800" y2="278" stroke="#6a6a6a" stroke-width="0.7"/>
-      <text x="800" y="295" font-family="et-book, Palatino, Georgia, serif" font-size="15" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
+      <text x="800" y="295" font-family="et-book, Palatino, Georgia, serif" font-size="17" font-style="italic" fill="#6a6a6a" text-anchor="middle">acquisition</text>
     </svg>
 
     <!-- MOBILE (<=760px): the vertical dated rail. viewBox 300x470,
@@ -3683,14 +3716,40 @@ body::before {
          Spirit of Charlie Award      2021          square
 
        Coordinate math:
-         x(year) = 90 + (year - 2003) * 19
-           year 2003 -> x=90, 2026 -> x=90 + 23*19 = 527
-       Stretching the chart to viewBox width 600, axis ends at 540.
-       Row positions:
-         Education lane: y = 30, 50, 70, 90, 110
-         Service lane:   y = 160, 180, 200, 220, 240, 260, 280
-         Lane divider:   y = 135
-         Year axis:      y = 310  (viewBox height 340)
+         x(year) = 180 + (year - 2003) * 38
+           year 2003 -> x=180, 2026 -> x=180 + 23*38 = 1054
+       Axis runs 180 to 1080 inside a viewBox 1200 wide.
+       Row positions (a mark's y IS its row centre; a square's y is
+       centre - 3, since the square is 6 wide and centred on its year):
+         Education lane: y = 30, 48, 66, 84, 102
+         Lane divider:   y = 125
+         Density note:   y = 140
+         Service lane:   y = 162, 180, 198, 216, 234, 252, 270
+         Year axis:      y = 297, tick labels y = 315  (viewBox height 334)
+       Text baselines sit at row centre + 5.
+
+       TWO VARIANTS, swapped at 760px like the career arc and the dot plot:
+       svg.gantt-wide (the geometry above) and svg.gantt-narrow (the
+       pre-rescale 600-unit chart, verbatim). Both draw the same twelve
+       marks. Only the WIDE one is decoded by scripts/_common.gantt_marks;
+       lint_gantt.variant_label_drift is what keeps the narrow copy honest.
+
+       Rescaled 2026-08-15 from a 600-unit viewBox (x0=90, 19/year) so the
+       figure could render at 90% of the content box like the career band
+       and the publications dot plot. Scaling the OLD chart to that width
+       would have taken its font-size 14 labels to ~25px against ~16px on
+       both neighbours, so the x axis was stretched instead and the type
+       left at chart scale. That trade is the reason the narrow variant
+       exists: spending the room horizontally means less of it vertically,
+       so in a 322px phone column the wide chart's labels render ~4px
+       against the old chart's ~7.5px. Measured, not estimated; the swap
+       restores mobile exactly. Two values are load-bearing and did NOT scale:
+       bars stay stroke-width 4 and squares stay 6 wide, because
+       _common.gantt_marks filters on the literal stroke-width="4" and
+       decodes a square's centre as x + 3, and the CSS 18/18.1 scroll-draw
+       selectors key on line[stroke-width="4"] and rect fill="#111".
+       scripts/_common.py's GANTT_X0 / GANTT_PX_PER_YEAR /
+       GANTT_LANE_DIVIDER_Y must match the numbers above.
        ========================================================== -->
   <!-- #education and #service anchors, RESTORED 2026-08-13 (owner) after
        being deleted earlier the same day with the prose sections that used
@@ -3717,7 +3776,127 @@ body::before {
       Education credentials and service commitments, 2003 to present. Squares mark single-year items; bars mark date ranges. The MPH carried an AHRQ-funded Patient Safety certificate under Pascale Carayon plus an $18,000 grant. The full record, with orgs and citations, is in the <a href="/cv.html">CV</a>.
     </figcaption>
 
-    <svg viewBox="0 0 600 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
+    <svg class="gantt-wide" viewBox="0 0 1200 334" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
+
+      <!-- LANE LABELS, left edge -->
+      <text x="12" y="71" font-family="et-book, Palatino, Georgia, serif" font-size="17" fill="#6a6a6a" font-style="italic">education</text>
+      <text x="12" y="221" font-family="et-book, Palatino, Georgia, serif" font-size="17" fill="#6a6a6a" font-style="italic">service</text>
+
+      <!-- LANE DIVIDER -->
+      <line x1="160" y1="125" x2="1080" y2="125" stroke="#d0d0c8" stroke-width="0.5"/>
+
+      <!-- ============================================================
+           EDUCATION LANE
+           Five entries, top to bottom by start year.
+           Bar stroke-width 4, square side 6.
+           ============================================================ -->
+
+      <!-- BA English Literature, 2003-2007.
+           x: 180 to 180 + (2007-2003)*38 = 180 to 332 -->
+      <line x1="180" y1="30" x2="332" y2="30" stroke="#111" stroke-width="4" style="--seq:0"/>
+      <text x="340" y="35" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">BA, English Literature</text>
+
+      <!-- MPH Biostatistics, 2013-2015.
+           x: 180 + (2013-2003)*38 = 560 to 180 + (2015-2003)*38 = 636 -->
+      <line x1="560" y1="48" x2="636" y2="48" stroke="#111" stroke-width="4" style="--seq:2"/>
+      <text x="644" y="53" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">MPH, Biostatistics</text>
+
+      <!-- Graduate Cert Patient Safety, 2014-2015.
+           x: 180 + (2014-2003)*38 = 598 to 180 + (2015-2003)*38 = 636 -->
+      <line x1="598" y1="66" x2="636" y2="66" stroke="#111" stroke-width="4" style="--seq:3"/>
+      <text x="644" y="71" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Grad Cert, Patient Safety</text>
+
+      <!-- Oxford qualitative methods, 2014 (single year).
+           Square centered at x = 180 + (2014-2003)*38 = 598, row y=84 -->
+      <rect x="595" y="81" width="6" height="6" fill="#111" style="--seq:3"/>
+      <text x="608" y="89" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Oxford, qualitative methods</text>
+
+      <!-- Entrepreneurial Boot Camp, 2015 (single year).
+           Square centered at x = 180 + (2015-2003)*38 = 636, row y=102 -->
+      <rect x="633" y="99" width="6" height="6" fill="#111" style="--seq:4"/>
+      <text x="646" y="107" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Entrepreneurial Boot Camp</text>
+
+      <!-- ============================================================
+           SERVICE LANE
+           Seven entries, top to bottom by start year.
+           ============================================================ -->
+
+      <!-- WORT board chair, 2013-2015.
+           x: 180 + (2013-2003)*38 = 560 to 180 + (2015-2003)*38 = 636 -->
+      <line x1="560" y1="162" x2="636" y2="162" stroke="#111" stroke-width="4" style="--seq:2"/>
+      <text x="644" y="167" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">WORT board chair</text>
+
+      <!-- UG research mentor, 2014-2017.
+           x: 180 + (2014-2003)*38 = 598 to 180 + (2017-2003)*38 = 712 -->
+      <line x1="598" y1="180" x2="712" y2="180" stroke="#111" stroke-width="4" style="--seq:3"/>
+      <text x="720" y="185" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">UG research mentor</text>
+
+      <!-- Digital Fellow, 2016 (single year).
+           Square centered at x = 180 + (2016-2003)*38 = 674, row y=198 -->
+      <rect x="671" y="195" width="6" height="6" fill="#111" style="--seq:5"/>
+      <text x="684" y="203" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Digital Fellow</text>
+
+      <!-- Road Home board, 2016-2020.
+           x: 180 + (2016-2003)*38 = 674 to 180 + (2020-2003)*38 = 826 -->
+      <line x1="674" y1="216" x2="826" y2="216" stroke="#111" stroke-width="4" style="--seq:5"/>
+      <text x="834" y="221" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Road Home board</text>
+
+      <!-- Alumni Hall Service Award, 2017 (single).
+           Square centered at x = 180 + (2017-2003)*38 = 712, row y=234 -->
+      <rect x="709" y="231" width="6" height="6" fill="#111" style="--seq:6"/>
+      <text x="722" y="239" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Alumni Hall Service Award</text>
+
+      <!-- Peer reviewer, 2019 to now.
+           x: 180 + (2019-2003)*38 = 788 to 180 + (2026-2003)*38 = 1054.
+           Label is right-anchored to the left of the bar so it clears
+           the Spirit of Charlie square on the row below. -->
+      <line x1="788" y1="252" x2="1054" y2="252" stroke="#111" stroke-width="4" style="--seq:7"/>
+      <text x="780" y="257" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111" text-anchor="end">peer reviewer (ongoing)</text>
+
+      <!-- Spirit of Charlie Award, 2021 (single year).
+           Square centered at x = 180 + (2021-2003)*38 = 864, row y=270 -->
+      <rect x="861" y="267" width="6" height="6" fill="#111" style="--seq:8"/>
+      <text x="874" y="275" font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#111">Spirit of Charlie Award</text>
+
+      <!-- ============================================================
+           YEAR AXIS at y=297.
+           Plot every 5 years to avoid clutter, plus key
+           transition years 2014, 2015 for the dense cluster.
+           ============================================================ -->
+      <line x1="180" y1="297" x2="1080" y2="297" stroke="#111" stroke-width="0.8"/>
+
+      <g font-family="et-book, Palatino, Georgia, serif" font-size="16" fill="#6a6a6a" text-anchor="middle">
+        <g><line x1="180"  y1="294" x2="180"  y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="180"  y="315">2003</text></g>
+        <g><line x1="370"  y1="294" x2="370"  y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="370"  y="315">2008</text></g>
+        <g><line x1="560"  y1="294" x2="560"  y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="560"  y="315">2013</text></g>
+        <g><line x1="750"  y1="294" x2="750"  y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="750"  y="315">2018</text></g>
+        <g><line x1="940"  y1="294" x2="940"  y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="940"  y="315">2023</text></g>
+        <g><line x1="1054" y1="294" x2="1054" y2="300" stroke="#6a6a6a" stroke-width="0.6"/><text x="1054" y="315">now</text></g>
+      </g>
+
+      <!-- ============================================================
+           DENSITY ANNOTATION at the 2014-2015 cluster.
+           A small italic label calling out the period when three
+           credentials and two service commitments overlapped.
+           Sits below the lane divider, above the service lane,
+           in the "white space" of that vertical band.
+           ============================================================ -->
+      <text x="617" y="140" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic" text-anchor="middle">2014-15: three credentials, two roles</text>
+    </svg>
+
+    <!-- NARROW VARIANT, <=760px. The pre-2026-08-15 chart, verbatim:
+         600-unit viewBox, x(year) = 90 + (year - 2003) * 19, font-size 14.
+         The wide form above trades vertical room for horizontal room, so
+         at a 322px phone column its labels render ~4px. This is the same
+         swap svg.tl-horizontal/svg.tl-rail and svg.dp-wide/svg.dp-mobile
+         already make, and for the same reason.
+
+         Only svg.gantt-wide is parsed by scripts/_common.gantt_marks: the
+         two SVGs use DIFFERENT transforms, so decoding both against one
+         transform would misdate every mark here. lint_gantt's
+         check_variant_labels_match keeps this copy from drifting out of
+         step with the wide one. Edit both or neither. -->
+    <svg class="gantt-narrow" viewBox="0 0 600 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined timeline of education credentials and service commitments showing concurrent activity in 2014-2015">
 
       <!-- LANE LABELS, left edge -->
       <text x="6" y="62" font-family="et-book, Palatino, Georgia, serif" font-size="15" fill="#6a6a6a" font-style="italic">education</text>

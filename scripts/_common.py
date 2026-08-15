@@ -175,17 +175,33 @@ _CV_HEADING_RE = re.compile(r"^(?P<hashes>#{1,6})\s+(?P<title>.+?)\s*$")
 # ─── Gantt figure mark parser ─────────────────────────────────────────────
 # The homepage Education + Service Gantt is a hand-coded SVG whose marks
 # encode their year(s) positionally, through the chart's own transform
-# x(year) = 90 + (year - 2003) * 19. Reading the year back from the geometry
+# x(year) = 180 + (year - 2003) * 38. Reading the year back from the geometry
 # is what makes the alignment lints more than a text diff: a mark drawn at
 # the wrong x decodes to the wrong year and stops matching its CV entry.
+#
+# These four values ARE the chart's transform, so they move with it. The
+# figure was re-laid-out onto a 1200-unit viewBox on 2026-08-15 (x0 90 -> 180,
+# 19 -> 38 per year, lane divider 135 -> 130) to render at the same width as
+# the career band and the dot plot. Tests import these rather than restating
+# them, so the next re-layout does not need a second edit in three files.
 
-GANTT_LANE_DIVIDER_Y = 135
-GANTT_X0 = 90
-GANTT_PX_PER_YEAR = 19
+GANTT_LANE_DIVIDER_Y = 130   # education rows top out at 102, service starts 162
+GANTT_X0 = 180
+GANTT_PX_PER_YEAR = 38
 GANTT_BASE_YEAR = 2003
 
 _GANTT_FIGURE_RE = re.compile(
     r'<figure class="gantt-figure">(?P<body>.*?)</figure>', re.DOTALL
+)
+# The figure holds TWO renderings of the same data: svg.gantt-wide (desktop)
+# and svg.gantt-narrow (<=760px), which use DIFFERENT transforms. Only the
+# wide one is decoded; running the narrow one's 600-unit coordinates through
+# the wide transform would misdate every mark. lint_gantt separately checks
+# that the two carry the same labels, so scoping here cannot hide drift.
+# Falls back to the whole figure body when no .gantt-wide svg is present, so
+# a fixture can supply bare marks with no <svg> wrapper at all.
+_GANTT_WIDE_RE = re.compile(
+    r'<svg class="gantt-wide"[^>]*>(?P<body>.*?)</svg>', re.DOTALL
 )
 # A data mark (rect square or thick-line bar) immediately followed by its
 # <text> label.
@@ -204,7 +220,7 @@ class GanttMark:
     """One data mark in the homepage Gantt figure."""
 
     label: str                # raw <text> label, not entity-normalized
-    lane: str                 # "education" (y < 135) | "service"
+    lane: str                 # "education" (y < GANTT_LANE_DIVIDER_Y) | "service"
     years: frozenset[int]     # decoded from the mark's x-coordinate(s)
     line: int                 # 1-indexed line in index.html
 
@@ -253,9 +269,13 @@ def gantt_marks(text: str) -> list[GanttMark]:
     fig = _GANTT_FIGURE_RE.search(text)
     if not fig:
         return []
-    base = fig.start("body")
+    body, base = fig.group("body"), fig.start("body")
+    wide = _GANTT_WIDE_RE.search(body)
+    if wide:
+        base += wide.start("body")
+        body = wide.group("body")
     marks: list[GanttMark] = []
-    for m in _GANTT_MARK_RE.finditer(fig.group("body")):
+    for m in _GANTT_MARK_RE.finditer(body):
         mark = m.group("mark")
         line = text.count("\n", 0, base + m.start()) + 1
         if mark.startswith("<rect"):
