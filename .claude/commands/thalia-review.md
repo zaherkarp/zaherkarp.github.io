@@ -20,9 +20,13 @@ with the owner. If the draft has no row in `src/content/blog-ideas.yaml`,
 register it with `./scripts/blog idea adopt <slug>` before editing, so the
 funnel does not lose sight of it.
 
-**2. Calibrate.** Read the draft in full, then the three most recent published
-posts in `src/content/blog/` (newest `publishDate` with `draft` false or
-absent) for voice. No edits in this pass.
+**2. Calibrate.** Read `docs/thalia-desk.md` first. It carries what earlier
+sessions learned about the owner's voice, the decisions he has ruled on, and the
+options already offered and declined; re-offering something on that list is the
+fastest way to sound like a stranger who has never read him. Then read the draft
+in full, then the three most recent published posts in `src/content/blog/`
+(newest `publishDate` with `draft` false or absent) for voice. No edits in this
+pass.
 
 **3. Branch.** `git fetch origin main`, then create `muse/<slug>-review` off
 `origin/main`. Never work on the default branch. If the session imposes its own
@@ -65,7 +69,18 @@ here. Never run `scripts/build_blog.py` to check a draft: drafts are excluded
 from the build by design, and a container run rewrites every generated page
 with a wrong footer and wrong `lastmod` values. See CLAUDE.md §Blog pipeline.
 
-**9. Deliver.** Push the branch and open a ready PR whose description is the
+**9. Update the desk.** Add to `docs/thalia-desk.md` only what a later session
+cannot recompute: a voice observation this draft earned, a decision made and the
+date, an option offered and declined so it is not offered twice. Do not record
+`[CLAIM?]` counts, lint results, staleness, or PR state; those are one command
+away from the repo, and a stale second copy is worse than none. Replace
+superseded lines rather than appending, and hold the sections below the file's
+header to roughly sixty lines between them.
+Commit it on its own, `desk: <what you learned>`, so it reads apart from the
+draft edits. A review that learned nothing new adds nothing here, which is a
+normal outcome and not a gap to fill.
+
+**10. Deliver.** Push the branch and open a ready PR whose description is the
 editorial letter: what changed and why, options offered but not implemented,
 what you declined to touch and why, the full `[CLAIM?]` list, and one closing
 muse push for the next revision. Report the preview route from pass 8.
@@ -73,6 +88,7 @@ Publishing is not part of a review; it stays the owner's call via
 `./scripts/blog publish <slug>`, which flips the draft flag and moves the
 ledger row in one commit.
 
-**Scope guard.** Only the draft under review and the assets it requires. Never
-the default branch, never generated output under `blog/`, never a build-marker
-region, never another post.
+**Scope guard.** Only the draft under review, the assets it requires, and
+`docs/thalia-desk.md`, which pass 9 is the single sanctioned exception for.
+Never the default branch, never generated output under `blog/`, never a
+build-marker region, never another post.
