@@ -1,6 +1,6 @@
 ---
 title: "How This Site Builds Itself"
-description: "A pure HTML and CSS portfolio site with no framework still has a build system. Five Python build scripts, six linters, a self-installing pre-push hook, and a handful of patterns that turn out to have names in the textbook."
+description: "A pure HTML and CSS portfolio site with no framework still has a build system. Six Python build scripts, twelve linters, a self-installing pre-push hook, and a handful of patterns that turn out to have names in the textbook."
 publishDate: 2026-05-19
 draft: true
 tags: ["portfolio", "static-site", "github-actions", "python", "ci-cd", "pipelines", "concurrency"]
@@ -8,13 +8,13 @@ tags: ["portfolio", "static-site", "github-actions", "python", "ci-cd", "pipelin
 
 # How This Site Builds Itself
 
-There is a thing people say about static sites: they are just files. No database, no framework, no build, you just edit the HTML and push. That is true for the surface of this site, and not quite true for any of the source that produces it. The homepage is hand-authored HTML, but the blog is not HTML at all in the repo. It is markdown with frontmatter, linted on the way in and rendered on the way out. The resume is not a PDF in the repo. It is markdown that becomes a PDF on every push, and so is the CV next to it. The activity sparkline above the writing section, the eight most recent post entries, the citation counts on each publication: none of those are hand-maintained. They are outputs of scripts that run in CI and commit themselves back.
+There is a thing people say about static sites: they are just files. No database, no framework, no build, you just edit the HTML and push. That is true for the surface of this site, and not quite true for any of the source that produces it. The homepage is hand-authored HTML, but the blog is not HTML at all in the repo. It is markdown with frontmatter, linted on the way in and rendered on the way out. The resume is not a PDF in the repo. It is markdown that becomes a PDF on every push, and so is the CV next to it. The activity sparkline in the writing column, the eight post entries beside it, the citation counts on each publication: none of those are hand-maintained. They are outputs of scripts that run in CI and commit themselves back.
 
 The reason I bring this up is that "no framework" is often confused with "no build system." It is not the same thing. A framework is a set of opinions about how a build system should be assembled. Removing the framework does not remove the build system. It just hands you the assembly job. This post is about how I did that assembly for this site, what each pipeline does, and a thing I did not expect when I started: that almost every pattern I reached for by instinct turned out to have a name in the literature. The build is small and homemade, but it is made of the same primitives a much larger system is made of, and seeing them at this scale is part of why I keep it homemade.
 
 ## The shape
 
-There are five Python build scripts in `scripts/` and six linters that guard them. Three of the build scripts run in CI on every relevant push. Two are manual. The linters run twice: once locally before a push, once again in CI.
+There are six Python build scripts in `scripts/` and twelve linters that guard them. Three of the build scripts run in CI on every relevant push. Three are manual. The linters run twice: once locally before a push, once again in CI.
 
 ```mermaid
 flowchart LR
@@ -67,7 +67,7 @@ The publish command has one guard worth calling out, because it encodes a footgu
 
 ## The blog pipeline
 
-This is the largest of the five. It reads markdown with YAML frontmatter, lints it, renders it through markdown-it-py and Jinja2, and writes one `blog/<slug>/index.html` per post, plus the listing pages, an RSS `feed.xml`, and a `sitemap.xml`. It also splits the archive: posts from 2009 through 2011 (the undergraduate-era journalism pieces) go to `/blog/archive/` so the main listing reads as a coherent data-engineering portfolio.
+This is the largest of the six. It reads markdown with YAML frontmatter, lints it, renders it through markdown-it-py and Jinja2, and writes one `blog/<slug>/index.html` per post, plus the listing pages, an RSS `feed.xml`, and a `sitemap.xml`. It also splits the archive: posts from 2009 through 2011 (the undergraduate-era journalism pieces) go to `/blog/archive/` so the main listing reads as a coherent data-engineering portfolio.
 
 ```mermaid
 flowchart LR
@@ -108,9 +108,9 @@ DOCS = [
 The interesting transform here is a regex post-pass that restructures role headers. The markdown looks like this:
 
 ```markdown
-**Health Catalyst** | Senior Data Engineer
-March 2020 – February 2025
-*Python, SQL Server, Power BI, T-SQL*
+**Health Catalyst** | Healthcare Analytics Manager
+Aug 2020 – Aug 2025
+*AWS (S3, Redshift, QuickSight) · Azure / Databricks · dbt, Python, T-SQL*
 ```
 
 Markdown-it renders that as a single `<p>` with `<br>`-separated inlines. That works, but it is hard to style; print CSS cannot target "the third inline span inside this paragraph" without a structural hook. The post-pass rewrites it into a `<header class="role">` with three labelled child elements, and the print CSS targets each cleanly. Writing a full markdown-it plugin for this one shape would be overkill, and the regex is scoped tightly enough (it matches the exact `strong | text <br> text <br> em` shape) that it will not false-match other content. This is the engineering judgment that gets moralized away in style guides that say "never parse HTML with regex": the rule is real, but it is a rule about *parsing arbitrary structure*. Transforming one rigid, self-produced shape is a different problem, and the targeted tool is the right size for it.
@@ -122,7 +122,7 @@ The CI runner needs `libpango-1.0-0` and `libpangoft2-1.0-0` installed before We
 This is the one that turned out to be the most fun to write. It owns several regions of `index.html` and one region of the life-in-weeks page, splicing generated content into each between marker comments while leaving the hand-authored prose around them alone:
 
 - A 24-week activity sparkline showing recent posting cadence.
-- The two most recent non-draft posts as featured entries, plus the next six as compact tiles.
+- The writing column: two posts as full featured entries, plus the next six as compact tiles. Ordering is opt-in rather than purely chronological. A post can carry `homepageSelected: true` and sort ahead of the rest, with both groups still newest-first inside themselves, so the column reads as a descending date list rather than a broken sort. Publication date alone used to decide what led the page, which is how a Teradata utility note came to sit above the healthcare work the page is actually arguing for. The blog listing stays strictly chronological and never consults the field.
 - Semantic Scholar citation counts on each publication entry.
 - A "thought" dot per post injected into the life-in-weeks grid.
 - A month-precision "Updated" stamp in the footer.
@@ -181,27 +181,23 @@ The interesting consequence is that the homepage is never *wrong* about the blog
 
 Two scripts are deliberately off CI, because their inputs change rarely and the failure mode of forgetting to run them is cosmetic, not broken content.
 
-`scripts/build_og.py` rebuilds `og-default.png` (the Open Graph card, 1200 by 630) from inlined design tokens via Pillow. The card content (name, subtitle, domain) changes about once a year. `scripts/build_cliff.py` redraws the Medicare Advantage Star Ratings density curve on the homepage from the canonical CMS distribution in `src/data/`, using a pure-Python Gaussian kernel density estimate so the script has no dependencies beyond the standard library; it gets re-run when CMS releases new ratings each October. Both write into marker regions, both are idempotent, and both are honest about the tradeoff: "you will remember to run it" is an acceptable contract when the worst case is a slightly stale image, and an unacceptable one when the worst case is a published post that never reaches the homepage. Knowing which builds can be manual is itself a design decision, not an oversight.
+`scripts/build_og.py` rebuilds `og-default.png` (the Open Graph card, 1200 by 630) via Pillow, reading its colors from `src/content/palette.yaml`. It used to inline them, on the reasoning that a one-off renderer does not need the indirection, and it duly went stale: the site changed accent colors and the card kept painting the old palette for months, invisible to the palette linter because that only inspects files carrying marker spans. Reading the source makes that class of drift impossible rather than merely detectable, which is the better trade whenever it is available. The card content (name, subtitle, domain) changes about once a year. `scripts/build_cliff.py` redraws the Medicare Advantage Star Ratings density curve on the homepage from the canonical CMS distribution in `src/data/`, using a pure-Python Gaussian kernel density estimate so the script has no dependencies beyond the standard library; it gets re-run when CMS releases new ratings each October. Both write into marker regions, both are idempotent, and both are honest about the tradeoff: "you will remember to run it" is an acceptable contract when the worst case is a slightly stale image, and an unacceptable one when the worst case is a published post that never reaches the homepage. Knowing which builds can be manual is itself a design decision, not an oversight.
 
 ## The lint suite
 
-Six linters run before every push, via a self-installing pre-push hook, and a subset runs again in CI. None of them produce output files. They either pass or abort the operation.
+Twelve linters run before every push, via a self-installing pre-push hook, and the same twelve run again in CI. None of them produce output files. They either pass or abort the operation. They started as three and grew one at a time, each after something drifted.
 
 ```mermaid
 flowchart LR
     A[git push] --> B["hooks/pre-push"]
-    B --> C[lint_blog]
-    B --> D[lint_vocab]
-    B --> E[lint_facts]
-    B --> N[lint_notes]
-    B --> R[lint_recognition]
-    B --> G[lint_gantt]
-    C --> F{all pass?}
-    D --> F
+    B --> C["content: blog, vocab"]
+    B --> E["cross-surface: facts, skills, recognition, gantt"]
+    B --> N["page integrity: notes, links, markers, html"]
+    B --> P2["generated tokens: palette, ideas"]
+    C --> F{all 12 pass?}
     E --> F
     N --> F
-    R --> F
-    G --> F
+    P2 --> F
     F -->|yes| P[push proceeds]
     F -->|no| X[push aborts]
 ```
@@ -218,11 +214,13 @@ The three newer linters extend that same idea to surfaces that are easy to let d
 
 `lint_notes.py` enforces an additivity rule: a homepage sidenote or margin note must not restate a number or a five-word run that already appears in the page prose, and a post's homepage margin note must add something its title and description do not already say. It is a redundancy check against the page's own text.
 
-`lint_recognition.py` keeps the homepage "Service and Recognition" section a subset of the comprehensive record in the CV, without a shared data file. Both surfaces stay hand-authored; the linter parses each and matches entries on shared year plus shared significant tokens, so "Undergraduate Research Mentor" still matches the CV's "Undergraduate Research Scholar Mentor" without a synonym table. The gate is one-directional (the homepage may show fewer items than the CV, never more), so a failure means something is shown publicly with no CV record behind it.
+`lint_recognition.py` keeps what the homepage shows of the awards and service record a subset of the comprehensive record in the CV, without a shared data file. Both surfaces stay hand-authored; the linter parses each and matches entries on shared year plus shared significant tokens, so "UG research mentor" still matches the CV's "Undergraduate Research Scholar Mentor" without a synonym table. The gate is one-directional (the homepage may show fewer items than the CV, never more), so a failure means something is shown publicly with no CV record behind it.
 
-`lint_gantt.py` keeps the hand-coded Education and Service Gantt figure in lockstep with the two prose sections it summarizes, by reading each mark's year back out of its x-coordinate through the chart's own coordinate transform and checking that every section entry has a matching mark. It exists because the figure once silently fell three entries out of date.
+`lint_gantt.py` keeps the hand-coded Education and Service Gantt figure in lockstep with that same CV record, by reading each mark's year back out of its x-coordinate through the chart's own coordinate transform and checking that every mark has a counterpart. It exists because the figure once silently fell three entries out of date.
 
-The shape across all six is the same: a check that runs as early as possible (pre-push, the earliest place that can still block a mistake), backed up by a second run in CI for anything that reaches `main` another way. That is shift-left and defense-in-depth, named patterns, applied to a personal site.
+Those two are worth a note, because they moved after I first wrote this section and the move is instructive. Both originally reconciled the figure against the prose sections beside it on the homepage, in the direction section-must-have-a-mark. Then the prose sections were cut for length and the figure became the only visible record, which inverted the question: there was no longer a section to check against, and the thing worth guaranteeing was that nothing is displayed publicly without a record behind it. So both now read the CV, in the direction mark-must-have-a-record. The lesson is that a consistency check has a direction, the direction encodes which surface you trust, and deleting a surface can invert it. A gate that keeps passing after the thing it compared against is gone is not a gate.
+
+The shape across all twelve is the same: a check that runs as early as possible (pre-push, the earliest place that can still block a mistake), backed up by a second run in CI for anything that reaches `main` another way. That is shift-left and defense-in-depth, named patterns, applied to a personal site.
 
 ## When two builds race
 
@@ -260,7 +258,11 @@ Now the part the draft of this post left as a to-do. Because publishing a post f
 
 The handling is a few lines of bash in `build_portfolio.yml`. It pushes first (there is no race most of the time, so do not pay for one), and only on a rejected push does it `git fetch origin main` and `git rebase origin/main` and try again, up to five times with a growing sleep. A failed rebase is aborted so the next attempt starts from a clean state instead of wedging half-applied. Mapped to the textbook, git's ref update is a compare-and-swap: the push says "move `main` from the commit I think is there to my new commit," and the swap fails if someone else moved it first. Rejection is a CAS failure; rebase-and-retry is the read-modify-write loop you wrap around any optimistic lock. `build_resume.yml` does the same with `git pull --rebase`. One non-obvious requirement falls out of this: the checkout uses `fetch-depth: 0` (full history, not the default shallow clone) because a rebase needs the merge base, and a shallow clone does not have it. A shallow clone made the rebase fail silently and the old retry loop exhaust itself for nothing.
 
-There is a second concurrency hazard, the kind that bites you only after the first is fixed: a workflow that commits to the branch it watches can trigger itself, forever. GitHub closes that door by design (a push made with the default `GITHUB_TOKEN` does not trigger another workflow run), which is a deliberate loop-breaker and not an accident. It has a side effect, though: when `build_portfolio` writes refreshed citation counts into `publications.yaml`, that write does *not* wake `build_resume`, so the CV would never pick up the new counts. The fix is a clock. `build_portfolio` runs its weekly citation refresh on a Sunday 06:00 cron; `build_resume` runs its own cron an hour later at 07:00, by which point the fresh counts are committed for it to read. The cron is not a timer for its own sake; it is the coordination point that replaces the trigger the loop-breaker swallowed. Concurrency correctness is rarely one clever trick. It is noticing each hazard the previous fix exposed.
+There is a second concurrency hazard, the kind that bites you only after the first is fixed: a workflow that commits to the branch it watches can trigger itself, forever. GitHub closes that door by design (a push made with the default `GITHUB_TOKEN` does not trigger another workflow run), which is a deliberate loop-breaker and not an accident. It has a side effect, though: when `build_portfolio` writes refreshed citation counts into `publications.yaml`, that write does *not* wake `build_resume`, so the CV would never pick up the new counts.
+
+My first fix was a clock. `build_portfolio` refreshes citations on a Sunday 06:00 cron, so I gave `build_resume` its own cron an hour later, on the assumption that the counts would be committed by then. That is not a coordination mechanism, it is a guess with a cron expression around it, and it fails in the direction you would expect: when the portfolio run is slow or retries, the resume build reads the old counts and ships them, silently and on schedule. A wall clock cannot observe whether the thing it is waiting for actually happened.
+
+The fix that replaced it observes the event instead. `build_resume.yml` now triggers on `workflow_run` when the portfolio workflow *completes*, gated to runs that actually succeeded and that came from the schedule or a manual dispatch, so the frequent push-triggered portfolio rebuilds do not churn the timestamped PDFs. The dependency is now expressed as a dependency rather than approximated by elapsed time. Concurrency correctness is rarely one clever trick. It is noticing each hazard the previous fix exposed, including the ones your own fix introduced.
 
 ## The patterns that rhyme
 
