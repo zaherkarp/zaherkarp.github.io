@@ -70,10 +70,16 @@ from the build by design, and a container run rewrites every generated page
 with a wrong footer and wrong `lastmod` values. See CLAUDE.md §Blog pipeline.
 
 **9. Update the desk.** Add to `docs/thalia-desk.md` only what a later session
-cannot recompute: a voice observation this draft earned, a decision made and the
-date, an option offered and declined so it is not offered twice. Do not record
-`[CLAIM?]` counts, lint results, staleness, or PR state; those are one command
-away from the repo, and a stale second copy is worse than none. Replace
+cannot recompute: a voice observation this draft earned, a decision made or
+awaiting his ruling with the date, an editorial option offered and declined so
+it is not offered twice. Keep two things off the desk because something else
+already holds them. Recomputable state stays off (`[CLAIM?]` counts, lint
+results, staleness, PR state); it is one command from the repo and a stale copy
+misleads. And a pitched post idea's fate stays off: it lives in the ledger as a
+row or a `dropped` status (§Blog idea backlog), which the nudge already reads.
+If the review leaves owner-only work behind, record the outstanding decision
+that keeps the draft unshipped, not the fact behind it, so the Monday nudge's
+one ask and the next review agree on what is unshipped and why. Replace
 superseded lines rather than appending, and hold the sections below the file's
 header to roughly sixty lines between them.
 Commit it on its own, `desk: <what you learned>`, so it reads apart from the
